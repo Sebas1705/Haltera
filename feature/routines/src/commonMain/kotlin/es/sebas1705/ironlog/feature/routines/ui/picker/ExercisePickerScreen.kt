@@ -39,12 +39,22 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.components.ExerciseFilterBar
+import es.sebas1705.ironlog.core.ui.components.FilterChipSpec
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
+import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Exercise
+import es.sebas1705.ironlog.data.models.ExerciseCategory
+import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.routines_clear_search
 import es.sebas1705.ironlog.feature.routines.resources.routines_error
+import es.sebas1705.ironlog.feature.routines.resources.routines_filter_any
+import es.sebas1705.ironlog.feature.routines.resources.routines_filter_category
+import es.sebas1705.ironlog.feature.routines.resources.routines_filter_clear
+import es.sebas1705.ironlog.feature.routines.resources.routines_filter_equipment
+import es.sebas1705.ironlog.feature.routines.resources.routines_filter_muscle
 import es.sebas1705.ironlog.feature.routines.resources.routines_flexible_option
 import es.sebas1705.ironlog.feature.routines.resources.routines_flexible_option_hint
 import es.sebas1705.ironlog.feature.routines.resources.routines_no_results
@@ -52,6 +62,9 @@ import es.sebas1705.ironlog.feature.routines.resources.routines_pick_exercise
 import es.sebas1705.ironlog.feature.routines.resources.routines_search_exercises
 import es.sebas1705.ironlog.feature.routines.resources.routines_variants_count
 import es.sebas1705.ironlog.feature.routines.ui.components.BackButton
+import es.sebas1705.ironlog.feature.routines.ui.components.categoryLabel
+import es.sebas1705.ironlog.feature.routines.ui.components.equipmentLabel
+import es.sebas1705.ironlog.feature.routines.ui.components.muscleLabel
 import es.sebas1705.ironlog.feature.routines.ui.components.variantShortLabel
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
@@ -102,6 +115,7 @@ internal fun ExercisePickerScreen(
                 query = it
                 send(ExercisePickerIntent.SetQuery(it))
             }
+            PickerFilters(state, send)
             when {
                 state.loading -> LoadingScreen()
                 state.results.isEmpty() -> Text(
@@ -207,5 +221,37 @@ private fun SearchField(query: String, onChange: (String) -> Unit) {
         singleLine = true,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp),
+    )
+}
+
+@Composable
+private fun PickerFilters(state: ExercisePickerState, send: (ExercisePickerIntent) -> Unit) {
+    ExerciseFilterBar(
+        filters = listOf(
+            FilterChipSpec(
+                title = stringResource(Res.string.routines_filter_category),
+                selected = state.category,
+                options = ExerciseCategory.entries,
+                optionLabel = { categoryLabel(it) },
+                onSelect = { send(ExercisePickerIntent.CategorySelected(it)) },
+            ),
+            FilterChipSpec(
+                title = stringResource(Res.string.routines_filter_muscle),
+                selected = state.muscle,
+                options = Muscle.entries,
+                optionLabel = { muscleLabel(it) },
+                onSelect = { send(ExercisePickerIntent.MuscleSelected(it)) },
+            ),
+            FilterChipSpec(
+                title = stringResource(Res.string.routines_filter_equipment),
+                selected = state.equipment,
+                options = Equipment.entries,
+                optionLabel = { equipmentLabel(it) },
+                onSelect = { send(ExercisePickerIntent.EquipmentSelected(it)) },
+            ),
+        ),
+        anyLabel = stringResource(Res.string.routines_filter_any),
+        clearLabel = stringResource(Res.string.routines_filter_clear),
+        onClear = { send(ExercisePickerIntent.ClearFilters) },
     )
 }

@@ -15,6 +15,9 @@ import org.jetbrains.compose.resources.Font
 /** OpenType feature for tabular (equal-width) figures. */
 private const val TABULAR_FIGURES = "tnum"
 
+/** Share of the Material letter spacing kept for Inter. */
+private const val INTER_TRACKING = 0.25f
+
 /**
  * Tabular figures: every digit has the same width, so loads, reps and timers do not shift as they
  * change. Use it on numbers: `MaterialTheme.typography.headlineMedium.tabularFigures()`.
@@ -50,7 +53,9 @@ fun appTypography(): Typography {
 
 private fun brandTypography(display: FontFamily, text: FontFamily): Typography = Typography().run {
     fun TextStyle.display() = copy(fontFamily = display, fontWeight = FontWeight.SemiBold)
-    fun TextStyle.text() = copy(fontFamily = text)
+
+    // Material tracking is tuned for Roboto; Inter is wider, so it gets less of it.
+    fun TextStyle.text() = copy(fontFamily = text, letterSpacing = letterSpacing * INTER_TRACKING)
     copy(
         displayLarge = displayLarge.display(),
         displayMedium = displayMedium.display(),

@@ -41,6 +41,53 @@ patches:
   Handstand_Push-Ups: { category: CALISTHENICS }
   Hanging_Leg_Raise: { trackingType: BODYWEIGHT_REPS }
   Inverted_Row: { trackingType: BODYWEIGHT_REPS }
+  # Loaded "other" implements (plates, sleds, carries, strongman objects): weighted tracking with the right load entry.
+  Farmers_Walk: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Yoke_Walk: { loadType: BARBELL, trackingType: WEIGHT_TIME }
+  Rickshaw_Carry: { loadType: BARBELL, trackingType: WEIGHT_TIME }
+  Crucifix: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Plate_Pinch: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Standing_Olympic_Plate_Hand_Squeeze: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Sled_Push: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Sled_Drag_-_Harness: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Backward_Drag: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  Bear_Crawl_Sled_Drags: { loadType: DUMBBELL, trackingType: WEIGHT_TIME }
+  # Bodyweight movements the source files under "other" (dip belts, rings, straps, bars).
+  Weighted_Pull_Ups: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Weighted_Bench_Dip: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Ring_Dips: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Mixed_Grip_Chin: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  One_Arm_Chin-Up: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Gironda_Sternum_Chins: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Side_To_Side_Chins: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Kipping_Muscle_Up: { equipment: BODYWEIGHT, category: CALISTHENICS, trackingType: BODYWEIGHT_REPS }
+  Knee_Hip_Raise_On_Parallel_Bars: { equipment: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Hyperextensions_Back_Extensions: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Inverted_Row_with_Straps: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Bodyweight_Mid_Row: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Suspended_Push-Up: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Suspended_Row: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  Suspended_Split_Squat: { loadType: BODYWEIGHT, trackingType: BODYWEIGHT_REPS }
+  # Weighted "other" movements tracked as load + reps.
+  Weighted_Squat: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Front_Plate_Raise: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Plate_Twist: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Reverse_Plate_Curls: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Svend_Press: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Lying_Face_Down_Plate_Neck_Resistance: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Lying_Face_Up_Plate_Neck_Resistance: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Seated_Head_Harness_Neck_Resistance: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Wrist_Roller: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Log_Lift: { loadType: BARBELL, trackingType: WEIGHT_REPS }
+  Atlas_Stones: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Keg_Load: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Sandbag_Load: { loadType: DUMBBELL, trackingType: WEIGHT_REPS }
+  Donkey_Calf_Raises: { equipment: MACHINE, trackingType: WEIGHT_REPS }
+  Seated_Band_Hamstring_Curl: { equipment: BAND, trackingType: WEIGHT_REPS }
+  # Tracking or category corrections.
+  Split_Squats: { category: PLYOMETRICS, trackingType: REPS }
+  Isometric_Chest_Squeezes: { trackingType: TIME }
+  Prone_Manual_Hamstring: { trackingType: REPS }
 
 groups:
   - id: bench-press

@@ -1664,3 +1664,19 @@ Tasks 1–5 were executed as written, then amended after code review. The commit
   `es.yaml` names take precedence over wger, so `ATTRIBUTION.md` credits only the wger names still used: one, at generation time. `--missing-es` prints `[]`. The generated catalogue v1 has 807 exercises and 883 variants, and `build.mjs --check` passes.
 - Task 9: `catalog/README.md` follows the plan's text, extended for the `released` flag, where the Spanish comes from (`i18n/es.yaml`, else wger for names) and quoting commas in flow lists. The `catalog` CI job (Step 1) is **deferred**: `.github/workflows/ci.yml` is created by F1a, which is not merged yet. The job is added as given in Step 1 when this branch is rebased onto main after F1a. Step 3 was run locally: 44 tests pass and `Catalogue up to date: v1, 807 exercises`.
 - Task 10: the push and PR (Step 3) are left to the coordinator.
+- Final review fixes (v1 still unreleased). These supersede the counts above.
+  - **Push press:** its Spanish name came from a wrong wger match. It now has a name-only `es.yaml` entry, since the source has no steps. With that, no wger data is used, and `ATTRIBUTION.md` says so instead of printing an empty table.
+  - **Variant names:** new validator rule — variants that share equipment within an exercise need a `{ en, es }` name, and names must be distinct. Names were set for lat-pulldown, triceps-pushdown, leg-curl, handstand-hold, l-sit, climbing and swimming.
+  - **Patches:** 43 loaded "other" or misfiled exercises were patched with load and tracking types. This adds `WEIGHT_TIME` for carries, sleds and holds; `BODYWEIGHT_REPS` for dips, chins and suspension work; and `WEIGHT_REPS` for plates and strongman objects. All the patched source ids exist.
+  - **Duplicates:**
+    - `running` now uses `Running_Treadmill`, and `Jogging_Treadmill` is excluded.
+    - `walking` moved from `custom.yaml` to a group (a `Walking_Treadmill` variant plus an inline outdoor variant). Its muscles now come from the source (quadriceps) instead of `FULL_BODY`.
+    - `hammer-curl.dumbbell` is now `Hammer_Curls`, and `Alternate_Hammer_Curl` stays a separate exercise.
+    - `Two-Arm_Kettlebell_Jerk` and the remaining chain setups are excluded.
+  - **Group instructions:** `group.instructions` overrides the primary source's steps. `running` and `walking` use generic steps, and their outdoor variants keep `instructions: null`.
+  - **Spanish text:**
+    - "banco Scott" replaces "predicador" everywhere.
+    - Notes pointing to a non-existent "foot positions section" and first-person remarks were removed. Step counts are unchanged.
+    - `Lunge_Sprint` became "Zancada con salto alterno en multipower", to match its Smith-machine steps.
+    - `One-Arm_Kettlebell_Para_Press` became "Press con kettlebell a una mano con el codo abierto". The source describes an elbow-out overhead press, not a floor press, and a separate `One-Arm_Kettlebell_Floor_Press` exists.
+  - **Regeneration:** `ids.lock.json` was reset to `[]` before regenerating, so renames do not ship as deprecated ids. Result: v1 with 801 exercises, 878 variants and `deprecatedIds: []`. Tracking types: WEIGHT_REPS 469, TIME 139, BODYWEIGHT_REPS 95, REPS 75, DISTANCE_TIME 13, WEIGHT_TIME 10. 50 tests pass.

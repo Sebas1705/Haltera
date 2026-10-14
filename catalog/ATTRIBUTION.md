@@ -8,11 +8,7 @@ Exercise data and images from [yuhonas/free-exercise-db](https://github.com/yuho
 
 ## wger
 
-Spanish exercise names from the [wger](https://wger.de) exercise database, used under their Creative Commons licences:
-
-| wger exercise | English | Spanish | Licence | Author |
-|---|---|---|---|---|
-| [478](https://wger.de/exercise/478/view/) | Push Press | Press de hombro con mancuernas | CC-BY-SA 3 | Tierrasverdes |
+No wger data is currently used: every Spanish name comes from `catalog/i18n/es.yaml` or the Ironlog curation.
 
 ## Ironlog
 

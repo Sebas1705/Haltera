@@ -1,0 +1,53 @@
+-- Base exercises (spec §3.1). Catalogue rows are owned by the importer; USER rows by the user.
+CREATE TABLE ExerciseEntity (
+    id               TEXT NOT NULL PRIMARY KEY,
+    source           TEXT NOT NULL,              -- CATALOG | USER
+    nameEn           TEXT NOT NULL,
+    nameEs           TEXT NOT NULL,
+    category         TEXT NOT NULL,
+    trackingType     TEXT NOT NULL,
+    level            TEXT NOT NULL,
+    primaryMuscles   TEXT NOT NULL,              -- comma-separated Muscle names
+    secondaryMuscles TEXT NOT NULL,
+    instructionsEn   TEXT NOT NULL,              -- JSON array of steps
+    instructionsEs   TEXT NOT NULL,
+    deprecated       INTEGER NOT NULL DEFAULT 0, -- 0/1
+    updatedAt        INTEGER NOT NULL            -- epoch millis
+);
+
+-- OR IGNORE is meant only for primary-key conflicts (row already present: the importer then runs updateCatalog).
+-- It would also silently swallow UNIQUE, NOT NULL or CHECK violations: revisit it before adding such constraints.
+insertCatalogIfMissing:
+INSERT OR IGNORE INTO ExerciseEntity(
+    id, source, nameEn, nameEs, category, trackingType, level,
+    primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt
+) VALUES (
+    :id, 'CATALOG', :nameEn, :nameEs, :category, :trackingType, :level,
+    :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, 0, :updatedAt
+);
+
+updateCatalog:
+UPDATE ExerciseEntity
+SET nameEn = :nameEn, nameEs = :nameEs, category = :category, trackingType = :trackingType, level = :level,
+    primaryMuscles = :primaryMuscles, secondaryMuscles = :secondaryMuscles,
+    instructionsEn = :instructionsEn, instructionsEs = :instructionsEs, deprecated = 0, updatedAt = :updatedAt
+WHERE id = :id AND source = 'CATALOG';
+
+deprecate:
+UPDATE ExerciseEntity SET deprecated = 1, updatedAt = :updatedAt
+WHERE id = :id AND source = 'CATALOG';
+
+insertUser:
+INSERT INTO ExerciseEntity(
+    id, source, nameEn, nameEs, category, trackingType, level,
+    primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt
+) VALUES (
+    :id, 'USER', :nameEn, :nameEs, :category, :trackingType, :level,
+    :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, 0, :updatedAt
+);
+
+selectById:
+SELECT * FROM ExerciseEntity WHERE id = ?;
+
+countActive:
+SELECT COUNT(*) FROM ExerciseEntity WHERE deprecated = 0;

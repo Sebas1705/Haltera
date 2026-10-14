@@ -9,3 +9,9 @@ test('pipes in wger names do not break the table', () => {
   const row = renderAttribution({ sources, usedWger }).split('\n').find((l) => l.startsWith('| [7]'));
   assert.equal(row, '| [7](https://wger.de/exercise/7/view/) | Push-Ups \\| Incline | Flexiones \\| inclinadas | CC-BY-SA 4 | a\\|b |');
 });
+
+test('without wger names the section says so instead of printing an empty table', () => {
+  const text = renderAttribution({ sources, usedWger: [] });
+  assert.ok(text.includes('No wger data is currently used'));
+  assert.ok(!text.includes('| wger exercise |'));
+});

@@ -15,11 +15,15 @@ export function renderAttribution({ sources, usedWger }) {
     '',
     '## wger',
     '',
-    'Spanish exercise names from the [wger](https://wger.de) exercise database, used under their Creative Commons licences:',
-    '',
-    '| wger exercise | English | Spanish | Licence | Author |',
-    '|---|---|---|---|---|',
-    ...usedWger.map((w) => `| [${w.wgerId}](https://wger.de/exercise/${w.wgerId}/view/) | ${cell(w.en)} | ${cell(w.es)} | ${cell(w.license)} | ${cell(w.author)} |`),
+    ...(usedWger.length === 0
+      ? ['No wger data is currently used: every Spanish name comes from `catalog/i18n/es.yaml` or the Ironlog curation.']
+      : [
+          'Spanish exercise names from the [wger](https://wger.de) exercise database, used under their Creative Commons licences:',
+          '',
+          '| wger exercise | English | Spanish | Licence | Author |',
+          '|---|---|---|---|---|',
+          ...usedWger.map((w) => `| [${w.wgerId}](https://wger.de/exercise/${w.wgerId}/view/) | ${cell(w.en)} | ${cell(w.es)} | ${cell(w.license)} | ${cell(w.author)} |`),
+        ]),
     '',
     '## Ironlog',
     '',

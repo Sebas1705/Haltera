@@ -1,0 +1,4 @@
+<resources>
+    <string name="session_title">Sesión</string>
+    <string name="session_placeholder">La sesión en curso: series, temporizador de descanso y resumen final.</string>
+</resources>

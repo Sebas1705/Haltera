@@ -1,0 +1,4 @@
+<resources>
+    <string name="exercises_title">Exercises</string>
+    <string name="exercises_placeholder">Search and filter exercises, see details and history, and create your own.</string>
+</resources>

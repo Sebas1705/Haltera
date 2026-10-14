@@ -1,0 +1,4 @@
+<resources>
+    <string name="today_title">Hoy</string>
+    <string name="today_placeholder">Tu próximo día de rutina, empezar o reanudar una sesión y tu semana de un vistazo.</string>
+</resources>

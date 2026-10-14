@@ -1,0 +1,4 @@
+<resources>
+    <string name="session_title">Session</string>
+    <string name="session_placeholder">The live session: sets, rest timer and finish summary.</string>
+</resources>

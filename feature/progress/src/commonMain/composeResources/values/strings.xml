@@ -1,0 +1,4 @@
+<resources>
+    <string name="progress_title">Progress</string>
+    <string name="progress_placeholder">Calendar, per-exercise history, personal records and charts.</string>
+</resources>

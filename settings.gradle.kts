@@ -32,3 +32,11 @@ include(
 include(":data:models", ":data:local", ":data:repository", ":data:routines")
 
 include(":domain:usecases")
+
+include(
+    ":feature:today",
+    ":feature:routines",
+    ":feature:exercises",
+    ":feature:progress",
+    ":feature:session",
+)

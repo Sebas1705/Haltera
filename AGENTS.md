@@ -32,13 +32,10 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Never skip the `execute { }` wrapper** — all coroutine work in ViewModels goes through it
 - **Never import across forbidden layer boundaries** — a feature cannot import another feature; domain cannot import data implementations
 - **Always use convention plugins** — do not copy-paste `kotlin { }` / `android { }` blocks into module builds
-<<<<<<< HEAD
 - **Feature agents edit only inside their `feature:<name>` module** — the shell calls each feature through its fixed entry points (MODULE_MAP.md); changing a signature means changing `composeApp` in the same PR
 - **Every UI string is a resource** — English in `composeResources/values/strings.xml`, Spanish in `values-es/strings.xml`, same keys; no hard-coded user-facing text
 - **Loads are grams (`Long`), times epoch millis** — convert only for display (`core:units`)
-=======
 - **Secrets live only in Doppler** (project `ironlog`, config `prd`), never in the repository: no keystores, passwords, service account keys or tokens in code, docs, scripts or commits. GitHub only holds `DOPPLER_TOKEN` (read-only). See [docs/RELEASE.md](docs/RELEASE.md)
->>>>>>> origin/main
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
 
 ## Changing the database schema

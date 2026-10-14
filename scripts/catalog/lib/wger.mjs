@@ -1,11 +1,13 @@
 // Reduces wger exerciseinfo results to the English/Spanish name pairs we use, with their licence.
 
+import { stripDiacritics } from './text.mjs';
+
 const ENGLISH = 2;
 const SPANISH = 4;
 
 /** Normalised key used to match names across sources. */
 export function nameKey(name) {
-  return name.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]/g, '');
+  return stripDiacritics(name.toLowerCase()).replace(/[^a-z0-9]/g, '');
 }
 
 /** One entry per wger exercise that has both an English and a Spanish translation. */

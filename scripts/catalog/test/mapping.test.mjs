@@ -50,3 +50,12 @@ test('slug turns source ids into kebab case', () => {
   assert.equal(slug('Barbell_Bench_Press_-_Medium_Grip'), 'barbell-bench-press-medium-grip');
   assert.equal(slug('3_4_Sit-Up'), '3-4-sit-up');
 });
+
+test('null-equipment default follows the category passed in (patched category)', () => {
+  assert.equal(equipmentOf(src({ equipment: null, category: 'stretching' }), 'STRENGTH'), 'BODYWEIGHT');
+  assert.equal(equipmentOf(src({ equipment: null }), 'MOBILITY'), 'NONE');
+});
+
+test('slug strips diacritics', () => {
+  assert.equal(slug('Pádel Ñandú'), 'padel-nandu');
+});

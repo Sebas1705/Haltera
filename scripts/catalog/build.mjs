@@ -17,9 +17,27 @@ const OUT_CATALOG = 'composeApp/src/commonMain/composeResources/files/catalog.js
 const OUT_ATTRIBUTION = 'catalog/ATTRIBUTION.md';
 const OUT_LOCK = 'catalog/ids.lock.json';
 
-const readJson = async (p, fallback) => (existsSync(path(p)) ? JSON.parse(await readFile(path(p), 'utf8')) : fallback);
-const readYaml = async (p, fallback) => (existsSync(path(p)) ? (parse(await readFile(path(p), 'utf8')) ?? fallback) : fallback);
-const readText = async (p) => (existsSync(path(p)) ? readFile(path(p), 'utf8') : null);
+/** Reads a UTF-8 file without a leading BOM. A missing file returns `fallback`, or fails when there is none (required input). */
+async function readSource(p, fallback) {
+  if (!existsSync(path(p))) {
+    if (fallback === undefined) throw new Error(`missing ${p}`);
+    return null;
+  }
+  return (await readFile(path(p), 'utf8')).replace(/^﻿/, '');
+}
+const readJson = async (p, fallback) => {
+  const text = await readSource(p, fallback);
+  return text === null ? fallback : JSON.parse(text);
+};
+const readYaml = async (p, fallback) => {
+  const text = await readSource(p, fallback);
+  return text === null ? fallback : (parse(text) ?? fallback);
+};
+/** Committed outputs, with CRLF normalised so a Windows checkout does not look stale. */
+const readText = async (p) => {
+  const text = await readSource(p, null);
+  return text === null ? null : text.replace(/\r\n/g, '\n');
+};
 
 const sources = await readJson('catalog/sources/sources.json');
 const overrides = await readYaml('catalog/overrides.yaml', { catalogVersion: 1 });

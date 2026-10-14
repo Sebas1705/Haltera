@@ -64,10 +64,11 @@ export function categoryOf(source) {
   return category;
 }
 
-export function equipmentOf(source) {
+/** `category` is the resolved (possibly patched) Ironlog category; it picks the default for null equipment. */
+export function equipmentOf(source, category = categoryOf(source)) {
   if (/smith machine/i.test(source.name)) return 'SMITH';
   if (source.equipment === 'machine' && source.category === 'cardio') return 'CARDIO_MACHINE';
-  if (source.equipment == null) return categoryOf(source) === 'STRENGTH' ? 'BODYWEIGHT' : 'NONE';
+  if (source.equipment == null) return category === 'STRENGTH' ? 'BODYWEIGHT' : 'NONE';
   const equipment = SOURCE_EQUIPMENT[source.equipment];
   if (!equipment) throw new Error(`Unknown source equipment "${source.equipment}" in ${source.name}`);
   return equipment;

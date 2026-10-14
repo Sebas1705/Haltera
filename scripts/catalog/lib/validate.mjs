@@ -1,18 +1,38 @@
 // Catalogue validation (spec §6.2). Returns a list of human-readable errors; empty means valid.
+// Malformed entries are reported, never thrown, so one bad curation line does not hide the others.
 import { ALLOWED_LOAD_TYPES, CATEGORIES, EQUIPMENT, LEVELS, LOAD_TYPES, MUSCLES, TRACKING_TYPES } from './mapping.mjs';
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-function checkInstructions(where, instructions, errors) {
-  if (instructions == null) return;
-  if (instructions.en.length > 0 && instructions.es.length !== instructions.en.length) {
+const isStringArray = (value) => Array.isArray(value) && value.every((s) => typeof s === 'string');
+
+/** Exercise instructions are required; variant instructions may be null (they inherit the exercise's). */
+function checkInstructions(where, instructions, errors, { required }) {
+  if (instructions == null && !required) return;
+  if (instructions == null || !isStringArray(instructions.en) || !isStringArray(instructions.es)) {
+    errors.push(`${where}: instructions must be { en: string[], es: string[] }`);
+    return;
+  }
+  if (instructions.es.length !== instructions.en.length) {
     errors.push(`${where}: instructions.es has ${instructions.es.length} steps, instructions.en has ${instructions.en.length}`);
   }
+}
+
+function checkMuscles(where, field, list, errors) {
+  if (!Array.isArray(list)) {
+    errors.push(`${where}: ${field} must be an array`);
+    return [];
+  }
+  for (const m of list) {
+    if (!MUSCLES.includes(m)) errors.push(`${where}: invalid muscle ${m}`);
+  }
+  return list;
 }
 
 export function validateCatalog(catalog) {
   const errors = [];
   if (!Number.isInteger(catalog.catalogVersion) || catalog.catalogVersion < 1) errors.push('catalogVersion must be a positive integer');
+  if (!Array.isArray(catalog.exercises)) return [...errors, 'exercises must be an array'];
   const seen = new Set();
   const unique = (id) => {
     if (seen.has(id)) errors.push(`duplicate id ${id}`);
@@ -21,22 +41,25 @@ export function validateCatalog(catalog) {
 
   for (const e of catalog.exercises) {
     unique(e.id);
-    if (!KEBAB.test(e.id)) errors.push(`${e.id}: exercise id is not kebab-case`);
+    if (typeof e.id !== 'string' || !KEBAB.test(e.id)) errors.push(`${e.id}: exercise id is not kebab-case`);
     if (!e.name?.en?.trim()) errors.push(`${e.id}: missing name.en`);
     if (!e.name?.es?.trim()) errors.push(`${e.id}: missing name.es`);
     if (!CATEGORIES.includes(e.category)) errors.push(`${e.id}: invalid category ${e.category}`);
     if (!TRACKING_TYPES.includes(e.trackingType)) errors.push(`${e.id}: invalid trackingType ${e.trackingType}`);
     if (!LEVELS.includes(e.level)) errors.push(`${e.id}: invalid level ${e.level}`);
-    if (e.primaryMuscles.length === 0) errors.push(`${e.id}: no primary muscles`);
-    for (const m of [...e.primaryMuscles, ...e.secondaryMuscles]) {
-      if (!MUSCLES.includes(m)) errors.push(`${e.id}: invalid muscle ${m}`);
+    const primary = checkMuscles(e.id, 'primaryMuscles', e.primaryMuscles, errors);
+    if (Array.isArray(e.primaryMuscles) && primary.length === 0) errors.push(`${e.id}: no primary muscles`);
+    checkMuscles(e.id, 'secondaryMuscles', e.secondaryMuscles, errors);
+    checkInstructions(e.id, e.instructions, errors, { required: true });
+    if (!Array.isArray(e.variants)) {
+      errors.push(`${e.id}: variants must be an array`);
+      continue;
     }
-    checkInstructions(e.id, e.instructions, errors);
     if (e.variants.length === 0) errors.push(`${e.id}: no variants`);
 
     for (const v of e.variants) {
       unique(v.id);
-      const [prefix, suffix, extra] = v.id.split('.');
+      const [prefix, suffix, extra] = String(v.id).split('.');
       if (prefix !== e.id || !suffix || extra !== undefined || !KEBAB.test(suffix)) {
         errors.push(`${v.id}: variant id must be "${e.id}.<kebab-suffix>"`);
       }
@@ -50,7 +73,7 @@ export function validateCatalog(catalog) {
       if (e.trackingType === 'BODYWEIGHT_REPS' && !['BODYWEIGHT', 'BAND', 'MACHINE'].includes(v.loadType)) {
         errors.push(`${v.id}: BODYWEIGHT_REPS exercise with loadType ${v.loadType}`);
       }
-      checkInstructions(v.id, v.instructions, errors);
+      checkInstructions(v.id, v.instructions, errors, { required: false });
     }
   }
   return errors;

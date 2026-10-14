@@ -39,3 +39,18 @@ test('variant ids must start with the exercise id', () => {
   const errors = validateCatalog(catalog([exercise({ variants: [variant({ id: 'other.barbell' })] })]));
   assert.ok(errors.some((e) => e.includes('other.barbell')));
 });
+
+test('malformed entries are reported instead of crashing', () => {
+  const errors = validateCatalog(catalog([exercise({ primaryMuscles: undefined, secondaryMuscles: 'CHEST', variants: null, instructions: null })]));
+  assert.ok(errors.some((e) => e.includes('primaryMuscles must be an array')));
+  assert.ok(errors.some((e) => e.includes('secondaryMuscles must be an array')));
+  assert.ok(errors.some((e) => e.includes('variants must be an array')));
+  assert.ok(errors.some((e) => e.includes('instructions must be')));
+  const partial = validateCatalog(catalog([exercise({ instructions: { en: ['a'], es: 'b' } })]));
+  assert.ok(partial.some((e) => e.includes('instructions must be')));
+});
+
+test('Spanish steps without English steps are reported', () => {
+  const errors = validateCatalog(catalog([exercise({ instructions: { en: [], es: ['b'] } })]));
+  assert.ok(errors.some((e) => e.includes('instructions.es has 1 steps, instructions.en has 0')));
+});

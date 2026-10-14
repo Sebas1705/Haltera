@@ -80,3 +80,38 @@ test('custom exercises are appended', () => {
   const { catalog } = buildCatalog({ sources: [], wger: [], overrides: base, custom, es: {}, lockedIds: [] });
   assert.deepEqual(catalog.exercises[0].variants, [{ id: 'padel.match', equipment: 'NONE', loadType: 'NONE', name: null, instructions: null, frames: [] }]);
 });
+
+const run = (over) => buildCatalog({ sources: [], wger: [], overrides: base, custom: { exercises: [] }, es: {}, lockedIds: [], ...over });
+
+test('output order and hash do not depend on input order', () => {
+  const ids = ['Zottman_Curl', 'Ab_Roller', 'abs_lower', 'Barbell_Curl', 'Ölympic_Lift', 'cable-row', 'Cable_Row_2'];
+  const sources = ids.map((id) => source(id));
+  const first = run({ sources, es: es(ids) });
+  const shuffled = run({ sources: [3, 6, 0, 5, 1, 4, 2].map((i) => sources[i]), es: es(ids) });
+  assert.deepEqual(shuffled.catalog, first.catalog);
+  const exerciseIds = first.catalog.exercises.map((e) => e.id);
+  assert.deepEqual(exerciseIds, [...exerciseIds].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0)));
+});
+
+test('patches and excludes naming unknown sources are errors', () => {
+  assert.throws(() => run({ sources: [source('Plank')], es: es(['Plank']), overrides: { ...base, patches: { Nope: { trackingType: 'TIME' } } } }), /patches: unknown source "Nope"/);
+  assert.throws(() => run({ sources: [source('Plank')], es: es(['Plank']), overrides: { ...base, exclude: ['Nope'] } }), /exclude: unknown source "Nope"/);
+});
+
+test('a source used twice in groups is an error', () => {
+  const group = (id, sources) => ({ id, name: { en: id, es: id }, variants: sources.map((s) => ({ source: s, suffix: `${s.toLowerCase()}-${id}` })) });
+  const sources = [source('Barbell_Bench')];
+  assert.throws(() => run({ sources, es: es(['Barbell_Bench']), overrides: { ...base, groups: [group('a', ['Barbell_Bench', 'Barbell_Bench'])] } }), /source "Barbell_Bench" is already grouped/);
+  assert.throws(() => run({ sources, es: es(['Barbell_Bench']), overrides: { ...base, groups: [group('a', ['Barbell_Bench']), group('b', ['Barbell_Bench'])] } }), /source "Barbell_Bench" is already grouped/);
+});
+
+test('a source both excluded and grouped is an error', () => {
+  const overrides = { ...base, exclude: ['Barbell_Bench'], groups: [{ id: 'bench', name: { en: 'B', es: 'B' }, variants: [{ source: 'Barbell_Bench' }] }] };
+  assert.throws(() => run({ sources: [source('Barbell_Bench')], overrides }), /source "Barbell_Bench" is excluded/);
+});
+
+test('a patched category drives the null-equipment default', () => {
+  const sources = [source('Hip_Stretch', { equipment: null, category: 'stretching', force: 'pull' })];
+  const { catalog } = run({ sources, es: es(['Hip_Stretch']), overrides: { ...base, patches: { Hip_Stretch: { category: 'STRENGTH' } } } });
+  assert.equal(catalog.exercises[0].variants[0].equipment, 'BODYWEIGHT');
+});

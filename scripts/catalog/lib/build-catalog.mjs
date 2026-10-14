@@ -4,10 +4,13 @@ import { categoryOf, equipmentOf, levelOf, loadTypeOf, musclesOf, trackingOf } f
 import { slug } from './slug.mjs';
 import { indexWger, nameKey } from './wger.mjs';
 
+/** Locale-independent ordering by code unit, so the output and its hash are the same on every machine. */
+const byId = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+
 /** A source exercise after mappings and patches, before grouping. */
 function prepare(source, patch = {}) {
   const category = patch.category ?? categoryOf(source);
-  const equipment = patch.equipment ?? equipmentOf(source);
+  const equipment = patch.equipment ?? equipmentOf(source, category);
   return {
     sourceId: source.id,
     nameEn: source.name,
@@ -28,6 +31,13 @@ export function buildCatalog({ sources, wger, overrides, custom, es, lockedIds }
   const usedWger = new Map();
   const missingEs = new Set();
   const excluded = new Set(overrides.exclude ?? []);
+  const sourceIds = new Set(sources.map((s) => s.id));
+  for (const id of Object.keys(overrides.patches ?? {})) {
+    if (!sourceIds.has(id)) throw new Error(`patches: unknown source "${id}"`);
+  }
+  for (const id of excluded) {
+    if (!sourceIds.has(id)) throw new Error(`exclude: unknown source "${id}"`);
+  }
   const prepared = new Map(
     sources.filter((s) => !excluded.has(s.id)).map((s) => [s.id, prepare(s, overrides.patches?.[s.id])]),
   );
@@ -59,8 +69,10 @@ export function buildCatalog({ sources, wger, overrides, custom, es, lockedIds }
       if (!v.source) {
         return { id: `${group.id}.${v.suffix}`, equipment: v.equipment, loadType: v.loadType ?? loadTypeOf(v.equipment), name: v.name ?? null, instructions: null, frames: [] };
       }
+      if (excluded.has(v.source)) throw new Error(`Group ${group.id}: source "${v.source}" is excluded`);
       const p = prepared.get(v.source);
-      if (!p) throw new Error(`Group ${group.id}: unknown or excluded source "${v.source}"`);
+      if (!p) throw new Error(`Group ${group.id}: unknown source "${v.source}"`);
+      if (grouped.has(v.source)) throw new Error(`Group ${group.id}: source "${v.source}" is already grouped`);
       grouped.add(v.source);
       const equipment = v.equipment ?? p.equipment;
       return {
@@ -119,7 +131,7 @@ export function buildCatalog({ sources, wger, overrides, custom, es, lockedIds }
     });
   }
 
-  exercises.sort((a, b) => a.id.localeCompare(b.id));
+  exercises.sort(byId);
   const liveIds = exercises.flatMap((e) => [e.id, ...e.variants.map((v) => v.id)]);
   const live = new Set(liveIds);
   const deprecatedIds = lockedIds.filter((id) => !live.has(id)).sort();

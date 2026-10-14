@@ -17,5 +17,5 @@ val progressModule = module {
     viewModelOf(::ExerciseProgressViewModel)
     viewModelOf(::BodyWeightViewModel)
     viewModelOf(::MuscleVolumeViewModel)
-    viewModel { params -> SessionDetailViewModel(params.get(), get(), get(), get(), get()) }
+    viewModel { params -> SessionDetailViewModel(params.get(), get(), get(), get(), get(), get()) }
 }

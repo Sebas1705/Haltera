@@ -169,4 +169,23 @@
     <string name="progress_equipment_cardio_machine">Máquina de cardio</string>
     <string name="progress_equipment_other">Otro</string>
     <string name="progress_equipment_none">Sin material</string>
+
+    <string name="progress_add_session">Añadir sesión este día</string>
+    <string name="progress_log_failed">No se pudo registrar la sesión</string>
+    <string name="progress_log_title">Registrar una sesión</string>
+    <string name="progress_log_date">Fecha</string>
+    <string name="progress_log_start">Hora de inicio</string>
+    <string name="progress_log_duration">Duración (min)</string>
+    <string name="progress_log_trained">¿Qué entrenaste?</string>
+    <string name="progress_log_day">Día %1$d · %2$s</string>
+    <string name="progress_log_other">Otro</string>
+    <string name="progress_log_confirm">Registrar</string>
+    <string name="progress_ok">Aceptar</string>
+    <string name="progress_edit_sets">Editar series</string>
+    <string name="progress_edit_times">Editar fecha y hora</string>
+    <string name="progress_delete_session">Borrar sesión</string>
+    <string name="progress_delete_session_title">¿Borrar esta sesión?</string>
+    <string name="progress_delete_session_text">Sus ejercicios y series se borrarán definitivamente.</string>
+    <string name="progress_more">Más opciones</string>
+    <string name="progress_change_failed">No se pudo guardar el cambio</string>
 </resources>

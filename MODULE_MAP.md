@@ -11,6 +11,7 @@
 | `core:testing` | Coroutine test rule |
 | `data:models` | Domain types of spec §3 (`Exercise`, `ExerciseVariant`, `Routine`, `RoutineDay`, `RoutineSlot`, `SlotTarget`, `Prescription`, `ProgressionRule`, `LoadIncrement`, `WorkoutSession`, `SessionExercise`, `SetLog`, `BodyWeightEntry`, `RoutineTemplate`…), lenient enum parsing, `ModelJson` (slot JSON columns) |
 | `data:local` | SQLDelight `AppDatabase` (catalogue, routines, sessions, sets, body weight, `Meta`), `DatabaseDriverFactory` per platform, `CatalogImporter`, `SearchText` (accent-insensitive search) |
+| `data:sync` | Account and sync (docs/designs/2026-10-14-sync-design.md): the §4 contract (`SyncContract.kt`: `RemoteStore`, `AccountService`, `SyncEngine`…), `SyncEngineImpl`, aggregate payloads (`AggregateStore`), `SettingsSyncBridge`; `syncModule`. Change tracking lives in `data:local` (`SyncTracking.sq` triggers) |
 | `data:routines` | `FamousRoutines.all`: the bundled famous-routine templates (spec §6.3), checked against `catalog.json` by a test |
 | `data:repository` | Repository interfaces (`CatalogRepository`, `ExerciseRepository`, `RoutineRepository`, `SessionRepository`, `BodyWeightRepository`) with internal SQL implementations bound in `repositoryModule` |
 | `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats`; use cases `SuggestNextLoad`, `ObserveTodayPlan` (`useCaseModule`) |

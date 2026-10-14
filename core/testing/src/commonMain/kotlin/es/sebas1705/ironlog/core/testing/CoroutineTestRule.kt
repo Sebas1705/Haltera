@@ -11,6 +11,6 @@ import kotlinx.coroutines.test.setMain
 class CoroutineTestRule(
     val dispatcher: TestDispatcher = UnconfinedTestDispatcher(),
 ) {
-    fun setup()    = Dispatchers.setMain(dispatcher)
+    fun setup() = Dispatchers.setMain(dispatcher)
     fun tearDown() = Dispatchers.resetMain()
 }

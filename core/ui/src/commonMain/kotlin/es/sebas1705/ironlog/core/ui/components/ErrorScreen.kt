@@ -16,12 +16,16 @@ fun ErrorScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier          = modifier.fillMaxSize().padding(24.dp),
+        modifier = modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Icon(Icons.Default.Warning, contentDescription = null,
-            tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(48.dp))
+        Icon(
+            Icons.Default.Warning,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.error,
+            modifier = Modifier.size(48.dp)
+        )
         Spacer(Modifier.height(16.dp))
         Text(message, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.error)
         if (onRetry != null) {

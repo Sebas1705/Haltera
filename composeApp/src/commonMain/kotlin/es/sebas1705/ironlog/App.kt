@@ -13,8 +13,8 @@ import es.sebas1705.ironlog.core.ui.theme.AppTheme
 /** Root composable. F1c replaces the placeholder with the catalogue status; F2 adds the tabs. */
 @Composable
 fun App(modifier: Modifier = Modifier) {
-    AppTheme(modifier) {
-        Surface(Modifier.fillMaxSize()) {
+    AppTheme {
+        Surface(modifier.fillMaxSize()) {
             Box(contentAlignment = Alignment.Center) {
                 Text("Ironlog", style = MaterialTheme.typography.headlineMedium)
             }

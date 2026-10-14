@@ -7,12 +7,16 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.collections.immutable)
-            implementation(libs.lifecycle.viewmodel)
+            api(libs.lifecycle.viewmodel)
             implementation(libs.koin.core)
             implementation(libs.kermit)
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

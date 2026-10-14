@@ -7,14 +7,15 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material3)
-            implementation(compose.ui)
-            implementation(compose.animation)
-            implementation(compose.components.resources)
-            implementation(libs.coil.compose)
-            implementation(libs.coil.network.ktor)
+            implementation(libs.bundles.compose.core)
+        }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "es.sebas1705.ironlog.core.ui.resources"
+    publicResClass = false
 }

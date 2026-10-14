@@ -5,6 +5,7 @@ kotlin {
         commonMain.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.coroutines.test)
             implementation(libs.koin.test)
         }
     }

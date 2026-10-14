@@ -9,10 +9,7 @@ import org.koin.dsl.module
 fun MainViewController() = ComposeUIViewController(
     configure = {
         startKoin {
-            modules(
-                appModule,
-                module { single { DatabaseDriverFactory() } }
-            )
+            modules(appModule, module { single { DatabaseDriverFactory() } })
         }
-    }
+    },
 ) { App() }

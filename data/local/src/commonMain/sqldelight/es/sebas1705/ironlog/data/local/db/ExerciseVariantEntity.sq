@@ -17,6 +17,8 @@ CREATE TABLE ExerciseVariantEntity (
 
 CREATE INDEX ExerciseVariantEntity_exerciseId ON ExerciseVariantEntity(exerciseId);
 
+-- OR IGNORE is meant only for primary-key conflicts (row already present: the importer then runs updateCatalog).
+-- It would also silently swallow UNIQUE, NOT NULL or CHECK violations: revisit it before adding such constraints.
 insertCatalogIfMissing:
 INSERT OR IGNORE INTO ExerciseVariantEntity(
     id, exerciseId, source, position, equipment, loadType, nameEn, nameEs,

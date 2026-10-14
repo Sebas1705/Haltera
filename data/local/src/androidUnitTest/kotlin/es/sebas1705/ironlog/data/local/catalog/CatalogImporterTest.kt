@@ -1,17 +1,25 @@
 package es.sebas1705.ironlog.data.local.catalog
 
-import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.ironlog.data.local.inMemoryDriver
 import es.sebas1705.ironlog.data.models.CatalogImportResult
+import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 
 class CatalogImporterTest {
-    private val db = AppDatabase(JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY).also { AppDatabase.Schema.create(it) })
+    private val driver = inMemoryDriver()
+    private val db = AppDatabase(driver)
     private var clock = 1_000L
     private val importer = CatalogImporter(db, now = { clock })
+
+    private val squat = """,{"id":"squat","name":{"en":"Squat","es":"Sentadilla"},"category":"STRENGTH",
+        "trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["QUADRICEPS"],"secondaryMuscles":[],
+        "instructions":{"en":["Squat."],"es":["Agáchate."]},
+        "variants":[{"id":"squat.barbell","equipment":"BARBELL","loadType":"BARBELL","frames":[]}]}"""
 
     private fun catalog(version: Int, benchEs: String = "Press de banca", deprecated: String = "", extra: String = "") = """
         {"catalogVersion":$version,"contentHash":"h$version","deprecatedIds":[$deprecated],"exercises":[
@@ -26,6 +34,12 @@ class CatalogImporterTest {
           $extra
         ]}
     """.trimIndent()
+
+    private fun insertUserExercise(id: String) = db.exerciseEntityQueries.insertUser(
+        id = id, nameEn = "My lift", nameEs = "Mi ejercicio", category = "STRENGTH",
+        trackingType = "WEIGHT_REPS", level = "BEGINNER", primaryMuscles = "CHEST", secondaryMuscles = "",
+        instructionsEn = "[]", instructionsEs = "[]", updatedAt = 1L,
+    )
 
     @Test
     fun `first import inserts exercises and variants and stores the version`() {
@@ -58,15 +72,12 @@ class CatalogImporterTest {
     fun `newer version updates rows, adds new ones and deprecates removed ids`() {
         importer.importIfNewer(catalog(1))
         clock = 2_000L
-        val squat = """,{"id":"squat","name":{"en":"Squat","es":"Sentadilla"},"category":"STRENGTH",
-            "trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["QUADRICEPS"],"secondaryMuscles":[],
-            "instructions":{"en":["Squat."],"es":["Agáchate."]},
-            "variants":[{"id":"squat.barbell","equipment":"BARBELL","loadType":"BARBELL","frames":[]}]}"""
 
-        importer.importIfNewer(
+        val result = importer.importIfNewer(
             catalog(2, benchEs = "Press banca", deprecated = "\"bench-press.dumbbell\"", extra = squat),
         )
 
+        assertEquals(CatalogImportResult.Imported(version = 2, exercises = 2, variants = 3), result)
         val bench = db.exerciseEntityQueries.selectById("bench-press").executeAsOne()
         assertEquals("Press banca", bench.nameEs)
         assertEquals(2_000L, bench.updatedAt)
@@ -77,11 +88,7 @@ class CatalogImporterTest {
 
     @Test
     fun `user exercises are never touched`() {
-        db.exerciseEntityQueries.insertUser(
-            id = "user-1", nameEn = "My lift", nameEs = "Mi ejercicio", category = "STRENGTH",
-            trackingType = "WEIGHT_REPS", level = "BEGINNER", primaryMuscles = "CHEST", secondaryMuscles = "",
-            instructionsEn = "[]", instructionsEs = "[]", updatedAt = 1L,
-        )
+        insertUserExercise("user-1")
 
         importer.importIfNewer(catalog(1, deprecated = "\"user-1\""))
 
@@ -91,12 +98,46 @@ class CatalogImporterTest {
     }
 
     @Test
+    fun `catalogue exercise whose id belongs to a user row is skipped with its variants`() {
+        insertUserExercise("bench-press")
+
+        val result = importer.importIfNewer(catalog(1, extra = squat))
+
+        assertEquals(CatalogImportResult.Imported(version = 1, exercises = 1, variants = 1), result)
+        val mine = db.exerciseEntityQueries.selectById("bench-press").executeAsOne()
+        assertEquals("USER", mine.source)
+        assertEquals("Mi ejercicio", mine.nameEs)
+        assertEquals(1L, mine.updatedAt)
+        assertEquals(emptyList(), db.exerciseVariantEntityQueries.selectByExercise("bench-press").executeAsList())
+        assertEquals(1L, db.exerciseVariantEntityQueries.countActive().executeAsOne())
+    }
+
+    @Test
     fun `malformed catalogue leaves the installed one untouched`() {
         importer.importIfNewer(catalog(1))
 
-        assertFailsWith<Exception> { importer.importIfNewer("{\"catalogVersion\":2,\"exercises\":[{\"id\":") }
+        assertFailsWith<SerializationException> {
+            importer.importIfNewer("{\"catalogVersion\":2,\"exercises\":[{\"id\":")
+        }
 
         assertEquals(1, importer.installedVersion())
         assertEquals(1L, db.exerciseEntityQueries.countActive().executeAsOne())
+    }
+
+    @Test
+    fun `a failure mid-import rolls back every write`() {
+        importer.importIfNewer(catalog(1))
+        driver.execute(
+            identifier = null,
+            sql = "CREATE TRIGGER boom BEFORE INSERT ON ExerciseVariantEntity " +
+                "WHEN NEW.id = 'squat.barbell' BEGIN SELECT RAISE(ABORT, 'boom'); END",
+            parameters = 0,
+        )
+
+        assertFailsWith<Exception> { importer.importIfNewer(catalog(2, benchEs = "Press banca", extra = squat)) }
+
+        assertEquals(1, importer.installedVersion())
+        assertEquals("Press de banca", db.exerciseEntityQueries.selectById("bench-press").executeAsOne().nameEs)
+        assertNull(db.exerciseEntityQueries.selectById("squat").executeAsOneOrNull())
     }
 }

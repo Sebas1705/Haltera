@@ -4,6 +4,10 @@ import kotlinx.serialization.Serializable
 
 // Shape of composeApp/.../files/catalog.json, produced by scripts/catalog (docs/plans/2026-10-14-f1b-catalog-pipeline.md).
 
+/** Just the version, decoded first so an up-to-date catalogue is never parsed in full. */
+@Serializable
+internal data class CatalogHeader(val catalogVersion: Int)
+
 @Serializable
 internal data class CatalogDto(
     val catalogVersion: Int,

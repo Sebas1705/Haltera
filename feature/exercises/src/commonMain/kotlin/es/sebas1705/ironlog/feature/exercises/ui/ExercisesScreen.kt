@@ -2,34 +2,24 @@ package es.sebas1705.ironlog.feature.exercises.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -43,9 +33,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -56,6 +43,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.ironlog.core.ui.components.ErrorScreen
+import es.sebas1705.ironlog.core.ui.components.ExerciseFilterBar
+import es.sebas1705.ironlog.core.ui.components.FilterChipSpec
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.ExerciseCategory
@@ -74,7 +63,6 @@ import es.sebas1705.ironlog.feature.exercises.resources.exercises_new
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_search_clear
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_search_hint
 import es.sebas1705.ironlog.feature.exercises.ui.common.label
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -147,88 +135,34 @@ private fun SearchField(query: String, onQueryChange: (String) -> Unit) {
 
 @Composable
 private fun FilterRow(state: ExercisesState, onIntent: (ExercisesIntent) -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .horizontalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        FilterMenuChip(
-            title = Res.string.exercises_filter_category,
-            selected = state.category,
-            options = ExerciseCategory.entries,
-            optionLabel = { it.label },
-            onSelect = { onIntent(ExercisesIntent.CategorySelected(it)) },
-        )
-        FilterMenuChip(
-            title = Res.string.exercises_filter_muscle,
-            selected = state.muscle,
-            options = Muscle.entries,
-            optionLabel = { it.label },
-            onSelect = { onIntent(ExercisesIntent.MuscleSelected(it)) },
-        )
-        FilterMenuChip(
-            title = Res.string.exercises_filter_equipment,
-            selected = state.equipment,
-            options = Equipment.entries,
-            optionLabel = { it.label },
-            onSelect = { onIntent(ExercisesIntent.EquipmentSelected(it)) },
-        )
-        if (state.category != null || state.muscle != null || state.equipment != null) {
-            TextButton(onClick = { onIntent(ExercisesIntent.ClearFilters) }) {
-                Text(stringResource(Res.string.exercises_filter_clear))
-            }
-        }
-    }
-}
-
-/** A filter chip that opens a menu with "Any" plus [options]; selected, it shows the chosen value. */
-@Composable
-private fun <T : Any> FilterMenuChip(
-    title: StringResource,
-    selected: T?,
-    options: List<T>,
-    optionLabel: (T) -> StringResource,
-    onSelect: (T?) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val titleText = stringResource(title)
-    Box {
-        FilterChip(
-            selected = selected != null,
-            onClick = { expanded = true },
-            label = { Text(selected?.let { stringResource(optionLabel(it)) } ?: titleText) },
-            trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = titleText) },
-        )
-        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.exercises_filter_any)) },
-                leadingIcon = { SelectedMark(selected == null) },
-                onClick = {
-                    expanded = false
-                    onSelect(null)
-                },
-            )
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(stringResource(optionLabel(option))) },
-                    leadingIcon = { SelectedMark(option == selected) },
-                    onClick = {
-                        expanded = false
-                        onSelect(option)
-                    },
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SelectedMark(selected: Boolean) {
-    if (selected) Icon(Icons.Filled.Check, contentDescription = null) else Spacer(Modifier.size(24.dp))
+    ExerciseFilterBar(
+        filters = listOf(
+            FilterChipSpec(
+                title = stringResource(Res.string.exercises_filter_category),
+                selected = state.category,
+                options = ExerciseCategory.entries,
+                optionLabel = { stringResource(it.label) },
+                onSelect = { onIntent(ExercisesIntent.CategorySelected(it)) },
+            ),
+            FilterChipSpec(
+                title = stringResource(Res.string.exercises_filter_muscle),
+                selected = state.muscle,
+                options = Muscle.entries,
+                optionLabel = { stringResource(it.label) },
+                onSelect = { onIntent(ExercisesIntent.MuscleSelected(it)) },
+            ),
+            FilterChipSpec(
+                title = stringResource(Res.string.exercises_filter_equipment),
+                selected = state.equipment,
+                options = Equipment.entries,
+                optionLabel = { stringResource(it.label) },
+                onSelect = { onIntent(ExercisesIntent.EquipmentSelected(it)) },
+            ),
+        ),
+        anyLabel = stringResource(Res.string.exercises_filter_any),
+        clearLabel = stringResource(Res.string.exercises_filter_clear),
+        onClear = { onIntent(ExercisesIntent.ClearFilters) },
+    )
 }
 
 @Composable

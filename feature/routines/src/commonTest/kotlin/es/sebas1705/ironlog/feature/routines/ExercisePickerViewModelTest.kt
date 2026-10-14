@@ -1,7 +1,11 @@
 package es.sebas1705.ironlog.feature.routines
 
 import es.sebas1705.ironlog.core.testing.CoroutineTestRule
+import es.sebas1705.ironlog.data.models.Equipment
+import es.sebas1705.ironlog.data.models.ExerciseCategory
+import es.sebas1705.ironlog.data.models.ExerciseFilter
 import es.sebas1705.ironlog.data.models.LoadIncrement
+import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.data.models.ProgressionRule
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.feature.routines.ui.picker.ExercisePickerIntent
@@ -46,6 +50,29 @@ class ExercisePickerViewModelTest {
 
         assertEquals(listOf("", "ben"), exercises.searches)
         assertEquals(listOf("bench-press"), vm.uiState.value.results.map { it.id })
+    }
+
+    @Test
+    fun `filter chips narrow the results and clear resets them`() = runTest {
+        val vm = viewModel()
+        advanceTimeBy(300)
+        vm.onEvent(ExercisePickerIntent.EquipmentSelected(Equipment.DUMBBELL))
+        advanceTimeBy(300)
+        assertEquals(Equipment.DUMBBELL, vm.uiState.value.equipment)
+        assertEquals(listOf("bench-press"), vm.uiState.value.results.map { it.id })
+
+        vm.onEvent(ExercisePickerIntent.CategorySelected(ExerciseCategory.CARDIO))
+        vm.onEvent(ExercisePickerIntent.MuscleSelected(Muscle.CHEST))
+        advanceTimeBy(300)
+        assertEquals(ExerciseFilter(category = ExerciseCategory.CARDIO, muscle = Muscle.CHEST, equipment = Equipment.DUMBBELL), exercises.filters.last())
+        assertTrue(vm.uiState.value.results.isEmpty())
+
+        vm.onEvent(ExercisePickerIntent.ClearFilters)
+        advanceTimeBy(300)
+        assertNull(vm.uiState.value.category)
+        assertNull(vm.uiState.value.muscle)
+        assertNull(vm.uiState.value.equipment)
+        assertEquals(3, vm.uiState.value.results.size)
     }
 
     @Test

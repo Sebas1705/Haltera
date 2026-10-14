@@ -1,0 +1,15 @@
+<resources>
+    <string name="session_channel_live">Sesión de entrenamiento</string>
+    <string name="session_channel_live_description">Ejercicio actual y temporizador de descanso mientras entrenas</string>
+    <string name="session_channel_alert">Avisos de descanso</string>
+    <string name="session_channel_alert_description">Cuando termina un descanso o una serie cronometrada</string>
+    <string name="session_notification_title">Entrenamiento en curso</string>
+    <string name="session_notification_rest">Descanso</string>
+    <string name="session_notification_work">Trabajo</string>
+    <string name="session_notification_ready">Preparado</string>
+    <string name="session_notification_training">Entrenando</string>
+    <string name="session_notification_skip">Saltar</string>
+    <string name="session_notification_plus">+15 s</string>
+    <string name="session_alert_title">¡Tiempo!</string>
+    <string name="session_alert_text">Siguiente serie: %1$s</string>
+</resources>

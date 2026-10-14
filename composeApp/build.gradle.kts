@@ -2,6 +2,16 @@ plugins {
     alias(libs.plugins.kmp.app)
 }
 
+// Release builds in CI (.github/actions/build-release) get, as environment variables:
+//  - VERSION_CODE: the commit count of main, so every build installs over the previous one.
+//  - VERSION_NAME: the build name (main-<n> for builds of main).
+//  - SIGNING_*: the release (upload) keystore, decoded from Doppler ironlog/prd.
+// Locally they are absent: the convention plugin's versionCode/versionName and a release build
+// signed with the debug key.
+val ciVersionCode: Int? = System.getenv("VERSION_CODE")?.toIntOrNull()
+val ciVersionName: String? = System.getenv("VERSION_NAME")?.takeIf { it.isNotBlank() }
+val ciKeystorePath: String? = System.getenv("SIGNING_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -28,8 +38,25 @@ kotlin {
 }
 
 android {
+    defaultConfig {
+        ciVersionCode?.let { versionCode = it }
+        ciVersionName?.let { versionName = it }
+    }
+    signingConfigs {
+        if (ciKeystorePath != null) {
+            create("release") {
+                storeFile = file(ciKeystorePath)
+                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            }
+        }
+    }
     buildTypes {
         getByName("debug") { applicationIdSuffix = ".debug" }
+        getByName("release") {
+            signingConfig = signingConfigs.getByName(if (ciKeystorePath != null) "release" else "debug")
+        }
     }
 }
 

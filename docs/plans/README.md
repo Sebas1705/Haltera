@@ -8,7 +8,7 @@ The core spec ([2026-10-14-ironlog-core-design.md](../designs/2026-10-14-ironlog
 |---|---|---|---|---|
 | F1a | [Project scaffold and CI](2026-10-14-f1a-scaffold.md) | KMP project from Templetry `kmp/modular-features` aligned with the build pins validated in Owlsplit, template sample removed, app starts on Android, green CI (Android + iOS simulator) | — | Done |
 | F1b | [Exercise catalogue pipeline](2026-10-14-f1b-catalog-pipeline.md) | `scripts/catalog` (Node): pinned free-exercise-db + wger Spanish names + own curation → `catalog.json` + `ATTRIBUTION.md`, with validation in CI | — (parallel to F1a) | Done |
-| F1c | [Catalogue data layer and importer](2026-10-14-f1c-catalog-data.md) | `data:models`, SQLDelight catalogue schema, idempotent importer (upsert + deprecate), `data:repository` counts, startup screen showing the imported catalogue | F1a, F1b | Planned |
+| F1c | [Catalogue data layer and importer](2026-10-14-f1c-catalog-data.md) | `data:models`, SQLDelight catalogue schema, idempotent importer (upsert + deprecate), `data:repository` counts (startup screen superseded by the MVP shell) | F1a, F1b | Done |
 | F2 | Exercises tab + brand/theme | Brand tokens and theme, Exercises tab (search, filters, detail with media, custom exercises), media download | F1 | — |
 | F3 | Routines | Routine editor and famous routines catalogue | F2 | — |
 | F4 | Live session | Today tab, session, timers, foreground service, progression engine | F3 | — |
@@ -18,6 +18,7 @@ Changes against the spec's phase table (§10), agreed when planning F1:
 
 - **Brand tokens move from F1 to F2.** F1 has no real UI; the visual identity is decided with the first real screen.
 - **Doppler moves from F1 to F5.** F1–F4 have no secrets (no Firebase, no signing); Doppler arrives with release signing.
+- **F5 release infrastructure done early (2026-10-14).** Doppler `ironlog/prd`, the release keystore, release signing and versioning in Gradle, and Firebase App Distribution for every merge to `main` are already in place ([RELEASE.md](../RELEASE.md)). F5 keeps the Play Console app, Play App Signing, store listing and the Play upload workflow.
 
 ## Dependencies and parallelism
 

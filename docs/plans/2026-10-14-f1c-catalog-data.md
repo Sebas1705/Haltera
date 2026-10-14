@@ -965,3 +965,19 @@ Expected: all CI jobs green (Android, iOS simulator, catalogue). Merge with a me
 - `node scripts/catalog/build.mjs --check` → up to date.
 - Fresh install on the emulator shows catalogue v1 with ~800 exercises; a second launch does not re-import.
 - CI green on `main` after the merge, including the iOS simulator build on the PR.
+
+## Deviations during execution
+
+- **Task 1:** `settings.gradle.kts` included only `:data:models` and `:data:local`. Gradle 9.5.1 refuses to configure a project whose directory does not exist, so `:data:repository` was added to the include in Task 5, when the module was created.
+- **Task 3 (Detekt):** two long lines were wrapped (`forEachIndexed { … -> upsert(…) }` in `CatalogImporter` and one `importIfNewer(catalog(2, …))` call in the test) to satisfy `ArgumentListWrapping`/`Wrapping`. No change in logic.
+- **Review fixes (commit `fix(data): cheap version check, rollback-safe import and user id guard`):**
+  - `CatalogHeader(catalogVersion)` is decoded first; the full `CatalogDto` is decoded only when the bundled version is newer.
+  - The version check and all writes run inside one `db.transactionWithResult { }`.
+  - `updateCatalog` runs only when `insertCatalogIfMissing` wrote nothing (no double writes), for exercises and variants.
+  - A catalogue exercise whose id belongs to a non-`CATALOG` row is skipped together with its variants. `Imported.exercises`/`variants` count rows actually written, not DTO entries. Invariant documented in the importer KDoc: user ids are `user-<uuid>` and catalogue ids never use that prefix.
+  - Test drivers have foreign keys on, as on the device (`inMemoryDriver()`/`inMemoryDatabase()` in `data:local` tests; an equivalent private helper in `SqlCatalogRepositoryTest`). `MetaQueriesTest` uses it too.
+  - New tests: user-id collision guard, and a real rollback (a `RAISE(ABORT)` trigger on `squat.barbell` makes the v2 import throw; version, `bench-press` and the absence of `squat` are checked). The malformed-JSON test now expects `SerializationException`.
+  - Both `.sq` files note that `OR IGNORE` is meant only for primary-key conflicts and must be revisited before adding UNIQUE/CHECK constraints (comment outside the DDL; `1.db` unchanged).
+- **Task 4:** besides the plan's assertions, the test checks `Imported` counts against the entries in `catalog.json` (currently 801 exercises, 878 variants), so silently skipped rows fail it.
+- **Task 5:** the repository dispatcher defaults to `Dispatchers.IO` (blocking database I/O) instead of `Dispatchers.Default`. The test also asserts the `Imported` result of `importBundled` and opts in to `ExperimentalCoroutinesApi` for `UnconfinedTestDispatcher`.
+- **Task 6:** not executed; the temporary startup screen is superseded by the MVP app shell. No `composeApp` changes and no `startup` strings in F1c.

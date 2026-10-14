@@ -1,0 +1,53 @@
+name: Distribute
+
+# Every merge to `main` that changes the app reaches the testers through Firebase App
+# Distribution (group `testers`): the same app and key as future Play releases, versionName
+# main-<n>. See docs/RELEASE.md.
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "**/*.md"]
+  workflow_dispatch:
+
+concurrency:
+  group: distribute
+  cancel-in-progress: true
+
+jobs:
+  distribute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Version name
+        id: ver
+        run: echo "name=main-$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: ./.github/actions/build-release
+        with:
+          version-name: ${{ steps.ver.outputs.name }}
+          extra-secrets: FIREBASE_SERVICE_ACCOUNT_JSON
+
+      - name: Upload to Firebase App Distribution
+        env:
+          TESTER_GROUP: ${{ vars.FIREBASE_TESTER_GROUP || 'testers' }}
+          NAME: ${{ steps.ver.outputs.name }}
+        run: |
+          export NOTES="$NAME: $(git log -1 --pretty='%s (%h)')"
+          doppler run -- bash -c '
+            umask 077
+            printf "%s" "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-sa.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+            npx --yes firebase-tools@15.32.1 appdistribution:distribute composeApp/build/outputs/apk/release/composeApp-release.apk \
+              --app "$FIREBASE_ANDROID_APP_ID" \
+              --groups "$TESTER_GROUP" \
+              --release-notes "$NOTES"'
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks" "$RUNNER_TEMP/firebase-sa.json"

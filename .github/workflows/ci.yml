@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ["docs/**", "**/*.md"]
+  pull_request:
+    branches: [main]
+    paths-ignore: ["docs/**", "**/*.md"]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android (detekt, tests, assemble)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v6
+      - run: ./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug --continue
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: test-reports
+          path: "**/build/reports/tests/"
+
+  ios:
+    name: iOS app (simulator)
+    if: github.event_name == 'pull_request' || github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with: { distribution: temurin, java-version: 21 }
+      - uses: gradle/actions/setup-gradle@v6
+      - run: brew install xcodegen
+      - working-directory: iosApp
+        run: xcodegen generate
+      - working-directory: iosApp
+        run: |
+          xcodebuild build -project Ironlog.xcodeproj -scheme Ironlog -configuration Debug \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
+            CODE_SIGNING_ALLOWED=NO -quiet

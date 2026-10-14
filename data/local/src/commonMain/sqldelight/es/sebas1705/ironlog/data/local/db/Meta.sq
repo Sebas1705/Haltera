@@ -1,0 +1,10 @@
+CREATE TABLE Meta (
+    key   TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+get:
+SELECT value FROM Meta WHERE key = ?;
+
+put:
+INSERT OR REPLACE INTO Meta(key, value) VALUES (?, ?);

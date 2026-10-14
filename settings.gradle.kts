@@ -27,6 +27,6 @@ include(
     ":core:testing",
 )
 
-include(":data:local")
+include(":data:models", ":data:local")
 
 include(":domain:usecases")

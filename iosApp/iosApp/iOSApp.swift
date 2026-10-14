@@ -4,7 +4,7 @@ import ComposeApp
 @main
 struct iOSApp: App {
     init() {
-        KoinIosKt.initKoin()
+        KoinIosKt.startIronlogKoin()
     }
 
     var body: some Scene {

@@ -5,8 +5,11 @@ import es.sebas1705.ironlog.di.appModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
-/** Starts Koin once per process. Called from `iOSApp.init()` as `KoinIosKt.initKoin()`. */
-fun initKoin() {
+/**
+ * Starts Koin once per process. Called from `iOSApp.init()` as `KoinIosKt.startIronlogKoin()`.
+ * Not named `initKoin`: Kotlin/Native would export an `init…` function to Swift as `doInitKoin()`.
+ */
+fun startIronlogKoin() {
     startKoin {
         modules(appModule, module { single { DatabaseDriverFactory() } })
     }

@@ -25,7 +25,7 @@ feature modules (`feature:*`) arrive from F2 and network-backed data from F8.
 | Layer | Modules | Can depend on |
 |-------|---------|---------------|
 | App   | `composeApp`, `iosApp` | feature, domain, data, core |
-| Feature (from F2) | `feature:*` | domain, data:models, core |
+| Feature (from F2) | `feature:*` | domain, data:models (from F1c), core |
 | Domain | `domain:usecases` | data interfaces and models, core:common |
 | Data | `data:local` | core |
 | Core | `core:*` | nothing project-local |
@@ -38,7 +38,7 @@ Every feature module will have:
 - `*Intent : MVIBaseIntent` — sealed interface
 - `*ViewModel : MVIBaseViewModel<S, I>(initialState)` — handles intents, emits state
 
-State mutations happen via `updateState { reducer }` (non-suspend, atomic).
+State mutations happen via `updateState { reducer }`. Reducers must be pure: no suspend calls and no side effects (they may run more than once).
 Coroutine work happens inside `execute { suspend block }`.
 **Never** call suspend functions inside the `updateState {}` lambda.
 
@@ -49,7 +49,7 @@ Platform-specific implementations live under `androidMain` (Android SDK) and
 ### Dependency Injection
 [Koin 4.x](https://insert-koin.io/) — DSL-based, KMP-native, no annotation processing.
 Shared modules are wired in `composeApp/src/commonMain/.../di/AppModule.kt`; the platform
-`DatabaseDriverFactory` is bound in `IronlogApplication` (Android) and `initKoin()` (iOS,
+`DatabaseDriverFactory` is bound in `IronlogApplication` (Android) and `startIronlogKoin()` (iOS,
 called once from `iOSApp.init()`).
 
 ### Local database

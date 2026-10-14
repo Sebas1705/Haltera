@@ -845,8 +845,7 @@ Expected: CI green on both jobs (Android and iOS simulator). Merge with a merge 
 
 ## Deviations during execution
 
-Tasks 1–3 were executed as written. Later deviations:
-
+- **Tasks 1–3.** The template was rendered into the session scratchpad instead of a `mktemp` directory, and the other temporary files lived there too. `gradlew` was committed as executable with `git update-index --chmod=+x`. `mkdir -p` was needed before writing `Meta.sq`.
 - **Line endings (before Task 4).** Added `.gitattributes` (`* text=auto eol=lf`, CRLF for `.bat`, `jar`/`png`/`jpg` binary) and renormalised the index. Removed the dead `<uses-sdk tools:overrideLibrary="io.kamel.image" />`, the unused `tools` namespace and leftover blank lines from `AndroidManifest.xml`.
 - **Task 4.** `:composeApp:assembleDebug` compiled without any of the known failures. Detekt needed fixes in template code (no rules disabled):
   - formatting autocorrected by detekt-formatting in `core:ui` (`Color.kt`, `Shape.kt`, `Theme.kt`, `ErrorScreen.kt`), `core:testing` (`CoroutineTestRule.kt`) and `core:common` (`FlowExtensions.kt`); unused import removed from `Theme.kt`;
@@ -857,10 +856,16 @@ Tasks 1–3 were executed as written. Later deviations:
   - Emulator check done on an already running AVD (`youknow_api36`) instead of starting a new one.
 - **Review fixes (after Task 5).**
   - `verifySqlDelightMigration` needs a database file: `data/local/src/commonMain/sqldelight/databases/1.db` is committed. Until F5 it is regenerated whenever a `.sq` file changes (replaces "no snapshot until F5").
-  - iOS starts Koin once via `initKoin()` (`composeApp/src/iosMain/.../KoinIos.kt`) called from `iOSApp.init()`; `MainViewController()` is just `ComposeUIViewController { App() }`. Android binds `DatabaseDriverFactory(androidContext())`.
+  - iOS starts Koin once via `startIronlogKoin()` (`composeApp/src/iosMain/.../KoinIos.kt`) called from `iOSApp.init()`; `MainViewController()` is just `ComposeUIViewController { App() }`. Android binds `DatabaseDriverFactory(androidContext())`.
   - `MVIBaseViewModel` takes `initialState` as a constructor parameter (`initState()` removed) and `updateState` uses `MutableStateFlow.update`.
   - Detekt `autoCorrect` only when `CI` is unset (convention plugin and root build); `detekt-formatting` read from the version catalogue.
   - `domain:usecases` exposes `core:common` with `api`; `mapToResult` keeps the throwable and rethrows `CancellationException`.
   - Database file renamed `app.db` → `ironlog.db`; foreign keys enabled on both drivers (Android `Callback.onOpen`, iOS `extendedConfig.foreignKeyConstraints`).
   - Build cleanup: "Desktop" dropped from the library KDoc, unused imports removed from the feature/app conventions, `release { }` split over several lines, `roborazzi apply false` dropped from the root build, `kotlin.native.ignoreDisabledTargets=true` in `gradle.properties`.
 - **Task 8.** Scope extended: `ARCHITECTURE.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `SECURITY.md` and `CONTRIBUTING.md` rewritten to match the current modules. `MODULE_MAP.md` says `AppResult` (the actual class) instead of `Result`. The README "what CI runs" command includes `verifySqlDelightMigration`, as CI does. AGENTS.md drops the "Adding a feature" recipe (features arrive in F2) and lists the real iOS targets (`iosArm64`, `iosSimulatorArm64`).
+- **Final review fixes.**
+  - The iOS Koin entry point is `startIronlogKoin()`, not `initKoin()`: Kotlin/Native exports `init…` functions to Swift as `doInit…` (Obj-C `init` method family), so `KoinIosKt.initKoin()` would not compile. Swift calls `KoinIosKt.startIronlogKoin()`.
+  - Android enables foreign keys in `Callback.onConfigure` instead of `onOpen`.
+  - The AGENTS.md `templetry:checks` command includes `verifySqlDelightMigration`, matching CI and the README.
+  - AGENTS.md and ARCHITECTURE.md describe `updateState` reducers as pure (no suspend calls, no side effects; they may run more than once).
+  - Docs mark what does not exist yet: `data:models` and the `core:testing` shared fakes (from F1c), `catalog/` and `scripts/` (from F1b), `routines/` (from F3).

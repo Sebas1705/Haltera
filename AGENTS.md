@@ -8,7 +8,7 @@ This file defines rules for anyone (people or AI agents) contributing to this re
 
 - All documentation: `README.md`, `docs/` (designs, plans, ADRs, research, guides), this file
 - Code: identifiers, comments, KDoc, log messages, test names
-- Data files and scripts (`catalog/`, `routines/`, `scripts/`): keys, comments, docs
+- Data files and scripts (`catalog/` and `scripts/` from F1b, `routines/` from F3): keys, comments, docs
 - Commit messages, branch names, pull request titles and descriptions, issues, review comments
 
 The only exception is **user-facing translated content**: the app UI ships in English
@@ -28,7 +28,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 
 ## Non-negotiable rules
 
-- **Never put suspend calls inside the `updateState { }` lambda** — it is a non-suspend `(S) -> S`
+- **Never put suspend calls inside the `updateState { }` lambda** — reducers must be pure: no suspend calls and no side effects (they may run more than once)
 - **Never skip the `execute { }` wrapper** — all coroutine work in ViewModels goes through it
 - **Never import across forbidden layer boundaries** — a feature cannot import another feature; domain cannot import data implementations
 - **Always use convention plugins** — do not copy-paste `kotlin { }` / `android { }` blocks into module builds
@@ -57,7 +57,7 @@ Toolchain, environment variables and pinned versions: [docs/plans/README.md](doc
 ## Required checks before finishing
 
 ```sh templetry:checks
-./gradlew detekt testDebugUnitTest :composeApp:assembleDebug
+./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug
 ```
 
 ## This project came from a template

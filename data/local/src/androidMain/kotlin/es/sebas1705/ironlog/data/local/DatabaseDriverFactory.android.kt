@@ -12,7 +12,7 @@ actual class DatabaseDriverFactory(private val context: Context) {
         context = context,
         name = DATABASE_NAME,
         callback = object : AndroidSqliteDriver.Callback(AppDatabase.Schema) {
-            override fun onOpen(db: SupportSQLiteDatabase) {
+            override fun onConfigure(db: SupportSQLiteDatabase) {
                 db.setForeignKeyConstraintsEnabled(true)
             }
         },

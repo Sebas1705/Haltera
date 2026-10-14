@@ -5,20 +5,50 @@ package es.sebas1705.ironlog.feature.exercises.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import es.sebas1705.ironlog.feature.exercises.ui.ExercisesScreen
+import es.sebas1705.ironlog.feature.exercises.ui.create.NewExerciseScreen
+import es.sebas1705.ironlog.feature.exercises.ui.detail.ExerciseDetailScreen
 import kotlinx.serialization.Serializable
 
 /** Top-level destination of the Exercises tab. */
 @Serializable
 data object ExercisesRoute
 
+/** Nested: one exercise. */
+@Serializable
+internal data class ExerciseDetailRoute(val exerciseId: String)
+
+/** Nested: the custom exercise editor. */
+@Serializable
+internal data object NewExerciseRoute
+
 /**
  * Registers the exercises destinations. The app shell calls this from its NavHost.
  * Nested destinations (detail, custom exercise editor) are added here and navigated with [navController].
  */
-@Suppress("UnusedParameter") // Wired by the shell; the feature implementation uses them.
 fun NavGraphBuilder.exercisesGraph(
     navController: NavController,
 ) {
-    composable<ExercisesRoute> { ExercisesScreen() }
+    composable<ExercisesRoute> {
+        ExercisesScreen(
+            onOpenExercise = { id -> navController.navigate(ExerciseDetailRoute(id)) { launchSingleTop = true } },
+            onCreateExercise = { navController.navigate(NewExerciseRoute) { launchSingleTop = true } },
+        )
+    }
+    composable<ExerciseDetailRoute> { entry ->
+        val route = entry.toRoute<ExerciseDetailRoute>()
+        ExerciseDetailScreen(exerciseId = route.exerciseId, onBack = { navController.popBackStack() })
+    }
+    composable<NewExerciseRoute> {
+        NewExerciseScreen(
+            onBack = { navController.popBackStack() },
+            // Replace the editor with the new exercise so back returns to the list.
+            onSaved = { id ->
+                navController.navigate(ExerciseDetailRoute(id)) {
+                    popUpTo<NewExerciseRoute> { inclusive = true }
+                }
+            },
+        )
+    }
 }

@@ -23,7 +23,7 @@ jobs:
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug --continue
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: test-reports

@@ -207,6 +207,23 @@ class SyncEngineTest {
         assertTrue(d1.dirty().isEmpty())
     }
 
+    @Test
+    fun `a deleted account is forgotten and its data is not re-uploaded`() = runTest {
+        d1.everything()
+        d1.engine.syncNow()
+        d1.bodyWeight(grams = 90_000)
+        d1.engine.forgetAccount()
+        cloud.deleteAll("uid-1")
+        d1.account.set(AccountSession.SignedOut)
+        assertEquals(SyncStatus.Disabled, d1.engine.status.value)
+        assertTrue(d1.dirty().isEmpty())
+
+        d1.account.set(AccountSession.SignedIn("uid-new", isAnonymous = true))
+        d1.engine.syncNow()
+        assertTrue(cloud.all("uid-1").isEmpty())
+        assertTrue(cloud.all("uid-new").isEmpty())
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `started engines sync live while signed in`() = runTest {

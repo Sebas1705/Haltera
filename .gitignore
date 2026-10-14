@@ -67,3 +67,7 @@ scripts/catalog/node_modules/
 
 # Kotlin compiler daemon state
 .kotlin/
+
+# Firebase (firebase/): rules-test dependencies and emulator logs
+firebase/rules-test/node_modules/
+firebase/*-debug.log

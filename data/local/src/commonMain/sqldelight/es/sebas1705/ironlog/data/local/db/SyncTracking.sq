@@ -71,6 +71,10 @@ VALUES ('settings', 'user', CAST((julianday('now') - 2440587.5) * 86400000 AS IN
 markAllDirty:
 UPDATE SyncState SET dirty = 1;
 
+-- Account deleted: nothing left to upload.
+clearAllDirty:
+UPDATE SyncState SET dirty = 0;
+
 selectCursor:
 SELECT sinceUpdatedAt FROM SyncCursor WHERE collection = ?;
 

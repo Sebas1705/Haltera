@@ -1,0 +1,12 @@
+rules_version = '2';
+
+// Ironlog keeps a copy of each user's data under users/{uid} (docs/designs/2026-10-14-sync-design.md §3).
+// A signed-in user (anonymous or Google) reads and writes only their own tree; everything else is denied.
+// Tests: firebase/rules-test (Firestore emulator, run in CI).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+  }
+}

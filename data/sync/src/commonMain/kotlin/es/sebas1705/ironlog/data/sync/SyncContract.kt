@@ -54,6 +54,12 @@ interface SyncEngine {
 
     /** Re-marks every local aggregate as dirty so it is uploaded under the current uid (merge after sign-in). */
     suspend fun markAllDirty()
+
+    /**
+     * Before deleting the account: stops syncing the current uid (Disabled) and forgets its local sync state
+     * (dirty flags, cursors, uid), so nothing is re-uploaded, not even when another account signs in later.
+     */
+    suspend fun forgetAccount()
 }
 
 sealed interface AccountSession {
@@ -70,8 +76,8 @@ sealed interface AccountSession {
     ) : AccountSession
 }
 
-/** A Google ID token from Credential Manager (Android) or GoogleSignIn (iOS). */
-data class GoogleIdToken(val idToken: String)
+/** A Google ID token from Credential Manager (Android) or GoogleSignIn (iOS, which also gives an access token). */
+data class GoogleIdToken(val idToken: String, val accessToken: String? = null)
 
 sealed interface LinkResult {
     /** The anonymous account was upgraded in place (same uid). */

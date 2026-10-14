@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import es.sebas1705.ironlog.account.AccountSection
 import es.sebas1705.ironlog.core.ui.components.IronlogLogo
 import es.sebas1705.ironlog.core.ui.theme.FontLicence
 import es.sebas1705.ironlog.core.ui.theme.readFontLicences
@@ -49,6 +50,7 @@ import es.sebas1705.ironlog.resources.credits_catalog
 import es.sebas1705.ironlog.resources.credits_fonts
 import es.sebas1705.ironlog.resources.credits_license
 import es.sebas1705.ironlog.resources.credits_title
+import es.sebas1705.ironlog.resources.settings_account
 import es.sebas1705.ironlog.resources.settings_bar_weight
 import es.sebas1705.ironlog.resources.settings_credits
 import es.sebas1705.ironlog.resources.settings_keep_screen_on
@@ -100,6 +102,9 @@ fun SettingsScreen(onBack: () -> Unit, onCredits: () -> Unit, viewModel: Setting
     val settings = state.settings
     BackScaffold(Res.string.settings_title, onBack) { modifier ->
         Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            SectionTitle(Res.string.settings_account)
+            AccountSection()
+            HorizontalDivider(Modifier.padding(top = 16.dp, bottom = 8.dp))
             SectionTitle(Res.string.settings_units)
             Row(Modifier.padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 WeightUnit.entries.forEach { unit ->

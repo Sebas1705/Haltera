@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -50,12 +51,14 @@ class SyncEngineImpl(
     private var currentUid: String? = null
     private var lastSyncedAt: Long? = null
     private var failures = 0
+    private val forgotten = MutableStateFlow<String?>(null)
 
     override fun start(scope: CoroutineScope) {
         if (started) return
         started = true
         scope.launch(io) {
-            account.session.collectLatest { session ->
+            combine(account.session, forgotten) { session, gone -> session.takeUnless { it is AccountSession.SignedIn && it.uid == gone } }
+                .collectLatest { session ->
                 if (session is AccountSession.SignedIn) {
                     run(session.uid)
                 } else {
@@ -78,6 +81,7 @@ class SyncEngineImpl(
 
     override suspend fun syncNow() {
         val uid = currentUid ?: (account.session.value as? AccountSession.SignedIn)?.uid ?: return
+        if (uid == forgotten.value) return
         withContext(io) {
             prepare(uid)
             pass(uid)
@@ -91,6 +95,21 @@ class SyncEngineImpl(
         }
     }
 
+    override suspend fun forgetAccount() {
+        forgotten.value = currentUid ?: (account.session.value as? AccountSession.SignedIn)?.uid
+        withContext(io) {
+            lock.withLock {
+                db.transaction {
+                    q.clearAllDirty()
+                    q.resetCursors()
+                    db.metaQueries.put(META_UID, "") // no previous account: the next one does not merge this data
+                }
+            }
+        }
+        currentUid = null
+        state.value = SyncStatus.Disabled
+    }
+
     /** First run: tracks the data logged before sync existed. Another uid: merges everything into it. */
     internal fun prepare(uid: String) {
         db.transaction {
@@ -98,7 +117,7 @@ class SyncEngineImpl(
                 backfill()
                 db.metaQueries.put(META_BACKFILLED, "1")
             }
-            val previous = db.metaQueries.get(META_UID).executeAsOneOrNull()
+            val previous = db.metaQueries.get(META_UID).executeAsOneOrNull()?.takeIf { it.isNotEmpty() }
             if (previous != uid) {
                 if (previous != null) {
                     q.resetCursors()
@@ -183,6 +202,7 @@ class SyncEngineImpl(
 
     /** Uploads every dirty root. False on failure (the caller backs off). */
     internal suspend fun upload(uid: String): Boolean = lock.withLock {
+        if (uid == forgotten.value) return@withLock true
         try {
             var rounds = 0
             while (rounds++ < MAX_ROUNDS) {

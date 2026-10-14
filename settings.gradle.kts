@@ -29,7 +29,7 @@ include(
     ":core:datastore",
 )
 
-include(":data:models", ":data:local", ":data:repository", ":data:routines", ":data:sync")
+include(":data:models", ":data:local", ":data:repository", ":data:routines", ":data:sync", ":data:remote")
 
 include(":domain:usecases")
 

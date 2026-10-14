@@ -12,6 +12,14 @@ val ciVersionCode: Int? = System.getenv("VERSION_CODE")?.toIntOrNull()
 val ciVersionName: String? = System.getenv("VERSION_NAME")?.takeIf { it.isNotBlank() }
 val ciKeystorePath: String? = System.getenv("SIGNING_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
 
+// The Firebase config comes from Doppler (scripts/doppler-sync-local.sh, or build-release in CI) and is
+// git-ignored. Without it the app still builds (CI checks, fresh clones) and runs with sync off.
+if (file("google-services.json").exists()) {
+    apply(plugin = libs.plugins.google.services.get().pluginId)
+} else {
+    logger.warn("composeApp/google-services.json missing: building without Firebase config")
+}
+
 kotlin {
     sourceSets {
         commonMain.dependencies {
@@ -22,6 +30,7 @@ kotlin {
             implementation(libs.navigation.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.kermit)
 
             implementation(libs.koin.core)
@@ -35,6 +44,7 @@ kotlin {
             implementation(project(":data:local"))
             implementation(project(":data:repository"))
             implementation(project(":data:sync"))
+            implementation(project(":data:remote"))
             implementation(project(":domain:usecases"))
 
             implementation(project(":feature:today"))
@@ -46,6 +56,9 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
+            implementation(libs.androidx.credentials)
+            implementation(libs.androidx.credentials.play)
+            implementation(libs.google.identity.googleid)
         }
     }
 }

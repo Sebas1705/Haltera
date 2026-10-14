@@ -100,6 +100,7 @@ internal fun RoutineEntity.toModel(days: List<RoutineDay>) = Routine(
     origin = originTemplateId?.let { RoutineOrigin(it, originVersion?.toInt() ?: 0) },
     isActive = isActive != 0L,
     nextDayIndex = if (days.isEmpty()) 0 else nextDayIndex.toInt().coerceIn(0, days.lastIndex),
+    nextDayIndexSetAt = nextDayIndexSetAt,
     createdAt = createdAt,
     updatedAt = updatedAt,
 )

@@ -39,5 +39,5 @@ object ModelJson {
         null
     }
 
-    private val DEFAULT_PRESCRIPTION = Prescription.RepRange(8, 12)
+    private val DEFAULT_PRESCRIPTION = Prescription.DEFAULT
 }

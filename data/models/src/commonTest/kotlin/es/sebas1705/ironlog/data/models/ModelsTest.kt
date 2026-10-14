@@ -42,10 +42,17 @@ class ModelsTest {
 
     @Test
     fun `slot columns round trip through JSON`() {
-        val targets = listOf(SlotTarget.Fixed("squat.barbell"), SlotTarget.Flexible("bench-press", listOf("bench-press.dumbbell")))
+        val targets =
+            listOf(
+                SlotTarget.Fixed("squat.barbell"),
+                SlotTarget.Flexible("bench-press", listOf("bench-press.dumbbell"))
+            )
         targets.forEach { assertEquals(it, ModelJson.decodeTarget(ModelJson.encodeTarget(it))) }
         val prescriptions = listOf(
-            Prescription.RepRange(8, 12), Prescription.Reps(5), Prescription.Duration(60), Prescription.Distance(5000),
+            Prescription.RepRange(8, 12),
+            Prescription.Reps(5),
+            Prescription.Duration(60),
+            Prescription.Distance(5000),
         )
         prescriptions.forEach { assertEquals(it, ModelJson.decodePrescription(ModelJson.encodePrescription(it))) }
         val rules = listOf(
@@ -61,7 +68,10 @@ class ModelsTest {
         assertNull(ModelJson.decodeTarget("{\"type\":\"circuit\"}"))
         assertNull(ModelJson.decodeTarget("not json"))
         assertEquals(Prescription.RepRange(8, 12), ModelJson.decodePrescription("{\"type\":\"amrap\"}"))
-        assertEquals(ProgressionRule.None, ModelJson.decodeProgression("{\"type\":\"percentOfTrainingMax\",\"tm\":100}"))
+        assertEquals(
+            ProgressionRule.None,
+            ModelJson.decodeProgression("{\"type\":\"percentOfTrainingMax\",\"tm\":100}")
+        )
     }
 
     @Test

@@ -40,7 +40,7 @@ data class RoutineSlot(
     val target: SlotTarget,
     val sets: Int = 3,
     val warmupSets: Int = 0,
-    val prescription: Prescription = Prescription.RepRange(8, 12),
+    val prescription: Prescription = Prescription.DEFAULT,
     val restBetweenSetsS: Int = DEFAULT_REST_S,
     val restAfterS: Int = DEFAULT_REST_S,
     /** Slots sharing a group alternate sets and rest only after the round. */
@@ -64,7 +64,7 @@ data class SlotSpec(
     val target: SlotTarget,
     val sets: Int = 3,
     val warmupSets: Int = 0,
-    val prescription: Prescription = Prescription.RepRange(8, 12),
+    val prescription: Prescription = Prescription.DEFAULT,
     val restBetweenSetsS: Int = RoutineSlot.DEFAULT_REST_S,
     val restAfterS: Int = RoutineSlot.DEFAULT_REST_S,
     val supersetGroup: Int? = null,
@@ -89,6 +89,11 @@ sealed interface SlotTarget {
 /** What each working set aims for; consistent with the exercise's [TrackingType]. */
 @Serializable
 sealed interface Prescription {
+    companion object {
+        /** 8–12 reps, the default for a new slot. */
+        val DEFAULT: Prescription = RepRange(min = 8, max = 12)
+    }
+
     @Serializable
     @SerialName("repRange")
     data class RepRange(val min: Int, val max: Int) : Prescription

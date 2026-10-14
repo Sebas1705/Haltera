@@ -14,6 +14,8 @@ enum class WeightUnit {
 
 /** Conversions between stored grams and the display units (spec §3.3: no floating point in storage). */
 object Weights {
+    private const val DECIMAL_BASE = 10L
+
     const val GRAMS_PER_KG = 1_000L
 
     /** International avoirdupois pound. */
@@ -47,7 +49,7 @@ object Weights {
      */
     fun format(grams: Long, unit: WeightUnit, decimals: Int = 2): String {
         var factor = 1L
-        repeat(decimals) { factor *= 10 }
+        repeat(decimals) { factor *= DECIMAL_BASE }
         val scaled = (fromGrams(grams, unit) * factor).roundToLong()
         val sign = if (scaled < 0) "-" else ""
         val whole = abs(scaled) / factor

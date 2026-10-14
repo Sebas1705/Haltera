@@ -91,6 +91,7 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 multiplatform-settings             = { module = "com.russhwolf:multiplatform-settings",             version.ref = "multiplatform-settings" }
 multiplatform-settings-no-arg      = { module = "com.russhwolf:multiplatform-settings-no-arg",      version.ref = "multiplatform-settings" }
 multiplatform-settings-coroutines  = { module = "com.russhwolf:multiplatform-settings-coroutines",  version.ref = "multiplatform-settings" }
+multiplatform-settings-test        = { module = "com.russhwolf:multiplatform-settings-test",        version.ref = "multiplatform-settings" }
 
 security-crypto = { module = "androidx.security:security-crypto",          version.ref = "security-crypto" }
 leakcanary      = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }

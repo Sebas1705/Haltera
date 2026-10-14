@@ -6,8 +6,10 @@ plugins {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(project(":data:models"))
             api(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines)
+            implementation(libs.kotlinx.serialization.json)
         }
         androidMain.dependencies { implementation(libs.sqldelight.android.driver) }
         iosMain.dependencies { implementation(libs.sqldelight.native.driver) }

@@ -1,0 +1,43 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  android-release:
+    name: Android Release APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew :composeApp:assembleRelease
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: composeApp/build/outputs/apk/release/*.apk
+          generate_release_notes: true
+
+  desktop-release:
+    name: Desktop Release (Linux/Windows/macOS)
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew :composeApp:packageDistributionForCurrentOS
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            composeApp/build/compose/binaries/main/**/*.deb
+            composeApp/build/compose/binaries/main/**/*.msi
+            composeApp/build/compose/binaries/main/**/*.dmg
+          generate_release_notes: false

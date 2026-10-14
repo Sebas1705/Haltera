@@ -1,0 +1,25 @@
+CREATE TABLE IF NOT EXISTS UserEntity (
+    id         TEXT NOT NULL PRIMARY KEY,
+    name       TEXT NOT NULL,
+    email      TEXT NOT NULL,
+    avatar_url TEXT,
+    created_at TEXT
+);
+
+upsertUser:
+INSERT OR REPLACE INTO UserEntity VALUES (?, ?, ?, ?, ?);
+
+selectAll:
+SELECT * FROM UserEntity;
+
+selectById:
+SELECT * FROM UserEntity WHERE id = ?;
+
+deleteById:
+DELETE FROM UserEntity WHERE id = ?;
+
+deleteAll:
+DELETE FROM UserEntity;
+
+count:
+SELECT COUNT(*) FROM UserEntity;

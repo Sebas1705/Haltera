@@ -1,0 +1,59 @@
+# Gradle
+.gradle/
+build/
+**/.gradle/
+**/build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.DS_Store
+*.swp
+Thumbs.db
+
+# Android
+/local.properties
+*.apk
+*.ap_
+*.aab
+
+# iOS / Xcode
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+Pods/
+
+# KMP
+iosApp/Pods/
+iosApp/.build/
+
+# Secrets / env
+local.properties
+secrets.properties
+*.keystore
+*.jks
+google-services.json
+GoogleService-Info.plist
+
+# SQLDelight generated
+**/build/sqldelight/
+
+# Detekt
+**/build/reports/detekt/

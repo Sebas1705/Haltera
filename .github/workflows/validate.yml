@@ -1,0 +1,86 @@
+name: Validate
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── Static analysis ──────────────────────────────────────────────────────────
+  detekt:
+    name: Detekt
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew detekt
+
+  # ── Kotlin compilation ───────────────────────────────────────────────────────
+  compile-desktop:
+    name: Compile (Desktop)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew :composeApp:compileKotlinDesktop
+
+  compile-android:
+    name: Compile (Android)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew :composeApp:compileDebugKotlinAndroid
+
+  # ── Unit tests ───────────────────────────────────────────────────────────────
+  unit-tests:
+    name: Unit Tests (JVM)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew allTests --continue
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: "**/build/reports/tests/"
+
+  # ── Android build ────────────────────────────────────────────────────────────
+  assemble-android:
+    name: Assemble Android APK
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew :composeApp:assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: debug-apk
+          path: composeApp/build/outputs/apk/debug/*.apk
+
+  # ── iOS compile (macOS) ──────────────────────────────────────────────────────
+  compile-ios:
+    name: Compile (iOS framework)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64

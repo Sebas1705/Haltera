@@ -185,7 +185,7 @@ Suggestions are never applied silently: the next session prefills the suggested 
 | Source | Use | License |
 |---|---|---|
 | free-exercise-db (yuhonas) | Base data (~800 exercises) + 2 frames per exercise | Unlicense (public domain) |
-| wger | Spanish names/instructions where available | CC-BY-SA 4.0, attribution required |
+| wger | Spanish names | CC-BY-SA 3.0/4.0 or CC0, per exercise |
 | Own curation | Variant grouping, tracking/load types, Spanish gaps, missing categories | Ours |
 
 Rejected for a published app: ExerciseDB GIFs (no clear media licence; commercial dataset sold separately), API Ninjas (free tier forbids commercial use, no images), MuscleWiki (paid, streaming only, no offline). They remain possible later behind the media interface if a licence is obtained.

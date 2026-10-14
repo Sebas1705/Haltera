@@ -22,7 +22,9 @@ Workflow:
 
 Rules:
 
-- Ids are stable forever.
+- Ids are stable forever once shipped. While `released: false`, reset `ids.lock.json` to `[]` before
+  regenerating, so ids renamed during curation do not ship as `deprecatedIds`. Never reset it after a
+  version has shipped.
 - While `released: false` in `overrides.yaml`, the current `catalogVersion` can be edited freely. Once a
   version ships, set `released: true`: from then on, any change to the generated catalogue needs
   `catalogVersion` + 1 and `released: false` again (the build refuses otherwise).

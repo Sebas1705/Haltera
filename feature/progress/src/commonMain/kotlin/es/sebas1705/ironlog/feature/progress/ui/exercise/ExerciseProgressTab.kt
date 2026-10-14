@@ -32,6 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
+import es.sebas1705.ironlog.core.ui.components.PrBadge
+import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
+import es.sebas1705.ironlog.core.ui.theme.tabularFigures
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.domain.usecases.stats.PersonalRecords
 import es.sebas1705.ironlog.domain.usecases.stats.Record
@@ -175,7 +178,10 @@ private fun VariantChips(variants: List<VariantInfo>, selectedId: String?, onSel
 private fun RecordsCard(records: PersonalRecords?, unit: WeightUnit) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Text(stringResource(Res.string.progress_records_title), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(stringResource(Res.string.progress_records_title), style = MaterialTheme.typography.titleMedium)
+                if (records != null) PrBadge()
+            }
             val rows = listOfNotNull(
                 records?.heaviestLoad?.let {
                     stringResource(Res.string.progress_record_heaviest) to it to formatWeight(it.value, unit)
@@ -210,6 +216,6 @@ private fun RecordRow(label: String, record: Record, value: String) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Text(value, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+        Text(value, style = MaterialTheme.typography.titleMedium.tabularFigures(), color = IronlogTheme.colors.prGold)
     }
 }

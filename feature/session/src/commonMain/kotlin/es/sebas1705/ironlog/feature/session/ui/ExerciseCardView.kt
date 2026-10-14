@@ -44,6 +44,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import es.sebas1705.ironlog.core.datastore.UserSettings
+import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
 import es.sebas1705.ironlog.data.models.Prescription
 import es.sebas1705.ironlog.data.models.SetKind
 import es.sebas1705.ironlog.data.models.SetLog
@@ -214,7 +215,7 @@ private fun SuggestionLine(card: ExerciseCard, settings: UserSettings) {
     Text(
         text = stringResource(Res.string.session_increase, load, reason),
         style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.primary,
+        color = IronlogTheme.colors.prGold,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
     )
 }
@@ -282,7 +283,7 @@ private fun SetRow(
                 val marker = stringResource(Res.string.session_increase_marker)
                 Text(
                     "↑",
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IronlogTheme.colors.prGold,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 6.dp).semantics { contentDescription = marker },
                 )

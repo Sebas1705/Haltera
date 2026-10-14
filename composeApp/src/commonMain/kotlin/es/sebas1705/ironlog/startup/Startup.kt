@@ -16,6 +16,7 @@ import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.core.ui.components.ErrorScreen
+import es.sebas1705.ironlog.core.ui.components.IronlogLogo
 import es.sebas1705.ironlog.data.repository.CatalogRepository
 import es.sebas1705.ironlog.resources.Res
 import es.sebas1705.ironlog.resources.app_name
@@ -74,11 +75,8 @@ fun StartupScreen(state: StartupState, onRetry: () -> Unit, modifier: Modifier =
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(
-            stringResource(Res.string.app_name),
-            style = MaterialTheme.typography.displayMedium,
-            color = MaterialTheme.colorScheme.primary,
-        )
+        IronlogLogo(size = 112.dp)
+        Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.displayMedium)
         CircularProgressIndicator()
         Text(stringResource(Res.string.startup_loading), color = MaterialTheme.colorScheme.onSurfaceVariant)
     }

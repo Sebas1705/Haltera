@@ -1,0 +1,522 @@
+-- Sync change tracking (docs/designs/2026-10-14-sync-design.md §5). One SyncState row per aggregate root:
+-- routines/{routineId}, sessions/{sessionId}, bodyWeight/{id}, exercises/{USER exerciseId}, settings/user.
+-- The triggers at the end keep it up to date; they are skipped while remote changes are applied
+-- (Meta syncApplying = '1'). Catalogue rows (source = 'CATALOG') are never tracked.
+CREATE TABLE SyncState (
+    collection TEXT NOT NULL,
+    id         TEXT NOT NULL,
+    updatedAt  INTEGER NOT NULL,              -- epoch millis of the last local change (or of the applied remote one)
+    dirty      INTEGER NOT NULL DEFAULT 0,    -- 0/1: changed locally, not uploaded yet
+    deleted    INTEGER NOT NULL DEFAULT 0,    -- 0/1: tombstone
+    PRIMARY KEY (collection, id)
+);
+
+CREATE INDEX SyncState_dirty ON SyncState(dirty);
+
+-- Download cursor per collection: the newest remote updatedAt applied.
+CREATE TABLE SyncCursor (
+    collection     TEXT NOT NULL PRIMARY KEY,
+    sinceUpdatedAt INTEGER NOT NULL
+);
+
+selectState:
+SELECT * FROM SyncState WHERE collection = ? AND id = ?;
+
+selectDirty:
+SELECT * FROM SyncState WHERE dirty = 1 ORDER BY updatedAt LIMIT :limit;
+
+countDirty:
+SELECT COUNT(*) FROM SyncState WHERE dirty = 1;
+
+putState:
+INSERT OR REPLACE INTO SyncState(collection, id, updatedAt, dirty, deleted) VALUES (?, ?, ?, ?, ?);
+
+-- Acknowledged upload: clears dirty only when nothing changed since the read.
+clearDirty:
+UPDATE SyncState SET dirty = 0 WHERE collection = :collection AND id = :id AND updatedAt = :updatedAt;
+
+-- Marks one root dirty now (settings bridge).
+markDirty:
+INSERT OR REPLACE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT :collection, :id,
+       MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER),
+           COALESCE((SELECT s.updatedAt + 1 FROM SyncState s WHERE s.collection = :collection AND s.id = :id), 0)),
+       1, 0;
+
+-- Backfill: a SyncState row for every local root that has none yet (data logged before sync existed).
+-- Settings always exist: the engine backfills them only when they differ from the defaults, so a fresh install
+-- takes the settings already in the cloud.
+backfillRoutines:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT 'routines', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0 FROM RoutineEntity;
+
+backfillSessions:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT 'sessions', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0 FROM WorkoutSessionEntity;
+
+backfillBodyWeight:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT 'bodyWeight', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0 FROM BodyWeightEntity;
+
+backfillExercises:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT 'exercises', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+FROM ExerciseEntity WHERE source = 'USER';
+
+backfillSettings:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+VALUES ('settings', 'user', CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0);
+
+-- Re-uploads everything (merge into another account); updatedAt is kept so the last writer still wins.
+markAllDirty:
+UPDATE SyncState SET dirty = 1;
+
+selectCursor:
+SELECT sinceUpdatedAt FROM SyncCursor WHERE collection = ?;
+
+putCursor:
+INSERT OR REPLACE INTO SyncCursor(collection, sinceUpdatedAt) VALUES (?, ?);
+
+resetCursors:
+DELETE FROM SyncCursor;
+
+-- Apply helpers (run with syncApplying = '1'). Parents are upserted with INSERT OR IGNORE + UPDATE, never
+-- INSERT OR REPLACE: a REPLACE deletes the row first and would fire ON DELETE CASCADE / SET NULL on its children.
+selectBodyWeight:
+SELECT * FROM BodyWeightEntity WHERE id = ?;
+
+routineExists:
+SELECT COUNT(*) FROM RoutineEntity WHERE id = ?;
+
+slotExists:
+SELECT COUNT(*) FROM RoutineSlotEntity WHERE id = ?;
+
+insertRoutineIfMissing:
+INSERT OR IGNORE INTO RoutineEntity(id, name, description, originTemplateId, originVersion, isActive, nextDayIndex, createdAt, updatedAt)
+VALUES (:id, :name, :description, :originTemplateId, :originVersion, 0, :nextDayIndex, :createdAt, :updatedAt);
+
+updateRoutine:
+UPDATE RoutineEntity
+SET name = :name, description = :description, originTemplateId = :originTemplateId, originVersion = :originVersion,
+    nextDayIndex = :nextDayIndex, createdAt = :createdAt, updatedAt = :updatedAt
+WHERE id = :id;
+
+deleteDaysNotIn:
+DELETE FROM RoutineDayEntity WHERE routineId = :routineId AND id NOT IN :keep;
+
+insertDayIfMissing:
+INSERT OR IGNORE INTO RoutineDayEntity(id, routineId, position, name, kind) VALUES (:id, :routineId, :position, :name, :kind);
+
+updateDay:
+UPDATE RoutineDayEntity SET routineId = :routineId, position = :position, name = :name, kind = :kind WHERE id = :id;
+
+deleteSlotsNotIn:
+DELETE FROM RoutineSlotEntity WHERE dayId = :dayId AND id NOT IN :keep;
+
+insertSlotIfMissing:
+INSERT OR IGNORE INTO RoutineSlotEntity(
+    id, dayId, position, target, sets, warmupSets, prescription, restBetweenSetsS, restAfterS,
+    supersetGroup, bilateral, notes, progression
+) VALUES (:id, :dayId, :position, :target, :sets, :warmupSets, :prescription, :restBetweenSetsS, :restAfterS,
+    :supersetGroup, :bilateral, :notes, :progression);
+
+updateSlot:
+UPDATE RoutineSlotEntity
+SET dayId = :dayId, position = :position, target = :target, sets = :sets, warmupSets = :warmupSets,
+    prescription = :prescription, restBetweenSetsS = :restBetweenSetsS, restAfterS = :restAfterS,
+    supersetGroup = :supersetGroup, bilateral = :bilateral, notes = :notes, progression = :progression
+WHERE id = :id;
+
+insertSessionIfMissing:
+INSERT OR IGNORE INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
+VALUES (:id, :startedAt, :endedAt, :routineId, :routineDayIndex, :dayName, :notes, :bodyWeightGrams);
+
+updateSession:
+UPDATE WorkoutSessionEntity
+SET startedAt = :startedAt, endedAt = :endedAt, routineId = :routineId, routineDayIndex = :routineDayIndex,
+    dayName = :dayName, notes = :notes, bodyWeightGrams = :bodyWeightGrams
+WHERE id = :id;
+
+deleteSessionExercisesNotIn:
+DELETE FROM SessionExerciseEntity WHERE sessionId = :sessionId AND id NOT IN :keep;
+
+insertSessionExerciseIfMissing:
+INSERT OR IGNORE INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes)
+VALUES (:id, :sessionId, :position, :variantId, :slotId, :notes);
+
+updateSessionExercise:
+UPDATE SessionExerciseEntity
+SET sessionId = :sessionId, position = :position, variantId = :variantId, slotId = :slotId, notes = :notes
+WHERE id = :id;
+
+deleteSetsNotIn:
+DELETE FROM SetLogEntity WHERE sessionExerciseId = :sessionExerciseId AND id NOT IN :keep;
+
+-- SetLogEntity has no children: REPLACE is safe.
+replaceSet:
+INSERT OR REPLACE INTO SetLogEntity(
+    id, sessionExerciseId, position, kind, reps, loadGrams, loadDetail, durationS, distanceM, rpe, completed, completedAt
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertExerciseIfMissing:
+INSERT OR IGNORE INTO ExerciseEntity(
+    id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, trackingType, level,
+    primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt
+) VALUES (:id, 'USER', :nameEn, :nameEs, :nameEnSearch, :nameEsSearch, :category, :trackingType, :level,
+    :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, :deprecated, :updatedAt);
+
+updateUserExercise:
+UPDATE ExerciseEntity
+SET nameEn = :nameEn, nameEs = :nameEs, nameEnSearch = :nameEnSearch, nameEsSearch = :nameEsSearch,
+    category = :category, trackingType = :trackingType, level = :level, primaryMuscles = :primaryMuscles,
+    secondaryMuscles = :secondaryMuscles, instructionsEn = :instructionsEn, instructionsEs = :instructionsEs,
+    deprecated = :deprecated, updatedAt = :updatedAt
+WHERE id = :id AND source = 'USER';
+
+deleteUserVariantsNotIn:
+DELETE FROM ExerciseVariantEntity WHERE exerciseId = :exerciseId AND source = 'USER' AND id NOT IN :keep;
+
+insertVariantIfMissing:
+INSERT OR IGNORE INTO ExerciseVariantEntity(
+    id, exerciseId, source, position, equipment, loadType, nameEn, nameEs,
+    instructionsEn, instructionsEs, frames, deprecated, updatedAt
+) VALUES (:id, :exerciseId, 'USER', :position, :equipment, :loadType, :nameEn, :nameEs,
+    :instructionsEn, :instructionsEs, :frames, :deprecated, :updatedAt);
+
+updateUserVariant:
+UPDATE ExerciseVariantEntity
+SET exerciseId = :exerciseId, position = :position, equipment = :equipment, loadType = :loadType,
+    nameEn = :nameEn, nameEs = :nameEs, instructionsEn = :instructionsEn, instructionsEs = :instructionsEs,
+    frames = :frames, deprecated = :deprecated, updatedAt = :updatedAt
+WHERE id = :id AND source = 'USER';
+
+deleteUserExercise:
+DELETE FROM ExerciseEntity WHERE id = ? AND source = 'USER';
+
+-- Change-tracking triggers: each upserts the owning root's SyncState row with dirty = 1.
+-- updatedAt is "now", but always past the previous value, so an edit right after a read is never mistaken
+-- for the uploaded version. Child triggers look their root up: a child deleted by the cascade of a deleted
+-- root finds it gone and writes deleted = 1 (or nothing, when its parent row is gone too), so the tombstone wins.
+-- routineId SET NULL on sessions when a routine is deleted is a real session change and is tracked.
+-- They use UPDATE + INSERT ... WHERE NOT EXISTS, not INSERT OR REPLACE: a trigger fired by a foreign-key action
+-- runs with the outer statement's ABORT conflict resolution, so the REPLACE would fail there.
+
+CREATE TRIGGER RoutineEntity_syncInsert
+AFTER INSERT ON RoutineEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'routines' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = new.id);
+END;
+
+CREATE TRIGGER RoutineEntity_syncUpdate
+AFTER UPDATE ON RoutineEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'routines' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = new.id);
+END;
+
+CREATE TRIGGER RoutineEntity_syncDelete
+AFTER DELETE ON RoutineEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'routines' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = old.id);
+END;
+
+CREATE TRIGGER WorkoutSessionEntity_syncInsert
+AFTER INSERT ON WorkoutSessionEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'sessions' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = new.id);
+END;
+
+CREATE TRIGGER WorkoutSessionEntity_syncUpdate
+AFTER UPDATE ON WorkoutSessionEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'sessions' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = new.id);
+END;
+
+CREATE TRIGGER WorkoutSessionEntity_syncDelete
+AFTER DELETE ON WorkoutSessionEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'sessions' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = old.id);
+END;
+
+CREATE TRIGGER BodyWeightEntity_syncInsert
+AFTER INSERT ON BodyWeightEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'bodyWeight' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyWeight', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyWeight' AND s.id = new.id);
+END;
+
+CREATE TRIGGER BodyWeightEntity_syncUpdate
+AFTER UPDATE ON BodyWeightEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'bodyWeight' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyWeight', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyWeight' AND s.id = new.id);
+END;
+
+CREATE TRIGGER BodyWeightEntity_syncDelete
+AFTER DELETE ON BodyWeightEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'bodyWeight' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyWeight', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyWeight' AND s.id = old.id);
+END;
+
+CREATE TRIGGER ExerciseEntity_syncInsert
+AFTER INSERT ON ExerciseEntity
+WHEN new.source = 'USER' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'exercises' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'exercises', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'exercises' AND s.id = new.id);
+END;
+
+CREATE TRIGGER ExerciseEntity_syncUpdate
+AFTER UPDATE ON ExerciseEntity
+WHEN new.source = 'USER' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'exercises' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'exercises', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'exercises' AND s.id = new.id);
+END;
+
+CREATE TRIGGER ExerciseEntity_syncDelete
+AFTER DELETE ON ExerciseEntity
+WHEN old.source = 'USER' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'exercises' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'exercises', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'exercises' AND s.id = old.id);
+END;
+
+CREATE TRIGGER RoutineDayEntity_syncInsert
+AFTER INSERT ON RoutineDayEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = new.routineId) THEN 0 ELSE 1 END
+    WHERE collection = 'routines' AND id = new.routineId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', new.routineId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = new.routineId) THEN 0 ELSE 1 END
+    WHERE new.routineId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = new.routineId);
+END;
+
+CREATE TRIGGER RoutineDayEntity_syncUpdate
+AFTER UPDATE ON RoutineDayEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = new.routineId) THEN 0 ELSE 1 END
+    WHERE collection = 'routines' AND id = new.routineId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', new.routineId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = new.routineId) THEN 0 ELSE 1 END
+    WHERE new.routineId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = new.routineId);
+END;
+
+CREATE TRIGGER RoutineDayEntity_syncDelete
+AFTER DELETE ON RoutineDayEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = old.routineId) THEN 0 ELSE 1 END
+    WHERE collection = 'routines' AND id = old.routineId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', old.routineId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = old.routineId) THEN 0 ELSE 1 END
+    WHERE old.routineId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = old.routineId);
+END;
+
+CREATE TRIGGER SessionExerciseEntity_syncInsert
+AFTER INSERT ON SessionExerciseEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = new.sessionId) THEN 0 ELSE 1 END
+    WHERE collection = 'sessions' AND id = new.sessionId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', new.sessionId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = new.sessionId) THEN 0 ELSE 1 END
+    WHERE new.sessionId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = new.sessionId);
+END;
+
+CREATE TRIGGER SessionExerciseEntity_syncUpdate
+AFTER UPDATE ON SessionExerciseEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = new.sessionId) THEN 0 ELSE 1 END
+    WHERE collection = 'sessions' AND id = new.sessionId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', new.sessionId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = new.sessionId) THEN 0 ELSE 1 END
+    WHERE new.sessionId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = new.sessionId);
+END;
+
+CREATE TRIGGER SessionExerciseEntity_syncDelete
+AFTER DELETE ON SessionExerciseEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = old.sessionId) THEN 0 ELSE 1 END
+    WHERE collection = 'sessions' AND id = old.sessionId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', old.sessionId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = old.sessionId) THEN 0 ELSE 1 END
+    WHERE old.sessionId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = old.sessionId);
+END;
+
+CREATE TRIGGER ExerciseVariantEntity_syncInsert
+AFTER INSERT ON ExerciseVariantEntity
+WHEN new.source = 'USER' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM ExerciseEntity p WHERE p.id = new.exerciseId) THEN 0 ELSE 1 END
+    WHERE collection = 'exercises' AND id = new.exerciseId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'exercises', new.exerciseId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM ExerciseEntity p WHERE p.id = new.exerciseId) THEN 0 ELSE 1 END
+    WHERE new.exerciseId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'exercises' AND s.id = new.exerciseId);
+END;
+
+CREATE TRIGGER ExerciseVariantEntity_syncUpdate
+AFTER UPDATE ON ExerciseVariantEntity
+WHEN new.source = 'USER' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM ExerciseEntity p WHERE p.id = new.exerciseId) THEN 0 ELSE 1 END
+    WHERE collection = 'exercises' AND id = new.exerciseId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'exercises', new.exerciseId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM ExerciseEntity p WHERE p.id = new.exerciseId) THEN 0 ELSE 1 END
+    WHERE new.exerciseId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'exercises' AND s.id = new.exerciseId);
+END;
+
+CREATE TRIGGER ExerciseVariantEntity_syncDelete
+AFTER DELETE ON ExerciseVariantEntity
+WHEN old.source = 'USER' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM ExerciseEntity p WHERE p.id = old.exerciseId) THEN 0 ELSE 1 END
+    WHERE collection = 'exercises' AND id = old.exerciseId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'exercises', old.exerciseId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM ExerciseEntity p WHERE p.id = old.exerciseId) THEN 0 ELSE 1 END
+    WHERE old.exerciseId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'exercises' AND s.id = old.exerciseId);
+END;
+
+CREATE TRIGGER RoutineSlotEntity_syncInsert
+AFTER INSERT ON RoutineSlotEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId)) THEN 0 ELSE 1 END
+    WHERE collection = 'routines' AND id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId);
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId), CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId)) THEN 0 ELSE 1 END
+    WHERE (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId) IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId));
+END;
+
+CREATE TRIGGER RoutineSlotEntity_syncUpdate
+AFTER UPDATE ON RoutineSlotEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId)) THEN 0 ELSE 1 END
+    WHERE collection = 'routines' AND id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId);
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId), CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId)) THEN 0 ELSE 1 END
+    WHERE (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId) IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = new.dayId));
+END;
+
+CREATE TRIGGER RoutineSlotEntity_syncDelete
+AFTER DELETE ON RoutineSlotEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = old.dayId)) THEN 0 ELSE 1 END
+    WHERE collection = 'routines' AND id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = old.dayId);
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'routines', (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = old.dayId), CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM RoutineEntity p WHERE p.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = old.dayId)) THEN 0 ELSE 1 END
+    WHERE (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = old.dayId) IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'routines' AND s.id = (SELECT q.routineId FROM RoutineDayEntity q WHERE q.id = old.dayId));
+END;
+
+CREATE TRIGGER SetLogEntity_syncInsert
+AFTER INSERT ON SetLogEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId)) THEN 0 ELSE 1 END
+    WHERE collection = 'sessions' AND id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId);
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId), CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId)) THEN 0 ELSE 1 END
+    WHERE (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId) IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId));
+END;
+
+CREATE TRIGGER SetLogEntity_syncUpdate
+AFTER UPDATE ON SetLogEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId)) THEN 0 ELSE 1 END
+    WHERE collection = 'sessions' AND id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId);
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId), CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId)) THEN 0 ELSE 1 END
+    WHERE (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId) IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = new.sessionExerciseId));
+END;
+
+CREATE TRIGGER SetLogEntity_syncDelete
+AFTER DELETE ON SetLogEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = old.sessionExerciseId)) THEN 0 ELSE 1 END
+    WHERE collection = 'sessions' AND id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = old.sessionExerciseId);
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'sessions', (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = old.sessionExerciseId), CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM WorkoutSessionEntity p WHERE p.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = old.sessionExerciseId)) THEN 0 ELSE 1 END
+    WHERE (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = old.sessionExerciseId) IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'sessions' AND s.id = (SELECT q.sessionId FROM SessionExerciseEntity q WHERE q.id = old.sessionExerciseId));
+END;
+
+CREATE TRIGGER RoutineEntity_syncActive
+AFTER UPDATE OF isActive ON RoutineEntity
+WHEN old.isActive IS NOT new.isActive AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'settings' AND id = 'user';
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'settings', 'user', CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE 'user' IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'settings' AND s.id = 'user');
+END;
+
+CREATE TRIGGER RoutineEntity_syncActiveDelete
+AFTER DELETE ON RoutineEntity
+WHEN old.isActive = 1 AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'settings' AND id = 'user';
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'settings', 'user', CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE 'user' IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'settings' AND s.id = 'user');
+END;
+

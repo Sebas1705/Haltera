@@ -444,7 +444,7 @@ Barbell_Squat:
   instructions:
     - "Este ejercicio se realiza mejor dentro de un rack de sentadillas por seguridad. Para empezar, coloca primero la barra en un rack justo por debajo de la altura de los hombros. Una vez elegida la altura correcta y cargada la barra, métete bajo la barra y apoya la parte posterior de los hombros (ligeramente por debajo del cuello) sobre ella."
     - "Sujeta la barra con ambos brazos a cada lado y levántala del rack empujando primero con las piernas y enderezando a la vez el torso."
-    - "Aléjate del rack y coloca las piernas en una postura media a la anchura de los hombros con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento y también la espalda recta. Esta es la posición inicial. (Nota: a efectos de esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas explicadas en la sección de posturas de los pies)."
+    - "Aléjate del rack y coloca las piernas en una postura media a la anchura de los hombros con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento y también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar lentamente la barra flexionando las rodillas y las caderas mientras mantienes una postura recta con la cabeza alta. Continúa hacia abajo hasta que el ángulo entre el muslo y las pantorrillas sea ligeramente inferior a 90 grados. Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con los dedos de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan los dedos de los pies), estás sometiendo la rodilla a una tensión excesiva y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra mientras espiras empujando el suelo con el talón del pie mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -455,7 +455,7 @@ Barbell_Squat_To_A_Bench:
     - ""
     - "Después, coloca la barra en un rack que se ajuste a tu altura. Una vez elegida la altura correcta y cargada la barra, métete bajo la barra y apoya la parte posterior de los hombros (ligeramente por debajo del cuello) sobre ella."
     - "Sujeta la barra con ambos brazos a cada lado y levántala del rack empujando primero con las piernas y enderezando a la vez el torso."
-    - "Aléjate del rack y coloca las piernas en una postura media a la anchura de los hombros con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te desequilibrará, y mantén también la espalda recta. Esta es la posición inicial. (Nota: a efectos de esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas explicadas en la sección de posturas de los pies)."
+    - "Aléjate del rack y coloca las piernas en una postura media a la anchura de los hombros con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te desequilibrará, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar lentamente la barra flexionando las rodillas y llevando la cadera hacia atrás mientras mantienes una postura recta con la cabeza alta. Continúa hacia abajo hasta tocar ligeramente el banco que tienes detrás. Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con los dedos de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan los dedos de los pies), estás sometiendo la rodilla a una tensión excesiva y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra mientras espiras empujando el suelo con el talón del pie mientras estiras las piernas y extiendes las caderas para volver a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -871,12 +871,12 @@ Cable_One_Arm_Tricep_Extension:
     - "Vuelve lentamente con el asa a la posición inicial."
     - "Repite el número de repeticiones indicado y luego realiza el mismo movimiento con el otro brazo."
 Cable_Preacher_Curl:
-  name: "Curl predicador en polea"
+  name: "Curl en banco Scott en polea"
   instructions:
-    - "Coloca un banco predicador a unos 60 cm delante de una polea."
+    - "Coloca un banco Scott a unos 60 cm delante de una polea."
     - "Coloca una barra recta en la polea baja."
-    - "Siéntate en el banco predicador con el codo y la parte superior de los brazos firmemente apoyados en el cojín del banco y pide a alguien que te pase la barra de la polea baja."
-    - "Agarra la barra y extiende completamente los brazos sobre el cojín del banco predicador. Esta es la posición inicial."
+    - "Siéntate en el banco Scott con el codo y la parte superior de los brazos firmemente apoyados en el cojín del banco y pide a alguien que te pase la barra de la polea baja."
+    - "Agarra la barra y extiende completamente los brazos sobre el cojín del banco Scott. Esta es la posición inicial."
     - "Ahora empieza a subir el peso hacia los hombros y aprieta con fuerza los bíceps en la parte alta del movimiento. Espira mientras realizas este movimiento. Mantén también un segundo arriba."
     - "Ahora baja lentamente el peso hasta la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -1719,7 +1719,7 @@ Dumbbell_One-Arm_Upright_Row:
 Dumbbell_Prone_Incline_Curl:
   name: "Curl con mancuernas boca abajo en banco inclinado"
   instructions:
-    - "Coge una mancuerna en cada mano y túmbate boca abajo en un banco inclinado con los hombros cerca de la parte superior de la inclinación. Las rodillas pueden descansar sobre el asiento o puedes colocar las piernas abiertas a los lados (mi forma preferida)."
+    - "Coge una mancuerna en cada mano y túmbate boca abajo en un banco inclinado con los hombros cerca de la parte superior de la inclinación. Las rodillas pueden descansar sobre el asiento o puedes colocar las piernas abiertas a los lados."
     - "Deja que los brazos se extiendan y cuelguen de forma natural delante de ti de modo que queden perpendiculares al suelo."
     - "Ahora mantén los codos pegados a los costados y orienta las palmas hacia delante. Esta es la posición inicial."
     - "Sube las mancuernas contrayendo los bíceps hasta que los brazos estén totalmente flexionados. Espira mientras realizas esta parte del movimiento y asegúrate de que solo se muevan los antebrazos. Los brazos deben permanecer fijos en todo momento."
@@ -1788,7 +1788,7 @@ Dumbbell_Squat:
   name: "Sentadilla con mancuernas"
   instructions:
     - "Ponte de pie con la espalda recta sujetando una mancuerna en cada mano (palmas mirando hacia los lados de las piernas)."
-    - "Coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial. Nota: para esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas explicadas en la sección de posición de los pies."
+    - "Coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar lentamente el torso flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa bajando hasta que los muslos estén paralelos al suelo. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de la punta de los pies), estás sometiendo la rodilla a un estrés innecesario y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir el torso mientras espiras empujando el suelo principalmente con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -1796,7 +1796,7 @@ Dumbbell_Squat_To_A_Bench:
   name: "Sentadilla con mancuernas a un banco"
   instructions:
     - "Ponte de pie con la espalda recta y un banco plano detrás de ti, sujetando una mancuerna en cada mano (palmas mirando hacia los lados de las piernas)."
-    - "Coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial. Nota: para esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas explicadas en la sección de posición de los pies."
+    - "Coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar lentamente el torso flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa bajando hasta que toques ligeramente el banco que tienes detrás. Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de la punta de los pies), estás sometiendo la rodilla a un estrés innecesario y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra mientras espiras empujando el suelo principalmente con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -2055,7 +2055,7 @@ Front_Barbell_Squat:
   instructions:
     - "Este ejercicio se realiza mejor dentro de un rack de sentadillas por seguridad. Para empezar, coloca primero la barra en un soporte que se ajuste a tu altura. Una vez elegida la altura correcta y cargada la barra, lleva los brazos por debajo de la barra manteniendo los codos altos y la parte superior del brazo ligeramente por encima de la paralela al suelo. Apoya la barra sobre la parte superior de los deltoides y cruza los brazos agarrando la barra para tener un control total."
     - "Saca la barra del rack empujando primero con las piernas y enderezando a la vez el torso."
-    - "Aléjate del rack y coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial. (Nota: para esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas descritas en la sección de posición de los pies)."
+    - "Aléjate del rack y coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar lentamente la barra flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa bajando hasta que el ángulo entre el muslo y la pantorrilla sea ligeramente inferior a 90 grados (que es el punto en el que los muslos quedan por debajo de la paralela al suelo). Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de la punta de los pies), estás sometiendo la rodilla a un estrés innecesario y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra mientras espiras empujando el suelo principalmente con la parte media del pie mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -2064,7 +2064,7 @@ Front_Barbell_Squat_To_A_Bench:
   instructions:
     - "Este ejercicio se realiza mejor dentro de un rack de sentadillas por seguridad. Para empezar, coloca primero un banco plano detrás de ti y la barra en un soporte que se ajuste a tu altura. Una vez elegida la altura correcta y cargada la barra, lleva los brazos por debajo de la barra manteniendo los codos altos y la parte superior del brazo ligeramente por encima de la paralela al suelo. Apoya la barra sobre la parte superior de los deltoides y cruza los brazos agarrando la barra para tener un control total."
     - "Saca la barra del rack empujando primero con las piernas y enderezando a la vez el torso."
-    - "Aléjate del rack y coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial. (Nota: para esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas descritas en la sección de posición de los pies)."
+    - "Aléjate del rack y coloca las piernas con una postura media a la anchura de los hombros y las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te hará perder el equilibrio, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar lentamente la barra flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa bajando hasta que toques el banco con los glúteos. Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de la punta de los pies), estás sometiendo la rodilla a un estrés innecesario y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra mientras espiras empujando el suelo principalmente con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -2216,7 +2216,7 @@ Hack_Squat:
     - "Apoya la espalda contra el respaldo de la máquina y coloca los hombros bajo las hombreras."
     - "Coloca las piernas en la plataforma con una postura media a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Consejo: mantén la cabeza arriba en todo momento y la espalda apoyada en el respaldo en todo momento."
     - "Coloca los brazos en las asas laterales de la máquina y desactiva las barras de seguridad (en la mayoría de los diseños se hace moviendo las asas laterales de una posición frontal a una diagonal)."
-    - "Ahora estira las piernas sin bloquear las rodillas. Esta es la posición inicial. (Nota: para esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas descritas en la sección de colocación de los pies)."
+    - "Ahora estira las piernas sin bloquear las rodillas. Esta es la posición inicial."
     - "Empieza a bajar lentamente la plataforma flexionando las rodillas mientras mantienes una postura recta con la cabeza arriba (espalda siempre apoyada en el respaldo). Continúa hacia abajo hasta que el ángulo entre el muslo y las pantorrillas sea ligeramente inferior a 90 grados (que es el punto en el que los muslos quedan por debajo de la paralela al suelo). Inspira durante esta parte del movimiento. Consejo: si has hecho el ejercicio correctamente, la parte frontal de las rodillas debe formar una línea recta imaginaria con los dedos de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de los dedos de los pies), estás sometiendo la rodilla a un estrés excesivo y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la plataforma mientras espiras, empujando el suelo principalmente con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -2377,7 +2377,7 @@ Hyperextensions_Back_Extensions:
   instructions:
     - "Túmbate boca abajo en un banco de hiperextensiones, metiendo los tobillos de forma segura bajo los rodillos."
     - "Ajusta la almohadilla superior si es posible para que la parte alta de los muslos quede plana sobre la almohadilla ancha, dejando espacio suficiente para flexionar la cintura sin restricciones."
-    - "Con el cuerpo recto, cruza los brazos delante de ti (mi preferencia) o detrás de la cabeza. Esta es la posición inicial. Consejo: también puedes sostener un disco delante de ti, bajo los brazos cruzados, para añadir resistencia."
+    - "Con el cuerpo recto, cruza los brazos delante de ti o detrás de la cabeza. Esta es la posición inicial. Consejo: también puedes sostener un disco delante de ti, bajo los brazos cruzados, para añadir resistencia."
     - "Empieza a inclinarte hacia delante lentamente desde la cintura todo lo que puedas manteniendo la espalda plana. Inspira mientras realizas este movimiento. Sigue avanzando hasta que notes un buen estiramiento en los isquiotibiales y ya no puedas continuar sin redondear la espalda. Consejo: nunca redondees la espalda al hacer este ejercicio. Además, algunas personas pueden llegar más lejos que otras. Lo importante es que llegues hasta donde tu cuerpo te permita sin redondear la espalda."
     - "Sube lentamente el torso hasta la posición inicial mientras inspiras. Consejo: evita la tentación de arquear la espalda más allá de una línea recta. Además, no balancees el torso en ningún momento para proteger la espalda de lesiones."
     - "Repite el número de repeticiones indicado."
@@ -2385,7 +2385,7 @@ Hyperextensions_With_No_Hyperextension_Bench:
   name: "Hiperextensiones sin banco de hiperextensiones"
   instructions:
     - "Con alguien sujetándote las piernas, deslízate hacia abajo hasta el borde de un banco plano hasta que las caderas queden fuera del extremo del banco. Consejo: todo el tronco debe quedar colgando hacia el suelo. Además, estarás en la misma posición que en un banco de hiperextensiones, pero el rango de movimiento será menor debido a la altura del banco plano frente a la del banco de hiperextensiones."
-    - "Con el cuerpo recto, cruza los brazos delante de ti (mi preferencia) o detrás de la cabeza. Esta es la posición inicial. Consejo: también puedes sostener un disco delante de ti, bajo los brazos cruzados, para añadir resistencia."
+    - "Con el cuerpo recto, cruza los brazos delante de ti o detrás de la cabeza. Esta es la posición inicial. Consejo: también puedes sostener un disco delante de ti, bajo los brazos cruzados, para añadir resistencia."
     - "Empieza a inclinarte hacia delante lentamente desde la cintura todo lo que puedas manteniendo la espalda plana. Inspira mientras realizas este movimiento. Sigue avanzando hasta que casi toques el suelo o notes un buen estiramiento en los isquiotibiales (lo que ocurra primero). Consejo: nunca redondees la espalda al hacer este ejercicio."
     - "Sube lentamente el torso hasta la posición inicial mientras espiras. Consejo: evita la tentación de arquear la espalda más allá de una línea recta. Además, no balancees el torso en ningún momento para proteger la espalda de lesiones."
     - "Repite el número de repeticiones indicado."
@@ -2968,7 +2968,7 @@ Leg_Lift:
 Leg_Press:
   name: "Prensa de piernas"
   instructions:
-    - "En una máquina de prensa de piernas, siéntate y coloca las piernas sobre la plataforma justo frente a ti con una postura media (a la anchura de los hombros). (Nota: para esta explicación usaremos la postura media descrita, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas descritas en la sección de posición de los pies)."
+    - "En una máquina de prensa de piernas, siéntate y coloca las piernas sobre la plataforma justo frente a ti con una postura media (a la anchura de los hombros)."
     - "Baja las barras de seguridad que sujetan la plataforma con peso y empuja la plataforma hacia arriba hasta que las piernas queden completamente extendidas frente a ti. Consejo: asegúrate de no bloquear las rodillas. El torso y las piernas deben formar un ángulo perfecto de 90 grados. Esta es la posición inicial."
     - "Mientras inspiras, baja despacio la plataforma hasta que la parte superior e inferior de las piernas formen un ángulo de 90 grados."
     - "Empujando principalmente con los talones y usando los cuádriceps, vuelve a la posición inicial mientras sueltas el aire."
@@ -2976,7 +2976,7 @@ Leg_Press:
 Leg_Pull-In:
   name: "Recogida de piernas"
   instructions:
-    - "Túmbate sobre una esterilla con las piernas extendidas y las manos con las palmas hacia abajo a tu lado o bajo los glúteos. Consejo: yo prefiero las manos a mi lado. Esta es la posición inicial."
+    - "Túmbate sobre una esterilla con las piernas extendidas y las manos con las palmas hacia abajo a tu lado o bajo los glúteos. Esta es la posición inicial."
     - "Flexiona las rodillas y lleva la parte superior de los muslos hacia el abdomen mientras sueltas el aire. Continúa el movimiento hasta que las rodillas estén aproximadamente a la altura del pecho. Contrae los abdominales mientras ejecutas este movimiento y mantén durante un segundo arriba. Consejo: durante el movimiento, la parte inferior de las piernas (gemelos) debe permanecer siempre paralela al suelo."
     - "Vuelve a la posición inicial mientras inspiras."
     - "Repite el número de repeticiones indicado."
@@ -3113,7 +3113,7 @@ Lunge_Pass_Through:
     - "Empujando con el talón del pie, vuelve a la posición inicial."
     - "Repite el movimiento el número de repeticiones indicado, alternando las piernas."
 Lunge_Sprint:
-  name: "Zancada con salto alterno"
+  name: "Zancada con salto alterno en multipower"
   instructions:
     - "Ajusta una barra en un multipower a una altura adecuada. Colócate bajo la barra, apoyándola sobre la parte posterior de los hombros. Saca la barra del soporte y luego separa los pies, llevando un pie hacia delante y otro hacia atrás. Esta es la posición inicial."
     - "Baja la rodilla trasera casi hasta el suelo, flexionando las rodillas y bajando las caderas al hacerlo."
@@ -3219,7 +3219,7 @@ Lying_Leg_Curls:
   name: "Curl femoral tumbado"
   instructions:
     - "Ajusta la palanca de la máquina a tu altura y túmbate boca abajo en la máquina de curl femoral con la almohadilla de la palanca en la parte posterior de las piernas (unos pocos centímetros por debajo de los gemelos). Consejo: usa preferiblemente una máquina de curl femoral inclinada en lugar de plana, ya que una posición inclinada es más favorable para el reclutamiento de los isquiotibiales."
-    - "Manteniendo el torso plano sobre el banco, asegúrate de que las piernas estén completamente estiradas y agarra las asas laterales de la máquina. Coloca las puntas de los pies rectas (o puedes usar cualquiera de las otras dos posturas descritas en la sección de posición de los pies). Esta es la posición inicial."
+    - "Manteniendo el torso plano sobre el banco, asegúrate de que las piernas estén completamente estiradas y agarra las asas laterales de la máquina. Coloca las puntas de los pies rectas. Esta es la posición inicial."
     - "Mientras sueltas el aire, flexiona las piernas hacia arriba tanto como puedas sin levantar la parte superior de las piernas de la almohadilla. Una vez alcances la posición de contracción completa, mantenla un segundo."
     - "Mientras inspiras, devuelve las piernas a la posición inicial. Repite el número de repeticiones indicado."
 Lying_Machine_Squat:
@@ -3274,7 +3274,7 @@ Lying_T-Bar_Row:
 Lying_Triceps_Press:
   name: "Press de tríceps tumbado (rompecráneos)"
   instructions:
-    - "Túmbate en un banco plano con una barra Z (mi preferencia) o una barra recta colocada en el suelo detrás de la cabeza y los pies en el suelo."
+    - "Túmbate en un banco plano con una barra Z o una barra recta colocada en el suelo detrás de la cabeza y los pies en el suelo."
     - "Agarra la barra detrás de ti con un agarre prono medio y súbela frente a ti con los brazos extendidos. Consejo: los brazos deben ser perpendiculares al torso y al suelo. Los codos deben estar pegados. Esta es la posición inicial."
     - "Mientras inspiras, baja despacio el peso hasta que la barra toque ligeramente la frente, manteniendo inmóvil la parte superior de los brazos y los codos."
     - "En ese punto, usa los tríceps para subir el peso de vuelta a la posición inicial mientras sueltas el aire."
@@ -3297,10 +3297,10 @@ Machine_Bicep_Curl:
     - "Haz una pausa en la parte alta del movimiento y luego devuelve despacio el peso a la posición inicial."
     - "Evita devolver el peso por completo a los topes hasta terminar la serie para mantener la tensión en los músculos trabajados."
 Machine_Preacher_Curls:
-  name: "Curl predicador en máquina"
+  name: "Curl en banco Scott en máquina"
   instructions:
-    - "Siéntate en la máquina de curl predicador y selecciona el peso."
-    - "Coloca la parte posterior de la parte superior de los brazos (los tríceps) sobre la almohadilla predicador y agarra las asas con agarre supino (palmas hacia arriba). Consejo: asegúrate de que, al colocar los brazos en la almohadilla, mantengas los codos hacia dentro. Esta es la posición inicial."
+    - "Siéntate en la máquina de curl en banco Scott y selecciona el peso."
+    - "Coloca la parte posterior de la parte superior de los brazos (los tríceps) sobre la almohadilla del banco Scott y agarra las asas con agarre supino (palmas hacia arriba). Consejo: asegúrate de que, al colocar los brazos en la almohadilla, mantengas los codos hacia dentro. Esta es la posición inicial."
     - "Ahora sube las asas mientras sueltas el aire y contraes los bíceps. En la parte alta de la posición asegúrate de mantener la contracción durante un segundo. Consejo: solo deben moverse los antebrazos. La parte superior de los brazos debe permanecer inmóvil y apoyada en la almohadilla en todo momento."
     - "Baja despacio las asas a la posición inicial mientras inspiras."
     - "Repite el número de repeticiones indicado."
@@ -3413,14 +3413,14 @@ Narrow_Stance_Squats:
   instructions:
     - "Este ejercicio se realiza mejor dentro de una jaula de sentadillas por seguridad. Para empezar, coloca primero la barra en un soporte que se ajuste a tu altura. Una vez elegida la altura correcta y cargada la barra, métete bajo la barra y apoya sobre ella la parte posterior de los hombros (ligeramente por debajo del cuello)."
     - "Sujeta la barra con ambos brazos a cada lado y levántala del soporte empujando primero con las piernas y enderezando al mismo tiempo el torso."
-    - "Aléjate del soporte y coloca las piernas con una postura estrecha, menor que la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Los pies deben estar separados unos 7,5-15 cm. Mantén la cabeza alta en todo momento (mirar hacia abajo te desequilibrará) y mantén la espalda recta. Esta es la posición inicial. (Nota: para esta explicación usaremos la postura media descrita, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas explicadas en la sección de posturas de los pies)."
+    - "Aléjate del soporte y coloca las piernas con una postura estrecha, menor que la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Los pies deben estar separados unos 7,5-15 cm. Mantén la cabeza alta en todo momento (mirar hacia abajo te desequilibrará) y mantén la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar despacio la barra flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa bajando hasta que el ángulo entre la parte superior de la pierna y las pantorrillas sea ligeramente menor de 90 grados (que es el punto en el que la parte superior de las piernas queda por debajo del paralelo con el suelo). Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con los dedos de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si sobrepasan los dedos de los pies), entonces estás sometiendo la rodilla a una tensión excesiva y el ejercicio se ha realizado de forma incorrecta."
     - "Empieza a subir la barra mientras sueltas el aire empujando el suelo principalmente con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
 Natural_Glute_Ham_Raise:
   name: "Elevación glúteo-isquio natural"
   instructions:
-    - "Usando el soporte para las piernas de una máquina de jalón al pecho o de un banco predicador, colócate de modo que los tobillos queden bajo las almohadillas, las rodillas sobre el asiento y estés de espaldas a la máquina. Debes estar erguido y mantener una buena postura."
+    - "Usando el soporte para las piernas de una máquina de jalón al pecho o de un banco Scott, colócate de modo que los tobillos queden bajo las almohadillas, las rodillas sobre el asiento y estés de espaldas a la máquina. Debes estar erguido y mantener una buena postura."
     - "Esta es la posición inicial. Bájate de forma controlada hasta que las rodillas estén casi completamente rectas."
     - "Manteniendo el control, vuelve a subir hasta la posición inicial."
     - "Si no puedes completar una repetición, usa una goma elástica, un compañero o impúlsate con un cajón para ayudarte a completar la repetición."
@@ -3547,7 +3547,7 @@ One-Arm_Kettlebell_Military_Press_To_The_Side:
     - "Mira la kettlebell y presiónala hacia arriba y hacia fuera hasta bloquearla por encima de la cabeza."
     - "Baja la kettlebell de nuevo al hombro de forma controlada y repite. Asegúrate de contraer con fuerza el dorsal, los glúteos y el abdomen para obtener más estabilidad y fuerza."
 One-Arm_Kettlebell_Para_Press:
-  name: "Para press con kettlebell a una mano"
+  name: "Press con kettlebell a una mano con el codo abierto"
   instructions:
     - "Lleva una kettlebell hasta el hombro. Hazlo extendiendo las piernas y las caderas mientras tiras de la kettlebell hacia el hombro. Rota la muñeca al hacerlo, de modo que la palma quede mirando hacia delante. Esta es la posición inicial."
     - "Sujeta la kettlebell con el codo hacia el lateral y presiónala hacia arriba y hacia fuera hasta bloquearla por encima de la cabeza."
@@ -3667,9 +3667,9 @@ One_Arm_Dumbbell_Bench_Press:
     - "Repite el movimiento el número de repeticiones prescrito en tu programa de entrenamiento."
     - "Cambia de brazo y repite el movimiento."
 One_Arm_Dumbbell_Preacher_Curl:
-  name: "Curl predicador con mancuerna a una mano"
+  name: "Curl en banco Scott con mancuerna a una mano"
   instructions:
-    - "Agarra una mancuerna con el brazo derecho y apoya la parte superior del brazo sobre el banco predicador o el banco inclinado. La mancuerna debe sostenerse a la altura del hombro. Esta es la posición inicial."
+    - "Agarra una mancuerna con el brazo derecho y apoya la parte superior del brazo sobre el banco Scott o el banco inclinado. La mancuerna debe sostenerse a la altura del hombro. Esta es la posición inicial."
     - "Mientras inspiras, baja lentamente la mancuerna hasta que la parte superior del brazo quede extendida y el bíceps completamente estirado."
     - "Mientras espiras, usa el bíceps para subir el peso hasta que el bíceps esté completamente contraído y la mancuerna quede a la altura del hombro. Recuerda de nuevo que, para asegurar la contracción completa, debes subir el dedo meñique más alto que el pulgar."
     - "Aprieta el bíceps con fuerza durante un segundo en la posición de contracción y repite el número de repeticiones indicado."
@@ -4028,17 +4028,17 @@ Power_Stairs:
     - "Al inclinarte hacia atrás, intenta lanzar el peso sobre la escalera, cuyos peldaños suelen tener unos 40-45 cm de altura. Puedes usar las piernas para ayudar a empujar el peso sobre el escalón."
     - "Repite durante 3-5 repeticiones y continúa con un peso mayor, moviéndote lo más rápido posible."
 Preacher_Curl:
-  name: "Curl predicador"
+  name: "Curl en banco Scott"
   instructions:
-    - "Para realizar este movimiento necesitarás un banco predicador y una barra Z. Agarra la barra Z por el agarre interior cercano (lo preferible es que alguien te pase la barra o cógela del soporte delantero que tienen la mayoría de los bancos predicador). Las palmas de las manos deben mirar hacia delante y deben quedar ligeramente inclinadas hacia dentro debido a la forma de la barra."
-    - "Con la parte superior de los brazos apoyada contra el cojín del banco predicador y el pecho contra él, sujeta la barra Z a la altura de los hombros. Esta es la posición inicial."
+    - "Para realizar este movimiento necesitarás un banco Scott y una barra Z. Agarra la barra Z por el agarre interior cercano (lo preferible es que alguien te pase la barra o cógela del soporte delantero que tienen la mayoría de los bancos Scott). Las palmas de las manos deben mirar hacia delante y deben quedar ligeramente inclinadas hacia dentro debido a la forma de la barra."
+    - "Con la parte superior de los brazos apoyada contra el cojín del banco Scott y el pecho contra él, sujeta la barra Z a la altura de los hombros. Esta es la posición inicial."
     - "Mientras inspiras, baja lentamente la barra hasta que la parte superior del brazo quede extendida y el bíceps completamente estirado."
     - "Mientras espiras, usa el bíceps para subir el peso hasta que el bíceps esté completamente contraído y la barra quede a la altura de los hombros. Aprieta el bíceps con fuerza y mantén esta posición durante un segundo."
     - "Repite el número de repeticiones indicado."
 Preacher_Hammer_Dumbbell_Curl:
-  name: "Curl martillo predicador con mancuernas"
+  name: "Curl martillo en banco Scott con mancuernas"
   instructions:
-    - "Apoya la parte superior de ambos brazos sobre el banco predicador mientras sujetas una mancuerna en cada mano con las palmas enfrentadas (agarre neutro)."
+    - "Apoya la parte superior de ambos brazos sobre el banco Scott mientras sujetas una mancuerna en cada mano con las palmas enfrentadas (agarre neutro)."
     - "Mientras inspiras, baja lentamente las mancuernas hasta que la parte superior del brazo quede extendida y el bíceps completamente estirado."
     - "Mientras espiras, usa el bíceps para subir el peso hasta que el bíceps esté completamente contraído y las mancuernas queden a la altura de los hombros."
     - "Aprieta el bíceps con fuerza durante un segundo en la posición de contracción y repite el número de repeticiones indicado."
@@ -4201,10 +4201,10 @@ Reverse_Barbell_Curl:
     - "Baja lentamente la barra a la posición inicial mientras inspiras."
     - "Repite el número de repeticiones indicado."
 Reverse_Barbell_Preacher_Curls:
-  name: "Curl inverso en banco predicador con barra"
+  name: "Curl inverso en banco Scott con barra"
   instructions:
     - "Coge una barra Z con agarre prono (palmas hacia abajo) a la anchura de los hombros."
-    - "Apoya la parte superior de ambos brazos sobre el banco predicador con los brazos extendidos. Esta es la posición inicial."
+    - "Apoya la parte superior de ambos brazos sobre el banco Scott con los brazos extendidos. Esta es la posición inicial."
     - "Al espirar, usa los bíceps para subir el peso hasta que estén totalmente contraídos y la barra esté a la altura de los hombros. Aprieta con fuerza los bíceps durante un segundo en la posición contraída."
     - "Al inspirar, baja lentamente la barra hasta que la parte superior de los brazos quede extendida y los bíceps totalmente estirados."
     - "Repite el número de repeticiones indicado."
@@ -5105,7 +5105,7 @@ Smith_Machine_Squat:
   instructions:
     - "Para empezar, ajusta primero la barra a la altura que mejor se adapte a tu estatura. Una vez elegida la altura correcta y cargada la barra, colócate bajo ella y apoya la parte posterior de los hombros (ligeramente por debajo del cuello) sobre la barra."
     - "Sujeta la barra con ambos brazos a cada lado (palmas hacia delante), desbloquéala y sácala del soporte empujando primero con las piernas y enderezando el torso al mismo tiempo."
-    - "Coloca las piernas en una posición media, a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento y la espalda recta. Esta es la posición inicial. (Nota: para esta explicación usaremos la posición media, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posiciones de pies descritas en la sección de posiciones de pies)."
+    - "Coloca las piernas en una posición media, a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento y la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar despacio la barra flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa hasta que el ángulo entre el muslo y la pantorrilla sea ligeramente inferior a 90 grados (el punto en el que los muslos quedan por debajo del paralelo con el suelo). Inspira durante esta parte del movimiento. Consejo: si has hecho el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de las puntas de los pies), estás sometiendo la rodilla a un estrés innecesario y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra mientras espiras, empujando el suelo con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -5198,7 +5198,7 @@ Speed_Squats:
   instructions:
     - "Este ejercicio se realiza mejor dentro de una jaula de sentadillas por seguridad. Para empezar, ajusta primero la barra en un soporte que se adapte a tu altura. Una vez elegida la altura correcta y cargada la barra, colócate bajo ella y apoya la parte posterior de los hombros (ligeramente por debajo del cuello) sobre la barra."
     - "Sujeta la barra con ambos brazos a cada lado y sácala del soporte empujando primero con las piernas y enderezando el torso al mismo tiempo."
-    - "Da un paso atrás para separarte del soporte y coloca las piernas en una posición media, a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te desequilibrará, y mantén también la espalda recta. Esta es la posición inicial. (Nota: para esta explicación usaremos la posición media, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posiciones de pies descritas en la sección de posiciones de pies)."
+    - "Da un paso atrás para separarte del soporte y coloca las piernas en una posición media, a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te desequilibrará, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar la barra flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa hasta que el ángulo entre el muslo y la pantorrilla sea ligeramente inferior a 90 grados (el punto en el que los muslos quedan por debajo del paralelo con el suelo). Inspira durante esta parte del movimiento. Consejo: si has hecho el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si pasan de las puntas de los pies), estás sometiendo la rodilla a un estrés innecesario y el ejercicio se ha realizado incorrectamente."
     - "Empieza a subir la barra lo más rápido posible sin usar inercia mientras espiras, empujando el suelo principalmente con el talón mientras estiras de nuevo las piernas y vuelves a la posición inicial. Nota: debes realizar estos ejercicios lo más rápido posible, pero sin perder la técnica perfecta y sin usar inercia."
     - "Repite el número de repeticiones indicado."
@@ -5960,9 +5960,9 @@ Tuck_Crunch:
     - "Empieza a bajar lentamente el tronco hasta la posición inicial mientras inspiras."
     - "Repite el número de repeticiones indicado."
 Two-Arm_Dumbbell_Preacher_Curl:
-  name: "Curl predicador con mancuernas a dos brazos"
+  name: "Curl en banco Scott con mancuernas a dos brazos"
   instructions:
-    - "Coge una mancuerna con cada brazo y apoya la parte superior de los brazos sobre el banco predicador o el banco inclinado. La mancuerna debe sostenerse a la altura de los hombros. Esta es la posición inicial."
+    - "Coge una mancuerna con cada brazo y apoya la parte superior de los brazos sobre el banco Scott o el banco inclinado. La mancuerna debe sostenerse a la altura de los hombros. Esta es la posición inicial."
     - "Mientras inspiras, baja lentamente las mancuernas hasta que la parte superior del brazo quede extendida y el bíceps totalmente estirado."
     - "Mientras espiras, usa el bíceps para subir las pesas hasta que el bíceps esté totalmente contraído y las mancuernas queden a la altura de los hombros."
     - "Aprieta con fuerza el bíceps durante un segundo en la posición contraída y repite el número de repeticiones indicado."
@@ -6249,7 +6249,7 @@ Zercher_Squats:
   instructions:
     - "Este ejercicio es mejor realizarlo dentro de un rack de sentadillas por seguridad. Para empezar, coloca la barra en un rack que se ajuste a tu altura. La altura correcta debe estar por encima de la cintura pero por debajo del pecho. Una vez elegida la altura correcta y cargada la barra, entrelaza las manos y coloca la barra sobre los brazos, en el pliegue entre el antebrazo y la parte superior del brazo."
     - "Levanta la barra de modo que quede apoyada sobre los antebrazos. Si sujetas la barra correctamente, debe parecer que tienes los brazos cruzados pero con una barra atravesada sobre ellos."
-    - "Aléjate del rack y coloca las piernas con una postura media, a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te desequilibrará, y mantén también la espalda recta. Esta es la posición inicial. (Nota: a efectos de esta explicación usaremos la postura media descrita arriba, que trabaja el desarrollo general; sin embargo, puedes elegir cualquiera de las tres posturas descritas en la sección de posturas de los pies)."
+    - "Aléjate del rack y coloca las piernas con una postura media, a la anchura de los hombros, con las puntas de los pies ligeramente hacia fuera. Mantén la cabeza alta en todo momento, ya que mirar hacia abajo te desequilibrará, y mantén también la espalda recta. Esta es la posición inicial."
     - "Empieza a bajar la barra flexionando las rodillas mientras mantienes una postura recta con la cabeza alta. Continúa bajando hasta que el ángulo entre el muslo y las pantorrillas sea ligeramente inferior a 90 grados (que es el punto en el que los muslos quedan por debajo del paralelo con el suelo). Inspira mientras realizas esta parte del movimiento. Consejo: si has realizado el ejercicio correctamente, la parte delantera de las rodillas debe formar una línea recta imaginaria con las puntas de los pies, perpendicular al frente. Si las rodillas sobrepasan esa línea imaginaria (si sobrepasan las puntas de los pies), estás sometiendo la rodilla a un estrés excesivo y el ejercicio se ha realizado de forma incorrecta."
     - "Empieza a subir la barra mientras espiras empujando el suelo principalmente con la parte delantera del pie mientras estiras de nuevo las piernas y vuelves a la posición inicial."
     - "Repite el número de repeticiones indicado."
@@ -6265,9 +6265,9 @@ Zottman_Curl:
     - "Cuando las mancuernas se acerquen a los muslos, empieza a rotar la muñeca para volver a un agarre neutro (palmas hacia el cuerpo)."
     - "Repite el número de repeticiones indicado."
 Zottman_Preacher_Curl:
-  name: "Curl predicador Zottman"
+  name: "Curl en banco Scott Zottman"
   instructions:
-    - "Coge una mancuerna en cada mano y apoya la parte superior de los brazos sobre el banco predicador o el banco inclinado. Las mancuernas deben sostenerse a la altura de los hombros y los codos deben estar flexionados. Sujeta las mancuernas con las palmas de las manos hacia abajo. Esta es la posición inicial."
+    - "Coge una mancuerna en cada mano y apoya la parte superior de los brazos sobre el banco Scott o el banco inclinado. Las mancuernas deben sostenerse a la altura de los hombros y los codos deben estar flexionados. Sujeta las mancuernas con las palmas de las manos hacia abajo. Esta es la posición inicial."
     - "Mientras inspiras, baja lentamente las mancuernas manteniendo las palmas hacia abajo hasta que la parte superior del brazo quede extendida y los bíceps totalmente estirados."
     - "Ahora rota las muñecas cuando estés en la parte baja del movimiento de modo que las palmas de las manos miren hacia arriba."
     - "Mientras espiras, usa los bíceps para subir las pesas hasta que estén totalmente contraídos y las mancuernas queden a la altura de los hombros. Recuerda de nuevo que, para asegurar la contracción completa, debes subir el meñique más alto que el pulgar."

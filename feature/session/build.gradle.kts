@@ -11,6 +11,9 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.koin.core)
             implementation(libs.bundles.koin.compose.bundle)
+            // Persists the rest timer (absolute end times) so it survives process death.
+            implementation(libs.multiplatform.settings)
+            implementation(libs.multiplatform.settings.no.arg)
 
             implementation(project(":core:common"))
             implementation(project(":core:ui"))
@@ -23,6 +26,7 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.turbine)
+            implementation(project(":core:testing"))
         }
     }
 }

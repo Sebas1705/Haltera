@@ -1,0 +1,15 @@
+<resources>
+    <string name="session_channel_live">Workout session</string>
+    <string name="session_channel_live_description">Current exercise and rest timer while you train</string>
+    <string name="session_channel_alert">Rest alerts</string>
+    <string name="session_channel_alert_description">When a rest or a timed set ends</string>
+    <string name="session_notification_title">Workout in progress</string>
+    <string name="session_notification_rest">Rest</string>
+    <string name="session_notification_work">Work</string>
+    <string name="session_notification_ready">Get ready</string>
+    <string name="session_notification_training">Training</string>
+    <string name="session_notification_skip">Skip</string>
+    <string name="session_notification_plus">+15 s</string>
+    <string name="session_alert_title">Time\'s up</string>
+    <string name="session_alert_text">Next set: %1$s</string>
+</resources>

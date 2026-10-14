@@ -39,6 +39,10 @@ import es.sebas1705.ironlog.feature.session.platform.RequestSessionPermissions
 import es.sebas1705.ironlog.feature.session.resources.Res
 import es.sebas1705.ironlog.feature.session.resources.session_add_exercise
 import es.sebas1705.ironlog.feature.session.resources.session_back
+import es.sebas1705.ironlog.feature.session.resources.session_delete
+import es.sebas1705.ironlog.feature.session.resources.session_log_date
+import es.sebas1705.ironlog.feature.session.resources.session_months_short
+import es.sebas1705.ironlog.feature.session.resources.session_save
 import es.sebas1705.ironlog.feature.session.resources.session_discard
 import es.sebas1705.ironlog.feature.session.resources.session_empty
 import es.sebas1705.ironlog.feature.session.resources.session_finish
@@ -46,11 +50,20 @@ import es.sebas1705.ironlog.feature.session.resources.session_free
 import es.sebas1705.ironlog.feature.session.resources.session_missing
 import es.sebas1705.ironlog.feature.session.resources.session_more
 import es.sebas1705.ironlog.feature.session.timer.TimerMath
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
-/** The live session of [sessionId] (spec §5). [onFinished] leaves after finishing or discarding. */
+/**
+ * The session [sessionId] (spec §5), live or in log mode ([SessionState.logMode]). [onFinished] leaves after
+ * finishing or discarding a live session; log mode leaves with [onBack].
+ */
 @Composable
 fun SessionScreen(
     sessionId: String,
@@ -62,9 +75,11 @@ fun SessionScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val language = uiLanguage()
     LaunchedEffect(language) { viewModel.onEvent(SessionIntent.SetLanguage(language)) }
-    LaunchedEffect(state.discarded) { if (state.discarded) onFinished() }
-    KeepScreenOn(enabled = state.inProgress && state.settings.keepScreenOn)
-    if (state.inProgress) RequestSessionPermissions()
+    LaunchedEffect(state.discarded) {
+        if (state.discarded) if (state.logMode) onBack() else onFinished()
+    }
+    KeepScreenOn(enabled = state.live && state.settings.keepScreenOn)
+    if (state.live) RequestSessionPermissions()
 
     SessionContent(state, viewModel::onEvent, onBack, onFinished, modifier)
 }
@@ -83,7 +98,7 @@ internal fun SessionContent(
         modifier = modifier,
         topBar = { SessionTopBar(state, now, onEvent, onBack) },
         bottomBar = {
-            if (state.inProgress) {
+            if (state.live) {
                 RestBanner(
                     timer = state.timer,
                     now = now,
@@ -98,7 +113,7 @@ internal fun SessionContent(
         when {
             state.loading || state.discarded -> LoadingScreen(Modifier.padding(padding))
             state.missing -> Centered(stringResource(Res.string.session_missing), Modifier.padding(padding))
-            // A session finished here returns to Today; a past one (opened from Progress) just goes back.
+            // A live session finished here returns to Today; a logged or edited one goes back where it came from.
             summary != null -> SummaryView(
                 summary = summary,
                 unit = state.settings.unit,
@@ -124,27 +139,51 @@ private fun SessionTopBar(state: SessionState, now: Long, onEvent: (SessionInten
             Column {
                 Text(state.dayName ?: stringResource(Res.string.session_free), maxLines = 1)
                 if (state.startedAt > 0) {
-                    val end = state.endedAt ?: now
-                    Text(TimerMath.formatElapsed(end - state.startedAt), style = MaterialTheme.typography.labelMedium)
+                    // Log mode shows when it happened; a live session its running time.
+                    val subtitle = if (state.logMode) {
+                        logDate(state.startedAt)
+                    } else {
+                        TimerMath.formatElapsed((state.endedAt ?: now) - state.startedAt)
+                    }
+                    Text(subtitle, style = MaterialTheme.typography.labelMedium, maxLines = 1)
                 }
             }
         },
         actions = {
-            if (state.inProgress) {
+            if (state.editable) {
                 IconButton(onClick = { onEvent(SessionIntent.OpenAddExercise) }) {
                     Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.session_add_exercise))
                 }
-                TextButton(onClick = { onEvent(SessionIntent.RequestFinish) }, enabled = !state.busy) {
-                    Text(stringResource(Res.string.session_finish))
+                if (state.logMode) {
+                    TextButton(onClick = { onEvent(SessionIntent.Save) }, enabled = !state.busy) {
+                        Text(stringResource(Res.string.session_save))
+                    }
+                } else {
+                    TextButton(onClick = { onEvent(SessionIntent.RequestFinish) }, enabled = !state.busy) {
+                        Text(stringResource(Res.string.session_finish))
+                    }
                 }
-                OverflowMenu(onDiscard = { onEvent(SessionIntent.RequestDiscard) })
+                OverflowMenu(
+                    label = if (state.logMode) Res.string.session_delete else Res.string.session_discard,
+                    onDiscard = { onEvent(SessionIntent.RequestDiscard) },
+                )
             }
         },
     )
 }
 
+/** "12 Oct 2026 · 18:00" in the device time zone. */
+@OptIn(ExperimentalTime::class)
 @Composable
-private fun OverflowMenu(onDiscard: () -> Unit) {
+private fun logDate(millis: Long): String {
+    val at = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
+    val month = stringArrayResource(Res.array.session_months_short).getOrElse(at.month.ordinal) { "" }
+    val time = "${at.hour.toString().padStart(2, '0')}:${at.minute.toString().padStart(2, '0')}"
+    return stringResource(Res.string.session_log_date, at.day, month, at.year, time)
+}
+
+@Composable
+private fun OverflowMenu(label: StringResource, onDiscard: () -> Unit) {
     var open by rememberSaveable { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }) {
@@ -152,7 +191,7 @@ private fun OverflowMenu(onDiscard: () -> Unit) {
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(
-                text = { Text(stringResource(Res.string.session_discard)) },
+                text = { Text(stringResource(label)) },
                 onClick = {
                     open = false
                     onDiscard()
@@ -189,7 +228,7 @@ private fun ExerciseList(state: SessionState, onEvent: (SessionIntent) -> Unit, 
             ExerciseCardView(
                 card = card,
                 current = card.id == current,
-                editable = state.inProgress,
+                editable = state.editable,
                 settings = state.settings,
                 actions = actions,
             )
@@ -205,6 +244,9 @@ private fun SessionOverlays(state: SessionState, onEvent: (SessionIntent) -> Uni
             onEvent(SessionIntent.ConfirmFinish)
         }, onDismiss = dismiss)
         SessionDialog.ConfirmDiscard -> ConfirmDiscardDialog(onConfirm = {
+            onEvent(SessionIntent.ConfirmDiscard)
+        }, onDismiss = dismiss)
+        SessionDialog.ConfirmDelete -> ConfirmDeleteDialog(onConfirm = {
             onEvent(SessionIntent.ConfirmDiscard)
         }, onDismiss = dismiss)
         SessionDialog.AddExercise -> AddExerciseDialog(

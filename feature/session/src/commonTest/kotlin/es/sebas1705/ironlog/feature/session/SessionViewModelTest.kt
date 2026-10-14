@@ -71,7 +71,7 @@ class SessionViewModelTest {
             sessions = sessions,
             suggestNextLoad = SuggestNextLoad(sessions),
         )
-        return SessionViewModel(SESSION_ID, sessions, catalog, settings, timer, indicator)
+        return SessionViewModel(SESSION_ID, sessions, catalog, settings, timer, indicator) { clock.now }
             .also { it.onEvent(SessionIntent.SetLanguage("en")) }
     }
 
@@ -386,6 +386,140 @@ class SessionViewModelTest {
         assertTrue(vm.uiState.value.discarded)
         assertTrue(SESSION_ID !in sessions.sessions.value)
         assertEquals(1, indicator.hidden)
+    }
+
+    // endregion
+
+    // region Log mode (past sessions and saved sessions)
+
+    private val day = 24 * 60 * 60_000L
+
+    /** A past session as Today/Progress create it: already saved with its start and end, no sets yet. */
+    private fun pastSession(startedAt: Long = clock.now - 3 * day, endedAt: Long? = startedAt + 60 * 60_000L) =
+        routineSession(benchExercise()).copy(startedAt = startedAt, endedAt = endedAt)
+
+    @Test
+    fun aSavedSessionOpensInLogModeWithoutTimerNotificationOrService() = runTest {
+        // Another session owns the rest timer: log mode must not touch it.
+        val live = TimerSnapshot(sessionId = "live", restEndsAt = clock.now + 60_000)
+        store.save(live)
+        val vm = viewModel(pastSession())
+
+        val state = vm.uiState.value
+        assertTrue(state.logMode)
+        assertFalse(state.live)
+        assertTrue(state.editable)
+        assertNull(indicator.shown, "no foreground service")
+        val set = cardSets(vm)[1]
+        vm.onEvent(SessionIntent.ToggleSet(set.id))
+        assertTrue(sessions.set(set.id)!!.completed)
+        assertEquals(TimerSnapshot(), vm.uiState.value.timer)
+        assertEquals(live, store.state.value, "no rest started")
+        assertTrue(alert.scheduled.isEmpty(), "no notification scheduled")
+        assertNull(vm.uiState.value.summary)
+    }
+
+    @Test
+    fun logModePrefillsOnlyFromHistoryBeforeTheSessionDate() = runTest {
+        val start = clock.now - 3 * day
+        sessions.history += pastBench(100_000, listOf(5, 5, 5), sessionId = "after", at = start + day)
+        sessions.history += pastBench(60_000, listOf(10, 9, 8), sessionId = "before", at = start - day)
+        val vm = viewModel(pastSession(startedAt = start))
+
+        val working = cardSets(vm).filter { it.kind == SetKind.WORKING }
+        assertEquals(listOf(10, 9, 8), working.map { it.reps })
+        assertTrue(working.all { it.loadGrams == 60_000L && !it.completed })
+        assertIs<Suggestion.Keep>(vm.uiState.value.cards.first().suggestion)
+    }
+
+    @Test
+    fun saveKeepsTheSavedEndTimeDropsPendingRowsAndShowsTheSummary() = runTest {
+        val start = clock.now - 3 * day
+        val vm = viewModel(pastSession(startedAt = start, endedAt = start + 50 * 60_000L))
+        val working = cardSets(vm).filter { it.kind == SetKind.WORKING }
+        working.take(2).forEach { vm.onEvent(SessionIntent.ToggleSet(it.id)) }
+
+        vm.onEvent(SessionIntent.Save)
+
+        val saved = sessions.sessions.value.getValue(SESSION_ID)
+        assertEquals(start + 50 * 60_000L, saved.endedAt)
+        assertEquals(2, saved.exercises.single().sets.size)
+        assertEquals(0, sessions.finished, "already saved: not finished again")
+        val summary = assertNotNull(vm.uiState.value.summary)
+        assertEquals(50 * 60_000L, summary.durationMs)
+        assertEquals(2, summary.completedSets)
+        assertFalse(vm.uiState.value.finishedHere, "Done goes back, not to Today")
+        assertFalse(vm.uiState.value.editable)
+        assertEquals(0, indicator.hidden)
+    }
+
+    @Test
+    fun requestFinishInLogModeSavesWithoutAConfirmation() = runTest {
+        val vm = viewModel(pastSession())
+        vm.onEvent(SessionIntent.RequestFinish)
+        assertNull(vm.uiState.value.dialog)
+        assertNotNull(vm.uiState.value.summary)
+    }
+
+    @Test
+    fun aSessionLeftInProgressLongAgoIsLoggedAndSavedWithTheDefaultDuration() = runTest {
+        val start = clock.now - SessionViewModel.LOG_MODE_AFTER_MS - 1
+        val vm = viewModel(pastSession(startedAt = start, endedAt = null))
+        assertTrue(vm.uiState.value.logMode)
+
+        vm.onEvent(SessionIntent.Save)
+
+        assertEquals(
+            start + SessionViewModel.DEFAULT_LOG_DURATION_MS,
+            sessions.sessions.value.getValue(SESSION_ID).endedAt
+        )
+        assertNotNull(vm.uiState.value.summary)
+    }
+
+    @Test
+    fun aRecentSessionInProgressStaysLive() = runTest {
+        val vm = viewModel(pastSession(startedAt = clock.now - 60 * 60_000L, endedAt = null))
+        assertFalse(vm.uiState.value.logMode)
+        assertTrue(vm.uiState.value.live)
+        assertEquals(SESSION_ID, indicator.shown)
+    }
+
+    @Test
+    fun editingASavedSessionChangesItsSetsAndKeepsItSaved() = runTest {
+        val start = clock.now - 3 * day
+        val done = benchExercise().copy(
+            sets = listOf(SetLog("s-a", "e-bench", 0, SetKind.WORKING, 8, 60_000, completed = true)),
+        )
+        val vm = viewModel(routineSession(done).copy(startedAt = start, endedAt = start + 3_600_000))
+        assertEquals(1, cardSets(vm).size, "no rows are added to an exercise that has sets")
+
+        vm.onEvent(SessionIntent.EditSet("s-a"))
+        vm.onEvent(SessionIntent.ChangeDraft(vm.uiState.value.editor!!.draft.copy(reps = 10, loadGrams = 65_000)))
+        vm.onEvent(SessionIntent.SaveDraft)
+        vm.onEvent(SessionIntent.AddSet("e-bench"))
+        vm.onEvent(SessionIntent.ToggleSet(cardSets(vm)[1].id))
+        vm.onEvent(SessionIntent.Save)
+
+        val saved = sessions.sessions.value.getValue(SESSION_ID)
+        assertEquals(start + 3_600_000, saved.endedAt)
+        assertEquals(listOf(10, 10), saved.exercises.single().sets.map { it.reps })
+        assertEquals(listOf(65_000L, 65_000L), saved.exercises.single().sets.map { it.loadGrams })
+    }
+
+    @Test
+    fun deletingInLogModeAsksFirstAndLeavesTheLiveTimerAlone() = runTest {
+        val live = TimerSnapshot(sessionId = "live", restEndsAt = clock.now + 60_000)
+        store.save(live)
+        val vm = viewModel(pastSession())
+
+        vm.onEvent(SessionIntent.RequestDiscard)
+        assertEquals(SessionDialog.ConfirmDelete, vm.uiState.value.dialog)
+        vm.onEvent(SessionIntent.ConfirmDiscard)
+
+        assertNull(sessions.sessions.value[SESSION_ID])
+        assertTrue(vm.uiState.value.discarded)
+        assertEquals(live, store.state.value)
+        assertEquals(0, indicator.hidden)
     }
 
     // endregion

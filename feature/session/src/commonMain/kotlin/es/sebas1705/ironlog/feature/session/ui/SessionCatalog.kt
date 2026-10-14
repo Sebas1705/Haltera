@@ -16,8 +16,9 @@ import es.sebas1705.ironlog.domain.usecases.session.SuggestNextLoad
 import kotlinx.coroutines.flow.Flow
 
 /**
- * Read side of the live session: exercises, variants, routine slots, suggestions and last loads, cached
- * per session (they do not change while it runs: history only holds finished sessions).
+ * Read side of the session screen: exercises, variants, routine slots, suggestions and last loads, cached
+ * per session. History is always read as of the session's start ([sessionStartedAt]): a past session
+ * being logged only sees what came before it, and the session itself never counts.
  */
 class SessionCatalog(
     private val exercises: ExerciseRepository,
@@ -30,6 +31,16 @@ class SessionCatalog(
     private val slotCache = mutableMapOf<String, Map<String, RoutineSlot>>()
     private val suggestionCache = mutableMapOf<Pair<String, String>, Suggestion>()
     private val lastCache = mutableMapOf<Pair<String?, String>, SessionExercise?>()
+
+    /** Start of the session shown: the upper bound (exclusive) of every history read. */
+    var sessionStartedAt: Long? = null
+        set(value) {
+            if (field != value) {
+                suggestionCache.clear()
+                lastCache.clear()
+            }
+            field = value
+        }
 
     suspend fun variant(id: String): ExerciseVariant? =
         if (id in variantCache) variantCache[id] else exercises.getVariant(id).also { variantCache[id] = it }
@@ -46,14 +57,18 @@ class SessionCatalog(
     }
 
     suspend fun suggestion(slot: RoutineSlot, variantId: String): Suggestion =
-        suggestionCache.getOrPut(slot.id to variantId) { suggestNextLoad(slot, variantId) }
+        suggestionCache.getOrPut(slot.id to variantId) { suggestNextLoad(slot, variantId, sessionStartedAt) }
 
-    /** Last finished performance of the slot with this variant, else of the variant anywhere. */
+    /** Last finished performance (before this session) of the slot with this variant, else of the variant. */
     suspend fun lastPerformance(slotId: String?, variantId: String): SessionExercise? {
         val key = slotId to variantId
         if (key in lastCache) return lastCache[key]
-        val fromSlot = slotId?.let { sessions.lastForSlotAndVariant(it, variantId, limit = 1).firstOrNull() }
-        val last = fromSlot?.exercise ?: sessions.lastForVariant(variantId, limit = 1).firstOrNull()?.exercise
+        val before = sessionStartedAt
+        val fromSlot = slotId?.let {
+            sessions.lastForSlotAndVariant(it, variantId, limit = 1, before = before).firstOrNull()
+        }
+        val last = fromSlot?.exercise
+            ?: sessions.lastForVariant(variantId, limit = 1, before = before).firstOrNull()?.exercise
         lastCache[key] = last
         return last
     }
@@ -68,9 +83,10 @@ class SessionCatalog(
         return if (target.allowedVariantIds.isEmpty()) all else all.filter { it.id in target.allowedVariantIds }
     }
 
-    /** Finished history of a variant without [excludeSessionId], for PR comparison. */
+    /** Finished history of a variant before this session (and without it), for PR comparison. */
     suspend fun previousHistory(variantId: String, excludeSessionId: String): List<ExerciseHistoryEntry> =
-        sessions.lastForVariant(variantId, limit = HISTORY_LIMIT).filter { it.sessionId != excludeSessionId }
+        sessions.lastForVariant(variantId, limit = HISTORY_LIMIT, before = sessionStartedAt)
+            .filter { it.sessionId != excludeSessionId }
 
     /**
      * The increase a finished session earned for its slot (spec §5 summary), when that session is the

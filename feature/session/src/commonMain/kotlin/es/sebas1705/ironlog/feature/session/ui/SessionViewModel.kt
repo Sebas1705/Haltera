@@ -19,10 +19,16 @@ import es.sebas1705.ironlog.feature.session.timer.TimerSnapshot
 import kotlinx.coroutines.Job
 
 /**
- * The live session (spec §5). Everything it shows is the database (`observeSession`) or the persisted
+ * The session screen (spec §5). Everything it shows is the database (`observeSession`) or the persisted
  * timer, so it survives rotation and process death; the ViewModel only keeps caches and dialog state.
+ *
+ * Two modes, derived from the session when it is first loaded (the `SessionRoute(sessionId)` contract
+ * stays as it is): a **live** session (in progress, started less than [LOG_MODE_AFTER_MS] ago) runs the
+ * rest timer, notification and keep-screen-on and ends with "Finish"; a session already saved or started
+ * longer ago is in **log mode** ([SessionState.logMode]): the same editor without any of that, ending
+ * with "Save", which keeps the saved end time (or sets one for a stale session) and shows the summary.
  */
-@Suppress("TooManyFunctions") // One handler per live-session operation.
+@Suppress("TooManyFunctions", "LongParameterList") // One handler per session operation.
 class SessionViewModel(
     private val sessionId: String,
     private val sessions: SessionRepository,
@@ -30,6 +36,7 @@ class SessionViewModel(
     private val settings: SettingsRepository,
     private val timer: RestTimerController,
     private val indicator: LiveSessionIndicator,
+    private val now: () -> Long = ::systemNow,
 ) : MVIBaseViewModel<SessionState, SessionIntent>(
     SessionState(sessionId = sessionId, settings = settings.settings.value)
 ) {
@@ -42,11 +49,14 @@ class SessionViewModel(
     private var leaving = false
     private var searchJob: Job? = null
 
+    /** Log mode, decided on the first load (null until then). */
+    private var logMode: Boolean? = null
+
     init {
         execute { settings.settings.collect { s -> updateState { it.copy(settings = s) } } }
         execute {
             timer.state.collect { t ->
-                val mine = if (t.sessionId == sessionId) t else TimerSnapshot()
+                val mine = if (t.sessionId == sessionId && logMode != true) t else TimerSnapshot()
                 updateState { it.copy(timer = mine) }
             }
         }
@@ -93,9 +103,17 @@ class SessionViewModel(
             is SessionIntent.AddExercise -> addExercise(intent.variantId)
             is SessionIntent.AdjustRest -> timer.adjustRest(intent.deltaSeconds)
             SessionIntent.SkipRest -> timer.skip()
-            SessionIntent.RequestFinish -> updateState { it.copy(dialog = SessionDialog.ConfirmFinish) }
+            SessionIntent.RequestFinish -> if (isLogMode()) {
+                save()
+            } else {
+                updateState { it.copy(dialog = SessionDialog.ConfirmFinish) }
+            }
             SessionIntent.ConfirmFinish -> finish()
-            SessionIntent.RequestDiscard -> updateState { it.copy(dialog = SessionDialog.ConfirmDiscard) }
+            SessionIntent.Save -> save()
+            SessionIntent.RequestDiscard -> {
+                val dialog = if (isLogMode()) SessionDialog.ConfirmDelete else SessionDialog.ConfirmDiscard
+                updateState { it.copy(dialog = dialog) }
+            }
             SessionIntent.ConfirmDiscard -> discard()
             SessionIntent.DismissDialog -> {
                 searchJob?.cancel()
@@ -112,6 +130,10 @@ class SessionViewModel(
             updateState { it.copy(loading = false, missing = true) }
             return
         }
+        val log = logMode ?: (!session.inProgress || session.startedAt < now() - LOG_MODE_AFTER_MS).also {
+            logMode = it
+        }
+        catalog.sessionStartedAt = session.startedAt
         val slots = catalog.slots(session.routineId)
         val cards = session.exercises.sortedBy { it.position }.map { buildCard(it, slots[it.slotId]) }
         updateState {
@@ -121,10 +143,15 @@ class SessionViewModel(
                 dayName = session.dayName,
                 startedAt = session.startedAt,
                 endedAt = session.endedAt,
+                logMode = log,
+                timer = if (log) TimerSnapshot() else it.timer,
                 cards = cards,
             )
         }
-        if (session.inProgress) {
+        if (log) {
+            // Logging after the fact: prescribed rows are prefilled until the user saves.
+            if (!leaving) seedMissingRows(cards)
+        } else if (session.inProgress) {
             if (!indicatorShown && !leaving) {
                 indicatorShown = true
                 indicator.show(sessionId)
@@ -185,7 +212,7 @@ class SessionViewModel(
 
     private fun syncLabel() {
         val state = currentState
-        if (!state.inProgress || leaving) return
+        if (!state.live || leaving) return
         // Also claims the timer for this session, which keeps the Android notification alive.
         val card = state.cards.firstOrNull { it.id == state.currentCardId } ?: state.cards.lastOrNull()
         timer.setLabel(sessionId, card?.name?.plain(language).orEmpty())
@@ -199,7 +226,7 @@ class SessionViewModel(
         val (card, set) = findSet(setId) ?: return
         val completed = !set.completed
         sessions.updateSet(set.id, set.toInput().copy(completed = completed))
-        if (completed) startRestAfter(card, set.id)
+        if (completed && !isLogMode()) startRestAfter(card, set.id)
     }
 
     private fun startRestAfter(card: ExerciseCard, setId: String) {
@@ -227,6 +254,7 @@ class SessionViewModel(
         val (card, set) = findSet(setId) ?: return
         val work = set.durationS ?: (card.prescription as? Prescription.Duration)?.seconds ?: DEFAULT_WORK_S
         sessions.updateSet(set.id, set.toInput().copy(durationS = work, completed = true))
+        if (isLogMode()) return // Logged after the fact: the target duration, no countdown.
         val (rest, _) = restAfter(card, set.id)
         timer.startTimed(sessionId, card.name.plain(language), set.id, work, rest)
     }
@@ -312,29 +340,60 @@ class SessionViewModel(
 
     // region Finish
 
-    /** Drops the rows never completed, ends the session (advancing the cycle) and shows the summary. */
+    /** Drops the rows never completed, ends the session and shows the summary. */
     private suspend fun finish() {
         if (leaving) return
         leaving = true
         updateState { it.copy(dialog = null, busy = true, finishedHere = true) }
         timer.clear()
         indicator.hide()
-        sessions.getSession(sessionId)?.exercises.orEmpty()
-            .flatMap { it.sets }
-            .filterNot { it.completed }
-            .forEach { sessions.deleteSet(it.id) }
+        dropUncompletedSets()
         sessions.finish(sessionId)
         updateState { it.copy(busy = false) }
     }
 
+    /**
+     * Log mode "Save": drops the rows never completed and shows the summary. A saved session keeps its end
+     * time (the times are edited from Progress); one never ended gets the default duration. Nothing live
+     * (timer, notification) is touched: another session may be running.
+     */
+    private suspend fun save() {
+        if (leaving) return
+        leaving = true
+        updateState { it.copy(dialog = null, busy = true) }
+        dropUncompletedSets()
+        val session = sessions.getSession(sessionId)
+        if (session == null) {
+            updateState { it.copy(busy = false, missing = true) }
+            return
+        }
+        if (session.inProgress) sessions.finish(sessionId, endedAt = session.startedAt + DEFAULT_LOG_DURATION_MS)
+        val saved = sessions.getSession(sessionId) ?: session
+        summaryRequested = true
+        val summary = buildSummary(saved, catalog.slots(saved.routineId), currentState.cards)
+        updateState { it.copy(busy = false, endedAt = saved.endedAt, summary = summary) }
+    }
+
+    private suspend fun dropUncompletedSets() {
+        sessions.getSession(sessionId)?.exercises.orEmpty()
+            .flatMap { it.sets }
+            .filterNot { it.completed }
+            .forEach { sessions.deleteSet(it.id) }
+    }
+
+    /** Discards a live session, or deletes a session in log mode (after the confirmation). */
     private suspend fun discard() {
         if (leaving) return
         leaving = true
         updateState { it.copy(dialog = null, discarded = true) }
-        timer.clear()
-        indicator.hide()
+        if (!isLogMode()) {
+            timer.clear()
+            indicator.hide()
+        }
         sessions.deleteSession(sessionId)
     }
+
+    private fun isLogMode(): Boolean = logMode == true
 
     private suspend fun buildSummary(session: WorkoutSession, slots: Map<String, RoutineSlot>, cards: List<ExerciseCard>): FinishSummary {
         val names = cards.associate { it.id to it.name }
@@ -350,9 +409,15 @@ class SessionViewModel(
 
     // endregion
 
-    private companion object {
-        const val DEFAULT_LANGUAGE = "en"
-        const val DEFAULT_WORK_S = 30
-        const val AD_HOC_SETS = 3
+    companion object {
+        /** An in-progress session started longer ago than this opens in log mode (it was left unfinished). */
+        const val LOG_MODE_AFTER_MS = 12 * 60 * 60 * 1_000L
+
+        /** End time given to a session saved in log mode that was never ended. */
+        const val DEFAULT_LOG_DURATION_MS = 60 * 60 * 1_000L
+
+        private const val DEFAULT_LANGUAGE = "en"
+        private const val DEFAULT_WORK_S = 30
+        private const val AD_HOC_SETS = 3
     }
 }

@@ -1,0 +1,1 @@
+Read and follow @AGENTS.md. In particular: all documentation, code, comments, commits and PRs in this repository are written in English (Spanish only in UI localisation resources and `es` data fields).

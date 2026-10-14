@@ -57,3 +57,7 @@ GoogleService-Info.plist
 
 # Detekt
 **/build/reports/detekt/
+
+# XcodeGen output
+iosApp/*.xcodeproj/
+iosApp/iosApp/Info.plist

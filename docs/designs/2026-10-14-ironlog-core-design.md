@@ -258,11 +258,11 @@ Percentage-based programmes (5/3/1, nSuns, PHAT) arrive in F9.
 
 | Phase | Content | Milestone |
 |---|---|---|
-| **F1** Foundations | Repo from Templetry, CI, Doppler, brand tokens, SQLDelight schema, catalogue pipeline + importer | — |
-| **F2** Exercises | Exercises tab, search/filters, detail with media, custom exercises | — |
+| **F1** Foundations | Repo from Templetry, CI, SQLDelight catalogue schema, catalogue pipeline + importer ([plans](../plans/README.md)) | — |
+| **F2** Exercises | Brand tokens and theme, Exercises tab, search/filters, detail with media (download), custom exercises | — |
 | **F3** Routines | Routine editor, famous routines catalogue | — |
 | **F4** Live session | Today tab, session, timers, foreground service/notifications, progression engine | — |
-| **F5** Progress | Calendar, per-exercise history, PRs, 1RM, volume charts, settings | **MVP → Play Alpha** |
+| **F5** Progress | Calendar, per-exercise history, PRs, 1RM, volume charts, settings; Doppler, release signing | **MVP → Play Alpha** |
 | F6 | Body weight and measurements with moving average/trend charts | — |
 | F7 | Nutrition: meals, foods (Open Food Facts barcode lookup with local cache; bundled USDA FoodData Central generic subset, CC0), calories, macros, goals, statistics over time | — |
 | F8 | Account + outbox sync (ported from Owlsplit), routine sharing, backup, CSV export | — |

@@ -17,10 +17,15 @@ data class SessionRoute(val sessionId: String)
  * Registers the session destinations. The app shell calls this from its NavHost.
  * [onFinished] leaves the session screen after finishing or discarding (the shell pops back to Today).
  */
-@Suppress("UnusedParameter") // Wired by the shell; the feature implementation uses them.
 fun NavGraphBuilder.sessionGraph(
     navController: NavController,
     onFinished: () -> Unit,
 ) {
-    composable<SessionRoute> { entry -> SessionScreen(sessionId = entry.toRoute<SessionRoute>().sessionId) }
+    composable<SessionRoute> { entry ->
+        SessionScreen(
+            sessionId = entry.toRoute<SessionRoute>().sessionId,
+            onBack = { navController.popBackStack() },
+            onFinished = onFinished,
+        )
+    }
 }

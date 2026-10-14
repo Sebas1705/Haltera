@@ -14,7 +14,7 @@ class IronlogApplication : Application() {
             androidContext(this@IronlogApplication)
             modules(
                 appModule,
-                module { single { DatabaseDriverFactory(this@IronlogApplication) } },
+                module { single { DatabaseDriverFactory(androidContext()) } },
             )
         }
     }

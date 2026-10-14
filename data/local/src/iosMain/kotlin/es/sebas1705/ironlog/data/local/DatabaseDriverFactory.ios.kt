@@ -5,5 +5,13 @@ import app.cash.sqldelight.driver.native.NativeSqliteDriver
 import es.sebas1705.ironlog.data.local.db.AppDatabase
 
 actual class DatabaseDriverFactory {
-    actual fun create(): SqlDriver = NativeSqliteDriver(AppDatabase.Schema, "app.db")
+    actual fun create(): SqlDriver = NativeSqliteDriver(
+        schema = AppDatabase.Schema,
+        name = DATABASE_NAME,
+        onConfiguration = { config ->
+            config.copy(
+                extendedConfig = config.extendedConfig.copy(foreignKeyConstraints = true),
+            )
+        },
+    )
 }

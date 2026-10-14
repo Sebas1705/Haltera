@@ -5,7 +5,6 @@ import ext.configureKmp
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import com.android.build.api.dsl.ApplicationExtension
@@ -41,7 +40,13 @@ class KmpAppConventionPlugin : Plugin<Project> {
             }
             buildTypes {
                 debug   { isDebuggable = true }
-                release { isMinifyEnabled = true; proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro") }
+                release {
+                    isMinifyEnabled = true
+                    proguardFiles(
+                        getDefaultProguardFile("proguard-android-optimize.txt"),
+                        "proguard-rules.pro",
+                    )
+                }
             }
         }
     }

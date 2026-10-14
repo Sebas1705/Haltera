@@ -7,7 +7,7 @@ import org.gradle.kotlin.dsl.apply
 /**
  * Base KMP library convention.
  * Applies: kotlin.multiplatform, com.android.library, kotlin.serialization, detekt.
- * Configures: Android + Desktop + iOS targets, jvmTarget = 17, minSdk = 24.
+ * Configures: Android + iOS targets, jvmTarget = 17, minSdk = 24.
  *
  * Use this on every non-app module. Specialised conventions (feature, data, etc.)
  * build on top by applying additional plugins or adding dependencies.

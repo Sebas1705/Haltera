@@ -75,4 +75,30 @@
 
     <string name="today_error_start">No se pudo empezar la sesión</string>
     <string name="today_error_save">No se pudo guardar el cambio</string>
+
+    <string name="today_log_past">Registrar sesión pasada</string>
+    <string name="today_log_past_title">Registrar una sesión pasada</string>
+    <string name="today_log_past_date">Fecha</string>
+    <string name="today_log_past_date_value">%1$d %2$s %3$d</string>
+    <string name="today_log_past_start">Hora de inicio</string>
+    <string name="today_log_past_duration">Duración (min)</string>
+    <string name="today_log_past_trained">¿Qué entrenaste?</string>
+    <string name="today_log_past_day">Día %1$d · %2$s</string>
+    <string name="today_log_past_other">Otro</string>
+    <string name="today_log_past_confirm">Registrar</string>
+    <string name="today_ok">Aceptar</string>
+    <string-array name="today_months_short">
+        <item>ene</item>
+        <item>feb</item>
+        <item>mar</item>
+        <item>abr</item>
+        <item>may</item>
+        <item>jun</item>
+        <item>jul</item>
+        <item>ago</item>
+        <item>sep</item>
+        <item>oct</item>
+        <item>nov</item>
+        <item>dic</item>
+    </string-array>
 </resources>

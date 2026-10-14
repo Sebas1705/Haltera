@@ -22,6 +22,7 @@ import es.sebas1705.ironlog.data.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
@@ -41,7 +42,11 @@ internal class FakeRoutineRepository(active: Routine? = null) : RoutineRepositor
         active.update { routine -> routine?.takeIf { it.id == routineId }?.copy(nextDayIndex = index) ?: routine }
     }
 
-    override fun observeRoutines(): Flow<List<Routine>> = unused()
+    /** Every routine: the active one plus [others]. */
+    val others = MutableStateFlow<List<Routine>>(emptyList())
+
+    override fun observeRoutines(): Flow<List<Routine>> =
+        active.combine(others) { a, rest -> listOfNotNull(a) + rest }
     override fun observeRoutine(id: String): Flow<Routine?> = unused()
     override suspend fun getRoutine(id: String): Routine? = unused()
     override suspend fun createRoutine(name: String, description: String): String = unused()
@@ -68,6 +73,10 @@ internal class FakeSessionRepository(
     val inProgress = MutableStateFlow(inProgress)
     val sessions = MutableStateFlow(sessions)
     val started = mutableListOf<Pair<String, Int>?>()
+
+    /** Start time of each start ([started] order); null for a live start. */
+    val startedAt = mutableListOf<Long?>()
+    val finished = mutableListOf<Pair<String, Long?>>()
     var failStart = false
 
     override fun observeInProgress(): Flow<WorkoutSession?> = inProgress
@@ -75,16 +84,31 @@ internal class FakeSessionRepository(
     override fun observeSessionsBetween(fromMillis: Long, toMillis: Long): Flow<List<WorkoutSession>> =
         sessions.map { list -> list.filter { it.startedAt in fromMillis until toMillis }.sortedBy { it.startedAt } }
 
-    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int): String {
+    override fun observeLatestForRoutine(routineId: String): Flow<WorkoutSession?> =
+        sessions.map { list -> list.filter { it.routineId == routineId }.maxByOrNull { it.startedAt } }
+
+    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int, startedAt: Long?): String {
         if (failStart) error("Database unavailable")
         started += routineId to dayIndex
-        return "session-$routineId-$dayIndex"
+        this.startedAt += startedAt
+        val id = "session-$routineId-$dayIndex"
+        if (startedAt != null) {
+            sessions.value += WorkoutSession(id, startedAt, routineId = routineId, routineDayIndex = dayIndex)
+        }
+        return id
     }
 
-    override suspend fun startFree(): String {
+    override suspend fun startFree(startedAt: Long?): String {
         if (failStart) error("Database unavailable")
         started += null
+        this.startedAt += startedAt
+        if (startedAt != null) sessions.value += WorkoutSession("session-free", startedAt)
         return "session-free"
+    }
+
+    override suspend fun finish(sessionId: String, endedAt: Long?) {
+        finished += sessionId to endedAt
+        sessions.value = sessions.value.map { if (it.id == sessionId) it.copy(endedAt = endedAt) else it }
     }
 
     override suspend fun getInProgress(): WorkoutSession? = unused()
@@ -99,16 +123,17 @@ internal class FakeSessionRepository(
     override suspend fun updateSet(setId: String, input: SetInput) = unused()
     override suspend fun deleteSet(setId: String) = unused()
     override suspend fun updateSessionNotes(sessionId: String, notes: String) = unused()
-    override suspend fun finish(sessionId: String) = unused()
+    override suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?) = unused()
     override suspend fun deleteSession(sessionId: String) = unused()
     override fun observeHistory(limit: Int): Flow<List<WorkoutSession>> = unused()
     override suspend fun lastForSlotAndVariant(
         slotId: String,
         variantId: String,
-        limit: Int
-    ): List<ExerciseHistoryEntry> =
+        limit: Int,
+        before: Long?,
+    ): List<ExerciseHistoryEntry> = unused()
+    override suspend fun lastForVariant(variantId: String, limit: Int, before: Long?): List<ExerciseHistoryEntry> =
         unused()
-    override suspend fun lastForVariant(variantId: String, limit: Int): List<ExerciseHistoryEntry> = unused()
 }
 
 internal class FakeExerciseRepository(

@@ -12,7 +12,11 @@ import es.sebas1705.ironlog.data.repository.BodyWeightRepository
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
 import es.sebas1705.ironlog.data.repository.SessionRepository
+import es.sebas1705.ironlog.core.ui.components.PastSessionForm
+import es.sebas1705.ironlog.domain.usecases.session.LogPastSession
 import es.sebas1705.ironlog.domain.usecases.session.ObserveTodayPlan
+import es.sebas1705.ironlog.domain.usecases.session.PastSessionTarget
+import kotlinx.coroutines.flow.first
 import es.sebas1705.ironlog.domain.usecases.session.TodayPlan
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
@@ -33,7 +37,8 @@ internal class TodayViewModel(
     private val exercises: ExerciseRepository,
     private val bodyWeight: BodyWeightRepository,
     private val settings: SettingsRepository,
-    clock: TodayClock,
+    private val clock: TodayClock,
+    private val logPastSession: LogPastSession,
 ) : MVIBaseViewModel<TodayState, TodayIntent>(TodayState(unit = settings.settings.value.unit)) {
 
     private val effectChannel = Channel<TodayEffect>(Channel.BUFFERED)
@@ -91,6 +96,9 @@ internal class TodayViewModel(
             }
             TodayIntent.SaveWeight -> saveWeight()
             TodayIntent.DismissWeightDialog -> updateState { it.copy(weightDialog = null) }
+            TodayIntent.OpenLogPast -> openLogPast()
+            TodayIntent.DismissLogPast -> updateState { it.copy(logPast = null) }
+            is TodayIntent.ConfirmLogPast -> confirmLogPast(intent.form)
             TodayIntent.ErrorShown -> updateState { it.copy(error = null) }
         }
     }
@@ -101,6 +109,40 @@ internal class TodayViewModel(
         val result = attempt(create)
         updateState { it.copy(starting = false, error = if (result == null) TodayError.START_FAILED else it.error) }
         result?.let { effectChannel.send(TodayEffect.OpenSession(it)) }
+    }
+
+    /** Opens "Log past session" on today, preselecting the active routine's next day. */
+    private suspend fun openLogPast() {
+        val options = attempt { LogPastSession.options(routines.observeRoutines().first()) }.orEmpty()
+        val plan = currentState.plan
+        val nextIndex = options.indexOfFirst {
+            it.target.routineId == plan?.routineId && it.target.dayIndex == plan.next?.dayIndex
+        }
+        val choice = if (nextIndex >= 0) nextIndex.toString() else LogPastUi.FREE_CHOICE
+        val now = clock.now()
+        val today = PastSessionTime.localDate(now, clock.timeZone)
+        val form = PastSessionTime.newForm(
+            today,
+            now,
+            clock.timeZone,
+            LogPastSession.DEFAULT_DURATION_MINUTES,
+            choice,
+        )
+        updateState { it.copy(logPast = LogPastUi(form, options, PastSessionTime.utcMillis(today))) }
+    }
+
+    private suspend fun confirmLogPast(form: PastSessionForm) {
+        val dialog = currentState.logPast ?: return
+        updateState { it.copy(logPast = null) }
+        val target = form.choiceKey?.toIntOrNull()?.let { dialog.options.getOrNull(it)?.target }
+            ?: PastSessionTarget.Free
+        start {
+            logPastSession(
+                target,
+                PastSessionTime.startMillis(form, clock.timeZone),
+                PastSessionTime.durationMillis(form),
+            )
+        }
     }
 
     private suspend fun chooseDay(dayIndex: Int) {

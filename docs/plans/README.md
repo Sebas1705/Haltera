@@ -7,7 +7,7 @@ The core spec ([2026-10-14-ironlog-core-design.md](../designs/2026-10-14-ironlog
 | # | Plan | Verifiable deliverable | Depends on | Status |
 |---|---|---|---|---|
 | F1a | [Project scaffold and CI](2026-10-14-f1a-scaffold.md) | KMP project from Templetry `kmp/modular-features` aligned with the build pins validated in Owlsplit, template sample removed, app starts on Android, green CI (Android + iOS simulator) | — | Planned |
-| F1b | [Exercise catalogue pipeline](2026-10-14-f1b-catalog-pipeline.md) | `scripts/catalog` (Node): pinned free-exercise-db + wger Spanish names + own curation → `catalog.json` + `ATTRIBUTION.md`, with validation in CI | — (parallel to F1a) | Planned |
+| F1b | [Exercise catalogue pipeline](2026-10-14-f1b-catalog-pipeline.md) | `scripts/catalog` (Node): pinned free-exercise-db + wger Spanish names + own curation → `catalog.json` + `ATTRIBUTION.md`, with validation in CI | — (parallel to F1a) | Done (CI job pending the rebase on F1a) |
 | F1c | [Catalogue data layer and importer](2026-10-14-f1c-catalog-data.md) | `data:models`, SQLDelight catalogue schema, idempotent importer (upsert + deprecate), `data:repository` counts, startup screen showing the imported catalogue | F1a, F1b | Planned |
 | F2 | Exercises tab + brand/theme | Brand tokens and theme, Exercises tab (search, filters, detail with media, custom exercises), media download | F1 | — |
 | F3 | Routines | Routine editor and famous routines catalogue | F2 | — |

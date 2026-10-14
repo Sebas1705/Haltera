@@ -1654,3 +1654,13 @@ Tasks 1–5 were executed as written, then amended after code review. The commit
 - Extra tests: `test/wger.test.mjs`, `test/attribution.test.mjs`, plus error paths and edge cases in the mapping, builder and validation suites.
 - Task 6: `overrides.yaml` was used exactly as written. Every source id exists, nothing is duplicated, and the build reports no non-Spanish errors. Note that `build.mjs` prints only the first 50 errors, so the Step 2 grep check was confirmed by validating the full error list.
 - Task 7: in `custom.yaml`, commas inside YAML flow sequences split instruction steps (for example "Swim at a steady pace, keeping…" became two steps). That broke the step counts of `swimming` and `front-lever-hold`, and silently corrupted `burpee` and `handstand-hold`, whose counts still matched. The affected `en`/`es` lists now double-quote each step; the text is unchanged. Use quoted steps for any instruction that contains a comma.
+- Task 8: the Spanish for all source exercises (`catalog/i18n/es.yaml`) was produced in 9 parallel batches of source ids, then a consistency pass over the whole file. That pass:
+  - converted units to metric only in Spanish;
+  - removed source artefacts carried over from free-exercise-db;
+  - unified the register;
+  - aligned terms with the Task 8 glossary;
+  - fixed individual exercise names.
+  
+  `es.yaml` names take precedence over wger, so `ATTRIBUTION.md` credits only the wger names still used: one, at generation time. `--missing-es` prints `[]`. The generated catalogue v1 has 807 exercises and 883 variants, and `build.mjs --check` passes.
+- Task 9: `catalog/README.md` follows the plan's text, extended for the `released` flag, where the Spanish comes from (`i18n/es.yaml`, else wger for names) and quoting commas in flow lists. The `catalog` CI job (Step 1) is **deferred**: `.github/workflows/ci.yml` is created by F1a, which is not merged yet. The job is added as given in Step 1 when this branch is rebased onto main after F1a. Step 3 was run locally: 44 tests pass and `Catalogue up to date: v1, 807 exercises`.
+- Task 10: the push and PR (Step 3) are left to the coordinator.

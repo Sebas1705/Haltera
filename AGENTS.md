@@ -37,6 +37,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Loads are grams (`Long`), times epoch millis** — convert only for display (`core:units`)
 - **Secrets live only in Doppler** (project `ironlog`, config `prd`), never in the repository: no keystores, passwords, service account keys or tokens in code, docs, scripts or commits. GitHub only holds `DOPPLER_TOKEN` (read-only). See [docs/RELEASE.md](docs/RELEASE.md)
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
+- **The brand has one source, `brand/tokens.json`** — never hand-edit generated icons, the splash theme or `brand/*.svg`; change the tokens and run `node scripts/brand.mjs --png` (see [docs/BRAND.md](docs/BRAND.md)). Features use `IronlogTheme.colors` (accent, PR gold) and `PrBadge` from `core:ui` instead of new colours
 
 ## Changing the database schema
 
@@ -67,6 +68,8 @@ Toolchain, environment variables and pinned versions: [docs/plans/README.md](doc
 ```sh templetry:checks
 ./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug
 ```
+
+After changing `brand/` or `scripts/brand.mjs`, also run `node scripts/brand.mjs --check`.
 
 ## This project came from a template
 

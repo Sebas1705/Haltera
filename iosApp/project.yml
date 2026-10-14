@@ -34,6 +34,8 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: es.sebas1705.ironlog
         PRODUCT_NAME: Ironlog
+        # Assets.xcassets/AppIcon: rendered from brand/icon.svg by `node scripts/brand.mjs --png` (docs/BRAND.md).
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1,2"
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         # The shared code (Kotlin/Native static framework built by the phase below).

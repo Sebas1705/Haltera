@@ -13,9 +13,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import es.sebas1705.ironlog.core.ui.components.PrBadge
+import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
+import es.sebas1705.ironlog.core.ui.theme.tabularFigures
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.domain.usecases.stats.RecordKind
 import es.sebas1705.ironlog.feature.session.load.LoadDetail
@@ -60,11 +64,17 @@ internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () ->
         }
         summary.records.forEach { line ->
             Column {
-                Text(line.name.title(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(line.name.title(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+                    PrBadge()
+                }
                 Text(
                     line.kinds.sortedBy { it.ordinal }.map { stringResource(recordLabel(it)) }.joinToString(" · "),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = IronlogTheme.colors.prGold,
                 )
             }
         }
@@ -79,6 +89,7 @@ internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () ->
                         loadText(line.toGrams, detail, line.loadType, unit),
                     ),
                     style = MaterialTheme.typography.bodyLarge,
+                    color = IronlogTheme.colors.prGold,
                 )
             }
         }
@@ -94,7 +105,7 @@ private fun Metric(label: StringResource, value: String, modifier: Modifier = Mo
     Card(modifier) {
         Column(Modifier.padding(12.dp)) {
             Text(stringResource(label), style = MaterialTheme.typography.labelMedium)
-            Text(value, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.SemiBold)
+            Text(value, style = MaterialTheme.typography.titleLarge.tabularFigures())
         }
     }
 }

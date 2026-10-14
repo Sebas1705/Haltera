@@ -49,7 +49,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO -quiet
 
   catalog:
-    name: Exercise catalogue (tests, up to date)
+    name: Exercise catalogue and brand files (tests, up to date)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -61,3 +61,6 @@ jobs:
       - run: npm ci --prefix scripts/catalog
       - run: npm test --prefix scripts/catalog
       - run: node scripts/catalog/build.mjs --check
+      # App icons, splash theme and logo are generated from brand/tokens.json (docs/BRAND.md).
+      - name: Brand files up to date
+        run: node scripts/brand.mjs --check

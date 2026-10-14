@@ -30,18 +30,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import es.sebas1705.ironlog.core.ui.components.IronlogLogo
+import es.sebas1705.ironlog.core.ui.theme.FontLicence
+import es.sebas1705.ironlog.core.ui.theme.readFontLicences
 import es.sebas1705.ironlog.core.units.PlateCalculator
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.resources.Res
 import es.sebas1705.ironlog.resources.back
 import es.sebas1705.ironlog.resources.credits_catalog
+import es.sebas1705.ironlog.resources.credits_fonts
 import es.sebas1705.ironlog.resources.credits_license
 import es.sebas1705.ironlog.resources.credits_title
 import es.sebas1705.ironlog.resources.settings_bar_weight
@@ -182,25 +187,34 @@ private fun SwitchRow(label: StringResource, checked: Boolean, onChange: (Boolea
     )
 }
 
-/** Credits: the exercise catalogue attribution and the app licence, read from the bundled files. */
+/** Credits: the exercise catalogue attribution, the app licence and the font licences, read from the bundled files. */
 @Composable
 fun CreditsScreen(onBack: () -> Unit) {
     var attribution by remember { mutableStateOf("") }
     var license by remember { mutableStateOf("") }
+    var fonts by remember { mutableStateOf(emptyList<FontLicence>()) }
     LaunchedEffect(Unit) {
         attribution = Res.readBytes("files/ATTRIBUTION.md").decodeToString()
         license = Res.readBytes("files/LICENSE.txt").decodeToString()
+        fonts = readFontLicences()
     }
     BackScaffold(Res.string.credits_title, onBack) { modifier ->
         Column(
             modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
+            IronlogLogo(size = 72.dp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Text(stringResource(Res.string.credits_catalog), style = MaterialTheme.typography.titleMedium)
             Text(attribution.withoutMarkdown(), style = MaterialTheme.typography.bodyMedium)
             HorizontalDivider()
             Text(stringResource(Res.string.credits_license), style = MaterialTheme.typography.titleMedium)
             Text(license, style = MaterialTheme.typography.bodySmall)
+            HorizontalDivider()
+            Text(stringResource(Res.string.credits_fonts), style = MaterialTheme.typography.titleMedium)
+            fonts.forEach { font ->
+                Text(font.family, style = MaterialTheme.typography.titleSmall)
+                Text(font.text, style = MaterialTheme.typography.bodySmall)
+            }
         }
     }
 }

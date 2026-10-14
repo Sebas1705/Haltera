@@ -1,0 +1,11 @@
+{
+  "freeExerciseDb": {
+    "repo": "yuhonas/free-exercise-db",
+    "commit": "f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5",
+    "license": "Unlicense"
+  },
+  "wger": {
+    "api": "https://wger.de/api/v2/exerciseinfo/",
+    "fetchedAt": "2026-10-14"
+  }
+}

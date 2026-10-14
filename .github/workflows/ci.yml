@@ -47,3 +47,17 @@ jobs:
           xcodebuild build -project Ironlog.xcodeproj -scheme Ironlog -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO -quiet
+
+  catalog:
+    name: Exercise catalogue (tests, up to date)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: scripts/catalog/package-lock.json
+      - run: npm ci --prefix scripts/catalog
+      - run: npm test --prefix scripts/catalog
+      - run: node scripts/catalog/build.mjs --check

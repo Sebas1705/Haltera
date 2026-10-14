@@ -10,11 +10,7 @@
 
 - [ ] Convention plugin used (no raw plugin blocks in module build.gradle.kts)
 - [ ] No suspend inside `updateState {}` lambda
-- [ ] All modules declare `:core:security` if they use it transitively
-- [ ] Detekt passes (`./gradlew detekt`)
-- [ ] Desktop target compiles (`./gradlew :composeApp:compileKotlinDesktop`)
-- [ ] New feature module added to `settings.gradle.kts`
-
-## Changelog label
-
-<!-- Add one of: breaking / feature / fix / chore / docs / deps / ci / skip-changelog -->
+- [ ] Detekt, tests and schema check pass (`./gradlew detekt testDebugUnitTest verifySqlDelightMigration`)
+- [ ] Schema changed → `1.db` regenerated (AGENTS.md "Changing the database schema")
+- [ ] New module added to `settings.gradle.kts` and `MODULE_MAP.md`
+- [ ] UI strings added in English and Spanish

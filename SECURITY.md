@@ -11,12 +11,8 @@
 Open a **private security advisory** on GitHub (Security tab → Advisories → New draft advisory).
 Do not open a public issue for security vulnerabilities.
 
-## Token storage
+## Data
 
-- Android: `EncryptedSharedPreferences` (AES-256-GCM via Jetpack Security Crypto)
-- Desktop: `java.util.prefs.Preferences` (system keychain on macOS, registry-backed on Windows)
-- iOS: `NSUserDefaults` — consider migrating to Keychain for production use
-
-## Network
-
-All API calls require HTTPS. The Ktor client enforces no plaintext in release builds.
+Ironlog stores everything on the device, in the local SQLite database (`ironlog.db`).
+There is no account, token storage or network layer yet; sync arrives in a later phase (F8),
+and this section will describe its storage and transport rules then.

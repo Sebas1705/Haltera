@@ -9,7 +9,6 @@ import es.sebas1705.ironlog.data.sync.SyncDocument
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.time.Duration
@@ -46,7 +45,6 @@ class FirestoreRemoteStore(
                     .filter { it.type != ChangeType.REMOVED }
                     .map { it.document.data(RemoteDocument.serializer()).toSync(collection, it.document.id) }
             }
-            .filter { it.isNotEmpty() }
 
     override suspend fun deleteAll(uid: String) {
         SYNCED_COLLECTIONS.forEach { name ->

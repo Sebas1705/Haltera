@@ -18,6 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.cancellation.CancellationException
 
 /**
@@ -57,15 +58,30 @@ class SyncEngineImpl(
         if (started) return
         started = true
         scope.launch(io) {
-            combine(account.session, forgotten) { session, gone -> session.takeUnless { it is AccountSession.SignedIn && it.uid == gone } }
+            combine(
+                account.session,
+                forgotten
+            ) { session, gone -> session.takeUnless { it is AccountSession.SignedIn && it.uid == gone } }
                 .collectLatest { session ->
-                if (session is AccountSession.SignedIn) {
-                    run(session.uid)
-                } else {
-                    currentUid = null
-                    state.value = SyncStatus.Disabled
+                    if (session is AccountSession.SignedIn) {
+                        runGuarded(session.uid)
+                    } else {
+                        currentUid = null
+                        state.value = SyncStatus.Disabled
+                    }
                 }
-            }
+        }
+    }
+
+    /** A sync failure must never take the app down: it becomes the Error status. */
+    private suspend fun runGuarded(uid: String) {
+        try {
+            run(uid)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            failures = ERROR_AFTER_FAILURES
+            failed(e)
         }
     }
 
@@ -133,7 +149,9 @@ class SyncEngineImpl(
         q.backfillSessions()
         q.backfillBodyWeight()
         q.backfillExercises()
-        if (!settings.isDefault()) q.backfillSettings()
+        // settings/user also carries the active routine.
+        val active = db.routineEntityQueries.selectActive().executeAsOneOrNull() != null
+        if (active || !settings.isDefault()) q.backfillSettings()
     }
 
     /** Download every collection from its cursor, then upload. */
@@ -141,7 +159,10 @@ class SyncEngineImpl(
         lock.withLock {
             try {
                 SyncCollections.ALL.forEach { collection ->
-                    receive(collection, remote.changes(uid, collection, since(collection)).first())
+                    val first = withTimeoutOrNull(
+                        FIRST_BATCH_TIMEOUT_MILLIS
+                    ) { remote.changes(uid, collection, since(collection)).first() }
+                    receive(collection, first ?: throw RemoteTimeoutException(collection))
                 }
             } catch (e: CancellationException) {
                 throw e
@@ -261,8 +282,12 @@ class SyncEngineImpl(
         const val CURSOR_LOOKBACK_MILLIS = 7L * 24 * 60 * 60 * 1_000
         private const val MAX_ROUNDS = 1_000
         private const val ERROR_AFTER_FAILURES = 5
+        private const val FIRST_BATCH_TIMEOUT_MILLIS = 60_000L
         private const val BACKOFF_BASE_MILLIS = 1_000L
         private const val BACKOFF_MAX_MILLIS = 5 * 60 * 1_000L
         private const val MAX_BACKOFF_SHIFT = 9
     }
 }
+
+/** The remote did not deliver the current state of a collection in time (offline, or a stuck listener). */
+internal class RemoteTimeoutException(collection: String) : Exception("No answer from the server for $collection")

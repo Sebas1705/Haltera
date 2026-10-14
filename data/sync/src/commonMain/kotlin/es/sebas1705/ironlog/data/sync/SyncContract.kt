@@ -20,7 +20,10 @@ interface RemoteStore {
     /** Upserts documents (tombstones included). Throws on failure; the engine retries. */
     suspend fun push(uid: String, documents: List<SyncDocument>)
 
-    /** Emits batches of documents of [collection] changed after [sinceUpdatedAt], live. */
+    /**
+     * Emits batches of documents of [collection] changed after [sinceUpdatedAt], live. The first emission is
+     * the current matching set, even when empty: the engine waits for it to finish its catch-up pass.
+     */
     fun changes(uid: String, collection: String, sinceUpdatedAt: Long): Flow<List<SyncDocument>>
 
     /** Deletes every document of the user (account deletion). */

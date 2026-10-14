@@ -24,6 +24,10 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -70,6 +74,10 @@ import es.sebas1705.ironlog.feature.routines.ui.components.trainingDays
 import es.sebas1705.ironlog.feature.routines.ui.list.ActiveBadge
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import es.sebas1705.ironlog.feature.routines.resources.routines_share_more
+import es.sebas1705.ironlog.feature.routines.ui.share.ExportMenuItems
+import es.sebas1705.ironlog.feature.routines.ui.share.ExportOverlays
+import es.sebas1705.ironlog.feature.routines.ui.share.RoutineExportViewModel
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -82,6 +90,7 @@ internal fun RoutineEditorScreen(
     onOpenSlot: (slotId: String) -> Unit,
     onAddSlot: (dayId: String) -> Unit,
     viewModel: RoutineEditorViewModel = koinViewModel { parametersOf(routineId) },
+    export: RoutineExportViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
@@ -102,6 +111,7 @@ internal fun RoutineEditorScreen(
                 isActive = state.routine?.isActive == true,
                 onBack = onBack,
                 onSetActive = { send(RoutineEditorIntent.SetActive(it)) },
+                menu = { close -> ExportMenuItems(routineId, export, close) },
             )
         },
         snackbarHost = { SnackbarHost(snackbar) },
@@ -137,6 +147,7 @@ internal fun RoutineEditorScreen(
         )
     }
     DeleteConfirmation(state, send)
+    ExportOverlays(export)
 }
 
 @Composable
@@ -269,7 +280,14 @@ private fun DeleteConfirmation(state: RoutineEditorState, send: (RoutineEditorIn
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun EditorTopBar(hasRoutine: Boolean, isActive: Boolean, onBack: () -> Unit, onSetActive: (Boolean) -> Unit) {
+private fun EditorTopBar(
+    hasRoutine: Boolean,
+    isActive: Boolean,
+    onBack: () -> Unit,
+    onSetActive: (Boolean) -> Unit,
+    menu: @Composable (close: () -> Unit) -> Unit,
+) {
+    var open by remember { mutableStateOf(false) }
     TopAppBar(
         title = { Text(stringResource(Res.string.routines_editor_title)) },
         navigationIcon = { BackButton(onBack) },
@@ -283,6 +301,12 @@ private fun EditorTopBar(hasRoutine: Boolean, isActive: Boolean, onBack: () -> U
                         ),
                         tint = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                }
+                Box {
+                    IconButton(onClick = { open = true }) {
+                        Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.routines_share_more))
+                    }
+                    DropdownMenu(expanded = open, onDismissRequest = { open = false }) { menu { open = false } }
                 }
             }
         },

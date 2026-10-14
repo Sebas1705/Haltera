@@ -224,10 +224,19 @@ class FakeRoutineRepository(
 /** [ExerciseRepository] over a fixed list; search matches the English name. */
 class FakeExerciseRepository(private val exercises: List<Exercise>) : ExerciseRepository {
     val searches = mutableListOf<String>()
+    val filters = mutableListOf<ExerciseFilter>()
 
     override fun search(filter: ExerciseFilter, language: String, limit: Int): Flow<List<Exercise>> {
         searches += filter.query
-        return flowOf(exercises.filter { it.name.en.contains(filter.query, ignoreCase = true) }.take(limit))
+        filters += filter
+        return flowOf(
+            exercises.filter { e ->
+                e.name.en.contains(filter.query, ignoreCase = true) &&
+                    (filter.category == null || e.category == filter.category) &&
+                    (filter.muscle == null || filter.muscle in e.primaryMuscles) &&
+                    (filter.equipment == null || e.variants.any { it.equipment == filter.equipment })
+            }.take(limit),
+        )
     }
 
     override fun observeExercise(id: String): Flow<Exercise?> = flowOf(exercises.firstOrNull { it.id == id })

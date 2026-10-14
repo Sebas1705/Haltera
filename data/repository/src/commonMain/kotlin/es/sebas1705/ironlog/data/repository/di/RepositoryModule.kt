@@ -7,6 +7,8 @@ import es.sebas1705.ironlog.data.repository.CatalogRepository
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
 import es.sebas1705.ironlog.data.repository.SessionRepository
+import es.sebas1705.ironlog.data.repository.share.DefaultRoutineSharing
+import es.sebas1705.ironlog.data.repository.share.RoutineSharing
 import es.sebas1705.ironlog.data.repository.sql.HistoryLoader
 import es.sebas1705.ironlog.data.repository.sql.SqlBodyWeightRepository
 import es.sebas1705.ironlog.data.repository.sql.SqlCatalogRepository
@@ -36,4 +38,5 @@ val repositoryModule = module {
     single<RoutineRepository> { SqlRoutineRepository(get(), FamousRoutines.all, get(IoDispatcher), get(named("now"))) }
     single<SessionRepository> { SqlSessionRepository(get(), get(), get(IoDispatcher), get(named("now"))) }
     single<BodyWeightRepository> { SqlBodyWeightRepository(get(), get(IoDispatcher), get(named("now"))) }
+    single<RoutineSharing> { DefaultRoutineSharing(get(), get(), get(named("now"))) }
 }

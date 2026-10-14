@@ -11,6 +11,8 @@ import es.sebas1705.ironlog.feature.routines.ui.catalogue.TemplatePreviewScreen
 import es.sebas1705.ironlog.feature.routines.ui.editor.RoutineEditorScreen
 import es.sebas1705.ironlog.feature.routines.ui.list.RoutinesScreen
 import es.sebas1705.ironlog.feature.routines.ui.picker.ExercisePickerScreen
+import es.sebas1705.ironlog.feature.routines.ui.share.ImportSource
+import es.sebas1705.ironlog.feature.routines.ui.share.RoutineImportScreen
 import es.sebas1705.ironlog.feature.routines.ui.slot.SlotEditorScreen
 import kotlinx.serialization.Serializable
 
@@ -33,10 +35,14 @@ internal data object CatalogueRoute
 @Serializable
 internal data class TemplatePreviewRoute(val templateId: String)
 
+@Serializable
+internal data class ImportRoutineRoute(val source: String)
+
 /**
  * Registers the routines destinations. The app shell calls this from its NavHost.
  * Nested destinations (editor, slot editor, exercise picker, catalogue) draw their own top bar.
  */
+@Suppress("LongMethod") // One composable per destination.
 fun NavGraphBuilder.routinesGraph(
     navController: NavController,
 ) {
@@ -45,6 +51,19 @@ fun NavGraphBuilder.routinesGraph(
         RoutinesScreen(
             onOpenRoutine = { navController.navigate(RoutineEditorRoute(it)) },
             onOpenCatalogue = { navController.navigate(CatalogueRoute) },
+            onImport = { navController.navigate(ImportRoutineRoute(it.name)) },
+        )
+    }
+    composable<ImportRoutineRoute> { entry ->
+        RoutineImportScreen(
+            source = ImportSource.valueOf(entry.toRoute<ImportRoutineRoute>().source),
+            onBack = back,
+            onImported = { routineId ->
+                // The new routine opens in the editor; back goes to My routines.
+                navController.navigate(RoutineEditorRoute(routineId)) {
+                    popUpTo<RoutinesRoute> { inclusive = false }
+                }
+            },
         )
     }
     composable<RoutineEditorRoute> { entry ->

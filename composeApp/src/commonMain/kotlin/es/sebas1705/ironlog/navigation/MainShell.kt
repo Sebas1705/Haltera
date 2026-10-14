@@ -18,7 +18,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import es.sebas1705.ironlog.share.IncomingRoutineChannel
+import org.koin.compose.koinInject
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavDestination
@@ -72,6 +76,16 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
     val backStack by navController.currentBackStackEntryAsState()
     val tab = backStack?.destination?.currentTab()
     val onTabRoot = tab != null && backStack?.destination?.hasRoute(tab.routeClass) == true
+    val incoming by koinInject<IncomingRoutineChannel>().value.collectAsState()
+    // A routine opened from outside the app: the Routines tab root shows its import preview.
+    LaunchedEffect(incoming) {
+        if (incoming != null) {
+            navController.navigate(RoutinesRoute) {
+                popUpTo(navController.graph.findStartDestination().id)
+                launchSingleTop = true
+            }
+        }
+    }
 
     Scaffold(
         topBar = {

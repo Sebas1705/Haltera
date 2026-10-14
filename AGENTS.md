@@ -32,6 +32,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Never skip the `execute { }` wrapper** — all coroutine work in ViewModels goes through it
 - **Never import across forbidden layer boundaries** — a feature cannot import another feature; domain cannot import data implementations
 - **Always use convention plugins** — do not copy-paste `kotlin { }` / `android { }` blocks into module builds
+- **Secrets live only in Doppler** (project `ironlog`, config `prd`), never in the repository: no keystores, passwords, service account keys or tokens in code, docs, scripts or commits. GitHub only holds `DOPPLER_TOKEN` (read-only). See [docs/RELEASE.md](docs/RELEASE.md)
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
 
 ## Changing the database schema

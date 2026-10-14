@@ -18,6 +18,7 @@ Changes against the spec's phase table (§10), agreed when planning F1:
 
 - **Brand tokens move from F1 to F2.** F1 has no real UI; the visual identity is decided with the first real screen.
 - **Doppler moves from F1 to F5.** F1–F4 have no secrets (no Firebase, no signing); Doppler arrives with release signing.
+- **F5 release infrastructure done early (2026-10-14).** Doppler `ironlog/prd`, the release keystore, release signing and versioning in Gradle, and Firebase App Distribution for every merge to `main` are already in place ([RELEASE.md](../RELEASE.md)). F5 keeps the Play Console app, Play App Signing, store listing and the Play upload workflow.
 
 ## Dependencies and parallelism
 

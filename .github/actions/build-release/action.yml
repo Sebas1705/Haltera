@@ -1,0 +1,68 @@
+name: Build signed release
+description: >
+  Builds the release APK and AAB of composeApp (es.sebas1705.ironlog) signed with the release
+  (upload) keystore. Every secret comes from Doppler ironlog/prd (the job exports DOPPLER_TOKEN and
+  checks out the repo with full history first). The app has no Firebase SDK, so no Firebase config
+  file is written. Outputs land in composeApp/build/outputs/{apk,bundle}/release/.
+
+inputs:
+  version-name:
+    description: versionName (e.g. 1.0.0, or main-123 for a build of main).
+    required: true
+  extra-secrets:
+    description: Further Doppler secrets the calling workflow needs (space separated).
+    required: false
+    default: ""
+
+outputs:
+  version-code:
+    description: The versionCode of the build.
+    value: ${{ steps.code.outputs.version-code }}
+
+runs:
+  using: composite
+  steps:
+    - uses: dopplerhq/cli-action@v4
+
+    - name: Check that Doppler has every secret
+      shell: bash
+      env:
+        EXTRA_SECRETS: ${{ inputs.extra-secrets }}
+      run: |
+        [ -n "$DOPPLER_TOKEN" ] || { echo "::error::Missing the DOPPLER_TOKEN secret in GitHub"; exit 1; }
+        doppler run -- bash -c '
+          missing=0
+          for name in FIREBASE_ANDROID_APP_ID \
+                      SIGNING_KEYSTORE_BASE64 SIGNING_STORE_PASSWORD SIGNING_KEY_ALIAS SIGNING_KEY_PASSWORD \
+                      $EXTRA_SECRETS; do
+            if [ -z "${!name:-}" ]; then echo "::error::Missing secret $name in Doppler ironlog/prd"; missing=1; fi
+          done
+          exit $missing'
+
+    # Commits only grow on main: every build of main gets a higher versionCode than the previous
+    # one, so it installs over it.
+    - name: versionCode from the commit count
+      id: code
+      shell: bash
+      run: echo "version-code=$(git rev-list --count HEAD)" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/setup-java@v6
+      with: { distribution: temurin, java-version: 21 }
+
+    - uses: gradle/actions/setup-gradle@v6
+
+    - name: Keystore
+      shell: bash
+      run: |
+        doppler run -- bash -c 'umask 077; printf "%s" "$SIGNING_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"'
+        echo "SIGNING_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+    # Signing passwords reach Gradle as environment variables through `doppler run`.
+    - name: Build APK and AAB
+      shell: bash
+      env:
+        VERSION_CODE: ${{ steps.code.outputs.version-code }}
+        VERSION_NAME: ${{ inputs.version-name }}
+      run: |
+        chmod +x gradlew
+        doppler run -- ./gradlew :composeApp:assembleRelease :composeApp:bundleRelease --no-daemon --stacktrace

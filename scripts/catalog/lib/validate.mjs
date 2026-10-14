@@ -4,6 +4,8 @@ import { ALLOWED_LOAD_TYPES, CATEGORIES, EQUIPMENT, LEVELS, LOAD_TYPES, MUSCLES,
 
 const KEBAB = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
+const isObject = (value) => value != null && typeof value === 'object' && !Array.isArray(value);
+const isText = (value) => typeof value === 'string' && value.trim() !== '';
 const isStringArray = (value) => Array.isArray(value) && value.every((s) => typeof s === 'string');
 
 /** Exercise instructions are required; variant instructions may be null (they inherit the exercise's). */
@@ -40,10 +42,14 @@ export function validateCatalog(catalog) {
   };
 
   for (const e of catalog.exercises) {
+    if (!isObject(e)) {
+      errors.push(`exercise entry must be an object, got ${JSON.stringify(e)}`);
+      continue;
+    }
     unique(e.id);
     if (typeof e.id !== 'string' || !KEBAB.test(e.id)) errors.push(`${e.id}: exercise id is not kebab-case`);
-    if (!e.name?.en?.trim()) errors.push(`${e.id}: missing name.en`);
-    if (!e.name?.es?.trim()) errors.push(`${e.id}: missing name.es`);
+    if (!isText(e.name?.en)) errors.push(`${e.id}: missing name.en`);
+    if (!isText(e.name?.es)) errors.push(`${e.id}: missing name.es`);
     if (!CATEGORIES.includes(e.category)) errors.push(`${e.id}: invalid category ${e.category}`);
     if (!TRACKING_TYPES.includes(e.trackingType)) errors.push(`${e.id}: invalid trackingType ${e.trackingType}`);
     if (!LEVELS.includes(e.level)) errors.push(`${e.id}: invalid level ${e.level}`);
@@ -58,6 +64,10 @@ export function validateCatalog(catalog) {
     if (e.variants.length === 0) errors.push(`${e.id}: no variants`);
 
     for (const v of e.variants) {
+      if (!isObject(v)) {
+        errors.push(`${e.id}: variant entry must be an object, got ${JSON.stringify(v)}`);
+        continue;
+      }
       unique(v.id);
       const [prefix, suffix, extra] = String(v.id).split('.');
       if (prefix !== e.id || !suffix || extra !== undefined || !KEBAB.test(suffix)) {

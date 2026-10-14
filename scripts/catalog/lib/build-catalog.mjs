@@ -7,6 +7,11 @@ import { indexWger, nameKey } from './wger.mjs';
 /** Locale-independent ordering by code unit, so the output and its hash are the same on every machine. */
 const byId = (a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
+/** Curation entries must list their variants; fail with a readable message instead of a TypeError. */
+function requireVariants(where, entry) {
+  if (!Array.isArray(entry?.variants) || entry.variants.length === 0) throw new Error(`${where}: variants must be a non-empty list`);
+}
+
 /** A source exercise after mappings and patches, before grouping. */
 function prepare(source, patch = {}) {
   const category = patch.category ?? categoryOf(source);
@@ -65,6 +70,7 @@ export function buildCatalog({ sources, wger, overrides, custom, es, lockedIds }
   const grouped = new Set();
 
   for (const group of overrides.groups ?? []) {
+    requireVariants(`Group ${group?.id}`, group);
     const variants = group.variants.map((v) => {
       if (!v.source) {
         return { id: `${group.id}.${v.suffix}`, equipment: v.equipment, loadType: v.loadType ?? loadTypeOf(v.equipment), name: v.name ?? null, instructions: null, frames: [] };
@@ -116,6 +122,7 @@ export function buildCatalog({ sources, wger, overrides, custom, es, lockedIds }
   }
 
   for (const c of custom.exercises ?? []) {
+    requireVariants(`Custom exercise ${c?.id}`, c);
     exercises.push({
       id: c.id,
       name: c.name,

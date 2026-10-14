@@ -23,7 +23,7 @@ async function readSource(p, fallback) {
     if (fallback === undefined) throw new Error(`missing ${p}`);
     return null;
   }
-  return (await readFile(path(p), 'utf8')).replace(/^﻿/, '');
+  return (await readFile(path(p), 'utf8')).replace(/^\uFEFF/, '');
 }
 const readJson = async (p, fallback) => {
   const text = await readSource(p, fallback);
@@ -91,7 +91,7 @@ for (const [p, content] of Object.entries(outputs)) {
 }
 const variants = result.catalog.exercises.reduce((n, e) => n + e.variants.length, 0);
 console.log(`catalog v${result.catalog.catalogVersion}: ${result.catalog.exercises.length} exercises, ${variants} variants, ${result.catalog.deprecatedIds.length} deprecated ids`);
-// Ids from the previous ids.lock.json that were live in the previous catalogue and are no longer produced.
+// Ids that are deprecated now but were not yet deprecated in the previous catalog.json (i.e. they were live there).
 const previouslyDeprecated = new Set(previous?.deprecatedIds ?? []);
 const newlyDeprecated = result.catalog.deprecatedIds.filter((id) => !previouslyDeprecated.has(id));
 if (newlyDeprecated.length > 0) console.log(`Newly deprecated ids (${newlyDeprecated.length}):\n  ${newlyDeprecated.join('\n  ')}`);

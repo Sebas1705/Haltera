@@ -134,3 +134,17 @@ test('a variant equipment override recomputes the load type', () => {
   const { catalog } = run({ sources: [source('Kb_Press')], es: es(['Kb_Press']), overrides });
   assert.deepEqual(catalog.exercises[0].variants.map((v) => [v.id, v.equipment, v.loadType]), [['press.kettlebell', 'KETTLEBELL', 'DUMBBELL']]);
 });
+
+test('exercise order is by code unit, not locale (uppercase before lowercase)', () => {
+  const customExercise = (id) => ({
+    id, name: { en: id, es: id }, category: 'SPORT', trackingType: 'TIME', level: 'BEGINNER', primaryMuscles: ['FULL_BODY'],
+    secondaryMuscles: [], instructions: { en: [], es: [] }, variants: [{ suffix: 'match', equipment: 'NONE' }],
+  });
+  const { catalog } = run({ custom: { exercises: [customExercise('alpha'), customExercise('Zeta')] } });
+  assert.deepEqual(catalog.exercises.map((e) => e.id), ['Zeta', 'alpha']);
+});
+
+test('groups and custom exercises without variants are clear errors', () => {
+  assert.throws(() => run({ sources: [source('A')], overrides: { ...base, groups: [{ id: 'g', name: { en: 'G', es: 'G' } }] } }), /Group g: variants must be a non-empty list/);
+  assert.throws(() => run({ custom: { exercises: [{ id: 'padel', name: { en: 'Padel', es: 'Pádel' } }] } }), /Custom exercise padel: variants must be a non-empty list/);
+});

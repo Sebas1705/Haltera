@@ -73,3 +73,11 @@ test('catalogVersion must be a positive integer and primary muscles non-empty', 
   assert.ok(validateCatalog({ ...catalog([exercise()]), catalogVersion: '1' }).includes('catalogVersion must be a positive integer'));
   assert.ok(validateCatalog(catalog([exercise({ primaryMuscles: [] })])).includes('bench-press: no primary muscles'));
 });
+
+test('null entries and non-string names are reported instead of crashing', () => {
+  const errors = validateCatalog(catalog([null, exercise({ name: { en: 42, es: null }, variants: [null] })]));
+  assert.ok(errors.some((e) => e.includes('exercise entry must be an object')));
+  assert.ok(errors.some((e) => e.includes('bench-press: missing name.en')));
+  assert.ok(errors.some((e) => e.includes('bench-press: missing name.es')));
+  assert.ok(errors.some((e) => e.includes('bench-press: variant entry must be an object')));
+});

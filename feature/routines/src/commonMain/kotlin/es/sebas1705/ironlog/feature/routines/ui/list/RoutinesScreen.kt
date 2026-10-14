@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
@@ -56,6 +57,9 @@ import es.sebas1705.ironlog.feature.routines.resources.routines_empty_message
 import es.sebas1705.ironlog.feature.routines.resources.routines_empty_title
 import es.sebas1705.ironlog.feature.routines.resources.routines_error
 import es.sebas1705.ironlog.feature.routines.resources.routines_from_catalogue
+import es.sebas1705.ironlog.feature.routines.resources.routines_import
+import es.sebas1705.ironlog.feature.routines.resources.routines_import_file
+import es.sebas1705.ironlog.feature.routines.resources.routines_import_scan
 import es.sebas1705.ironlog.feature.routines.resources.routines_more_actions
 import es.sebas1705.ironlog.feature.routines.resources.routines_new_routine
 import es.sebas1705.ironlog.feature.routines.resources.routines_new_routine_default_name
@@ -66,8 +70,14 @@ import es.sebas1705.ironlog.feature.routines.resources.routines_untitled
 import es.sebas1705.ironlog.feature.routines.ui.components.ConfirmDialog
 import es.sebas1705.ironlog.feature.routines.ui.components.cycleLabel
 import es.sebas1705.ironlog.feature.routines.ui.components.trainingDays
+import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.ironlog.feature.routines.ui.share.ExportMenuItems
+import es.sebas1705.ironlog.feature.routines.ui.share.ExportOverlays
+import es.sebas1705.ironlog.feature.routines.ui.share.ImportSource
+import es.sebas1705.ironlog.feature.routines.ui.share.RoutineExportViewModel
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 /** Routines tab root: my routines with the active badge, and the ways to add one. */
@@ -75,8 +85,14 @@ import org.koin.compose.viewmodel.koinViewModel
 internal fun RoutinesScreen(
     onOpenRoutine: (routineId: String) -> Unit,
     onOpenCatalogue: () -> Unit,
+    onImport: (ImportSource) -> Unit,
     viewModel: RoutinesViewModel = koinViewModel(),
+    export: RoutineExportViewModel = koinViewModel(),
+    bridge: RoutineShareBridge = koinInject(),
 ) {
+    val incoming by bridge.incoming.collectAsStateWithLifecycle()
+    // A routine opened from outside the app (file or share sheet) goes straight to the import preview.
+    LaunchedEffect(incoming) { if (incoming != null) onImport(ImportSource.INCOMING) }
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbar = remember { SnackbarHostState() }
     val newName = stringResource(Res.string.routines_new_routine_default_name)
@@ -101,7 +117,7 @@ internal fun RoutinesScreen(
         contentWindowInsets = WindowInsets(0),
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = {
-            if (state.routines.isNotEmpty()) AddButtons(onCreate = { if (!state.creating) create() }, onOpenCatalogue)
+            if (state.routines.isNotEmpty()) AddButtons(onCreate = { if (!state.creating) create() }, onOpenCatalogue, onImport)
         },
     ) { padding ->
         when {
@@ -109,6 +125,7 @@ internal fun RoutinesScreen(
             state.routines.isEmpty() -> EmptyRoutines(
                 onCreate = create,
                 onOpenCatalogue = onOpenCatalogue,
+                onImport = onImport,
                 modifier = Modifier.padding(padding),
             )
             else -> LazyColumn(
@@ -123,6 +140,7 @@ internal fun RoutinesScreen(
                         onOpen = { onOpenRoutine(routine.id) },
                         onSetActive = { viewModel.onEvent(RoutinesIntent.SetActive(routine.id, it)) },
                         onDelete = { viewModel.onEvent(RoutinesIntent.RequestDelete(routine)) },
+                        export = export,
                     )
                 }
             }
@@ -138,6 +156,7 @@ internal fun RoutinesScreen(
             onDismiss = { viewModel.onEvent(RoutinesIntent.DismissDelete) },
         )
     }
+    ExportOverlays(export)
 }
 
 @Composable
@@ -146,6 +165,7 @@ private fun RoutineCard(
     onOpen: () -> Unit,
     onSetActive: (Boolean) -> Unit,
     onDelete: () -> Unit,
+    export: RoutineExportViewModel,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onOpen),
@@ -185,15 +205,16 @@ private fun RoutineCard(
                     )
                 }
             }
-            RoutineMenu(routine, onSetActive, onDelete)
+            RoutineMenu(routine, onSetActive, onDelete, export)
         }
     }
 }
 
 /** "From catalogue" and "New routine", stacked. */
 @Composable
-private fun AddButtons(onCreate: () -> Unit, onOpenCatalogue: () -> Unit) {
+private fun AddButtons(onCreate: () -> Unit, onOpenCatalogue: () -> Unit, onImport: (ImportSource) -> Unit) {
     Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        ImportMenuButton(onImport)
         ExtendedFloatingActionButton(
             onClick = onOpenCatalogue,
             icon = { Icon(Icons.Filled.Search, contentDescription = null) },
@@ -210,7 +231,12 @@ private fun AddButtons(onCreate: () -> Unit, onOpenCatalogue: () -> Unit) {
 }
 
 @Composable
-private fun RoutineMenu(routine: Routine, onSetActive: (Boolean) -> Unit, onDelete: () -> Unit) {
+private fun RoutineMenu(
+    routine: Routine,
+    onSetActive: (Boolean) -> Unit,
+    onDelete: () -> Unit,
+    export: RoutineExportViewModel,
+) {
     var menu by remember { mutableStateOf(false) }
     Box {
         IconButton(onClick = { menu = true }) {
@@ -234,6 +260,7 @@ private fun RoutineMenu(routine: Routine, onSetActive: (Boolean) -> Unit, onDele
                     onSetActive(!routine.isActive)
                 },
             )
+            ExportMenuItems(routine.id, export) { menu = false }
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.routines_delete)) },
                 onClick = {
@@ -261,7 +288,12 @@ internal fun ActiveBadge() {
 }
 
 @Composable
-private fun EmptyRoutines(onCreate: () -> Unit, onOpenCatalogue: () -> Unit, modifier: Modifier = Modifier) {
+private fun EmptyRoutines(
+    onCreate: () -> Unit,
+    onOpenCatalogue: () -> Unit,
+    onImport: (ImportSource) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -285,6 +317,38 @@ private fun EmptyRoutines(onCreate: () -> Unit, onOpenCatalogue: () -> Unit, mod
         OutlinedButton(onClick = onCreate, modifier = Modifier.fillMaxWidth()) {
             Icon(Icons.Filled.Add, contentDescription = null)
             Text(stringResource(Res.string.routines_new_routine), Modifier.padding(start = 8.dp))
+        }
+        ImportMenuButton(onImport)
+    }
+}
+
+/** "Import" with a menu: from a file or by scanning a QR code. */
+@Composable
+private fun ImportMenuButton(onImport: (ImportSource) -> Unit) {
+    var menu by remember { mutableStateOf(false) }
+    Box {
+        ExtendedFloatingActionButton(
+            onClick = { menu = true },
+            icon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null) },
+            text = { Text(stringResource(Res.string.routines_import)) },
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+            contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
+        )
+        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.routines_import_file)) },
+                onClick = {
+                    menu = false
+                    onImport(ImportSource.FILE)
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.routines_import_scan)) },
+                onClick = {
+                    menu = false
+                    onImport(ImportSource.SCAN)
+                },
+            )
         }
     }
 }

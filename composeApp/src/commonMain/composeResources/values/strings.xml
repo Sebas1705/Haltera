@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Ironlog</string>
+    <string name="back">Back</string>
+    <string name="startup_loading">Preparing the exercise catalogue…</string>
+    <string name="startup_catalog_error">The exercise catalogue could not be loaded.</string>
+    <string name="tab_today">Today</string>
+    <string name="tab_routines">Routines</string>
+    <string name="tab_exercises">Exercises</string>
+    <string name="tab_progress">Progress</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_units">Units</string>
+    <string name="settings_bar_weight">Bar weight</string>
+    <string name="settings_plates">Available plates (per side)</string>
+    <string name="settings_keep_screen_on">Keep the screen on during a session</string>
+    <string name="settings_rest_sound">Sound when rest ends</string>
+    <string name="settings_rest_vibration">Vibrate when rest ends</string>
+    <string name="settings_credits">Credits and licences</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="credits_title">Credits</string>
+    <string name="credits_catalog">Exercise catalogue</string>
+    <string name="credits_license">Ironlog licence</string>
+</resources>

@@ -1,0 +1,116 @@
+<resources>
+    <string name="session_title">Session</string>
+    <string name="session_free">Free session</string>
+    <string name="session_back">Back</string>
+    <string name="session_finish">Finish</string>
+    <string name="session_more">More options</string>
+    <string name="session_discard">Discard session</string>
+    <string name="session_add_exercise">Add exercise</string>
+    <string name="session_missing">This session no longer exists.</string>
+    <string name="session_empty">No exercises yet. Add one to start.</string>
+
+    <string name="session_prescription_range">%1$d × %2$d–%3$d reps</string>
+    <string name="session_prescription_reps">%1$d × %2$d reps</string>
+    <string name="session_prescription_duration">%1$d × %2$d s</string>
+    <string name="session_prescription_distance">%1$d × %2$d m</string>
+    <string name="session_rest_info">Rest %1$s</string>
+    <string name="session_increase">↑ %1$s: %2$s</string>
+    <string name="session_reason_top">top of the range reached</string>
+    <string name="session_reason_target">target hit</string>
+    <string name="session_increase_marker">Suggested increase</string>
+    <string name="session_variant_pick">Equipment for today</string>
+    <string name="session_variant_last">last %1$s</string>
+    <string name="session_variant_never">new</string>
+    <string name="session_add_set">Add set</string>
+    <string name="session_move_up">Move up</string>
+    <string name="session_move_down">Move down</string>
+    <string name="session_remove_exercise">Remove exercise</string>
+    <string name="session_set_complete">Set %1$d done</string>
+    <string name="session_set_start_timer">Start timed set</string>
+    <string name="session_edit_set">Edit set</string>
+
+    <string name="session_kind_warmup_short">W</string>
+    <string name="session_kind_drop_short">D</string>
+    <string name="session_kind_failure_short">F</string>
+    <string name="session_kind_warmup">Warm-up</string>
+    <string name="session_kind_working">Working</string>
+    <string name="session_kind_drop">Drop</string>
+    <string name="session_kind_failure">Failure</string>
+
+    <string name="session_unit_kg">kg</string>
+    <string name="session_unit_lb">lb</string>
+    <string name="session_bodyweight">BW</string>
+    <string name="session_plate_number">#%1$d</string>
+    <string name="session_band_level">Level %1$d</string>
+    <string name="session_seconds">%1$d s</string>
+    <string name="session_meters">%1$d m</string>
+    <string name="session_reps_value">%1$d reps</string>
+    <string name="session_no_load">—</string>
+
+    <string name="session_load">Load</string>
+    <string name="session_load_total">Total</string>
+    <string name="session_load_per_dumbbell">Per dumbbell</string>
+    <string name="session_load_machine_weight">Weight</string>
+    <string name="session_load_machine_plate">Plate #</string>
+    <string name="session_load_added">Added</string>
+    <string name="session_load_assisted">Assisted</string>
+    <string name="session_load_band">Band level</string>
+    <string name="session_reps">Reps</string>
+    <string name="session_duration">Time</string>
+    <string name="session_distance">Distance</string>
+    <string name="session_per_side">Bar %1$s + per side: %2$s</string>
+    <string name="session_bar_only">Empty bar (%1$s)</string>
+    <string name="session_plates_missing">Your plates reach %1$s</string>
+    <string name="session_decrease">Decrease</string>
+    <string name="session_increase_value">Increase</string>
+    <string name="session_save">Save</string>
+    <string name="session_cancel">Cancel</string>
+    <string name="session_delete_set">Delete set</string>
+
+    <string name="session_get_ready">Get ready</string>
+    <string name="session_work">Work</string>
+    <string name="session_rest">Rest</string>
+    <string name="session_rest_minus">−15 s</string>
+    <string name="session_rest_plus">+15 s</string>
+    <string name="session_skip">Skip</string>
+    <string name="session_stop">Stop</string>
+    <string name="session_alert_rest_over">Rest over: next set</string>
+
+    <string name="session_finish_title">Finish workout?</string>
+    <string name="session_finish_text">Sets you did not complete will be removed.</string>
+    <string name="session_discard_title">Discard this session?</string>
+    <string name="session_discard_text">All its sets will be deleted. This cannot be undone.</string>
+    <string name="session_search_hint">Search exercises</string>
+    <string name="session_no_results">No exercises found</string>
+
+    <string name="session_summary_title">Workout complete</string>
+    <string name="session_summary_duration">Duration</string>
+    <string name="session_summary_volume">Volume</string>
+    <string name="session_summary_sets">Sets</string>
+    <string name="session_summary_records">New records</string>
+    <string name="session_summary_no_records">No new records this time.</string>
+    <string name="session_summary_increases">Load up next time</string>
+    <string name="session_summary_increase_line">%1$s → %2$s</string>
+    <string name="session_summary_done">Done</string>
+    <string name="session_record_heaviest">Heaviest load</string>
+    <string name="session_record_one_rm">Estimated 1RM</string>
+    <string name="session_record_reps">Most reps</string>
+    <string name="session_record_volume">Session volume</string>
+
+    <string name="session_equipment_barbell">Barbell</string>
+    <string name="session_equipment_ez_bar">EZ bar</string>
+    <string name="session_equipment_trap_bar">Trap bar</string>
+    <string name="session_equipment_dumbbell">Dumbbell</string>
+    <string name="session_equipment_kettlebell">Kettlebell</string>
+    <string name="session_equipment_smith">Smith machine</string>
+    <string name="session_equipment_machine">Machine</string>
+    <string name="session_equipment_cable">Cable</string>
+    <string name="session_equipment_band">Band</string>
+    <string name="session_equipment_bodyweight">Bodyweight</string>
+    <string name="session_equipment_medicine_ball">Medicine ball</string>
+    <string name="session_equipment_swiss_ball">Swiss ball</string>
+    <string name="session_equipment_foam_roller">Foam roller</string>
+    <string name="session_equipment_cardio_machine">Cardio machine</string>
+    <string name="session_equipment_other">Other</string>
+    <string name="session_equipment_none">No equipment</string>
+</resources>

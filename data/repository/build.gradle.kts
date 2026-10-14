@@ -5,8 +5,10 @@ kotlin {
         commonMain.dependencies {
             api(project(":data:models"))
             implementation(project(":data:local"))
+            implementation(project(":data:routines"))
             implementation(libs.sqldelight.coroutines)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.koin.core)
         }
         androidUnitTest.dependencies {
             implementation(kotlin("test"))

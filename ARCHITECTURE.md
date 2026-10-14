@@ -3,21 +3,20 @@
 ## Overview
 
 Ironlog is a **Kotlin Multiplatform** app targeting **Android** and **iOS**.
-It follows **Clean Architecture** with a layered module graph. F1 ships only the foundations;
-feature modules (`feature:*`) arrive from F2 and network-backed data from F8.
+It follows **Clean Architecture** with a layered module graph. Network-backed data arrives in F8.
 
 ```
-┌──────────────────────────────────────────────────────┐
-│                composeApp / iosApp                   │  ← Entry points
-├──────────────────────────────────────────────────────┤
-│        feature:*  (from F2)                          │  ← UI + MVI
-├──────────────────────────────────────────────────────┤
-│                domain:usecases                       │  ← Business logic
-├──────────────────────────────────────────────────────┤
-│                data:local                            │  ← Data layer
-├──────────────────────────────────────────────────────┤
-│  core:common │ core:ui │ core:logging │ core:testing │  ← Shared foundations
-└──────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                composeApp / iosApp                               │  ← Entry points, shell, DI
+├──────────────────────────────────────────────────────────────────┤
+│  feature:today │ routines │ exercises │ session │ progress        │  ← UI + MVI
+├──────────────────────────────────────────────────────────────────┤
+│                domain:usecases                                   │  ← Business logic
+├──────────────────────────────────────────────────────────────────┤
+│  data:repository │ data:local │ data:routines │ data:models       │  ← Data layer
+├──────────────────────────────────────────────────────────────────┤
+│  core:common │ ui │ units │ datastore │ logging │ testing          │  ← Shared foundations
+└──────────────────────────────────────────────────────────────────┘
 ```
 
 ## Layers (dependency direction: up → down)
@@ -25,15 +24,15 @@ feature modules (`feature:*`) arrive from F2 and network-backed data from F8.
 | Layer | Modules | Can depend on |
 |-------|---------|---------------|
 | App   | `composeApp`, `iosApp` | feature, domain, data, core |
-| Feature (from F2) | `feature:*` | domain, data:models (from F1c), core |
-| Domain | `domain:usecases` | data interfaces and models, core:common |
-| Data | `data:local` | core |
-| Core | `core:*` | nothing project-local |
+| Feature | `feature:*` | `domain:usecases` (re-exports `data:models` and the `data:repository` interfaces), `core:*` |
+| Domain | `domain:usecases` | `data:models`, `data:repository` (interfaces), `core:common` |
+| Data | `data:repository`, `data:local`, `data:routines`, `data:models` | `data:*` below them, `core` |
+| Core | `core:*` | other `core` modules only (e.g. `core:datastore` → `core:units`) |
 
 ## Key patterns
 
 ### MVI
-Every feature module will have:
+Every feature module has:
 - `*State : MVIBaseState` — immutable data class
 - `*Intent : MVIBaseIntent` — sealed interface
 - `*ViewModel : MVIBaseViewModel<S, I>(initialState)` — handles intents, emits state
@@ -48,9 +47,13 @@ Platform-specific implementations live under `androidMain` (Android SDK) and
 
 ### Dependency Injection
 [Koin 4.x](https://insert-koin.io/) — DSL-based, KMP-native, no annotation processing.
-Shared modules are wired in `composeApp/src/commonMain/.../di/AppModule.kt`; the platform
-`DatabaseDriverFactory` is bound in `IronlogApplication` (Android) and `startIronlogKoin()` (iOS,
-called once from `iOSApp.init()`).
+Every shared module is listed in `appModules` (`composeApp/src/commonMain/.../di/AppModule.kt`): `appModule`, `datastoreModule`, `repositoryModule`, `useCaseModule` and one module per feature. The platform `DatabaseDriverFactory` is bound in `IronlogApplication` (Android) and `startIronlogKoin()` (iOS, called once from `iOSApp.init()`).
+
+### Repositories
+`data:repository` exposes interfaces only; the SQL implementations are `internal` and bound in `repositoryModule`. Reads are `Flow`s that re-emit after any write to their tables; writes are `suspend` and run on `Dispatchers.IO` in one transaction. Ids of user rows are UUID strings (user exercises: `user-<uuid>`); loads are grams (`Long`); times are epoch milliseconds.
+
+### Navigation
+navigation-compose with type-safe `@Serializable` routes. Each feature exposes its route objects and a `NavGraphBuilder.<name>Graph(...)` entry point; the shell (`MainShell`) owns the `NavHost`, the bottom bar and the top bar. Cross-feature navigation goes through lambdas passed by the shell (see MODULE_MAP.md).
 
 ### Local database
 [SQLDelight 2.x](https://sqldelight.github.io/) generates type-safe Kotlin from `.sq` files in

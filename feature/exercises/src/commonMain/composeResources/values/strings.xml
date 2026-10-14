@@ -1,0 +1,117 @@
+<resources>
+    <string name="exercises_title">Exercises</string>
+
+    <!-- List -->
+    <string name="exercises_search_hint">Search exercises</string>
+    <string name="exercises_search_clear">Clear search</string>
+    <string name="exercises_filter_category">Category</string>
+    <string name="exercises_filter_muscle">Muscle</string>
+    <string name="exercises_filter_equipment">Equipment</string>
+    <string name="exercises_filter_any">Any</string>
+    <string name="exercises_filter_clear">Clear filters</string>
+    <string name="exercises_custom_badge">Custom</string>
+    <string name="exercises_empty_title">No exercises found</string>
+    <string name="exercises_empty_message">Try another search or remove some filters.</string>
+    <string name="exercises_error">Could not load the exercises.</string>
+    <string name="exercises_new">New exercise</string>
+    <string name="exercises_back">Back</string>
+
+    <!-- Detail -->
+    <string name="exercises_detail_not_found">This exercise no longer exists.</string>
+    <string name="exercises_detail_variant">Variant</string>
+    <string name="exercises_detail_instructions">Instructions</string>
+    <string name="exercises_detail_no_instructions">No instructions yet.</string>
+    <string name="exercises_detail_primary">Primary muscles</string>
+    <string name="exercises_detail_secondary">Secondary muscles</string>
+    <string name="exercises_detail_level">Level</string>
+    <string name="exercises_detail_category">Category</string>
+    <string name="exercises_detail_tracking">Records</string>
+    <string name="exercises_detail_records">Personal records</string>
+    <string name="exercises_detail_no_records">No records yet. Finish a session with this variant to set them.</string>
+    <string name="exercises_detail_history">History</string>
+    <string name="exercises_detail_no_history">You have not trained this variant yet.</string>
+    <string name="exercises_media_placeholder">No images for this variant</string>
+    <string name="exercises_media_description">Demonstration of %1$s</string>
+    <string name="exercises_record_heaviest">Heaviest load</string>
+    <string name="exercises_record_one_rm">Estimated 1RM</string>
+    <string name="exercises_record_reps">Most reps</string>
+    <string name="exercises_record_volume">Best session volume</string>
+    <string name="exercises_load">%1$s %2$s</string>
+    <string name="exercises_load_level">Level %1$s</string>
+    <string name="exercises_set_times">%1$s × %2$s</string>
+    <string name="exercises_reps">%1$s reps</string>
+    <string name="exercises_distance">%1$s m</string>
+    <string name="exercises_sets">%1$s sets</string>
+    <string name="exercises_unit_kg">kg</string>
+    <string name="exercises_unit_lb">lb</string>
+
+    <!-- Create -->
+    <string name="exercises_create_name">Name</string>
+    <string name="exercises_create_name_error">Enter a name</string>
+    <string name="exercises_create_category">Category</string>
+    <string name="exercises_create_tracking">What each set records</string>
+    <string name="exercises_create_muscles">Primary muscles</string>
+    <string name="exercises_create_equipment">Equipment (one variant each)</string>
+    <string name="exercises_create_equipment_error">Pick at least one</string>
+    <string name="exercises_create_save">Save</string>
+    <string name="exercises_create_failed">Could not save the exercise.</string>
+
+    <!-- Categories -->
+    <string name="exercises_category_strength">Strength</string>
+    <string name="exercises_category_cardio">Cardio</string>
+    <string name="exercises_category_mobility">Mobility</string>
+    <string name="exercises_category_plyometrics">Plyometrics</string>
+    <string name="exercises_category_calisthenics">Calisthenics</string>
+    <string name="exercises_category_sport">Sport</string>
+
+    <!-- Levels -->
+    <string name="exercises_level_beginner">Beginner</string>
+    <string name="exercises_level_intermediate">Intermediate</string>
+    <string name="exercises_level_expert">Expert</string>
+
+    <!-- Tracking types -->
+    <string name="exercises_tracking_weight_reps">Weight and reps</string>
+    <string name="exercises_tracking_bodyweight_reps">Bodyweight reps</string>
+    <string name="exercises_tracking_reps">Reps</string>
+    <string name="exercises_tracking_time">Time</string>
+    <string name="exercises_tracking_weight_time">Weight and time</string>
+    <string name="exercises_tracking_distance_time">Distance and time</string>
+
+    <!-- Muscles -->
+    <string name="exercises_muscle_abdominals">Abdominals</string>
+    <string name="exercises_muscle_abductors">Abductors</string>
+    <string name="exercises_muscle_adductors">Adductors</string>
+    <string name="exercises_muscle_biceps">Biceps</string>
+    <string name="exercises_muscle_calves">Calves</string>
+    <string name="exercises_muscle_chest">Chest</string>
+    <string name="exercises_muscle_forearms">Forearms</string>
+    <string name="exercises_muscle_glutes">Glutes</string>
+    <string name="exercises_muscle_hamstrings">Hamstrings</string>
+    <string name="exercises_muscle_lats">Lats</string>
+    <string name="exercises_muscle_lower_back">Lower back</string>
+    <string name="exercises_muscle_middle_back">Middle back</string>
+    <string name="exercises_muscle_neck">Neck</string>
+    <string name="exercises_muscle_quadriceps">Quadriceps</string>
+    <string name="exercises_muscle_shoulders">Shoulders</string>
+    <string name="exercises_muscle_traps">Traps</string>
+    <string name="exercises_muscle_triceps">Triceps</string>
+    <string name="exercises_muscle_full_body">Full body</string>
+
+    <!-- Equipment -->
+    <string name="exercises_equipment_barbell">Barbell</string>
+    <string name="exercises_equipment_ez_bar">EZ bar</string>
+    <string name="exercises_equipment_trap_bar">Trap bar</string>
+    <string name="exercises_equipment_dumbbell">Dumbbell</string>
+    <string name="exercises_equipment_kettlebell">Kettlebell</string>
+    <string name="exercises_equipment_smith">Smith machine</string>
+    <string name="exercises_equipment_machine">Machine</string>
+    <string name="exercises_equipment_cable">Cable</string>
+    <string name="exercises_equipment_band">Band</string>
+    <string name="exercises_equipment_bodyweight">Bodyweight</string>
+    <string name="exercises_equipment_medicine_ball">Medicine ball</string>
+    <string name="exercises_equipment_swiss_ball">Swiss ball</string>
+    <string name="exercises_equipment_foam_roller">Foam roller</string>
+    <string name="exercises_equipment_cardio_machine">Cardio machine</string>
+    <string name="exercises_equipment_other">Other</string>
+    <string name="exercises_equipment_none">No equipment</string>
+</resources>

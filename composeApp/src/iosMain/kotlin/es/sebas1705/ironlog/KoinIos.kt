@@ -1,7 +1,7 @@
 package es.sebas1705.ironlog
 
 import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
-import es.sebas1705.ironlog.di.appModule
+import es.sebas1705.ironlog.di.appModules
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -11,6 +11,6 @@ import org.koin.dsl.module
  */
 fun startIronlogKoin() {
     startKoin {
-        modules(appModule, module { single { DatabaseDriverFactory() } })
+        modules(appModules + module { single { DatabaseDriverFactory() } })
     }
 }

@@ -1,0 +1,39 @@
+-- Workouts (spec §3.3). endedAt IS NULL means in progress; the calendar is derived from startedAt.
+CREATE TABLE WorkoutSessionEntity (
+    id              TEXT NOT NULL PRIMARY KEY,
+    startedAt       INTEGER NOT NULL,            -- epoch millis
+    endedAt         INTEGER,
+    routineId       TEXT REFERENCES RoutineEntity(id) ON DELETE SET NULL,
+    routineDayIndex INTEGER,
+    dayName         TEXT,                        -- snapshot of the routine day name
+    notes           TEXT NOT NULL DEFAULT '',
+    bodyWeightGrams INTEGER
+);
+
+CREATE INDEX WorkoutSessionEntity_startedAt ON WorkoutSessionEntity(startedAt);
+
+insert:
+INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
+VALUES (?, ?, NULL, ?, ?, ?, '', NULL);
+
+finish:
+UPDATE WorkoutSessionEntity SET endedAt = :endedAt WHERE id = :id AND endedAt IS NULL;
+
+updateNotes:
+UPDATE WorkoutSessionEntity SET notes = :notes WHERE id = :id;
+
+delete:
+DELETE FROM WorkoutSessionEntity WHERE id = ?;
+
+selectById:
+SELECT * FROM WorkoutSessionEntity WHERE id = ?;
+
+selectInProgress:
+SELECT * FROM WorkoutSessionEntity WHERE endedAt IS NULL ORDER BY startedAt DESC LIMIT 1;
+
+selectFinished:
+SELECT * FROM WorkoutSessionEntity WHERE endedAt IS NOT NULL ORDER BY startedAt DESC LIMIT :limit;
+
+-- [from, to) in epoch millis, any state.
+selectStartedBetween:
+SELECT * FROM WorkoutSessionEntity WHERE startedAt >= :from AND startedAt < :to ORDER BY startedAt;

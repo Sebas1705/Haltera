@@ -1,0 +1,160 @@
+<resources>
+    <!-- Common -->
+    <string name="routines_back">Atrás</string>
+    <string name="routines_cancel">Cancelar</string>
+    <string name="routines_save">Guardar</string>
+    <string name="routines_delete">Eliminar</string>
+    <string name="routines_error">No se pudo guardar el cambio. Inténtalo de nuevo.</string>
+    <string name="routines_decrease">Reducir %1$s</string>
+    <string name="routines_increase">Aumentar %1$s</string>
+    <string name="routines_move_up">Subir %1$s</string>
+    <string name="routines_move_down">Bajar %1$s</string>
+    <string name="routines_saved_automatically">Los cambios se guardan automáticamente.</string>
+
+    <!-- My routines -->
+    <string name="routines_active">Activa</string>
+    <string name="routines_active_routine">Rutina activa (toca para desactivarla)</string>
+    <string name="routines_set_active">Marcar como activa</string>
+    <string name="routines_set_inactive">Desactivar</string>
+    <string name="routines_more_actions">Más acciones de %1$s</string>
+    <string name="routines_new_routine">Nueva rutina</string>
+    <string name="routines_from_catalogue">Del catálogo</string>
+    <string name="routines_new_routine_default_name">Mi rutina</string>
+    <string name="routines_untitled">Rutina sin nombre</string>
+    <string name="routines_empty_title">Aún no tienes rutinas</string>
+    <string name="routines_empty_message">Empieza con una rutina famosa o crea la tuya. Podrás editarlo todo después.</string>
+    <string name="routines_delete_routine_title">¿Eliminar rutina?</string>
+    <string name="routines_delete_routine_message">Se eliminarán «%1$s» y sus días. Tus entrenamientos pasados se conservan.</string>
+    <plurals name="routines_cycle_length">
+        <item quantity="one">Ciclo de %1$d día</item>
+        <item quantity="other">Ciclo de %1$d días</item>
+    </plurals>
+    <plurals name="routines_training_days">
+        <item quantity="one">%1$d día de entreno</item>
+        <item quantity="other">%1$d días de entreno</item>
+    </plurals>
+
+    <!-- Catalogue -->
+    <string name="routines_catalogue_title">Rutinas famosas</string>
+    <string name="routines_credit">Créditos: %1$s</string>
+    <string name="routines_add_to_mine">Añadir a mis rutinas</string>
+    <string name="routines_make_active">Usarla como rutina activa</string>
+    <string name="routines_template_missing">Esta rutina ya no está en el catálogo.</string>
+    <string name="routines_rest_day">Día de descanso</string>
+    <string name="routines_level_beginner">Principiante</string>
+    <string name="routines_level_intermediate">Intermedio</string>
+    <string name="routines_level_expert">Avanzado</string>
+
+    <!-- Routine editor -->
+    <string name="routines_editor_title">Editar rutina</string>
+    <string name="routines_routine_missing">Esta rutina ya no existe.</string>
+    <string name="routines_name">Nombre</string>
+    <string name="routines_description">Descripción</string>
+    <string name="routines_cycle_hint">Los días se repiten en orden: tras el último vuelves al día 1. Añade días de descanso para un plan semanal.</string>
+    <string name="routines_no_days">Aún no hay días. Añade un día de entreno para empezar.</string>
+    <string name="routines_day_number">Día %1$d</string>
+    <string name="routines_day_default_name">Día %1$d</string>
+    <string name="routines_rest_day_default_name">Descanso</string>
+    <string name="routines_rename_day">Renombrar día</string>
+    <string name="routines_delete_day">Eliminar %1$s</string>
+    <string name="routines_delete_day_title">¿Eliminar día?</string>
+    <string name="routines_delete_day_message">Se eliminarán «%1$s» y sus ejercicios.</string>
+    <string name="routines_kind_training">Entreno</string>
+    <string name="routines_kind_rest">Descanso</string>
+    <string name="routines_add_training_day">Día de entreno</string>
+    <string name="routines_add_rest_day">Día de descanso</string>
+    <string name="routines_add_exercise">Añadir ejercicio</string>
+    <string name="routines_no_slots">Aún no hay ejercicios.</string>
+    <string name="routines_delete_slot">Eliminar %1$s</string>
+    <string name="routines_delete_slot_title">¿Quitar ejercicio?</string>
+    <string name="routines_delete_slot_message">Se quitará «%1$s» de este día.</string>
+
+    <!-- Slot labels -->
+    <string name="routines_variant_name">%1$s (%2$s)</string>
+    <string name="routines_slot_unknown_exercise">Ejercicio desconocido</string>
+    <string name="routines_slot_any_variant">Cualquier variante</string>
+    <string name="routines_slot_flexible_label">%1$s · %2$s</string>
+    <string name="routines_slot_sets_value">%1$d × %2$s</string>
+    <string name="routines_slot_warmup_value">+%1$d de calentamiento</string>
+    <string name="routines_slot_superset">Superserie %1$s</string>
+    <string name="routines_prescription_range_value">%1$d–%2$d reps</string>
+    <string name="routines_prescription_reps_value">%1$d reps</string>
+    <string name="routines_prescription_duration_value">%1$s</string>
+    <string name="routines_prescription_distance_value">%1$d m</string>
+
+    <!-- Exercise picker -->
+    <string name="routines_pick_exercise">Añadir ejercicio</string>
+    <string name="routines_search_exercises">Buscar ejercicios</string>
+    <string name="routines_clear_search">Borrar búsqueda</string>
+    <string name="routines_no_results">No se han encontrado ejercicios.</string>
+    <string name="routines_flexible_option">Flexible: elegir durante la sesión</string>
+    <string name="routines_flexible_option_hint">Usa el material que esté libre ese día</string>
+    <plurals name="routines_variants_count">
+        <item quantity="one">%1$d variante</item>
+        <item quantity="other">%1$d variantes</item>
+    </plurals>
+
+    <!-- Slot editor -->
+    <string name="routines_slot_editor_title">Ejercicio</string>
+    <string name="routines_slot_missing">Este ejercicio ya no está en la rutina.</string>
+    <string name="routines_section_variant">Material</string>
+    <string name="routines_target_fixed">Fijo</string>
+    <string name="routines_target_flexible">Flexible</string>
+    <string name="routines_flexible_hint">Eliges la variante al entrenar. Desmarca las que no quieras que se ofrezcan.</string>
+    <string name="routines_section_sets">Series</string>
+    <string name="routines_sets">Series efectivas</string>
+    <string name="routines_warmup_sets">Series de calentamiento</string>
+    <string name="routines_section_target">Objetivo por serie</string>
+    <string name="routines_kind_rep_range">Rango de reps</string>
+    <string name="routines_kind_reps">Reps</string>
+    <string name="routines_kind_duration">Tiempo</string>
+    <string name="routines_kind_distance">Distancia</string>
+    <string name="routines_min_reps">Reps mínimas</string>
+    <string name="routines_max_reps">Reps máximas</string>
+    <string name="routines_reps">Reps</string>
+    <string name="routines_duration">Tiempo</string>
+    <string name="routines_distance">Distancia</string>
+    <string name="routines_distance_value">%1$d m</string>
+    <string name="routines_prescription_mismatch">Este objetivo no encaja con cómo se registra el ejercicio. Elige una de las opciones de arriba.</string>
+    <string name="routines_section_rest">Descanso</string>
+    <string name="routines_rest_between">Entre series</string>
+    <string name="routines_rest_after">Tras el ejercicio</string>
+    <string name="routines_section_extras">Más</string>
+    <string name="routines_superset">Grupo de superserie</string>
+    <string name="routines_superset_none">Ninguno</string>
+    <string name="routines_superset_hint">Los ejercicios de un día en el mismo grupo alternan series y descansan tras cada ronda.</string>
+    <string name="routines_bilateral">Ambas manos</string>
+    <string name="routines_bilateral_hint">La carga es una mancuerna; el volumen cuenta las dos.</string>
+    <string name="routines_notes">Notas</string>
+    <string name="routines_section_progression">Progresión</string>
+    <string name="routines_progression_none">Ninguna</string>
+    <string name="routines_progression_double">Doble</string>
+    <string name="routines_progression_linear">Lineal</string>
+    <string name="routines_progression_none_hint">No se sugiere subir la carga.</string>
+    <string name="routines_progression_double_hint">Llega al tope del rango en todas las series para subir la carga la próxima vez.</string>
+    <string name="routines_progression_linear_hint">Sube la carga tras un número de sesiones con todas las series en objetivo.</string>
+    <string name="routines_sessions_at_top">Sesiones en el tope</string>
+    <string name="routines_every_n_sessions">Cada N sesiones</string>
+    <string name="routines_increment">Incremento</string>
+    <string name="routines_increment_steps">+%1$d</string>
+    <string name="routines_unit_kg_value">+%1$s kg</string>
+    <string name="routines_unit_lb_value">+%1$s lb</string>
+
+    <!-- Equipment -->
+    <string name="routines_equipment_barbell">Barra</string>
+    <string name="routines_equipment_ez_bar">Barra EZ</string>
+    <string name="routines_equipment_trap_bar">Barra hexagonal</string>
+    <string name="routines_equipment_dumbbell">Mancuerna</string>
+    <string name="routines_equipment_kettlebell">Kettlebell</string>
+    <string name="routines_equipment_smith">Máquina Smith</string>
+    <string name="routines_equipment_machine">Máquina</string>
+    <string name="routines_equipment_cable">Polea</string>
+    <string name="routines_equipment_band">Banda</string>
+    <string name="routines_equipment_bodyweight">Peso corporal</string>
+    <string name="routines_equipment_medicine_ball">Balón medicinal</string>
+    <string name="routines_equipment_swiss_ball">Fitball</string>
+    <string name="routines_equipment_foam_roller">Rodillo de espuma</string>
+    <string name="routines_equipment_cardio_machine">Máquina de cardio</string>
+    <string name="routines_equipment_other">Otro</string>
+    <string name="routines_equipment_none">Sin material</string>
+</resources>

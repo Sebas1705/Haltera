@@ -25,8 +25,18 @@ include(
     ":core:ui",
     ":core:logging",
     ":core:testing",
+    ":core:units",
+    ":core:datastore",
 )
 
-include(":data:models", ":data:local", ":data:repository")
+include(":data:models", ":data:local", ":data:repository", ":data:routines")
 
 include(":domain:usecases")
+
+include(
+    ":feature:today",
+    ":feature:routines",
+    ":feature:exercises",
+    ":feature:progress",
+    ":feature:session",
+)

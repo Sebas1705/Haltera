@@ -1,0 +1,47 @@
+-- Exercises of a routine day. target, prescription and progression are JSON (ModelJson) so new
+-- kinds need no schema migration (spec §3.2).
+CREATE TABLE RoutineSlotEntity (
+    id               TEXT NOT NULL PRIMARY KEY,
+    dayId            TEXT NOT NULL REFERENCES RoutineDayEntity(id) ON DELETE CASCADE,
+    position         INTEGER NOT NULL,
+    target           TEXT NOT NULL,
+    sets             INTEGER NOT NULL,
+    warmupSets       INTEGER NOT NULL DEFAULT 0,
+    prescription     TEXT NOT NULL,
+    restBetweenSetsS INTEGER NOT NULL,
+    restAfterS       INTEGER NOT NULL,
+    supersetGroup    INTEGER,
+    bilateral        INTEGER NOT NULL DEFAULT 0, -- 0/1
+    notes            TEXT NOT NULL DEFAULT '',
+    progression      TEXT NOT NULL
+);
+
+CREATE INDEX RoutineSlotEntity_dayId ON RoutineSlotEntity(dayId, position);
+
+insert:
+INSERT INTO RoutineSlotEntity(
+    id, dayId, position, target, sets, warmupSets, prescription, restBetweenSetsS, restAfterS,
+    supersetGroup, bilateral, notes, progression
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE RoutineSlotEntity
+SET target = :target, sets = :sets, warmupSets = :warmupSets, prescription = :prescription,
+    restBetweenSetsS = :restBetweenSetsS, restAfterS = :restAfterS, supersetGroup = :supersetGroup,
+    bilateral = :bilateral, notes = :notes, progression = :progression
+WHERE id = :id;
+
+setPosition:
+UPDATE RoutineSlotEntity SET position = :position WHERE id = :id;
+
+delete:
+DELETE FROM RoutineSlotEntity WHERE id = ?;
+
+selectById:
+SELECT * FROM RoutineSlotEntity WHERE id = ?;
+
+selectByDay:
+SELECT * FROM RoutineSlotEntity WHERE dayId = ? ORDER BY position;
+
+selectByDays:
+SELECT * FROM RoutineSlotEntity WHERE dayId IN ? ORDER BY dayId, position;

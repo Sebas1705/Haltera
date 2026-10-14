@@ -4,6 +4,8 @@ CREATE TABLE ExerciseEntity (
     source           TEXT NOT NULL,              -- CATALOG | USER
     nameEn           TEXT NOT NULL,
     nameEs           TEXT NOT NULL,
+    nameEnSearch     TEXT NOT NULL DEFAULT '',   -- lower case without accents (SearchText.normalize)
+    nameEsSearch     TEXT NOT NULL DEFAULT '',
     category         TEXT NOT NULL,
     trackingType     TEXT NOT NULL,
     level            TEXT NOT NULL,
@@ -19,16 +21,17 @@ CREATE TABLE ExerciseEntity (
 -- It would also silently swallow UNIQUE, NOT NULL or CHECK violations: revisit it before adding such constraints.
 insertCatalogIfMissing:
 INSERT OR IGNORE INTO ExerciseEntity(
-    id, source, nameEn, nameEs, category, trackingType, level,
+    id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, trackingType, level,
     primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt
 ) VALUES (
-    :id, 'CATALOG', :nameEn, :nameEs, :category, :trackingType, :level,
+    :id, 'CATALOG', :nameEn, :nameEs, :nameEnSearch, :nameEsSearch, :category, :trackingType, :level,
     :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, 0, :updatedAt
 );
 
 updateCatalog:
 UPDATE ExerciseEntity
-SET nameEn = :nameEn, nameEs = :nameEs, category = :category, trackingType = :trackingType, level = :level,
+SET nameEn = :nameEn, nameEs = :nameEs, nameEnSearch = :nameEnSearch, nameEsSearch = :nameEsSearch,
+    category = :category, trackingType = :trackingType, level = :level,
     primaryMuscles = :primaryMuscles, secondaryMuscles = :secondaryMuscles,
     instructionsEn = :instructionsEn, instructionsEs = :instructionsEs, deprecated = 0, updatedAt = :updatedAt
 WHERE id = :id AND source = 'CATALOG';
@@ -39,15 +42,33 @@ WHERE id = :id AND source = 'CATALOG';
 
 insertUser:
 INSERT INTO ExerciseEntity(
-    id, source, nameEn, nameEs, category, trackingType, level,
+    id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, trackingType, level,
     primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt
 ) VALUES (
-    :id, 'USER', :nameEn, :nameEs, :category, :trackingType, :level,
+    :id, 'USER', :nameEn, :nameEs, :nameEnSearch, :nameEsSearch, :category, :trackingType, :level,
     :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, 0, :updatedAt
 );
 
 selectById:
 SELECT * FROM ExerciseEntity WHERE id = ?;
 
+selectByIds:
+SELECT * FROM ExerciseEntity WHERE id IN ?;
+
 countActive:
 SELECT COUNT(*) FROM ExerciseEntity WHERE deprecated = 0;
+
+-- Exercise list (spec §7). :query is already normalised (SearchText.normalize); '' matches everything.
+-- :muscle matches primary muscles only; :equipment matches any active variant with that equipment.
+search:
+SELECT * FROM ExerciseEntity
+WHERE deprecated = 0
+  AND (:query = '' OR nameEnSearch LIKE '%' || :query || '%' OR nameEsSearch LIKE '%' || :query || '%')
+  AND (:category IS NULL OR category = :category)
+  AND (:muscle IS NULL OR (',' || primaryMuscles || ',') LIKE '%,' || :muscle || ',%')
+  AND (:equipment IS NULL OR EXISTS (
+        SELECT 1 FROM ExerciseVariantEntity v
+        WHERE v.exerciseId = ExerciseEntity.id AND v.deprecated = 0 AND v.equipment = :equipment
+  ))
+ORDER BY CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END, id
+LIMIT :limit;

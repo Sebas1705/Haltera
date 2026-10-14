@@ -1,5 +1,5 @@
 // Offline catalogue build. Usage:
-//   node scripts/catalog/build.mjs            write catalog.json, ATTRIBUTION.md and ids.lock.json
+//   node scripts/catalog/build.mjs            write catalog.json, ATTRIBUTION.md (also bundled in the app) and ids.lock.json
 //   node scripts/catalog/build.mjs --check    fail if the committed outputs are stale (CI)
 //   node scripts/catalog/build.mjs --missing-es  print the source ids that still need Spanish
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -15,6 +15,8 @@ const repo = fileURLToPath(new URL('../../', import.meta.url));
 const path = (p) => repo + p;
 const OUT_CATALOG = 'composeApp/src/commonMain/composeResources/files/catalog.json';
 const OUT_ATTRIBUTION = 'catalog/ATTRIBUTION.md';
+// Same text bundled in the app for Settings → Credits.
+const OUT_ATTRIBUTION_APP = 'composeApp/src/commonMain/composeResources/files/ATTRIBUTION.md';
 const OUT_LOCK = 'catalog/ids.lock.json';
 
 /** Reads a UTF-8 file without a leading BOM. A missing file returns `fallback`, or fails when there is none (required input). */
@@ -65,6 +67,7 @@ if (errors.length > 0) {
 const outputs = {
   [OUT_CATALOG]: JSON.stringify(result.catalog) + '\n',
   [OUT_ATTRIBUTION]: renderAttribution({ sources, usedWger: result.usedWger }),
+  [OUT_ATTRIBUTION_APP]: renderAttribution({ sources, usedWger: result.usedWger }),
   [OUT_LOCK]: JSON.stringify(result.lockedIds, null, 1) + '\n',
 };
 

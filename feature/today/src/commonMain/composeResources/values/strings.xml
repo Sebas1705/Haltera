@@ -1,0 +1,78 @@
+<resources>
+    <string name="today_title">Today</string>
+
+    <string name="today_resume_title">Session in progress</string>
+    <string name="today_resume_elapsed">Elapsed %1$s</string>
+    <string name="today_resume_action">Resume session</string>
+    <string name="today_free_session_name">Free session</string>
+
+    <string name="today_day_of">Day %1$d of %2$d · %3$s</string>
+    <string name="today_rest_hint">The plan says rest today. You can still train if you feel like it.</string>
+    <string name="today_start">Start</string>
+    <string name="today_train_other_day">Train another day</string>
+    <string name="today_no_exercises">This day has no exercises yet. Add them in the Routines tab.</string>
+    <string name="today_no_training_days">This routine has no training days. Add one in the Routines tab.</string>
+    <string name="today_flexible">Equipment chosen in the session</string>
+    <string name="today_unknown_exercise">Unknown exercise</string>
+
+    <string name="today_pick_day_title">Choose a day</string>
+    <string name="today_pick_day_hint">Tap a day to make it your next one, or start it now.</string>
+    <string name="today_pick_day_rest">Rest day</string>
+    <string name="today_pick_day_next">Next</string>
+    <string name="today_pick_day_start">Start this day now</string>
+    <string name="today_cancel">Cancel</string>
+
+    <string name="today_no_routine_title">No active routine</string>
+    <string name="today_no_routine_message">Create a routine or copy a famous one in the Routines tab and set it as active. You can also train without a plan.</string>
+    <string name="today_free_session">Free session</string>
+
+    <string name="today_week_title">This week</string>
+    <plurals name="today_week_sessions">
+        <item quantity="one">%1$d session</item>
+        <item quantity="other">%1$d sessions</item>
+    </plurals>
+    <string name="today_week_volume">%1$s %2$s volume</string>
+    <string name="today_weekday_1">M</string>
+    <string name="today_weekday_2">T</string>
+    <string name="today_weekday_3">W</string>
+    <string name="today_weekday_4">T</string>
+    <string name="today_weekday_5">F</string>
+    <string name="today_weekday_6">S</string>
+    <string name="today_weekday_7">S</string>
+    <string name="today_trained">Trained</string>
+
+    <string name="today_body_weight_title">Body weight</string>
+    <string name="today_body_weight_none">No entries yet</string>
+    <string name="today_weight_value">%1$s %2$s</string>
+    <string name="today_log_weight">Log weight</string>
+    <string name="today_weight_dialog_title">Log body weight</string>
+    <string name="today_weight_label">Weight (%1$s)</string>
+    <string name="today_weight_invalid">Enter a valid weight</string>
+    <string name="today_save">Save</string>
+    <string name="today_unit_kg">kg</string>
+    <string name="today_unit_lb">lb</string>
+
+    <string name="today_prescription_rep_range">%1$d × %2$d–%3$d</string>
+    <string name="today_prescription_reps">%1$d × %2$d</string>
+    <string name="today_prescription_duration">%1$d × %2$d s</string>
+    <string name="today_prescription_distance">%1$d × %2$d m</string>
+
+    <string name="today_equipment_barbell">Barbell</string>
+    <string name="today_equipment_ez_bar">EZ bar</string>
+    <string name="today_equipment_trap_bar">Trap bar</string>
+    <string name="today_equipment_dumbbell">Dumbbell</string>
+    <string name="today_equipment_kettlebell">Kettlebell</string>
+    <string name="today_equipment_smith">Smith machine</string>
+    <string name="today_equipment_machine">Machine</string>
+    <string name="today_equipment_cable">Cable</string>
+    <string name="today_equipment_band">Band</string>
+    <string name="today_equipment_bodyweight">Bodyweight</string>
+    <string name="today_equipment_medicine_ball">Medicine ball</string>
+    <string name="today_equipment_swiss_ball">Swiss ball</string>
+    <string name="today_equipment_foam_roller">Foam roller</string>
+    <string name="today_equipment_cardio_machine">Cardio machine</string>
+    <string name="today_equipment_other">Other</string>
+
+    <string name="today_error_start">Could not start the session</string>
+    <string name="today_error_save">Could not save the change</string>
+</resources>

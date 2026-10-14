@@ -9,10 +9,10 @@ The core spec ([2026-10-14-ironlog-core-design.md](../designs/2026-10-14-ironlog
 | F1a | [Project scaffold and CI](2026-10-14-f1a-scaffold.md) | KMP project from Templetry `kmp/modular-features` aligned with the build pins validated in Owlsplit, template sample removed, app starts on Android, green CI (Android + iOS simulator) | — | Done |
 | F1b | [Exercise catalogue pipeline](2026-10-14-f1b-catalog-pipeline.md) | `scripts/catalog` (Node): pinned free-exercise-db + wger Spanish names + own curation → `catalog.json` + `ATTRIBUTION.md`, with validation in CI | — (parallel to F1a) | Done |
 | F1c | [Catalogue data layer and importer](2026-10-14-f1c-catalog-data.md) | `data:models`, SQLDelight catalogue schema, idempotent importer (upsert + deprecate), `data:repository` counts (startup screen superseded by the MVP shell) | F1a, F1b | Done |
-| F2 | Exercises tab + brand/theme | Brand tokens and theme, Exercises tab (search, filters, detail with media, custom exercises), media download | F1 | — |
-| F3 | Routines | Routine editor and famous routines catalogue | F2 | — |
-| F4 | Live session | Today tab, session, timers, foreground service, progression engine | F3 | — |
-| F5 | Progress + release | Calendar, history, PRs, charts, settings; Doppler, signing and Play Alpha | F4 | — |
+| F2 | Exercises tab + brand/theme | Brand tokens and theme, Exercises tab (search, filters, detail with media, custom exercises), media download | F1 | MVP (first cut, 2026-10-14) |
+| F3 | Routines | Routine editor and famous routines catalogue | F2 | MVP (first cut, 2026-10-14) |
+| F4 | Live session | Today tab, session, timers, foreground service, progression engine | F3 | MVP (first cut, 2026-10-14) |
+| F5 | Progress + release | Calendar, history, PRs, charts, settings; Doppler, signing and Play Alpha | F4 | MVP (first cut, 2026-10-14) |
 
 Changes against the spec's phase table (§10), agreed when planning F1:
 
@@ -56,3 +56,7 @@ Same pins as Owlsplit (validated there between 2026-10-07 and 2026-10-14; see `O
 | Coil | 3.5.0 | 3.6 requires compileSdk 37 |
 | kotlinx coroutines / serialization / datetime | 1.11.0 / 1.11.0 / 0.8.0 | |
 | Detekt | 1.23.8 | Its Kotlin pinned to 2.0.21 |
+
+## MVP first cut (2026-10-14)
+
+F2–F5 were built in one push, without per-phase plans, to get a first build to testers through Firebase App Distribution: a shared foundation (models, full schema, repositories, progression/cycle/stats, famous routines, app shell and theme) followed by the five feature modules in parallel (`today`, `routines`, `exercises`, `session`, `progress`). Each feature reports its known limitations in its PR description; follow-up plans (F2b…F5b) pick those up together with the remaining spec items (media archive download, brand/icon, "save changes to routine", exact-alarm settings, Play release).

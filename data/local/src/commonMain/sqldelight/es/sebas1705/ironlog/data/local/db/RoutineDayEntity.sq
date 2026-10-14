@@ -1,0 +1,34 @@
+-- Days of a routine's cycle, ordered by position (0-based, contiguous).
+CREATE TABLE RoutineDayEntity (
+    id        TEXT NOT NULL PRIMARY KEY,
+    routineId TEXT NOT NULL REFERENCES RoutineEntity(id) ON DELETE CASCADE,
+    position  INTEGER NOT NULL,
+    name      TEXT NOT NULL,
+    kind      TEXT NOT NULL                    -- TRAINING | REST
+);
+
+CREATE INDEX RoutineDayEntity_routineId ON RoutineDayEntity(routineId, position);
+
+insert:
+INSERT INTO RoutineDayEntity(id, routineId, position, name, kind) VALUES (?, ?, ?, ?, ?);
+
+update:
+UPDATE RoutineDayEntity SET name = :name, kind = :kind WHERE id = :id;
+
+setPosition:
+UPDATE RoutineDayEntity SET position = :position WHERE id = :id;
+
+delete:
+DELETE FROM RoutineDayEntity WHERE id = ?;
+
+selectById:
+SELECT * FROM RoutineDayEntity WHERE id = ?;
+
+selectByRoutine:
+SELECT * FROM RoutineDayEntity WHERE routineId = ? ORDER BY position;
+
+selectByRoutines:
+SELECT * FROM RoutineDayEntity WHERE routineId IN ? ORDER BY routineId, position;
+
+countByRoutine:
+SELECT COUNT(*) FROM RoutineDayEntity WHERE routineId = ?;

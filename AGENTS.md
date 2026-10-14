@@ -24,7 +24,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 ## Must-read before any change
 
 1. `ARCHITECTURE.md` — layers, patterns, what depends on what
-2. `MODULE_MAP.md` — which module holds what
+2. `MODULE_MAP.md` — which module holds what, and the feature module contract (entry points, routes, Koin modules)
 
 ## Non-negotiable rules
 
@@ -32,6 +32,9 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Never skip the `execute { }` wrapper** — all coroutine work in ViewModels goes through it
 - **Never import across forbidden layer boundaries** — a feature cannot import another feature; domain cannot import data implementations
 - **Always use convention plugins** — do not copy-paste `kotlin { }` / `android { }` blocks into module builds
+- **Feature agents edit only inside their `feature:<name>` module** — the shell calls each feature through its fixed entry points (MODULE_MAP.md); changing a signature means changing `composeApp` in the same PR
+- **Every UI string is a resource** — English in `composeResources/values/strings.xml`, Spanish in `values-es/strings.xml`, same keys; no hard-coded user-facing text
+- **Loads are grams (`Long`), times epoch millis** — convert only for display (`core:units`)
 - **Secrets live only in Doppler** (project `ironlog`, config `prd`), never in the repository: no keystores, passwords, service account keys or tokens in code, docs, scripts or commits. GitHub only holds `DOPPLER_TOKEN` (read-only). See [docs/RELEASE.md](docs/RELEASE.md)
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
 
@@ -47,7 +50,8 @@ The schema lives in `.sq` files under `data/local/src/commonMain/sqldelight/`.
 - **From F5 on:** never edit a released schema; add `n.sqm` migrations, regenerate the snapshot
   with the same command and run `./gradlew verifySqlDelightMigration`.
 - Android 7 ships SQLite 3.9: no `UPSERT` (use `INSERT OR REPLACE`), booleans are `INTEGER` 0/1.
-- Foreign keys are enabled on both drivers (`DatabaseDriverFactory`).
+- Foreign keys are enabled on both drivers (`DatabaseDriverFactory`); repository tests use an in-memory JDBC driver with `foreign_keys=true`.
+- Enum columns are read leniently (`fromDb`): unknown values fall back to a default. JSON columns (slot target, prescription, progression) go through `ModelJson`.
 
 ## Environment
 

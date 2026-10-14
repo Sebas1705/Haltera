@@ -1,0 +1,172 @@
+<resources>
+    <string name="progress_title">Progreso</string>
+
+    <!-- Tabs -->
+    <string name="progress_tab_calendar">Calendario</string>
+    <string name="progress_tab_exercises">Ejercicios</string>
+    <string name="progress_tab_body_weight">Peso corporal</string>
+    <string name="progress_tab_volume">Volumen</string>
+
+    <!-- Shared -->
+    <string name="progress_back">Atrás</string>
+    <string name="progress_save">Guardar</string>
+    <string name="progress_cancel">Cancelar</string>
+    <string name="progress_delete">Eliminar</string>
+    <string name="progress_edit">Editar</string>
+    <string name="progress_unit_kg">kg</string>
+    <string name="progress_unit_lb">lb</string>
+    <string name="progress_weight_value">%1$s %2$s</string>
+    <string name="progress_date_short">%1$s %2$s</string>
+    <string name="progress_date_full">%1$s %2$s %3$s</string>
+    <string name="progress_duration_hm">%1$s h %2$s min</string>
+    <string name="progress_duration_m">%1$s min</string>
+    <string name="progress_variant_name">%1$s (%2$s)</string>
+    <string name="progress_unknown_exercise">Ejercicio desconocido</string>
+    <string name="progress_chart_description">%1$s: de %2$s a %3$s</string>
+    <string name="progress_chart_not_enough">Aún no hay datos suficientes.</string>
+    <plurals name="progress_exercise_count">
+        <item quantity="one">%1$d ejercicio</item>
+        <item quantity="other">%1$d ejercicios</item>
+    </plurals>
+    <plurals name="progress_session_count">
+        <item quantity="one">%1$d sesión</item>
+        <item quantity="other">%1$d sesiones</item>
+    </plurals>
+    <plurals name="progress_reps">
+        <item quantity="one">%1$d repetición</item>
+        <item quantity="other">%1$d repeticiones</item>
+    </plurals>
+    <string-array name="progress_months">
+        <item>Enero</item>
+        <item>Febrero</item>
+        <item>Marzo</item>
+        <item>Abril</item>
+        <item>Mayo</item>
+        <item>Junio</item>
+        <item>Julio</item>
+        <item>Agosto</item>
+        <item>Septiembre</item>
+        <item>Octubre</item>
+        <item>Noviembre</item>
+        <item>Diciembre</item>
+    </string-array>
+    <string-array name="progress_months_short">
+        <item>ene</item>
+        <item>feb</item>
+        <item>mar</item>
+        <item>abr</item>
+        <item>may</item>
+        <item>jun</item>
+        <item>jul</item>
+        <item>ago</item>
+        <item>sept</item>
+        <item>oct</item>
+        <item>nov</item>
+        <item>dic</item>
+    </string-array>
+    <string-array name="progress_weekdays_short">
+        <item>lun</item>
+        <item>mar</item>
+        <item>mié</item>
+        <item>jue</item>
+        <item>vie</item>
+        <item>sáb</item>
+        <item>dom</item>
+    </string-array>
+
+    <!-- Calendar -->
+    <string name="progress_previous_month">Mes anterior</string>
+    <string name="progress_next_month">Mes siguiente</string>
+    <string name="progress_month_title">%1$s %2$s</string>
+    <string name="progress_select_day">Toca un día para ver sus sesiones.</string>
+    <string name="progress_no_sessions_day">No hay sesiones este día.</string>
+    <string name="progress_free_session">Sesión libre</string>
+    <string name="progress_in_progress">En curso</string>
+    <string name="progress_session_volume">Volumen %1$s</string>
+
+    <!-- Session detail -->
+    <string name="progress_session_detail_title">Sesión</string>
+    <string name="progress_session_not_found">Esta sesión ya no existe.</string>
+    <string name="progress_notes">Notas</string>
+    <string name="progress_no_sets">No hay series registradas.</string>
+    <string name="progress_set_number">Serie %1$d</string>
+    <string name="progress_set_kind_warmup">Calentamiento</string>
+    <string name="progress_set_kind_drop">Serie descendente</string>
+    <string name="progress_set_kind_failure">Al fallo</string>
+    <string name="progress_set_not_completed">Sin completar</string>
+    <string name="progress_set_times">%1$s × %2$s</string>
+    <string name="progress_set_seconds">%1$d s</string>
+    <string name="progress_set_meters">%1$d m</string>
+    <string name="progress_set_band_level">Nivel %1$s</string>
+    <string name="progress_set_rpe">RPE %1$s</string>
+
+    <!-- Exercise progress -->
+    <string name="progress_exercise_empty">Termina una sesión para ver aquí el progreso de tus ejercicios.</string>
+    <string name="progress_pick_exercise">Ejercicio</string>
+    <string name="progress_chart_top_set">Serie más pesada</string>
+    <string name="progress_chart_one_rm">1RM estimado</string>
+    <string name="progress_chart_volume">Volumen por sesión</string>
+    <string name="progress_records_title">Récords personales</string>
+    <string name="progress_record_heaviest">Mayor carga</string>
+    <string name="progress_record_one_rm">Mejor 1RM estimado</string>
+    <string name="progress_record_reps">Más repeticiones</string>
+    <string name="progress_record_volume">Mayor volumen en una sesión</string>
+    <string name="progress_no_records">Aún no hay récords.</string>
+
+    <!-- Body weight -->
+    <string name="progress_bw_log">Registrar peso</string>
+    <string name="progress_bw_empty">Registra tu peso corporal para ver tu tendencia.</string>
+    <string name="progress_bw_latest">Último: %1$s</string>
+    <string name="progress_bw_change">%1$s en los últimos 30 días</string>
+    <string name="progress_bw_change_none">Registra más entradas para ver tu tendencia de 30 días.</string>
+    <string name="progress_bw_chart">Peso corporal</string>
+    <string name="progress_bw_average">Media de 7 entradas</string>
+    <string name="progress_bw_entries">Entradas</string>
+    <string name="progress_bw_add_title">Registrar peso corporal</string>
+    <string name="progress_bw_edit_title">Editar entrada</string>
+    <string name="progress_bw_field">Peso (%1$s)</string>
+    <string name="progress_bw_invalid">Introduce un peso válido.</string>
+
+    <!-- Weekly volume -->
+    <string name="progress_volume_intro">Volumen (carga × repeticiones) de las series efectivas por semana, según el músculo principal.</string>
+    <string name="progress_volume_empty">No hay volumen registrado en las últimas 4 semanas.</string>
+    <string name="progress_volume_week">Semana del %1$s</string>
+
+    <!-- Muscles -->
+    <string name="progress_muscle_abdominals">Abdominales</string>
+    <string name="progress_muscle_abductors">Abductores</string>
+    <string name="progress_muscle_adductors">Aductores</string>
+    <string name="progress_muscle_biceps">Bíceps</string>
+    <string name="progress_muscle_calves">Gemelos</string>
+    <string name="progress_muscle_chest">Pecho</string>
+    <string name="progress_muscle_forearms">Antebrazos</string>
+    <string name="progress_muscle_glutes">Glúteos</string>
+    <string name="progress_muscle_hamstrings">Isquiotibiales</string>
+    <string name="progress_muscle_lats">Dorsales</string>
+    <string name="progress_muscle_lower_back">Zona lumbar</string>
+    <string name="progress_muscle_middle_back">Espalda media</string>
+    <string name="progress_muscle_neck">Cuello</string>
+    <string name="progress_muscle_quadriceps">Cuádriceps</string>
+    <string name="progress_muscle_shoulders">Hombros</string>
+    <string name="progress_muscle_traps">Trapecios</string>
+    <string name="progress_muscle_triceps">Tríceps</string>
+    <string name="progress_muscle_full_body">Cuerpo completo</string>
+
+    <!-- Equipment -->
+    <string name="progress_equipment_barbell">Barra</string>
+    <string name="progress_equipment_ez_bar">Barra Z</string>
+    <string name="progress_equipment_trap_bar">Barra hexagonal</string>
+    <string name="progress_equipment_dumbbell">Mancuerna</string>
+    <string name="progress_equipment_kettlebell">Pesa rusa</string>
+    <string name="progress_equipment_smith">Multipower</string>
+    <string name="progress_equipment_machine">Máquina</string>
+    <string name="progress_equipment_cable">Polea</string>
+    <string name="progress_equipment_band">Banda</string>
+    <string name="progress_equipment_bodyweight">Peso corporal</string>
+    <string name="progress_equipment_medicine_ball">Balón medicinal</string>
+    <string name="progress_equipment_swiss_ball">Fitball</string>
+    <string name="progress_equipment_foam_roller">Rodillo de espuma</string>
+    <string name="progress_equipment_cardio_machine">Máquina de cardio</string>
+    <string name="progress_equipment_other">Otro</string>
+    <string name="progress_equipment_none">Sin material</string>
+</resources>

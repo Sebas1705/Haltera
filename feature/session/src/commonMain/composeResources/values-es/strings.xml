@@ -1,0 +1,116 @@
+<resources>
+    <string name="session_title">Sesión</string>
+    <string name="session_free">Sesión libre</string>
+    <string name="session_back">Atrás</string>
+    <string name="session_finish">Terminar</string>
+    <string name="session_more">Más opciones</string>
+    <string name="session_discard">Descartar sesión</string>
+    <string name="session_add_exercise">Añadir ejercicio</string>
+    <string name="session_missing">Esta sesión ya no existe.</string>
+    <string name="session_empty">Aún no hay ejercicios. Añade uno para empezar.</string>
+
+    <string name="session_prescription_range">%1$d × %2$d–%3$d reps</string>
+    <string name="session_prescription_reps">%1$d × %2$d reps</string>
+    <string name="session_prescription_duration">%1$d × %2$d s</string>
+    <string name="session_prescription_distance">%1$d × %2$d m</string>
+    <string name="session_rest_info">Descanso %1$s</string>
+    <string name="session_increase">↑ %1$s: %2$s</string>
+    <string name="session_reason_top">alcanzaste el tope del rango</string>
+    <string name="session_reason_target">objetivo cumplido</string>
+    <string name="session_increase_marker">Subida sugerida</string>
+    <string name="session_variant_pick">Material para hoy</string>
+    <string name="session_variant_last">última %1$s</string>
+    <string name="session_variant_never">nuevo</string>
+    <string name="session_add_set">Añadir serie</string>
+    <string name="session_move_up">Subir</string>
+    <string name="session_move_down">Bajar</string>
+    <string name="session_remove_exercise">Quitar ejercicio</string>
+    <string name="session_set_complete">Serie %1$d hecha</string>
+    <string name="session_set_start_timer">Iniciar serie cronometrada</string>
+    <string name="session_edit_set">Editar serie</string>
+
+    <string name="session_kind_warmup_short">C</string>
+    <string name="session_kind_drop_short">D</string>
+    <string name="session_kind_failure_short">F</string>
+    <string name="session_kind_warmup">Calentamiento</string>
+    <string name="session_kind_working">Efectiva</string>
+    <string name="session_kind_drop">Descendente</string>
+    <string name="session_kind_failure">Al fallo</string>
+
+    <string name="session_unit_kg">kg</string>
+    <string name="session_unit_lb">lb</string>
+    <string name="session_bodyweight">PC</string>
+    <string name="session_plate_number">#%1$d</string>
+    <string name="session_band_level">Nivel %1$d</string>
+    <string name="session_seconds">%1$d s</string>
+    <string name="session_meters">%1$d m</string>
+    <string name="session_reps_value">%1$d reps</string>
+    <string name="session_no_load">—</string>
+
+    <string name="session_load">Carga</string>
+    <string name="session_load_total">Total</string>
+    <string name="session_load_per_dumbbell">Por mancuerna</string>
+    <string name="session_load_machine_weight">Peso</string>
+    <string name="session_load_machine_plate">Placa n.º</string>
+    <string name="session_load_added">Lastre</string>
+    <string name="session_load_assisted">Asistido</string>
+    <string name="session_load_band">Nivel de banda</string>
+    <string name="session_reps">Reps</string>
+    <string name="session_duration">Tiempo</string>
+    <string name="session_distance">Distancia</string>
+    <string name="session_per_side">Barra %1$s + por lado: %2$s</string>
+    <string name="session_bar_only">Barra sola (%1$s)</string>
+    <string name="session_plates_missing">Con tus discos llegas a %1$s</string>
+    <string name="session_decrease">Bajar</string>
+    <string name="session_increase_value">Subir</string>
+    <string name="session_save">Guardar</string>
+    <string name="session_cancel">Cancelar</string>
+    <string name="session_delete_set">Borrar serie</string>
+
+    <string name="session_get_ready">Preparado</string>
+    <string name="session_work">Trabajo</string>
+    <string name="session_rest">Descanso</string>
+    <string name="session_rest_minus">−15 s</string>
+    <string name="session_rest_plus">+15 s</string>
+    <string name="session_skip">Saltar</string>
+    <string name="session_stop">Parar</string>
+    <string name="session_alert_rest_over">Fin del descanso: siguiente serie</string>
+
+    <string name="session_finish_title">¿Terminar el entrenamiento?</string>
+    <string name="session_finish_text">Se quitarán las series que no completaste.</string>
+    <string name="session_discard_title">¿Descartar esta sesión?</string>
+    <string name="session_discard_text">Se borrarán todas sus series. No se puede deshacer.</string>
+    <string name="session_search_hint">Buscar ejercicios</string>
+    <string name="session_no_results">No se encontraron ejercicios</string>
+
+    <string name="session_summary_title">Entrenamiento completado</string>
+    <string name="session_summary_duration">Duración</string>
+    <string name="session_summary_volume">Volumen</string>
+    <string name="session_summary_sets">Series</string>
+    <string name="session_summary_records">Nuevos récords</string>
+    <string name="session_summary_no_records">Esta vez no hay récords nuevos.</string>
+    <string name="session_summary_increases">Sube la carga la próxima vez</string>
+    <string name="session_summary_increase_line">%1$s → %2$s</string>
+    <string name="session_summary_done">Hecho</string>
+    <string name="session_record_heaviest">Carga máxima</string>
+    <string name="session_record_one_rm">1RM estimado</string>
+    <string name="session_record_reps">Más repeticiones</string>
+    <string name="session_record_volume">Volumen de la sesión</string>
+
+    <string name="session_equipment_barbell">Barra</string>
+    <string name="session_equipment_ez_bar">Barra Z</string>
+    <string name="session_equipment_trap_bar">Barra hexagonal</string>
+    <string name="session_equipment_dumbbell">Mancuerna</string>
+    <string name="session_equipment_kettlebell">Kettlebell</string>
+    <string name="session_equipment_smith">Multipower</string>
+    <string name="session_equipment_machine">Máquina</string>
+    <string name="session_equipment_cable">Polea</string>
+    <string name="session_equipment_band">Banda</string>
+    <string name="session_equipment_bodyweight">Peso corporal</string>
+    <string name="session_equipment_medicine_ball">Balón medicinal</string>
+    <string name="session_equipment_swiss_ball">Fitball</string>
+    <string name="session_equipment_foam_roller">Rodillo de espuma</string>
+    <string name="session_equipment_cardio_machine">Máquina de cardio</string>
+    <string name="session_equipment_other">Otro</string>
+    <string name="session_equipment_none">Sin material</string>
+</resources>

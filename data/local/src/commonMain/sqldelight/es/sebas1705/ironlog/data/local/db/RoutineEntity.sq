@@ -1,0 +1,43 @@
+-- Routines (spec §3.2). At most one row has isActive = 1; nextDayIndex is the cycle pointer (spec §3.4).
+CREATE TABLE RoutineEntity (
+    id               TEXT NOT NULL PRIMARY KEY,
+    name             TEXT NOT NULL,
+    description      TEXT NOT NULL DEFAULT '',
+    originTemplateId TEXT,                       -- famous routine copied from, if any
+    originVersion    INTEGER,
+    isActive         INTEGER NOT NULL DEFAULT 0, -- 0/1
+    nextDayIndex     INTEGER NOT NULL DEFAULT 0, -- 0-based day position, clamped on read
+    createdAt        INTEGER NOT NULL,
+    updatedAt        INTEGER NOT NULL
+);
+
+insert:
+INSERT INTO RoutineEntity(id, name, description, originTemplateId, originVersion, isActive, nextDayIndex, createdAt, updatedAt)
+VALUES (?, ?, ?, ?, ?, 0, 0, ?, ?);
+
+update:
+UPDATE RoutineEntity SET name = :name, description = :description, updatedAt = :updatedAt WHERE id = :id;
+
+touch:
+UPDATE RoutineEntity SET updatedAt = :updatedAt WHERE id = :id;
+
+delete:
+DELETE FROM RoutineEntity WHERE id = ?;
+
+selectAll:
+SELECT * FROM RoutineEntity ORDER BY isActive DESC, updatedAt DESC;
+
+selectById:
+SELECT * FROM RoutineEntity WHERE id = ?;
+
+selectActive:
+SELECT * FROM RoutineEntity WHERE isActive = 1 LIMIT 1;
+
+clearActive:
+UPDATE RoutineEntity SET isActive = 0 WHERE isActive = 1;
+
+markActive:
+UPDATE RoutineEntity SET isActive = 1 WHERE id = ?;
+
+setNextDayIndex:
+UPDATE RoutineEntity SET nextDayIndex = :nextDayIndex WHERE id = :id;

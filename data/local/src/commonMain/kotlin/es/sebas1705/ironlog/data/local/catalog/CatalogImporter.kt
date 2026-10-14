@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.data.local.catalog
 
+import es.sebas1705.ironlog.data.local.SearchText
 import es.sebas1705.ironlog.data.local.db.AppDatabase
 import es.sebas1705.ironlog.data.models.CatalogImportResult
 import kotlinx.serialization.builtins.ListSerializer
@@ -65,15 +66,19 @@ class CatalogImporter(
         val secondary = e.secondaryMuscles.joinToString(",")
         val stepsEn = e.instructions.en.toJsonColumn()
         val stepsEs = e.instructions.es.toJsonColumn()
+        val searchEn = SearchText.normalize(e.name.en)
+        val searchEs = SearchText.normalize(e.name.es)
         with(db.exerciseEntityQueries) {
             val inserted = insertCatalogIfMissing(
-                id = e.id, nameEn = e.name.en, nameEs = e.name.es, category = e.category,
+                id = e.id, nameEn = e.name.en, nameEs = e.name.es, nameEnSearch = searchEn, nameEsSearch = searchEs,
+                category = e.category,
                 trackingType = e.trackingType, level = e.level, primaryMuscles = primary,
                 secondaryMuscles = secondary, instructionsEn = stepsEn, instructionsEs = stepsEs, updatedAt = at,
             ).value
             if (inserted == 0L) {
                 updateCatalog(
-                    nameEn = e.name.en, nameEs = e.name.es, category = e.category, trackingType = e.trackingType,
+                    nameEn = e.name.en, nameEs = e.name.es, nameEnSearch = searchEn, nameEsSearch = searchEs,
+                    category = e.category, trackingType = e.trackingType,
                     level = e.level, primaryMuscles = primary, secondaryMuscles = secondary,
                     instructionsEn = stepsEn, instructionsEs = stepsEs, updatedAt = at, id = e.id,
                 )

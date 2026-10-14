@@ -16,7 +16,9 @@
 
 - Requires F1a (modules, build) and F1b (`composeApp/src/commonMain/composeResources/files/catalog.json`) merged into `main`. Branch: `f1c-catalog-data`.
 - Environment, identity and commit rules as in F1a. **Everything committed is in English**; Spanish only in `values-es/strings.xml`.
-- The schema is unreleased: `.sq` files are edited in place, no migration and no `databases/n.db` snapshot until F5.
+- The schema is unreleased: `.sq` files are edited in place and there are no migrations until F5, but the snapshot `data/local/src/commonMain/sqldelight/databases/1.db` must be regenerated after every `.sq` change by running `./gradlew :data:local:generateCommonMainAppDatabaseSchema` **on its own** (AGENTS.md); `verifySqlDelightMigration` runs in CI.
+- Foreign keys are enabled on device (F1a): `ExerciseVariantEntity.exerciseId` references `ExerciseEntity`, so the importer writes each exercise before its variants (it does).
+- Work in a worktree: `git worktree add ../.worktrees/Ironlog/f1c -b f1c-catalog-data main` (from `~/Documents/Repos/Ironlog`), and run every command there instead of switching branches in the main checkout.
 - SQLite on Android 7 is 3.9: no `UPSERT`, booleans are `INTEGER` 0/1.
 - Column encodings: muscles are comma-separated enum names (`CHEST,TRICEPS`); instructions and frames are JSON arrays of strings.
 - Run Gradle with the F1a environment (`JAVA_HOME`, `ANDROID_HOME`).
@@ -47,7 +49,7 @@
 - [ ] **Step 1: Branch and register the new modules**
 
 ```bash
-cd ~/Documents/Repos/Ironlog && git switch main && git pull && git switch -c f1c-catalog-data
+cd ~/Documents/Repos/Ironlog && git pull && git worktree add ../.worktrees/Ironlog/f1c -b f1c-catalog-data main && cd ../.worktrees/Ironlog/f1c
 ```
 In `settings.gradle.kts`, replace `include(":data:local")` with:
 ```kotlin
@@ -222,7 +224,15 @@ SELECT COUNT(*) FROM ExerciseVariantEntity WHERE deprecated = 0;
 ```
 Expected: `BUILD SUCCESSFUL` (`AppDatabase` now exposes `exerciseEntityQueries` and `exerciseVariantEntityQueries`).
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Regenerate the schema snapshot**
+
+```bash
+./gradlew :data:local:generateCommonMainAppDatabaseSchema
+./gradlew :data:local:verifySqlDelightMigration 2>&1 | tail -3
+```
+Expected: `databases/1.db` changes and the verification is `BUILD SUCCESSFUL`.
+
+- [ ] **Step 6: Commit**
 
 ```bash
 git add data/local
@@ -784,27 +794,28 @@ sealed interface StartupIntent : MVIBaseIntent {
 class StartupViewModel(
     private val catalog: CatalogRepository,
     private val readCatalog: suspend () -> String = ::readBundledCatalog,
-) : MVIBaseViewModel<StartupState, StartupIntent>() {
+) : MVIBaseViewModel<StartupState, StartupIntent>(StartupState()) {
 
     init {
         onEvent(StartupIntent.Start)
     }
 
-    override fun initState() = StartupState()
-
     override fun intentHandler(intent: StartupIntent): Job = when (intent) {
         StartupIntent.Start -> execute {
-            runCatching { catalog.importBundled(readCatalog()) }
-                .onFailure { error ->
-                    Logger.e(error) { "Catalogue import failed" }
-                    updateState { it.copy(failed = true) }
-                }
+            try {
+                catalog.importBundled(readCatalog())
+            } catch (e: CancellationException) {
+                throw e
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+                Logger.e(e) { "Catalogue import failed" }
+                updateState { it.copy(failed = true) }
+            }
             catalog.observeSummary().collectLatest { summary -> updateState { it.copy(summary = summary) } }
         }
     }
 }
 ```
-`Logger` is Kermit: add `implementation(libs.kermit)` to `composeApp` `commonMain.dependencies` if `core:logging` does not expose it with `api`.
+Add `import kotlin.coroutines.cancellation.CancellationException`. `MVIBaseViewModel` takes the initial state as a constructor argument (changed in F1a's review). `Logger` is Kermit and `core:logging` only has it as `implementation`: add `implementation(libs.kermit)` to `composeApp` `commonMain.dependencies`.
 
 - [ ] **Step 5: Screen**
 
@@ -899,8 +910,8 @@ import org.koin.compose.viewmodel.koinViewModel
 /** Root composable. F2 replaces the startup screen with the tabs. */
 @Composable
 fun App(modifier: Modifier = Modifier) {
-    AppTheme(modifier) {
-        Surface(Modifier.fillMaxSize()) {
+    AppTheme {
+        Surface(modifier.fillMaxSize()) {
             val viewModel: StartupViewModel = koinViewModel()
             val state by viewModel.uiState.collectAsStateWithLifecycle()
             StartupScreen(state)

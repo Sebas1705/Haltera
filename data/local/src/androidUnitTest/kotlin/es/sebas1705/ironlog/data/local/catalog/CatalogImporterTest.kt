@@ -36,7 +36,8 @@ class CatalogImporterTest {
     """.trimIndent()
 
     private fun insertUserExercise(id: String) = db.exerciseEntityQueries.insertUser(
-        id = id, nameEn = "My lift", nameEs = "Mi ejercicio", category = "STRENGTH",
+        id = id, nameEn = "My lift", nameEs = "Mi ejercicio", nameEnSearch = "my lift", nameEsSearch = "mi ejercicio",
+        category = "STRENGTH",
         trackingType = "WEIGHT_REPS", level = "BEGINNER", primaryMuscles = "CHEST", secondaryMuscles = "",
         instructionsEn = "[]", instructionsEs = "[]", updatedAt = 1L,
     )
@@ -52,6 +53,8 @@ class CatalogImporterTest {
         assertEquals("CHEST", bench.primaryMuscles)
         assertEquals("SHOULDERS,TRICEPS", bench.secondaryMuscles)
         assertEquals("[\"Túmbate.\"]", bench.instructionsEs)
+        assertEquals("bench press", bench.nameEnSearch)
+        assertEquals("press de banca", bench.nameEsSearch)
         val variants = db.exerciseVariantEntityQueries.selectByExercise("bench-press").executeAsList()
         assertEquals(listOf("bench-press.barbell", "bench-press.dumbbell"), variants.map { it.id })
         assertEquals("[\"B/0.jpg\",\"B/1.jpg\"]", variants[0].frames)

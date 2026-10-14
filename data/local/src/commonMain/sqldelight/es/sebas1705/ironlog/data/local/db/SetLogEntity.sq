@@ -1,0 +1,44 @@
+-- Sets (spec §3.3). loadGrams is normalised (grams, signed for assistance, or a plate/level index);
+-- loadDetail keeps what was entered as JSON.
+CREATE TABLE SetLogEntity (
+    id                TEXT NOT NULL PRIMARY KEY,
+    sessionExerciseId TEXT NOT NULL REFERENCES SessionExerciseEntity(id) ON DELETE CASCADE,
+    position          INTEGER NOT NULL,
+    kind              TEXT NOT NULL,             -- WARMUP | WORKING | DROP | FAILURE
+    reps              INTEGER,
+    loadGrams         INTEGER,
+    loadDetail        TEXT,
+    durationS         INTEGER,
+    distanceM         INTEGER,
+    rpe               REAL,
+    completed         INTEGER NOT NULL DEFAULT 0, -- 0/1
+    completedAt       INTEGER
+);
+
+CREATE INDEX SetLogEntity_sessionExerciseId ON SetLogEntity(sessionExerciseId, position);
+
+insert:
+INSERT INTO SetLogEntity(
+    id, sessionExerciseId, position, kind, reps, loadGrams, loadDetail, durationS, distanceM, rpe, completed, completedAt
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+update:
+UPDATE SetLogEntity
+SET kind = :kind, reps = :reps, loadGrams = :loadGrams, loadDetail = :loadDetail, durationS = :durationS,
+    distanceM = :distanceM, rpe = :rpe, completed = :completed, completedAt = :completedAt
+WHERE id = :id;
+
+setPosition:
+UPDATE SetLogEntity SET position = :position WHERE id = :id;
+
+delete:
+DELETE FROM SetLogEntity WHERE id = ?;
+
+selectById:
+SELECT * FROM SetLogEntity WHERE id = ?;
+
+selectBySessionExercise:
+SELECT * FROM SetLogEntity WHERE sessionExerciseId = ? ORDER BY position;
+
+selectBySessionExercises:
+SELECT * FROM SetLogEntity WHERE sessionExerciseId IN ? ORDER BY sessionExerciseId, position;

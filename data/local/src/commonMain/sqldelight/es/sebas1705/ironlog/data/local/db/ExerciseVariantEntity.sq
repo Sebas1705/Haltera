@@ -39,11 +39,25 @@ deprecate:
 UPDATE ExerciseVariantEntity SET deprecated = 1, updatedAt = :updatedAt
 WHERE id = :id AND source = 'CATALOG';
 
+insertUser:
+INSERT INTO ExerciseVariantEntity(
+    id, exerciseId, source, position, equipment, loadType, nameEn, nameEs,
+    instructionsEn, instructionsEs, frames, deprecated, updatedAt
+) VALUES (
+    :id, :exerciseId, 'USER', :position, :equipment, :loadType, :nameEn, :nameEs, NULL, NULL, '[]', 0, :updatedAt
+);
+
 selectByExercise:
 SELECT * FROM ExerciseVariantEntity WHERE exerciseId = ? ORDER BY position;
 
+selectByExercises:
+SELECT * FROM ExerciseVariantEntity WHERE exerciseId IN ? ORDER BY exerciseId, position;
+
 selectById:
 SELECT * FROM ExerciseVariantEntity WHERE id = ?;
+
+selectByIds:
+SELECT * FROM ExerciseVariantEntity WHERE id IN ?;
 
 countActive:
 SELECT COUNT(*) FROM ExerciseVariantEntity WHERE deprecated = 0;

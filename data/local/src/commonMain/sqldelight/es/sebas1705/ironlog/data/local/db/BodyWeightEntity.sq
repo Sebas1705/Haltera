@@ -1,0 +1,24 @@
+-- Body weight log (spec §3.3; charts in F6).
+CREATE TABLE BodyWeightEntity (
+    id          TEXT NOT NULL PRIMARY KEY,
+    measuredAt  INTEGER NOT NULL,              -- epoch millis
+    weightGrams INTEGER NOT NULL,
+    notes       TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX BodyWeightEntity_measuredAt ON BodyWeightEntity(measuredAt);
+
+upsert:
+INSERT OR REPLACE INTO BodyWeightEntity(id, measuredAt, weightGrams, notes) VALUES (?, ?, ?, ?);
+
+delete:
+DELETE FROM BodyWeightEntity WHERE id = ?;
+
+selectAll:
+SELECT * FROM BodyWeightEntity ORDER BY measuredAt DESC;
+
+selectLatest:
+SELECT * FROM BodyWeightEntity ORDER BY measuredAt DESC LIMIT 1;
+
+selectBetween:
+SELECT * FROM BodyWeightEntity WHERE measuredAt >= :from AND measuredAt < :to ORDER BY measuredAt;

@@ -1,8 +1,11 @@
 package es.sebas1705.ironlog.di
 
+import es.sebas1705.ironlog.account.AccountViewModel
+import es.sebas1705.ironlog.account.SyncStarter
 import es.sebas1705.ironlog.core.datastore.datastoreModule
 import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
 import es.sebas1705.ironlog.data.local.createDatabase
+import es.sebas1705.ironlog.data.remote.remoteModule
 import es.sebas1705.ironlog.data.repository.di.repositoryModule
 import es.sebas1705.ironlog.domain.usecases.di.useCaseModule
 import es.sebas1705.ironlog.feature.exercises.di.exercisesModule
@@ -18,13 +21,20 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { createDatabase(get<DatabaseDriverFactory>()) }
-    viewModel { StartupViewModel(get()) }
+    // The sync engine (data:sync, SyncEngine) is optional until its module is loaded.
+    single { SyncStarter(get(), getOrNull()) }
+    viewModel { StartupViewModel(get(), onImported = { get<SyncStarter>().start() }) }
     viewModelOf(::SettingsViewModel)
+    viewModel { AccountViewModel(get(), get(), get(), getOrNull()) }
 }
 
-/** Every shared module; the platform adds its `DatabaseDriverFactory`. */
+/**
+ * Every shared module; the platform adds its `DatabaseDriverFactory`, `FirebaseConfig` and
+ * `GoogleSignInLauncher`.
+ */
 val appModules = listOf(
     appModule,
+    remoteModule,
     datastoreModule,
     repositoryModule,
     useCaseModule,

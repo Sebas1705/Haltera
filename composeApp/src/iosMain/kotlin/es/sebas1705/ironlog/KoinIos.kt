@@ -1,16 +1,30 @@
 package es.sebas1705.ironlog
 
+import es.sebas1705.ironlog.account.GoogleSignInBridge
+import es.sebas1705.ironlog.account.GoogleSignInLauncher
+import es.sebas1705.ironlog.account.IosGoogleSignInLauncher
 import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
+import es.sebas1705.ironlog.data.remote.FirebaseConfig
+import es.sebas1705.ironlog.data.remote.isFirebaseConfigured
 import es.sebas1705.ironlog.di.appModules
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
 /**
- * Starts Koin once per process. Called from `iOSApp.init()` as `KoinIosKt.startIronlogKoin()`.
+ * Starts Koin once per process. Called from `iOSApp.init()` as
+ * `KoinIosKt.startIronlogKoin(googleSignIn:)`, after `FirebaseApp.configure()` (when
+ * GoogleService-Info.plist is bundled). [googleSignIn] is the Swift Google sign-in (null: none).
  * Not named `initKoin`: Kotlin/Native would export an `init…` function to Swift as `doInitKoin()`.
  */
-fun startIronlogKoin() {
+fun startIronlogKoin(googleSignIn: GoogleSignInBridge?) {
+    val firebase = FirebaseConfig(configured = isFirebaseConfigured())
     startKoin {
-        modules(appModules + module { single { DatabaseDriverFactory() } })
+        modules(
+            appModules + module {
+                single { DatabaseDriverFactory() }
+                single { firebase }
+                single<GoogleSignInLauncher> { IosGoogleSignInLauncher(googleSignIn.takeIf { firebase.configured }) }
+            }
+        )
     }
 }

@@ -65,7 +65,8 @@ class MigrationTest {
     }
 
     @Test
-    fun `the schema version is the shipped one plus the migration`() {
-        assertEquals(2L, AppDatabase.Schema.version)
+    fun `the schema version is the shipped one plus the migrations`() {
+        // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking (SyncMigrationTest in data:sync covers 1 -> 3).
+        assertEquals(3L, AppDatabase.Schema.version)
     }
 }

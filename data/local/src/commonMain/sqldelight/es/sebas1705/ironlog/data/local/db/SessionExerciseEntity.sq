@@ -36,28 +36,29 @@ SELECT * FROM SessionExerciseEntity WHERE sessionId = ? ORDER BY position;
 selectBySessions:
 SELECT * FROM SessionExerciseEntity WHERE sessionId IN ? ORDER BY sessionId, position;
 
--- History of a variant in finished sessions, latest first.
+-- History of a variant in finished sessions started before :before, latest first.
 historyByVariant:
 SELECT se.*, s.startedAt AS sessionStartedAt
 FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
-WHERE se.variantId = :variantId AND s.endedAt IS NOT NULL
+WHERE se.variantId = :variantId AND s.endedAt IS NOT NULL AND s.startedAt < :before
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;
 
--- History of every variant of an exercise in finished sessions, latest first.
+-- History of every variant of an exercise in finished sessions started before :before, latest first.
 historyByExercise:
 SELECT se.*, s.startedAt AS sessionStartedAt
 FROM SessionExerciseEntity se
 JOIN WorkoutSessionEntity s ON s.id = se.sessionId
 JOIN ExerciseVariantEntity v ON v.id = se.variantId
-WHERE v.exerciseId = :exerciseId AND s.endedAt IS NOT NULL
+WHERE v.exerciseId = :exerciseId AND s.endedAt IS NOT NULL AND s.startedAt < :before
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;
 
--- History of a routine slot with one variant in finished sessions, latest first (progression input).
+-- History of a routine slot with one variant in finished sessions started before :before, latest first
+-- (progression input).
 historyBySlotAndVariant:
 SELECT se.*, s.startedAt AS sessionStartedAt
 FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
-WHERE se.slotId = :slotId AND se.variantId = :variantId AND s.endedAt IS NOT NULL
+WHERE se.slotId = :slotId AND se.variantId = :variantId AND s.endedAt IS NOT NULL AND s.startedAt < :before
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;

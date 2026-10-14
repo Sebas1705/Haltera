@@ -2,11 +2,13 @@ package es.sebas1705.ironlog.feature.today.ui
 
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
+import es.sebas1705.ironlog.core.ui.components.PastSessionForm
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.data.models.BodyWeightEntry
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.LocalizedText
 import es.sebas1705.ironlog.data.models.Prescription
+import es.sebas1705.ironlog.domain.usecases.session.PastSessionOption
 
 /** Everything the Today tab shows (spec §7). Loads are grams, times epoch millis. */
 internal data class TodayState(
@@ -20,6 +22,8 @@ internal data class TodayState(
     val unit: WeightUnit = WeightUnit.KG,
     val dayPickerOpen: Boolean = false,
     val weightDialog: WeightDialogUi? = null,
+    /** The "Log past session" dialog, when open. */
+    val logPast: LogPastUi? = null,
     /** A session is being created; start buttons are disabled. */
     val starting: Boolean = false,
     val error: TodayError? = null,
@@ -76,6 +80,21 @@ internal data class WeekDayUi(
 
 internal data class WeightDialogUi(val input: String = "", val invalid: Boolean = false)
 
+/**
+ * "Log past session": the dialog's starting values and what can be chosen as trained: every training day
+ * ([options], active routine first; the form's choice key is the option index) or a free session
+ * ([FREE_CHOICE]). [maxDateUtcMillis] is today (no future dates).
+ */
+internal data class LogPastUi(
+    val initial: PastSessionForm,
+    val options: List<PastSessionOption>,
+    val maxDateUtcMillis: Long,
+) {
+    companion object {
+        const val FREE_CHOICE = "free"
+    }
+}
+
 internal enum class TodayError { START_FAILED, SAVE_FAILED }
 
 internal sealed interface TodayIntent : MVIBaseIntent {
@@ -102,6 +121,13 @@ internal sealed interface TodayIntent : MVIBaseIntent {
     data object SaveWeight : TodayIntent
 
     data object DismissWeightDialog : TodayIntent
+
+    data object OpenLogPast : TodayIntent
+
+    data object DismissLogPast : TodayIntent
+
+    /** Creates the past session from the dialog and opens it in log mode. */
+    data class ConfirmLogPast(val form: PastSessionForm) : TodayIntent
 
     data object ErrorShown : TodayIntent
 }

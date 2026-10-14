@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import es.sebas1705.ironlog.data.models.Exercise
 import es.sebas1705.ironlog.feature.session.resources.Res
 import es.sebas1705.ironlog.feature.session.resources.session_cancel
+import es.sebas1705.ironlog.feature.session.resources.session_delete
+import es.sebas1705.ironlog.feature.session.resources.session_delete_text
+import es.sebas1705.ironlog.feature.session.resources.session_delete_title
 import es.sebas1705.ironlog.feature.session.resources.session_discard
 import es.sebas1705.ironlog.feature.session.resources.session_discard_text
 import es.sebas1705.ironlog.feature.session.resources.session_discard_title
@@ -47,6 +50,16 @@ internal fun ConfirmDiscardDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) 
     Res.string.session_discard_title,
     Res.string.session_discard_text,
     Res.string.session_discard,
+    onConfirm,
+    onDismiss,
+)
+
+/** Log mode: deletes a saved session (the only confirmation the logbook asks for). */
+@Composable
+internal fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) = ConfirmDialog(
+    Res.string.session_delete_title,
+    Res.string.session_delete_text,
+    Res.string.session_delete,
     onConfirm,
     onDismiss,
 )

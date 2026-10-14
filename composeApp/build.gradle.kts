@@ -59,6 +59,8 @@ kotlin {
             implementation(libs.androidx.credentials)
             implementation(libs.androidx.credentials.play)
             implementation(libs.google.identity.googleid)
+            // QR scanning for routine import, without the camera permission (Google code scanner UI).
+            implementation(libs.play.services.code.scanner)
         }
     }
 }

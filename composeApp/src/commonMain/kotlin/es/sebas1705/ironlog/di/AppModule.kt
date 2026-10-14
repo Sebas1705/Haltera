@@ -15,6 +15,7 @@ import es.sebas1705.ironlog.feature.routines.di.routinesModule
 import es.sebas1705.ironlog.feature.session.di.sessionModule
 import es.sebas1705.ironlog.feature.today.di.todayModule
 import es.sebas1705.ironlog.settings.SettingsViewModel
+import es.sebas1705.ironlog.share.IncomingRoutineChannel
 import es.sebas1705.ironlog.startup.StartupViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
@@ -27,6 +28,7 @@ val appModule = module {
     viewModel { StartupViewModel(get(), onImported = { get<SyncStarter>().start() }) }
     viewModelOf(::SettingsViewModel)
     viewModel { AccountViewModel(get(), get(), get(), get()) }
+    single { IncomingRoutineChannel() }
 }
 
 /**

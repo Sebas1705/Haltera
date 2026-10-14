@@ -141,14 +141,148 @@ class SessionRepositoryTest {
     }
 
     @Test
-    fun `finishing advances the cycle pointer and wraps around`() = runTest {
+    fun `finishing leaves the manual override alone (the cycle is derived from sessions)`() = runTest {
         val r = repos()
         val routineId = r.routine()
 
         r.sessions.finish(r.sessions.startFromRoutineDay(routineId, 0))
-        assertEquals(1, r.routines.getRoutine(routineId)!!.nextDayIndex)
-        r.sessions.finish(r.sessions.startFromRoutineDay(routineId, 2))
-        assertEquals(0, r.routines.getRoutine(routineId)!!.nextDayIndex)
+
+        val routine = r.routines.getRoutine(routineId)!!
+        assertEquals(0, routine.nextDayIndex)
+        assertNull(routine.nextDayIndexSetAt)
+    }
+
+    @Test
+    fun `a past start is neither blocked by nor returns the live session`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        clock.millis = 100_000
+        val live = r.sessions.startFree()
+
+        val pastDay = r.sessions.startFromRoutineDay(routineId, 2, startedAt = 10_000)
+        val pastFree = r.sessions.startFree(startedAt = 20_000)
+
+        assertTrue(pastDay != live && pastFree != live && pastDay != pastFree)
+        assertEquals(10_000L, r.sessions.getSession(pastDay)!!.startedAt)
+        assertEquals("B", r.sessions.getSession(pastDay)!!.dayName)
+        assertEquals(20_000L, r.sessions.getSession(pastFree)!!.startedAt)
+        // The live session is still the one resumed by live starts.
+        assertEquals(live, r.sessions.getInProgress()?.id)
+        assertEquals(live, r.sessions.startFromRoutineDay(routineId, 0))
+    }
+
+    @Test
+    fun `finish at a given time, then change the times`() = runTest {
+        val r = repos()
+        val id = r.sessions.startFree(startedAt = 10_000)
+        clock.millis = 500_000
+
+        r.sessions.finish(id, endedAt = 70_000)
+        assertEquals(70_000L, r.sessions.getSession(id)!!.endedAt)
+
+        r.sessions.updateTimes(id, startedAt = 20_000, endedAt = 90_000)
+        val moved = r.sessions.getSession(id)!!
+        assertEquals(20_000L, moved.startedAt)
+        assertEquals(90_000L, moved.endedAt)
+
+        r.sessions.updateTimes(id, startedAt = 30_000, endedAt = 5_000)
+        assertEquals(30_000L, r.sessions.getSession(id)!!.endedAt)
+    }
+
+    @Test
+    fun `sets of a finished session can be edited without reopening it`() = runTest {
+        val r = repos()
+        val id = r.sessions.startFree(startedAt = 10_000)
+        val e = r.sessions.addExercise(id, "squat.barbell")
+        val set = r.sessions.logSet(e, SetInput(reps = 5, loadGrams = 100_000))
+        r.sessions.finish(id, endedAt = 20_000)
+
+        r.sessions.updateSet(set, SetInput(reps = 6, loadGrams = 105_000))
+        r.sessions.logSet(e, SetInput(reps = 4, loadGrams = 105_000))
+        r.sessions.addExercise(id, "bench-press.barbell")
+
+        val session = r.sessions.getSession(id)!!
+        assertEquals(20_000L, session.endedAt)
+        assertEquals(listOf(6, 4), session.exercises.first().sets.map { it.reps })
+        assertEquals(2, session.exercises.size)
+        assertNull(r.sessions.getInProgress())
+    }
+
+    @Test
+    fun `the latest session of a routine is by start time, finished or not`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        r.sessions.observeLatestForRoutine(routineId).test {
+            assertNull(awaitItem())
+            // Logged out of order: the most recent insert is the oldest session.
+            r.sessions.finish(r.sessions.startFromRoutineDay(routineId, 2, startedAt = 30_000), 31_000)
+            r.sessions.finish(r.sessions.startFromRoutineDay(routineId, 0, startedAt = 10_000), 11_000)
+            assertEquals(30_000L, expectMostRecentItem()!!.startedAt)
+            r.sessions.startFromRoutineDay(routineId, 0, startedAt = 40_000)
+            val latest = expectMostRecentItem()!!
+            assertEquals(40_000L, latest.startedAt)
+            assertTrue(latest.inProgress)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `history is ordered by start time and bounded by before`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        // Inserted out of order.
+        listOf(3_000L, 1_000L, 2_000L).forEach { at ->
+            val id = r.sessions.startFromRoutineDay(routineId, 0, startedAt = at)
+            val squat = r.sessions.getSession(id)!!.exercises.first()
+            r.sessions.logSet(squat.id, SetInput(reps = 5, loadGrams = at * 100))
+            r.sessions.finish(id, endedAt = at + 500)
+        }
+        val slotId = r.routines.getRoutine(routineId)!!.days.first().slots.first().id
+
+        assertEquals(listOf(3_000L, 2_000L, 1_000L), r.sessions.observeHistory().first().map { it.startedAt })
+        assertEquals(
+            listOf(3_000L, 2_000L, 1_000L),
+            r.sessions.lastForSlotAndVariant(slotId, "squat.barbell").map { it.sessionStartedAt },
+        )
+        assertEquals(
+            listOf(1_000L),
+            r.sessions.lastForSlotAndVariant(slotId, "squat.barbell", before = 2_000).map { it.sessionStartedAt },
+        )
+        assertEquals(
+            listOf(2_000L, 1_000L),
+            r.sessions.lastForVariant("squat.barbell", before = 2_500).map { it.sessionStartedAt },
+        )
+        assertTrue(r.sessions.lastForVariant("squat.barbell", before = 1_000).isEmpty())
+    }
+
+    @Test
+    fun `a past start picks the flexible variant used before it`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        val early = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 1_000)
+        r.sessions.substituteExercise(r.sessions.getSession(early)!!.exercises[1].id, "bench-press.barbell")
+        r.sessions.finish(early, 1_500)
+        val late = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 5_000)
+        r.sessions.substituteExercise(r.sessions.getSession(late)!!.exercises[1].id, "bench-press.dumbbell")
+        r.sessions.finish(late, 5_500)
+
+        val between = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 3_000)
+
+        assertEquals("bench-press.barbell", r.sessions.getSession(between)!!.exercises[1].variantId)
+    }
+
+    @Test
+    fun `deleting a finished session removes it from history`() = runTest {
+        val r = repos()
+        val id = r.sessions.startFree(startedAt = 1_000)
+        r.sessions.logSet(r.sessions.addExercise(id, "squat.barbell"), SetInput(reps = 5, loadGrams = 1))
+        r.sessions.finish(id, 2_000)
+
+        r.sessions.deleteSession(id)
+
+        assertNull(r.sessions.getSession(id))
+        assertTrue(r.sessions.observeHistory().first().isEmpty())
+        assertTrue(r.sessions.lastForVariant("squat.barbell").isEmpty())
     }
 
     @Test

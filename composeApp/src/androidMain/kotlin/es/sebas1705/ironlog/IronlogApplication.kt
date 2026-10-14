@@ -11,6 +11,8 @@ import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
 import es.sebas1705.ironlog.data.remote.FirebaseConfig
 import es.sebas1705.ironlog.data.remote.isFirebaseConfigured
 import es.sebas1705.ironlog.di.appModules
+import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.ironlog.share.AndroidRoutineShareBridge
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -32,7 +34,8 @@ class IronlogApplication : Application() {
                     single<GoogleSignInLauncher> {
                         if (firebase.configured) AndroidGoogleSignInLauncher(androidContext(), activities) else NoGoogleSignIn
                     }
-                }
+                    single<RoutineShareBridge> { AndroidRoutineShareBridge(androidContext(), get()) }
+                },
             )
         }
     }

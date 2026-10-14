@@ -123,10 +123,16 @@ class RoutineRepositoryTest {
         val id = repo.createRoutine("R")
         repo.addDay(id, "A")
         val b = repo.addDay(id, "B")
+        assertNull(repo.getRoutine(id)!!.nextDayIndexSetAt)
+        clock.millis = 7_000
         repo.setNextDayIndex(id, 7)
         assertEquals(1, repo.getRoutine(id)!!.nextDayIndex)
+        assertEquals(7_000L, repo.getRoutine(id)!!.nextDayIndexSetAt)
+        clock.millis = 8_000
         repo.deleteDay(b)
         assertEquals(0, repo.getRoutine(id)!!.nextDayIndex)
+        // Clamping after an edit is not a new choice: the override keeps its time.
+        assertEquals(7_000L, repo.getRoutine(id)!!.nextDayIndexSetAt)
     }
 
     @Test

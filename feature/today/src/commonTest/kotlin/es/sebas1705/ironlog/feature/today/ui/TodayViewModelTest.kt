@@ -22,6 +22,8 @@ import es.sebas1705.ironlog.data.models.SetLog
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.ironlog.core.ui.components.PastSessionForm
+import es.sebas1705.ironlog.domain.usecases.session.LogPastSession
 import es.sebas1705.ironlog.domain.usecases.session.ObserveTodayPlan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -54,13 +56,14 @@ class TodayViewModelTest {
     fun tearDown() = Dispatchers.resetMain()
 
     private fun viewModel(unit: WeightUnit = WeightUnit.KG) = TodayViewModel(
-        observeTodayPlan = ObserveTodayPlan(routines),
+        observeTodayPlan = ObserveTodayPlan(routines, sessions),
         sessions = sessions,
         routines = routines,
         exercises = FakeExerciseRepository(listOf(BENCH, ROW)),
         bodyWeight = bodyWeight,
         settings = FakeSettingsRepository(unit),
         clock = TodayClock(now = { NOW }, timeZone = TimeZone.UTC),
+        logPastSession = LogPastSession(sessions),
     )
 
     @Test
@@ -256,6 +259,62 @@ class TodayViewModelTest {
         assertNull(TodayViewModel.parseWeight("-3"))
         assertNull(TodayViewModel.parseWeight("5000"))
         assertNull(TodayViewModel.parseWeight(""))
+    }
+
+    @Test
+    fun `log past session preselects the next day and offers every training day and free`() {
+        routines.active.value = ROUTINE.copy(nextDayIndex = 1)
+        routines.others.value = listOf(Routine(id = "r2", name = "Full", days = listOf(day(0, "Full body"))))
+        val vm = viewModel()
+
+        vm.onEvent(TodayIntent.OpenLogPast)
+
+        val dialog = assertNotNull(vm.uiState.value.logPast)
+        assertEquals(
+            listOf("Push", "Pull", "Legs", "Full body"),
+            dialog.options.map { it.dayName },
+            "rest days are left out, active routine first",
+        )
+        assertEquals("1", dialog.initial.choiceKey, "Pull, the next day")
+        assertEquals(LogPastSession.DEFAULT_DURATION_MINUTES, dialog.initial.durationMinutes)
+        assertEquals(at(2026, 10, 14, 0), dialog.initial.dateUtcMillis)
+        assertEquals(9 to 0, dialog.initial.hour to dialog.initial.minute, "today: an hour ago")
+        assertEquals(at(2026, 10, 14, 0), dialog.maxDateUtcMillis)
+    }
+
+    @Test
+    fun `logging a past day creates it saved at its time, opens it and advances today's next day`() = runTest {
+        routines.active.value = ROUTINE
+        val vm = viewModel()
+        assertEquals(0, vm.uiState.value.plan!!.next!!.dayIndex)
+        vm.onEvent(TodayIntent.OpenLogPast)
+        val twoDaysAgo = PastSessionForm(at(2026, 10, 12, 0), 18, 30, 75, choiceKey = "0")
+
+        vm.effects.test {
+            vm.onEvent(TodayIntent.ConfirmLogPast(twoDaysAgo))
+            assertEquals(TodayEffect.OpenSession("session-r1-0"), awaitItem())
+        }
+
+        val start = LocalDateTime(2026, 10, 12, 18, 30).toInstant(TimeZone.UTC).toEpochMilliseconds()
+        assertEquals(listOf<Long?>(start), sessions.startedAt)
+        assertEquals(listOf<Pair<String, Long?>>("session-r1-0" to start + 75 * 60_000L), sessions.finished)
+        assertNull(vm.uiState.value.logPast)
+        assertEquals(1, vm.uiState.value.plan!!.next!!.dayIndex, "the cycle follows the logged session")
+        assertTrue(vm.uiState.value.week.days.first { it.dayOfMonth == 12 }.trained)
+    }
+
+    @Test
+    fun `a past session can be logged while another one is in progress, and as a free session`() = runTest {
+        sessions.inProgress.value = WorkoutSession("live", startedAt = NOW - 600_000)
+        val vm = viewModel()
+        vm.onEvent(TodayIntent.OpenLogPast)
+        assertEquals("free", vm.uiState.value.logPast!!.initial.choiceKey, "no routine: free session")
+
+        vm.effects.test {
+            vm.onEvent(TodayIntent.ConfirmLogPast(PastSessionForm(at(2026, 10, 1, 0), 7, 0, 60, "free")))
+            assertEquals(TodayEffect.OpenSession("session-free"), awaitItem())
+        }
+        assertEquals(listOf<Pair<String, Int>?>(null), sessions.started)
     }
 
     @Test

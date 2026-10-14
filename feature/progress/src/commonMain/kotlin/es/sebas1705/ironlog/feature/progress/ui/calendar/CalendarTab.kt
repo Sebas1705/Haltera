@@ -8,25 +8,32 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,9 +48,11 @@ import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.feature.progress.model.MonthKey
 import es.sebas1705.ironlog.feature.progress.model.SessionSummary
 import es.sebas1705.ironlog.feature.progress.resources.Res
+import es.sebas1705.ironlog.feature.progress.resources.progress_add_session
 import es.sebas1705.ironlog.feature.progress.resources.progress_exercise_count
 import es.sebas1705.ironlog.feature.progress.resources.progress_free_session
 import es.sebas1705.ironlog.feature.progress.resources.progress_in_progress
+import es.sebas1705.ironlog.feature.progress.resources.progress_log_failed
 import es.sebas1705.ironlog.feature.progress.resources.progress_month_title
 import es.sebas1705.ironlog.feature.progress.resources.progress_months
 import es.sebas1705.ironlog.feature.progress.resources.progress_next_month
@@ -53,6 +62,7 @@ import es.sebas1705.ironlog.feature.progress.resources.progress_select_day
 import es.sebas1705.ironlog.feature.progress.resources.progress_session_count
 import es.sebas1705.ironlog.feature.progress.resources.progress_session_volume
 import es.sebas1705.ironlog.feature.progress.resources.progress_weekdays_short
+import es.sebas1705.ironlog.feature.progress.ui.components.LogSessionDialog
 import es.sebas1705.ironlog.feature.progress.ui.components.formatDate
 import es.sebas1705.ironlog.feature.progress.ui.components.formatDuration
 import es.sebas1705.ironlog.feature.progress.ui.components.formatVolume
@@ -68,9 +78,18 @@ private const val DAYS_PER_WEEK = 7
 @Composable
 internal fun CalendarTab(
     onOpenSession: (SessionSummary) -> Unit,
+    onLogged: (sessionId: String) -> Unit,
     viewModel: CalendarViewModel = koinViewModel(),
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val logged by rememberUpdatedState(onLogged)
+    LaunchedEffect(viewModel) {
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                is CalendarEffect.OpenSession -> logged(effect.sessionId)
+            }
+        }
+    }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -93,9 +112,19 @@ internal fun CalendarTab(
             )
         }
         item { DayHeader(state) }
+        addSessionItems(state, onAdd = { viewModel.onEvent(CalendarIntent.OpenLogPast) })
         items(state.selectedSessions, key = { it.id }) { session ->
             SessionCard(session, state.unit, onClick = { onOpenSession(session) })
         }
+    }
+    state.logPast?.let { dialog ->
+        LogSessionDialog(
+            initial = dialog.initial,
+            options = dialog.options,
+            maxDateUtcMillis = dialog.maxDateUtcMillis,
+            onConfirm = { viewModel.onEvent(CalendarIntent.ConfirmLogPast(it)) },
+            onDismiss = { viewModel.onEvent(CalendarIntent.DismissLogPast) },
+        )
     }
 }
 
@@ -256,6 +285,28 @@ private fun SessionCard(session: SessionSummary, unit: WeightUnit, onClick: () -
             )
             if (session.inProgress) {
                 AssistChip(onClick = onClick, label = { Text(stringResource(Res.string.progress_in_progress)) })
+            }
+        }
+    }
+}
+
+/** "Add session on this day" for today or any past day, and the error of the last attempt. */
+private fun LazyListScope.addSessionItems(state: CalendarState, onAdd: () -> Unit) {
+    if (state.logFailed) {
+        item {
+            Text(
+                stringResource(Res.string.progress_log_failed),
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
+    if (state.canAddOnSelectedDay) {
+        item {
+            OutlinedButton(onClick = onAdd, modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Filled.Add, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(Res.string.progress_add_session))
             }
         }
     }

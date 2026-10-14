@@ -26,7 +26,7 @@ sqldelight {
             packageName.set("es.sebas1705.ironlog.data.local.db")
             srcDirs.setFrom("src/commonMain/sqldelight")
             // Schema snapshot used by verifySqlDelightMigration (generateCommonMainAppDatabaseSchema, run on its own).
-            // Until the first release (F5), 1.db is regenerated whenever a .sq file changes; from F5 on, migrations are added.
+            // The schema has shipped: every change adds migrations/n.sqm and a new n+1.db; shipped snapshots never change.
             schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
             verifyMigrations.set(true)
         }

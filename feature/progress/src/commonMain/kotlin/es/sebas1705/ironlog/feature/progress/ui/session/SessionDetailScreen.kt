@@ -1,6 +1,7 @@
 package es.sebas1705.ironlog.feature.progress.ui.session
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,7 +12,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -19,9 +25,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,8 +46,17 @@ import es.sebas1705.ironlog.data.models.SetLog
 import es.sebas1705.ironlog.feature.progress.model.SessionSummary
 import es.sebas1705.ironlog.feature.progress.resources.Res
 import es.sebas1705.ironlog.feature.progress.resources.progress_back
+import es.sebas1705.ironlog.feature.progress.resources.progress_cancel
+import es.sebas1705.ironlog.feature.progress.resources.progress_change_failed
+import es.sebas1705.ironlog.feature.progress.resources.progress_delete
+import es.sebas1705.ironlog.feature.progress.resources.progress_delete_session
+import es.sebas1705.ironlog.feature.progress.resources.progress_delete_session_text
+import es.sebas1705.ironlog.feature.progress.resources.progress_delete_session_title
+import es.sebas1705.ironlog.feature.progress.resources.progress_edit_sets
+import es.sebas1705.ironlog.feature.progress.resources.progress_edit_times
 import es.sebas1705.ironlog.feature.progress.resources.progress_exercise_count
 import es.sebas1705.ironlog.feature.progress.resources.progress_free_session
+import es.sebas1705.ironlog.feature.progress.resources.progress_more
 import es.sebas1705.ironlog.feature.progress.resources.progress_no_sets
 import es.sebas1705.ironlog.feature.progress.resources.progress_notes
 import es.sebas1705.ironlog.feature.progress.resources.progress_reps
@@ -52,6 +73,7 @@ import es.sebas1705.ironlog.feature.progress.resources.progress_set_number
 import es.sebas1705.ironlog.feature.progress.resources.progress_set_rpe
 import es.sebas1705.ironlog.feature.progress.resources.progress_set_seconds
 import es.sebas1705.ironlog.feature.progress.resources.progress_set_times
+import es.sebas1705.ironlog.feature.progress.ui.components.EditTimesDialog
 import es.sebas1705.ironlog.feature.progress.ui.components.formatDate
 import es.sebas1705.ironlog.feature.progress.ui.components.formatDuration
 import es.sebas1705.ironlog.feature.progress.ui.components.formatVolume
@@ -60,11 +82,17 @@ import es.sebas1705.ironlog.feature.progress.ui.components.variantLabel
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** Read-only detail of a finished session: its own Scaffold with a back arrow (nested route). */
+/**
+ * Detail of a saved session: its own Scaffold with a back arrow (nested route). Its sets are edited in
+ * feature:session ([onEditSets], log mode); its date and time and its deletion are handled here.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SessionDetailScreen(viewModel: SessionDetailViewModel, onBack: () -> Unit) {
+internal fun SessionDetailScreen(viewModel: SessionDetailViewModel, onBack: () -> Unit, onEditSets: () -> Unit) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val back by rememberUpdatedState(onBack)
+    LaunchedEffect(state.deleted) { if (state.deleted) back() }
+    val onIntent: (SessionDetailIntent) -> Unit = { viewModel.onEvent(it) }
     Scaffold(
         topBar = {
             TopAppBar(
@@ -77,18 +105,81 @@ internal fun SessionDetailScreen(viewModel: SessionDetailViewModel, onBack: () -
                         )
                     }
                 },
+                actions = { if (state.summary != null && !state.deleted) DetailActions(onEditSets, onIntent) },
             )
         },
     ) { padding ->
         val summary = state.summary
         when {
-            state.loading -> LoadingScreen(Modifier.padding(padding))
+            state.loading || state.deleted -> LoadingScreen(Modifier.padding(padding))
             summary == null -> ErrorScreen(
                 stringResource(Res.string.progress_session_not_found),
                 modifier = Modifier.padding(padding)
             )
             else -> SessionDetailContent(state, summary, Modifier.padding(padding))
         }
+    }
+    DetailDialogs(state.dialog, onIntent)
+}
+
+@Composable
+private fun DetailActions(onEditSets: () -> Unit, onIntent: (SessionDetailIntent) -> Unit) {
+    IconButton(onClick = onEditSets) {
+        Icon(Icons.Filled.Edit, contentDescription = stringResource(Res.string.progress_edit_sets))
+    }
+    var open by rememberSaveable { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { open = true }) {
+            Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.progress_more))
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.progress_edit_sets)) },
+                onClick = {
+                    open = false
+                    onEditSets()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.progress_edit_times)) },
+                onClick = {
+                    open = false
+                    onIntent(SessionDetailIntent.EditTimes)
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.progress_delete_session)) },
+                onClick = {
+                    open = false
+                    onIntent(SessionDetailIntent.RequestDelete)
+                },
+            )
+        }
+    }
+}
+
+@Composable
+private fun DetailDialogs(dialog: DetailDialog?, onIntent: (SessionDetailIntent) -> Unit) {
+    val dismiss = { onIntent(SessionDetailIntent.DismissDialog) }
+    when (dialog) {
+        is DetailDialog.EditTimes -> EditTimesDialog(
+            initial = dialog.initial,
+            maxDateUtcMillis = dialog.maxDateUtcMillis,
+            onConfirm = { onIntent(SessionDetailIntent.SaveTimes(it)) },
+            onDismiss = dismiss,
+        )
+        DetailDialog.ConfirmDelete -> AlertDialog(
+            onDismissRequest = dismiss,
+            title = { Text(stringResource(Res.string.progress_delete_session_title)) },
+            text = { Text(stringResource(Res.string.progress_delete_session_text)) },
+            confirmButton = {
+                TextButton(onClick = { onIntent(SessionDetailIntent.ConfirmDelete) }) {
+                    Text(stringResource(Res.string.progress_delete))
+                }
+            },
+            dismissButton = { TextButton(onClick = dismiss) { Text(stringResource(Res.string.progress_cancel)) } },
+        )
+        null -> Unit
     }
 }
 
@@ -99,6 +190,15 @@ private fun SessionDetailContent(state: SessionDetailState, summary: SessionSumm
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
+        if (state.failed) {
+            item {
+                Text(
+                    stringResource(Res.string.progress_change_failed),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+        }
         item { SummaryHeader(summary, state.unit) }
         if (state.notes.isNotBlank()) {
             item { NotesText(state.notes) }

@@ -5,8 +5,10 @@ import kotlinx.serialization.Serializable
 
 /**
  * A training routine whose cycle is [days] (length N >= 1, spec §3.2). At most one routine is active.
- * [nextDayIndex] is the cycle pointer (spec §3.4): the day after the last completed one. It may point
- * to a REST day; the `cycle` use case resolves the next training day.
+ * [nextDayIndex] is the manual override of the cycle (spec §3.4), chosen at [nextDayIndexSetAt] (null if
+ * never chosen). The next day is normally derived from the routine's latest session; the override only
+ * wins while no session started after it. It may point to a REST day; the `cycle` use case resolves the
+ * next training day.
  */
 data class Routine(
     val id: String,
@@ -16,6 +18,7 @@ data class Routine(
     val origin: RoutineOrigin? = null,
     val isActive: Boolean = false,
     val nextDayIndex: Int = 0,
+    val nextDayIndexSetAt: Long? = null,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
 )

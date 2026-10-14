@@ -32,17 +32,27 @@ internal class SqlSessionRepository(
 
     override suspend fun getSession(id: String): WorkoutSession? = io { loadSession(id) }
 
-    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int): String = io {
+    override fun observeLatestForRoutine(routineId: String): Flow<WorkoutSession?> =
+        history.changes().conflate()
+            .map {
+                history.session(
+                    db.workoutSessionEntityQueries.selectLatestForRoutine(routineId).executeAsOneOrNull()
+                )
+            }
+            .flowOn(dispatcher)
+
+    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int, startedAt: Long?): String = io {
         db.transactionWithResult {
-            db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull()?.let { return@transactionWithResult it.id }
+            if (startedAt == null) liveInProgressId()?.let { return@transactionWithResult it }
             val day = requireNotNull(
                 db.routineDayEntityQueries.selectByRoutine(routineId).executeAsList().getOrNull(dayIndex),
             ) { "Routine $routineId has no day $dayIndex" }
             val sessionId = newId()
-            db.workoutSessionEntityQueries.insert(sessionId, now(), routineId, dayIndex.toLong(), day.name)
+            val at = startedAt ?: now()
+            db.workoutSessionEntityQueries.insert(sessionId, at, routineId, dayIndex.toLong(), day.name)
             db.routineSlotEntityQueries.selectByDay(day.id).executeAsList()
                 .mapNotNull { it.toModel() }
-                .mapNotNull { slot -> variantFor(slot.id, slot.target)?.let { slot.id to it } }
+                .mapNotNull { slot -> variantFor(slot.id, slot.target, before = at)?.let { slot.id to it } }
                 .forEachIndexed { position, (slotId, variantId) ->
                     db.sessionExerciseEntityQueries.insert(newId(), sessionId, position.toLong(), variantId, slotId)
                 }
@@ -50,13 +60,17 @@ internal class SqlSessionRepository(
         }
     }
 
-    override suspend fun startFree(): String = io {
+    override suspend fun startFree(startedAt: Long?): String = io {
         db.transactionWithResult {
-            db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull()?.id ?: newId().also { id ->
-                db.workoutSessionEntityQueries.insert(id, now(), null, null, null)
+            val existing = if (startedAt == null) liveInProgressId() else null
+            existing ?: newId().also { id ->
+                db.workoutSessionEntityQueries.insert(id, startedAt ?: now(), null, null, null)
             }
         }
     }
+
+    /** The session a live start resumes instead of creating a new one. */
+    private fun liveInProgressId(): String? = db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull()?.id
 
     override suspend fun addExercise(sessionId: String, variantId: String, slotId: String?): String = io {
         val id = newId()
@@ -157,21 +171,20 @@ internal class SqlSessionRepository(
         db.workoutSessionEntityQueries.updateNotes(notes = notes, id = sessionId)
     }
 
-    override suspend fun finish(sessionId: String) = write {
+    override suspend fun finish(sessionId: String, endedAt: Long?) = write {
         db.transaction {
             val session = db.workoutSessionEntityQueries.selectById(sessionId).executeAsOneOrNull() ?: return@transaction
             if (session.endedAt != null) return@transaction
-            db.workoutSessionEntityQueries.finish(endedAt = now(), id = sessionId)
-            val routineId = session.routineId ?: return@transaction
-            val dayIndex = session.routineDayIndex ?: return@transaction
-            val dayCount = db.routineDayEntityQueries.countByRoutine(routineId).executeAsOne()
-            if (dayCount > 0) {
-                db.routineEntityQueries.setNextDayIndex(
-                    nextDayIndex = (dayIndex + 1) % dayCount,
-                    id = routineId
-                )
-            }
+            db.workoutSessionEntityQueries.finish(endedAt = endedAt ?: now(), id = sessionId)
         }
+    }
+
+    override suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?) = write {
+        db.workoutSessionEntityQueries.updateTimes(
+            startedAt = startedAt,
+            endedAt = endedAt?.coerceAtLeast(startedAt),
+            id = sessionId,
+        )
     }
 
     override suspend fun deleteSession(sessionId: String) = write { db.workoutSessionEntityQueries.delete(sessionId) }
@@ -197,11 +210,15 @@ internal class SqlSessionRepository(
             }
             .flowOn(dispatcher)
 
-    override suspend fun lastForSlotAndVariant(slotId: String, variantId: String, limit: Int): List<ExerciseHistoryEntry> =
-        io { history.bySlotAndVariant(slotId, variantId, limit) }
+    override suspend fun lastForSlotAndVariant(
+        slotId: String,
+        variantId: String,
+        limit: Int,
+        before: Long?,
+    ): List<ExerciseHistoryEntry> = io { history.bySlotAndVariant(slotId, variantId, limit, before) }
 
-    override suspend fun lastForVariant(variantId: String, limit: Int): List<ExerciseHistoryEntry> =
-        io { history.byVariant(variantId, limit) }
+    override suspend fun lastForVariant(variantId: String, limit: Int, before: Long?): List<ExerciseHistoryEntry> =
+        io { history.byVariant(variantId, limit, before) }
 
     private fun loadInProgress(): WorkoutSession? =
         history.session(db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull())
@@ -209,8 +226,11 @@ internal class SqlSessionRepository(
     private fun loadSession(id: String): WorkoutSession? =
         history.session(db.workoutSessionEntityQueries.selectById(id).executeAsOneOrNull())
 
-    /** The variant to use for a slot when the session starts; null if the exercise has no variants. */
-    private fun variantFor(slotId: String, target: SlotTarget): String? = when (target) {
+    /**
+     * The variant to use for a slot in a session starting at [before] (only earlier sessions count); null
+     * if the exercise has no variants.
+     */
+    private fun variantFor(slotId: String, target: SlotTarget, before: Long): String? = when (target) {
         is SlotTarget.Fixed -> target.variantId
         is SlotTarget.Flexible -> {
             val variants = db.exerciseVariantEntityQueries.selectByExercise(target.exerciseId).executeAsList()
@@ -223,7 +243,8 @@ internal class SqlSessionRepository(
                 db.sessionExerciseEntityQueries.historyBySlotAndVariant(
                     slotId,
                     variant.id,
-                    1
+                    before,
+                    1,
                 ) { _, _, _, _, _, _, at -> at }
                     .executeAsOneOrNull()?.let { at -> variant.id to at }
             }.maxByOrNull { it.second }

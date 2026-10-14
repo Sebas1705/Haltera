@@ -11,6 +11,8 @@ kotlin {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.koin.core)
             implementation(libs.bundles.koin.compose.bundle)
+            // QR code of a shared routine (spec §10.1).
+            implementation(libs.qrose)
 
             implementation(project(":core:common"))
             implementation(project(":core:ui"))

@@ -1,3 +1,6 @@
+import ext.COMPILE_SDK
+import ext.MIN_SDK
+import ext.TARGET_SDK
 import ext.configureKmp
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -24,11 +27,11 @@ class KmpAppConventionPlugin : Plugin<Project> {
 
         extensions.configure<ApplicationExtension> {
             namespace  = "es.sebas1705.ironlog"
-            compileSdk = 35
+            compileSdk = COMPILE_SDK
             defaultConfig {
                 applicationId = "es.sebas1705.ironlog"
-                minSdk        = 24
-                targetSdk     = 35
+                minSdk        = MIN_SDK
+                targetSdk     = TARGET_SDK
                 versionCode   = 1
                 versionName   = "1.0.0"
             }

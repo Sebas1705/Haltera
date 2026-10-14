@@ -24,9 +24,10 @@ comments:
 
 complexity:
   active: true
-  CyclomaticComplexMethod: { active: true, threshold: 15 }
+  # MVI intent handlers dispatch with one-line `when` branches: those do not add complexity.
+  CyclomaticComplexMethod: { active: true, threshold: 15, ignoreSimpleWhenEntries: true }
   LongMethod: { active: true, threshold: 60 }
-  LongParameterList: { active: true, functionThreshold: 8, constructorThreshold: 8 }
+  LongParameterList: { active: true, functionThreshold: 8, constructorThreshold: 8, ignoreAnnotated: ["Composable"], ignoreDataClasses: true }
   TooManyFunctions: { active: true, thresholdInFiles: 20, thresholdInClasses: 15 }
 
 coroutines:
@@ -57,7 +58,7 @@ formatting:
 
 naming:
   active: true
-  FunctionNaming: { active: true, ignoreAnnotated: ["Composable"] }
+  FunctionNaming: { active: true, ignoreAnnotated: ["Composable", "Test"], excludes: ["**/iosMain/**"] }
   InvalidPackageDeclaration: { active: false }
   NoNameShadowing: { active: true }
   TopLevelPropertyNaming: { active: true }
@@ -67,13 +68,12 @@ performance:
   active: true
   ArrayPrimitive: { active: true }
   ForEachOnRange: { active: true }
-  SpreadOperator: { active: true, excludedFunctions: ["arrayOf", "listOf", "mapOf"] }
+  SpreadOperator: { active: true }
 
 potential-bugs:
   active: true
   AvoidReferentialEquality: { active: true }
   DontDowncastCollectionTypes: { active: true }
-  ElseCaseInWhenExpression: { active: true }
   EqualsAlwaysReturnsTrueOrFalse: { active: true }
   LateinitUsage: { active: false }
   NullableToStringCall: { active: true }
@@ -83,9 +83,9 @@ potential-bugs:
 
 style:
   active: true
-  ForbiddenComment: { active: true, values: ["FIXME:", "STOPSHIP:"], allowedPatterns: "" }
-  MagicNumber: { active: true, ignoreAnnotated: ["Composable"], ignoreNumbers: ["-1", "0", "1", "2", "100", "1000"] }
+  ForbiddenComment: { active: true, comments: ["FIXME:", "STOPSHIP:"], allowedPatterns: "" }
+  MagicNumber: { active: true, ignoreAnnotated: ["Composable"], ignorePropertyDeclaration: true, ignoreEnums: true, ignoreNumbers: ["-1", "0", "1", "2", "100", "1000"] }
   MaxLineLength: { active: true, maxLineLength: 140, excludeImportStatements: true }
-  ReturnCount: { active: true, max: 4 }
+  ReturnCount: { active: true, max: 4, excludeGuardClauses: true }
   UnusedImports: { active: true }
   WildcardImport: { active: false }

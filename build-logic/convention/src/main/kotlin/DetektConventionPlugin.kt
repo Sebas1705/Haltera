@@ -9,13 +9,20 @@ class DetektConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
         apply(plugin = "io.gitlab.arturbosch.detekt")
         configure<DetektExtension> {
+            // KMP keeps sources under src/<sourceSet>/kotlin; Detekt's default (src/main/kotlin) finds nothing.
+            source.setFrom(
+                file("src").listFiles()
+                    ?.map { it.resolve("kotlin") }
+                    ?.filter { it.isDirectory }
+                    .orEmpty(),
+            )
             config.setFrom(rootProject.file("config/detekt/detekt.yml"))
             buildUponDefaultConfig = true
             autoCorrect = true
             parallel    = true
         }
         dependencies {
-            "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
+            "detektPlugins"("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
         }
     }
 }

@@ -9,6 +9,7 @@ kotlin {
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
             implementation(libs.koin.core)
             implementation(libs.bundles.koin.compose.bundle)
 

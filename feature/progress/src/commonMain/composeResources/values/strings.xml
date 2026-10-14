@@ -1,4 +1,172 @@
 <resources>
     <string name="progress_title">Progress</string>
-    <string name="progress_placeholder">Calendar, per-exercise history, personal records and charts.</string>
+
+    <!-- Tabs -->
+    <string name="progress_tab_calendar">Calendar</string>
+    <string name="progress_tab_exercises">Exercises</string>
+    <string name="progress_tab_body_weight">Body weight</string>
+    <string name="progress_tab_volume">Volume</string>
+
+    <!-- Shared -->
+    <string name="progress_back">Back</string>
+    <string name="progress_save">Save</string>
+    <string name="progress_cancel">Cancel</string>
+    <string name="progress_delete">Delete</string>
+    <string name="progress_edit">Edit</string>
+    <string name="progress_unit_kg">kg</string>
+    <string name="progress_unit_lb">lb</string>
+    <string name="progress_weight_value">%1$s %2$s</string>
+    <string name="progress_date_short">%2$s %1$s</string>
+    <string name="progress_date_full">%2$s %1$s, %3$s</string>
+    <string name="progress_duration_hm">%1$s h %2$s min</string>
+    <string name="progress_duration_m">%1$s min</string>
+    <string name="progress_variant_name">%1$s (%2$s)</string>
+    <string name="progress_unknown_exercise">Unknown exercise</string>
+    <string name="progress_chart_description">%1$s: from %2$s to %3$s</string>
+    <string name="progress_chart_not_enough">Not enough data yet.</string>
+    <plurals name="progress_exercise_count">
+        <item quantity="one">%1$d exercise</item>
+        <item quantity="other">%1$d exercises</item>
+    </plurals>
+    <plurals name="progress_session_count">
+        <item quantity="one">%1$d session</item>
+        <item quantity="other">%1$d sessions</item>
+    </plurals>
+    <plurals name="progress_reps">
+        <item quantity="one">%1$d rep</item>
+        <item quantity="other">%1$d reps</item>
+    </plurals>
+    <string-array name="progress_months">
+        <item>January</item>
+        <item>February</item>
+        <item>March</item>
+        <item>April</item>
+        <item>May</item>
+        <item>June</item>
+        <item>July</item>
+        <item>August</item>
+        <item>September</item>
+        <item>October</item>
+        <item>November</item>
+        <item>December</item>
+    </string-array>
+    <string-array name="progress_months_short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+    <string-array name="progress_weekdays_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+
+    <!-- Calendar -->
+    <string name="progress_previous_month">Previous month</string>
+    <string name="progress_next_month">Next month</string>
+    <string name="progress_month_title">%1$s %2$s</string>
+    <string name="progress_select_day">Tap a day to see its sessions.</string>
+    <string name="progress_no_sessions_day">No sessions on this day.</string>
+    <string name="progress_free_session">Free session</string>
+    <string name="progress_in_progress">In progress</string>
+    <string name="progress_session_volume">Volume %1$s</string>
+
+    <!-- Session detail -->
+    <string name="progress_session_detail_title">Session</string>
+    <string name="progress_session_not_found">This session no longer exists.</string>
+    <string name="progress_notes">Notes</string>
+    <string name="progress_no_sets">No sets logged.</string>
+    <string name="progress_set_number">Set %1$d</string>
+    <string name="progress_set_kind_warmup">Warm-up</string>
+    <string name="progress_set_kind_drop">Drop set</string>
+    <string name="progress_set_kind_failure">To failure</string>
+    <string name="progress_set_not_completed">Not completed</string>
+    <string name="progress_set_times">%1$s × %2$s</string>
+    <string name="progress_set_seconds">%1$d s</string>
+    <string name="progress_set_meters">%1$d m</string>
+    <string name="progress_set_band_level">Level %1$s</string>
+    <string name="progress_set_rpe">RPE %1$s</string>
+
+    <!-- Exercise progress -->
+    <string name="progress_exercise_empty">Finish a session to see your exercise progress here.</string>
+    <string name="progress_pick_exercise">Exercise</string>
+    <string name="progress_chart_top_set">Top set</string>
+    <string name="progress_chart_one_rm">Estimated 1RM</string>
+    <string name="progress_chart_volume">Session volume</string>
+    <string name="progress_records_title">Personal records</string>
+    <string name="progress_record_heaviest">Heaviest load</string>
+    <string name="progress_record_one_rm">Best estimated 1RM</string>
+    <string name="progress_record_reps">Most reps</string>
+    <string name="progress_record_volume">Best session volume</string>
+    <string name="progress_no_records">No records yet.</string>
+
+    <!-- Body weight -->
+    <string name="progress_bw_log">Log weight</string>
+    <string name="progress_bw_empty">Log your body weight to see your trend.</string>
+    <string name="progress_bw_latest">Latest: %1$s</string>
+    <string name="progress_bw_change">%1$s in the last 30 days</string>
+    <string name="progress_bw_change_none">Log more entries to see your 30-day trend.</string>
+    <string name="progress_bw_chart">Body weight</string>
+    <string name="progress_bw_average">7-entry average</string>
+    <string name="progress_bw_entries">Entries</string>
+    <string name="progress_bw_add_title">Log body weight</string>
+    <string name="progress_bw_edit_title">Edit entry</string>
+    <string name="progress_bw_field">Weight (%1$s)</string>
+    <string name="progress_bw_invalid">Enter a valid weight.</string>
+
+    <!-- Weekly volume -->
+    <string name="progress_volume_intro">Volume (load × reps) of working sets per week, by primary muscle.</string>
+    <string name="progress_volume_empty">No volume logged in the last 4 weeks.</string>
+    <string name="progress_volume_week">Week of %1$s</string>
+
+    <!-- Muscles -->
+    <string name="progress_muscle_abdominals">Abdominals</string>
+    <string name="progress_muscle_abductors">Abductors</string>
+    <string name="progress_muscle_adductors">Adductors</string>
+    <string name="progress_muscle_biceps">Biceps</string>
+    <string name="progress_muscle_calves">Calves</string>
+    <string name="progress_muscle_chest">Chest</string>
+    <string name="progress_muscle_forearms">Forearms</string>
+    <string name="progress_muscle_glutes">Glutes</string>
+    <string name="progress_muscle_hamstrings">Hamstrings</string>
+    <string name="progress_muscle_lats">Lats</string>
+    <string name="progress_muscle_lower_back">Lower back</string>
+    <string name="progress_muscle_middle_back">Middle back</string>
+    <string name="progress_muscle_neck">Neck</string>
+    <string name="progress_muscle_quadriceps">Quadriceps</string>
+    <string name="progress_muscle_shoulders">Shoulders</string>
+    <string name="progress_muscle_traps">Traps</string>
+    <string name="progress_muscle_triceps">Triceps</string>
+    <string name="progress_muscle_full_body">Full body</string>
+
+    <!-- Equipment -->
+    <string name="progress_equipment_barbell">Barbell</string>
+    <string name="progress_equipment_ez_bar">EZ bar</string>
+    <string name="progress_equipment_trap_bar">Trap bar</string>
+    <string name="progress_equipment_dumbbell">Dumbbell</string>
+    <string name="progress_equipment_kettlebell">Kettlebell</string>
+    <string name="progress_equipment_smith">Smith machine</string>
+    <string name="progress_equipment_machine">Machine</string>
+    <string name="progress_equipment_cable">Cable</string>
+    <string name="progress_equipment_band">Band</string>
+    <string name="progress_equipment_bodyweight">Bodyweight</string>
+    <string name="progress_equipment_medicine_ball">Medicine ball</string>
+    <string name="progress_equipment_swiss_ball">Swiss ball</string>
+    <string name="progress_equipment_foam_roller">Foam roller</string>
+    <string name="progress_equipment_cardio_machine">Cardio machine</string>
+    <string name="progress_equipment_other">Other</string>
+    <string name="progress_equipment_none">No equipment</string>
 </resources>

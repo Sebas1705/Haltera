@@ -20,4 +20,5 @@
     <string name="credits_title">Credits</string>
     <string name="credits_catalog">Exercise catalogue</string>
     <string name="credits_license">Ironlog licence</string>
+    <string name="credits_fonts">Fonts (SIL Open Font License 1.1)</string>
 </resources>

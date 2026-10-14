@@ -1,3 +1,4 @@
 <resources>
     <string name="retry">Retry</string>
+    <string name="pr_badge">PR</string>
 </resources>

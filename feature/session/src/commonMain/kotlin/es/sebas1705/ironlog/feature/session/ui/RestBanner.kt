@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -18,8 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
+import es.sebas1705.ironlog.core.ui.theme.tabularFigures
 import es.sebas1705.ironlog.feature.session.resources.Res
 import es.sebas1705.ironlog.feature.session.resources.session_get_ready
 import es.sebas1705.ironlog.feature.session.resources.session_rest
@@ -48,16 +50,27 @@ internal fun RestBanner(
     val phase = TimerMath.phase(timer, now)
     if (phase == TimerPhase.IDLE) return
     val remaining = TimerMath.formatSeconds(TimerMath.remainingSeconds(timer, now))
+    // Brand accent: iron orange with graphite content, in light and dark.
+    val accent = IronlogTheme.colors.accent
+    val onAccent = IronlogTheme.colors.onAccent
+    val tonal = ButtonDefaults.filledTonalButtonColors(
+        containerColor = onAccent.copy(alpha = 0.14f),
+        contentColor = onAccent
+    )
+    val solid = ButtonDefaults.buttonColors(containerColor = onAccent, contentColor = accent)
     Surface(
         modifier = modifier.fillMaxWidth(),
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = accent,
+        contentColor = onAccent,
         tonalElevation = 3.dp
     ) {
         Column(Modifier.navigationBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
             if (phase == TimerPhase.REST) {
                 LinearProgressIndicator(
                     progress = { TimerMath.restFraction(timer, now) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = onAccent,
+                    trackColor = onAccent.copy(alpha = 0.2f),
                 )
             }
             Row(Modifier.fillMaxWidth().padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -68,20 +81,25 @@ internal fun RestBanner(
                         else -> Res.string.session_rest
                     }
                     Text(stringResource(title), style = MaterialTheme.typography.labelLarge)
-                    Text(remaining, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                    Text(remaining, style = MaterialTheme.typography.headlineMedium.tabularFigures())
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                     when (phase) {
                         TimerPhase.REST -> {
                             FilledTonalButton(
-                                onClick = { onAdjust(-REST_STEP_S) }
+                                onClick = { onAdjust(-REST_STEP_S) },
+                                colors = tonal,
                             ) { Text(stringResource(Res.string.session_rest_minus)) }
                             FilledTonalButton(
-                                onClick = { onAdjust(REST_STEP_S) }
+                                onClick = { onAdjust(REST_STEP_S) },
+                                colors = tonal,
                             ) { Text(stringResource(Res.string.session_rest_plus)) }
-                            Button(onClick = onSkip) { Text(stringResource(Res.string.session_skip)) }
+                            Button(onClick = onSkip, colors = solid) { Text(stringResource(Res.string.session_skip)) }
                         }
-                        else -> Button(onClick = onStop) { Text(stringResource(Res.string.session_stop)) }
+                        else -> Button(
+                            onClick = onStop,
+                            colors = solid
+                        ) { Text(stringResource(Res.string.session_stop)) }
                     }
                 }
             }

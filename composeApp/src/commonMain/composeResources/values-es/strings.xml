@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Ironlog</string>
+    <string name="back">Atrás</string>
+    <string name="startup_loading">Preparando el catálogo de ejercicios…</string>
+    <string name="startup_catalog_error">No se ha podido cargar el catálogo de ejercicios.</string>
+    <string name="tab_today">Hoy</string>
+    <string name="tab_routines">Rutinas</string>
+    <string name="tab_exercises">Ejercicios</string>
+    <string name="tab_progress">Progreso</string>
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_units">Unidades</string>
+    <string name="settings_bar_weight">Peso de la barra</string>
+    <string name="settings_plates">Discos disponibles (por lado)</string>
+    <string name="settings_keep_screen_on">Mantener la pantalla encendida durante la sesión</string>
+    <string name="settings_rest_sound">Sonido al terminar el descanso</string>
+    <string name="settings_rest_vibration">Vibrar al terminar el descanso</string>
+    <string name="settings_credits">Créditos y licencias</string>
+    <string name="unit_kg">kg</string>
+    <string name="unit_lb">lb</string>
+    <string name="credits_title">Créditos</string>
+    <string name="credits_catalog">Catálogo de ejercicios</string>
+    <string name="credits_license">Licencia de Ironlog</string>
+</resources>

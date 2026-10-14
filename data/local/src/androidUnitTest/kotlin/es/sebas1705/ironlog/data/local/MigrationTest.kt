@@ -34,7 +34,11 @@ class MigrationTest {
                     "VALUES ('r1', 'GZCLP', '', 1, 2, 10, 20)",
                 0,
             )
-            v1.execute(null, "INSERT INTO RoutineDayEntity(id, routineId, position, name, kind) VALUES ('d1', 'r1', 0, 'Day 1', 'TRAINING')", 0)
+            v1.execute(
+                null,
+                "INSERT INTO RoutineDayEntity(id, routineId, position, name, kind) VALUES ('d1', 'r1', 0, 'Day 1', 'TRAINING')",
+                0
+            )
             v1.execute(
                 null,
                 "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName) " +

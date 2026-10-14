@@ -34,6 +34,7 @@ kotlin {
             implementation(project(":core:datastore"))
             implementation(project(":data:local"))
             implementation(project(":data:repository"))
+            implementation(project(":data:sync"))
             implementation(project(":domain:usecases"))
 
             implementation(project(":feature:today"))

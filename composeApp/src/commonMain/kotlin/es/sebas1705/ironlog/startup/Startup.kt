@@ -38,10 +38,12 @@ sealed interface StartupIntent : MVIBaseIntent {
     data object Start : StartupIntent
 }
 
-/** Imports the bundled catalogue on launch (only when it is newer than the installed one). */
+/** Imports the bundled catalogue on launch (only when it is newer than the installed one), then starts sync. */
 class StartupViewModel(
     private val catalog: CatalogRepository,
     private val readCatalog: suspend () -> String = ::readBundledCatalog,
+    /** Runs once the catalogue is in place (starts sync). */
+    private val onCatalogReady: () -> Unit = {},
 ) : MVIBaseViewModel<StartupState, StartupIntent>(StartupState()) {
 
     init {
@@ -53,6 +55,7 @@ class StartupViewModel(
             updateState { StartupState() }
             try {
                 catalog.importBundled(readCatalog())
+                onCatalogReady()
                 updateState { it.copy(ready = true) }
             } catch (e: CancellationException) {
                 throw e

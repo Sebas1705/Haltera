@@ -55,7 +55,7 @@ val LightBrandColors = BrandColors(
     success = Color(0xFF15803D),
     warning = Color(0xFFB45309),
     error = Color(0xFFB91C1C),
-    prGold = Color(0xFFA16207),
+    prGold = Color(0xFF854D0E),
     prGoldContainer = Color(0xFFFEF3C7),
     onPrGoldContainer = Color(0xFF713F12),
 )

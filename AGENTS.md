@@ -41,14 +41,17 @@ Conversations with the owner may be in Spanish; anything committed is in English
 ## Changing the database schema
 
 The schema lives in `.sq` files under `data/local/src/commonMain/sqldelight/`.
-`data/local/src/commonMain/sqldelight/databases/1.db` is the schema snapshot that
-`verifySqlDelightMigration` checks against.
+`data/local/src/commonMain/sqldelight/databases/n.db` are the snapshots of each shipped schema version and
+`migrations/n.sqm` upgrade version n to n + 1; `verifySqlDelightMigration` checks that they agree.
 
-- **Until the first release (F5):** edit the `.sq` files in place and regenerate `1.db`
-  whenever a `.sq` file changes, with `./gradlew :data:local:generateCommonMainAppDatabaseSchema`
-  run on its own (not combined with other tasks). Commit the new `1.db`.
-- **From F5 on:** never edit a released schema; add `n.sqm` migrations, regenerate the snapshot
-  with the same command and run `./gradlew verifySqlDelightMigration`.
+- **The schema has shipped** (testers have real data), so **every schema change needs a migration**:
+  add `migrations/n.sqm` (n = the current version, e.g. `1.sqm` upgrades 1 → 2), update the `.sq` files to
+  match (columns added by `ALTER TABLE` go last in the `CREATE TABLE`), regenerate the snapshot with
+  `./gradlew :data:local:generateCommonMainAppDatabaseSchema` run on its own (not combined with other
+  tasks), which writes `n+1.db`, and make `./gradlew verifySqlDelightMigration` pass. Add a migration test
+  (see `MigrationTest`: open a copy of `n.db`, insert data, migrate, check it survived).
+- **Never edit or regenerate a shipped snapshot** (`1.db`, `2.db`, …): commit only the new one.
+  Query-only changes (new or edited queries without table changes) need no migration.
 - Android 7 ships SQLite 3.9: no `UPSERT` (use `INSERT OR REPLACE`), booleans are `INTEGER` 0/1.
 - Foreign keys are enabled on both drivers (`DatabaseDriverFactory`); repository tests use an in-memory JDBC driver with `foreign_keys=true`.
 - Enum columns are read leniently (`fromDb`): unknown values fall back to a default. JSON columns (slot target, prescription, progression) go through `ModelJson`.

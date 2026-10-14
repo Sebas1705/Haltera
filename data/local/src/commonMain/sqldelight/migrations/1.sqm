@@ -1,0 +1,3 @@
+-- Schema 1 -> 2: the manual next-day override gets a timestamp, so the cycle derived from sessions
+-- (spec §3.4) can tell whether the override is newer than the routine's latest session.
+ALTER TABLE RoutineEntity ADD COLUMN nextDayIndexSetAt INTEGER;

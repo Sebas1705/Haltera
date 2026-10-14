@@ -1,4 +1,117 @@
 <resources>
     <string name="exercises_title">Ejercicios</string>
-    <string name="exercises_placeholder">Busca y filtra ejercicios, consulta detalles e historial y crea los tuyos.</string>
+
+    <!-- List -->
+    <string name="exercises_search_hint">Buscar ejercicios</string>
+    <string name="exercises_search_clear">Borrar búsqueda</string>
+    <string name="exercises_filter_category">Categoría</string>
+    <string name="exercises_filter_muscle">Músculo</string>
+    <string name="exercises_filter_equipment">Material</string>
+    <string name="exercises_filter_any">Cualquiera</string>
+    <string name="exercises_filter_clear">Quitar filtros</string>
+    <string name="exercises_custom_badge">Propio</string>
+    <string name="exercises_empty_title">No hay ejercicios</string>
+    <string name="exercises_empty_message">Prueba otra búsqueda o quita algún filtro.</string>
+    <string name="exercises_error">No se pudieron cargar los ejercicios.</string>
+    <string name="exercises_new">Nuevo ejercicio</string>
+    <string name="exercises_back">Atrás</string>
+
+    <!-- Detail -->
+    <string name="exercises_detail_not_found">Este ejercicio ya no existe.</string>
+    <string name="exercises_detail_variant">Variante</string>
+    <string name="exercises_detail_instructions">Instrucciones</string>
+    <string name="exercises_detail_no_instructions">Aún no hay instrucciones.</string>
+    <string name="exercises_detail_primary">Músculos principales</string>
+    <string name="exercises_detail_secondary">Músculos secundarios</string>
+    <string name="exercises_detail_level">Nivel</string>
+    <string name="exercises_detail_category">Categoría</string>
+    <string name="exercises_detail_tracking">Registra</string>
+    <string name="exercises_detail_records">Récords personales</string>
+    <string name="exercises_detail_no_records">Aún no hay récords. Termina una sesión con esta variante para conseguirlos.</string>
+    <string name="exercises_detail_history">Historial</string>
+    <string name="exercises_detail_no_history">Aún no has entrenado esta variante.</string>
+    <string name="exercises_media_placeholder">No hay imágenes de esta variante</string>
+    <string name="exercises_media_description">Demostración de %1$s</string>
+    <string name="exercises_record_heaviest">Mayor carga</string>
+    <string name="exercises_record_one_rm">1RM estimado</string>
+    <string name="exercises_record_reps">Más repeticiones</string>
+    <string name="exercises_record_volume">Mayor volumen en una sesión</string>
+    <string name="exercises_load">%1$s %2$s</string>
+    <string name="exercises_load_level">Nivel %1$s</string>
+    <string name="exercises_set_times">%1$s × %2$s</string>
+    <string name="exercises_reps">%1$s reps</string>
+    <string name="exercises_distance">%1$s m</string>
+    <string name="exercises_sets">%1$s series</string>
+    <string name="exercises_unit_kg">kg</string>
+    <string name="exercises_unit_lb">lb</string>
+
+    <!-- Create -->
+    <string name="exercises_create_name">Nombre</string>
+    <string name="exercises_create_name_error">Escribe un nombre</string>
+    <string name="exercises_create_category">Categoría</string>
+    <string name="exercises_create_tracking">Qué registra cada serie</string>
+    <string name="exercises_create_muscles">Músculos principales</string>
+    <string name="exercises_create_equipment">Material (una variante por cada uno)</string>
+    <string name="exercises_create_equipment_error">Elige al menos uno</string>
+    <string name="exercises_create_save">Guardar</string>
+    <string name="exercises_create_failed">No se pudo guardar el ejercicio.</string>
+
+    <!-- Categories -->
+    <string name="exercises_category_strength">Fuerza</string>
+    <string name="exercises_category_cardio">Cardio</string>
+    <string name="exercises_category_mobility">Movilidad</string>
+    <string name="exercises_category_plyometrics">Pliometría</string>
+    <string name="exercises_category_calisthenics">Calistenia</string>
+    <string name="exercises_category_sport">Deporte</string>
+
+    <!-- Levels -->
+    <string name="exercises_level_beginner">Principiante</string>
+    <string name="exercises_level_intermediate">Intermedio</string>
+    <string name="exercises_level_expert">Avanzado</string>
+
+    <!-- Tracking types -->
+    <string name="exercises_tracking_weight_reps">Peso y repeticiones</string>
+    <string name="exercises_tracking_bodyweight_reps">Repeticiones con peso corporal</string>
+    <string name="exercises_tracking_reps">Repeticiones</string>
+    <string name="exercises_tracking_time">Tiempo</string>
+    <string name="exercises_tracking_weight_time">Peso y tiempo</string>
+    <string name="exercises_tracking_distance_time">Distancia y tiempo</string>
+
+    <!-- Muscles -->
+    <string name="exercises_muscle_abdominals">Abdominales</string>
+    <string name="exercises_muscle_abductors">Abductores</string>
+    <string name="exercises_muscle_adductors">Aductores</string>
+    <string name="exercises_muscle_biceps">Bíceps</string>
+    <string name="exercises_muscle_calves">Gemelos</string>
+    <string name="exercises_muscle_chest">Pecho</string>
+    <string name="exercises_muscle_forearms">Antebrazos</string>
+    <string name="exercises_muscle_glutes">Glúteos</string>
+    <string name="exercises_muscle_hamstrings">Isquiotibiales</string>
+    <string name="exercises_muscle_lats">Dorsales</string>
+    <string name="exercises_muscle_lower_back">Zona lumbar</string>
+    <string name="exercises_muscle_middle_back">Espalda media</string>
+    <string name="exercises_muscle_neck">Cuello</string>
+    <string name="exercises_muscle_quadriceps">Cuádriceps</string>
+    <string name="exercises_muscle_shoulders">Hombros</string>
+    <string name="exercises_muscle_traps">Trapecios</string>
+    <string name="exercises_muscle_triceps">Tríceps</string>
+    <string name="exercises_muscle_full_body">Cuerpo completo</string>
+
+    <!-- Equipment -->
+    <string name="exercises_equipment_barbell">Barra</string>
+    <string name="exercises_equipment_ez_bar">Barra Z</string>
+    <string name="exercises_equipment_trap_bar">Barra hexagonal</string>
+    <string name="exercises_equipment_dumbbell">Mancuerna</string>
+    <string name="exercises_equipment_kettlebell">Kettlebell</string>
+    <string name="exercises_equipment_smith">Máquina Smith</string>
+    <string name="exercises_equipment_machine">Máquina</string>
+    <string name="exercises_equipment_cable">Polea</string>
+    <string name="exercises_equipment_band">Banda elástica</string>
+    <string name="exercises_equipment_bodyweight">Peso corporal</string>
+    <string name="exercises_equipment_medicine_ball">Balón medicinal</string>
+    <string name="exercises_equipment_swiss_ball">Fitball</string>
+    <string name="exercises_equipment_foam_roller">Rodillo de espuma</string>
+    <string name="exercises_equipment_cardio_machine">Máquina de cardio</string>
+    <string name="exercises_equipment_other">Otro</string>
+    <string name="exercises_equipment_none">Sin material</string>
 </resources>

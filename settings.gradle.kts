@@ -25,8 +25,10 @@ include(
     ":core:ui",
     ":core:logging",
     ":core:testing",
+    ":core:units",
+    ":core:datastore",
 )
 
-include(":data:models", ":data:local")
+include(":data:models", ":data:local", ":data:repository", ":data:routines")
 
 include(":domain:usecases")

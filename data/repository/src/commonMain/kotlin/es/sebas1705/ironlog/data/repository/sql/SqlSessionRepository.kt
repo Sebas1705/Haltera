@@ -1,0 +1,240 @@
+package es.sebas1705.ironlog.data.repository.sql
+
+import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.ironlog.data.local.db.WorkoutSessionEntity
+import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
+import es.sebas1705.ironlog.data.models.SetInput
+import es.sebas1705.ironlog.data.models.SlotTarget
+import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.ironlog.data.repository.SessionRepository
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
+
+@Suppress("TooManyFunctions") // One method per session operation of the contract.
+internal class SqlSessionRepository(
+    private val db: AppDatabase,
+    private val history: HistoryLoader,
+    private val dispatcher: CoroutineDispatcher,
+    private val now: () -> Long,
+) : SessionRepository {
+
+    override fun observeInProgress(): Flow<WorkoutSession?> =
+        history.changes().conflate().map { loadInProgress() }.flowOn(dispatcher)
+
+    override suspend fun getInProgress(): WorkoutSession? = io { loadInProgress() }
+
+    override fun observeSession(id: String): Flow<WorkoutSession?> =
+        history.changes().conflate().map { loadSession(id) }.flowOn(dispatcher)
+
+    override suspend fun getSession(id: String): WorkoutSession? = io { loadSession(id) }
+
+    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int): String = io {
+        db.transactionWithResult {
+            db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull()?.let { return@transactionWithResult it.id }
+            val day = requireNotNull(
+                db.routineDayEntityQueries.selectByRoutine(routineId).executeAsList().getOrNull(dayIndex),
+            ) { "Routine $routineId has no day $dayIndex" }
+            val sessionId = newId()
+            db.workoutSessionEntityQueries.insert(sessionId, now(), routineId, dayIndex.toLong(), day.name)
+            db.routineSlotEntityQueries.selectByDay(day.id).executeAsList()
+                .mapNotNull { it.toModel() }
+                .mapNotNull { slot -> variantFor(slot.id, slot.target)?.let { slot.id to it } }
+                .forEachIndexed { position, (slotId, variantId) ->
+                    db.sessionExerciseEntityQueries.insert(newId(), sessionId, position.toLong(), variantId, slotId)
+                }
+            sessionId
+        }
+    }
+
+    override suspend fun startFree(): String = io {
+        db.transactionWithResult {
+            db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull()?.id ?: newId().also { id ->
+                db.workoutSessionEntityQueries.insert(id, now(), null, null, null)
+            }
+        }
+    }
+
+    override suspend fun addExercise(sessionId: String, variantId: String, slotId: String?): String = io {
+        val id = newId()
+        db.transaction {
+            val position = db.sessionExerciseEntityQueries.selectBySession(sessionId).executeAsList().size.toLong()
+            db.sessionExerciseEntityQueries.insert(id, sessionId, position, variantId, slotId)
+        }
+        id
+    }
+
+    override suspend fun removeExercise(sessionExerciseId: String) = write {
+        db.transaction {
+            val exercise = db.sessionExerciseEntityQueries.selectById(sessionExerciseId).executeAsOneOrNull()
+                ?: return@transaction
+            db.sessionExerciseEntityQueries.delete(sessionExerciseId)
+            db.sessionExerciseEntityQueries.selectBySession(
+                exercise.sessionId
+            ).executeAsList().forEachIndexed { index, e ->
+                db.sessionExerciseEntityQueries.setPosition(index.toLong(), e.id)
+            }
+        }
+    }
+
+    override suspend fun substituteExercise(sessionExerciseId: String, variantId: String) = write {
+        db.sessionExerciseEntityQueries.setVariant(variantId = variantId, id = sessionExerciseId)
+    }
+
+    override suspend fun moveExercise(sessionExerciseId: String, toPosition: Int) = write {
+        db.transaction {
+            val exercise = db.sessionExerciseEntityQueries.selectById(sessionExerciseId).executeAsOneOrNull()
+                ?: return@transaction
+            val ids = db.sessionExerciseEntityQueries.selectBySession(exercise.sessionId).executeAsList().map { it.id }
+            reorder(ids, sessionExerciseId, toPosition).forEachIndexed { index, id ->
+                db.sessionExerciseEntityQueries.setPosition(index.toLong(), id)
+            }
+        }
+    }
+
+    override suspend fun updateExerciseNotes(sessionExerciseId: String, notes: String) = write {
+        db.sessionExerciseEntityQueries.updateNotes(notes = notes, id = sessionExerciseId)
+    }
+
+    override suspend fun logSet(sessionExerciseId: String, input: SetInput): String = io {
+        val id = newId()
+        db.transaction {
+            val position = db.setLogEntityQueries.selectBySessionExercise(
+                sessionExerciseId
+            ).executeAsList().size.toLong()
+            db.setLogEntityQueries.insert(
+                id = id,
+                sessionExerciseId = sessionExerciseId,
+                position = position,
+                kind = input.kind.name,
+                reps = input.reps?.toLong(),
+                loadGrams = input.loadGrams,
+                loadDetail = input.loadDetail,
+                durationS = input.durationS?.toLong(),
+                distanceM = input.distanceM?.toLong(),
+                rpe = input.rpe,
+                completed = input.completed.toDb(),
+                completedAt = if (input.completed) now() else null,
+            )
+        }
+        id
+    }
+
+    override suspend fun updateSet(setId: String, input: SetInput) = write {
+        db.transaction {
+            val existing = db.setLogEntityQueries.selectById(setId).executeAsOneOrNull() ?: return@transaction
+            db.setLogEntityQueries.update(
+                kind = input.kind.name,
+                reps = input.reps?.toLong(),
+                loadGrams = input.loadGrams,
+                loadDetail = input.loadDetail,
+                durationS = input.durationS?.toLong(),
+                distanceM = input.distanceM?.toLong(),
+                rpe = input.rpe,
+                completed = input.completed.toDb(),
+                completedAt = if (input.completed) existing.completedAt ?: now() else null,
+                id = setId,
+            )
+        }
+    }
+
+    override suspend fun deleteSet(setId: String) = write {
+        db.transaction {
+            val set = db.setLogEntityQueries.selectById(setId).executeAsOneOrNull() ?: return@transaction
+            db.setLogEntityQueries.delete(setId)
+            db.setLogEntityQueries.selectBySessionExercise(
+                set.sessionExerciseId
+            ).executeAsList().forEachIndexed { index, s ->
+                db.setLogEntityQueries.setPosition(index.toLong(), s.id)
+            }
+        }
+    }
+
+    override suspend fun updateSessionNotes(sessionId: String, notes: String) = write {
+        db.workoutSessionEntityQueries.updateNotes(notes = notes, id = sessionId)
+    }
+
+    override suspend fun finish(sessionId: String) = write {
+        db.transaction {
+            val session = db.workoutSessionEntityQueries.selectById(sessionId).executeAsOneOrNull() ?: return@transaction
+            if (session.endedAt != null) return@transaction
+            db.workoutSessionEntityQueries.finish(endedAt = now(), id = sessionId)
+            val routineId = session.routineId ?: return@transaction
+            val dayIndex = session.routineDayIndex ?: return@transaction
+            val dayCount = db.routineDayEntityQueries.countByRoutine(routineId).executeAsOne()
+            if (dayCount > 0) {
+                db.routineEntityQueries.setNextDayIndex(
+                    nextDayIndex = (dayIndex + 1) % dayCount,
+                    id = routineId
+                )
+            }
+        }
+    }
+
+    override suspend fun deleteSession(sessionId: String) = write { db.workoutSessionEntityQueries.delete(sessionId) }
+
+    override fun observeHistory(limit: Int): Flow<List<WorkoutSession>> = history.changes().conflate()
+        .map {
+            history.sessions(
+                db.workoutSessionEntityQueries.selectFinished(
+                    limit.toLong()
+                ) { id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw ->
+                    WorkoutSessionEntity(id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw)
+                }.executeAsList(),
+            )
+        }
+        .flowOn(dispatcher)
+
+    override fun observeSessionsBetween(fromMillis: Long, toMillis: Long): Flow<List<WorkoutSession>> =
+        history.changes().conflate()
+            .map {
+                history.sessions(
+                    db.workoutSessionEntityQueries.selectStartedBetween(fromMillis, toMillis).executeAsList()
+                )
+            }
+            .flowOn(dispatcher)
+
+    override suspend fun lastForSlotAndVariant(slotId: String, variantId: String, limit: Int): List<ExerciseHistoryEntry> =
+        io { history.bySlotAndVariant(slotId, variantId, limit) }
+
+    override suspend fun lastForVariant(variantId: String, limit: Int): List<ExerciseHistoryEntry> =
+        io { history.byVariant(variantId, limit) }
+
+    private fun loadInProgress(): WorkoutSession? =
+        history.session(db.workoutSessionEntityQueries.selectInProgress().executeAsOneOrNull())
+
+    private fun loadSession(id: String): WorkoutSession? =
+        history.session(db.workoutSessionEntityQueries.selectById(id).executeAsOneOrNull())
+
+    /** The variant to use for a slot when the session starts; null if the exercise has no variants. */
+    private fun variantFor(slotId: String, target: SlotTarget): String? = when (target) {
+        is SlotTarget.Fixed -> target.variantId
+        is SlotTarget.Flexible -> {
+            val variants = db.exerciseVariantEntityQueries.selectByExercise(target.exerciseId).executeAsList()
+            val allowed = if (target.allowedVariantIds.isEmpty()) {
+                variants
+            } else {
+                target.allowedVariantIds.mapNotNull { id -> variants.firstOrNull { it.id == id } }
+            }
+            val lastUsed = allowed.mapNotNull { variant ->
+                db.sessionExerciseEntityQueries.historyBySlotAndVariant(
+                    slotId,
+                    variant.id,
+                    1
+                ) { _, _, _, _, _, _, at -> at }
+                    .executeAsOneOrNull()?.let { at -> variant.id to at }
+            }.maxByOrNull { it.second }
+            lastUsed?.first
+                ?: allowed.firstOrNull { it.deprecated == 0L }?.id
+                ?: target.allowedVariantIds.firstOrNull()
+                ?: variants.firstOrNull()?.id
+        }
+    }
+
+    private suspend fun <T> io(block: () -> T): T = withContext(dispatcher) { block() }
+
+    private suspend fun write(block: () -> Unit) = withContext(dispatcher) { block() }
+}

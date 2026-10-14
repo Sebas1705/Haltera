@@ -91,3 +91,7 @@ for (const [p, content] of Object.entries(outputs)) {
 }
 const variants = result.catalog.exercises.reduce((n, e) => n + e.variants.length, 0);
 console.log(`catalog v${result.catalog.catalogVersion}: ${result.catalog.exercises.length} exercises, ${variants} variants, ${result.catalog.deprecatedIds.length} deprecated ids`);
+// Ids from the previous ids.lock.json that were live in the previous catalogue and are no longer produced.
+const previouslyDeprecated = new Set(previous?.deprecatedIds ?? []);
+const newlyDeprecated = result.catalog.deprecatedIds.filter((id) => !previouslyDeprecated.has(id));
+if (newlyDeprecated.length > 0) console.log(`Newly deprecated ids (${newlyDeprecated.length}):\n  ${newlyDeprecated.join('\n  ')}`);

@@ -6,7 +6,7 @@
 
 **Architecture:** Two commands. `fetch` (network) refreshes committed snapshots of the sources under `catalog/sources/`. `build` (offline, deterministic) reads the snapshots and the curation files (`catalog/overrides.yaml`, `catalog/custom.yaml`, `catalog/i18n/es.yaml`), groups source exercises into base exercises with equipment variants, applies mappings and patches, validates, and writes `composeApp/src/commonMain/composeResources/files/catalog.json`, `catalog/ATTRIBUTION.md` and `catalog/ids.lock.json`. `build --check` (CI) fails if the committed outputs are stale. All logic lives in pure functions under `scripts/catalog/lib/`, tested with `node:test`.
 
-**Tech Stack:** Node 22 (ES modules, `node:test`), `yaml` 2.8.1.
+**Tech Stack:** Node 22 (ES modules, `node:test`), `yaml` 2.8.3.
 
 **Platform:** tooling (output consumed by KMP in F1c)
 
@@ -19,7 +19,7 @@
 - Commits: configured identity, no co-author trailers.
 - Sources and licences (spec §6.1): free-exercise-db is Unlicense (public domain); wger data is CC-BY-SA — every Spanish name taken from wger must be listed in `ATTRIBUTION.md` with its licence and author.
 - free-exercise-db pinned commit: `f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5` (2026-09-27, 876 exercises).
-- wger API: `https://wger.de/api/v2/exerciseinfo/?limit=100&offset=N`, no key. Language ids: English `2`, Spanish `4`. Send `User-Agent: Ironlog-catalog/1.0 (sebssgarcia502580@gmail.com)`.
+- wger API: `https://wger.de/api/v2/exerciseinfo/?limit=100&offset=N`, no key. Language ids: English `2`, Spanish `4`. Send `User-Agent: Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)`.
 - Spanish style: Spain gym vocabulary (see the glossary in Task 8).
 
 ## Output format (`catalog.json`)
@@ -108,10 +108,10 @@ mkdir -p scripts/catalog/lib scripts/catalog/test catalog/sources catalog/i18n
     "fetch": "node fetch.mjs",
     "build": "node build.mjs",
     "check": "node build.mjs --check",
-    "test": "node --test test/"
+    "test": "node --test \"test/*.test.mjs\""
   },
   "dependencies": {
-    "yaml": "2.8.1"
+    "yaml": "2.8.3"
   }
 }
 ```
@@ -396,7 +396,7 @@ import { fileURLToPath } from 'node:url';
 import { reduceWger } from './lib/wger.mjs';
 
 const root = fileURLToPath(new URL('../../catalog/sources/', import.meta.url));
-const userAgent = 'Ironlog-catalog/1.0 (sebssgarcia502580@gmail.com)';
+const userAgent = 'Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)';
 
 async function getJson(url) {
   const response = await fetch(url, { headers: { 'User-Agent': userAgent, Accept: 'application/json' } });
@@ -1638,3 +1638,17 @@ Expected: the `catalog` job is green. Merge (merge commit) when CI is green and 
 - `node scripts/catalog/build.mjs --check` prints `Catalogue up to date`.
 - `node scripts/catalog/build.mjs --missing-es` prints `[]`.
 - `catalog.json` contains `bench-press` with variants `barbell`, `dumbbell`, `smith`, `machine`, and `running` with `treadmill` and `outdoor`.
+
+## Deviations during execution
+
+Tasks 1–5 were executed as written, then amended after code review. The committed code is the reference where it differs from the snippets above.
+
+- `package.json`: the test script is `node --test "test/*.test.mjs"`, because Node 24 rejects a directory argument. `yaml` is pinned to 2.8.3 (2.8.1 has advisory GHSA-48c2-rrv3-qjmp).
+- `.gitattributes` (`* text=auto eol=lf`) keeps generated outputs LF on every platform. `build.mjs` also normalises CRLF when it compares outputs in `--check`.
+- `build-catalog.mjs`: exercises are sorted by code unit, not with `localeCompare`, so the order and `contentHash` do not depend on the locale. It throws on `patches` or `exclude` entries that name unknown sources, on a source used twice in groups, and on a source that is both excluded and grouped. `equipmentOf(source, category)` takes the patched category for the null-equipment default.
+- `validate.mjs`: malformed entries are reported, not thrown: non-array muscles or variants, and exercise `instructions` that are not `{ en: string[], es: string[] }`. Any mismatch between `es` and `en` step counts is an error, including Spanish steps with no English.
+- `build.mjs`: a missing required input (`sources.json`, `free-exercise-db.json`) fails with "missing <file>". A leading UTF-8 BOM is stripped before parsing JSON or YAML. A write prints the newly deprecated ids.
+- `lib/text.mjs` exports `stripDiacritics` (`/[\u0300-\u036f]/g`), shared by `slug.mjs` and `wger.mjs`. `indexWger` sorts by wger id itself, so the lowest id wins whatever the input order.
+- `attribution.mjs` escapes `|` and flattens line breaks in table cells.
+- `fetch.mjs` fetches everything before writing any file, uses a 30 s timeout per request, checks that the payloads are arrays, and sends a User-Agent without a personal email.
+- Extra tests: `test/wger.test.mjs`, `test/attribution.test.mjs`, plus error paths and edge cases in the mapping, builder and validation suites.

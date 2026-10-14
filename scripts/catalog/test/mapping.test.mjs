@@ -59,3 +59,9 @@ test('null-equipment default follows the category passed in (patched category)',
 test('slug strips diacritics', () => {
   assert.equal(slug('Pádel Ñandú'), 'padel-nandu');
 });
+
+test('unknown source values throw', () => {
+  assert.throws(() => categoryOf(src({ category: 'yoga' })), /Unknown source category "yoga"/);
+  assert.throws(() => equipmentOf(src({ equipment: 'sled' })), /Unknown source equipment "sled"/);
+  assert.throws(() => musclesOf(['wings']), /Unknown muscle "wings"/);
+});

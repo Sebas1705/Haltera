@@ -1,5 +1,8 @@
 // Renders catalog/ATTRIBUTION.md, shown in the app under Settings -> Credits.
 
+/** Markdown table cell: pipes escaped, line breaks flattened. */
+const cell = (value) => String(value).replace(/\|/g, '\\|').replace(/\s*\n\s*/g, ' ');
+
 export function renderAttribution({ sources, usedWger }) {
   const lines = [
     '# Exercise catalogue attribution',
@@ -16,7 +19,7 @@ export function renderAttribution({ sources, usedWger }) {
     '',
     '| wger exercise | English | Spanish | Licence | Author |',
     '|---|---|---|---|---|',
-    ...usedWger.map((w) => `| [${w.wgerId}](https://wger.de/exercise/${w.wgerId}/view/) | ${w.en} | ${w.es} | ${w.license} | ${w.author} |`),
+    ...usedWger.map((w) => `| [${w.wgerId}](https://wger.de/exercise/${w.wgerId}/view/) | ${cell(w.en)} | ${cell(w.es)} | ${cell(w.license)} | ${cell(w.author)} |`),
     '',
     '## Ironlog',
     '',

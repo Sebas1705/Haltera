@@ -32,7 +32,7 @@ export function reduceWger(results) {
 /** Map nameKey -> entry over English names and aliases; the lowest wger id wins on collisions. */
 export function indexWger(entries) {
   const index = new Map();
-  for (const entry of entries) {
+  for (const entry of [...entries].sort((a, b) => a.wgerId - b.wgerId)) {
     for (const name of [entry.en, ...entry.enAliases]) {
       const key = nameKey(name);
       if (key && !index.has(key)) index.set(key, entry);

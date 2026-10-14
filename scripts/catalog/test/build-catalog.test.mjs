@@ -115,3 +115,22 @@ test('a patched category drives the null-equipment default', () => {
   const { catalog } = run({ sources, es: es(['Hip_Stretch']), overrides: { ...base, patches: { Hip_Stretch: { category: 'STRENGTH' } } } });
   assert.equal(catalog.exercises[0].variants[0].equipment, 'BODYWEIGHT');
 });
+
+test('the hash changes when the content changes', () => {
+  const a = run({ sources: [source('Barbell_Curl')], es: es(['Barbell_Curl']) });
+  const b = run({ sources: [source('Barbell_Curl', { level: 'expert' })], es: es(['Barbell_Curl']) });
+  assert.notEqual(a.catalog.contentHash, b.catalog.contentHash);
+});
+
+test('group error paths', () => {
+  const group = (variants) => ({ ...base, groups: [{ id: 'g', name: { en: 'G', es: 'G' }, variants }] });
+  assert.throws(() => run({ sources: [source('A')], overrides: group([{ source: 'Missing' }]) }), /unknown source "Missing"/);
+  assert.throws(() => run({ sources: [source('A')], overrides: { ...group([{ source: 'A' }]), exclude: ['A'] } }), /source "A" is excluded/);
+  assert.throws(() => run({ sources: [], overrides: group([{ suffix: 'band', equipment: 'BAND' }]) }), /needs at least one source variant/);
+});
+
+test('a variant equipment override recomputes the load type', () => {
+  const overrides = { ...base, groups: [{ id: 'press', name: { en: 'Press', es: 'Press' }, variants: [{ source: 'Kb_Press', equipment: 'KETTLEBELL' }] }] };
+  const { catalog } = run({ sources: [source('Kb_Press')], es: es(['Kb_Press']), overrides });
+  assert.deepEqual(catalog.exercises[0].variants.map((v) => [v.id, v.equipment, v.loadType]), [['press.kettlebell', 'KETTLEBELL', 'DUMBBELL']]);
+});

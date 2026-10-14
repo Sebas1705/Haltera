@@ -54,3 +54,22 @@ test('Spanish steps without English steps are reported', () => {
   const errors = validateCatalog(catalog([exercise({ instructions: { en: [], es: ['b'] } })]));
   assert.ok(errors.some((e) => e.includes('instructions.es has 1 steps, instructions.en has 0')));
 });
+
+test('ids must be kebab-case', () => {
+  const errors = validateCatalog(catalog([exercise({ id: 'Bench_Press', variants: [variant({ id: 'Bench_Press.Barbell' })] })]));
+  assert.ok(errors.some((e) => e.includes('Bench_Press: exercise id is not kebab-case')));
+  assert.ok(errors.some((e) => e.includes('Bench_Press.Barbell: variant id')));
+});
+
+test('BODYWEIGHT_REPS needs a bodyweight, band or machine load', () => {
+  const ok = exercise({ trackingType: 'BODYWEIGHT_REPS', variants: [variant({ id: 'bench-press.band', equipment: 'BAND', loadType: 'BAND' })] });
+  assert.deepEqual(validateCatalog(catalog([ok])), []);
+  const errors = validateCatalog(catalog([exercise({ trackingType: 'BODYWEIGHT_REPS' })]));
+  assert.ok(errors.some((e) => e.includes('BODYWEIGHT_REPS exercise with loadType BARBELL')));
+});
+
+test('catalogVersion must be a positive integer and primary muscles non-empty', () => {
+  assert.ok(validateCatalog({ ...catalog([exercise()]), catalogVersion: 0 }).includes('catalogVersion must be a positive integer'));
+  assert.ok(validateCatalog({ ...catalog([exercise()]), catalogVersion: '1' }).includes('catalogVersion must be a positive integer'));
+  assert.ok(validateCatalog(catalog([exercise({ primaryMuscles: [] })])).includes('bench-press: no primary muscles'));
+});

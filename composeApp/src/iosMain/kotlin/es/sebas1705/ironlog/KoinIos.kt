@@ -2,6 +2,8 @@ package es.sebas1705.ironlog
 
 import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
 import es.sebas1705.ironlog.di.appModules
+import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.ironlog.share.IosRoutineShareBridge
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -11,6 +13,11 @@ import org.koin.dsl.module
  */
 fun startIronlogKoin() {
     startKoin {
-        modules(appModules + module { single { DatabaseDriverFactory() } })
+        modules(
+            appModules + module {
+                single { DatabaseDriverFactory() }
+                single<RoutineShareBridge> { IosRoutineShareBridge(get()) }
+            },
+        )
     }
 }

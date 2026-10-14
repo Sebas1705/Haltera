@@ -45,6 +45,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)
+            // QR scanning for routine import, without the camera permission (Google code scanner UI).
+            implementation(libs.play.services.code.scanner)
         }
     }
 }

@@ -75,9 +75,12 @@ class FakeSessionRepository(private val clock: TestClock) : SessionRepository {
 
     override suspend fun getSession(id: String): WorkoutSession? = sessions.value[id]
 
-    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int): String = error("unused")
+    override fun observeLatestForRoutine(routineId: String): Flow<WorkoutSession?> = error("unused")
 
-    override suspend fun startFree(): String = error("unused")
+    override suspend fun startFromRoutineDay(routineId: String, dayIndex: Int, startedAt: Long?): String =
+        error("unused")
+
+    override suspend fun startFree(startedAt: Long?): String = error("unused")
 
     override suspend fun addExercise(sessionId: String, variantId: String, slotId: String?): String {
         val newId = id("ex")
@@ -150,11 +153,11 @@ class FakeSessionRepository(private val clock: TestClock) : SessionRepository {
     var finished = 0
         private set
 
-    override suspend fun finish(sessionId: String) {
+    override suspend fun finish(sessionId: String, endedAt: Long?) {
         val session = sessions.value[sessionId] ?: return
         if (!session.inProgress) return
         finished++
-        val ended = session.copy(endedAt = clock.now)
+        val ended = session.copy(endedAt = endedAt ?: clock.now)
         editSession(sessionId) { ended }
         ended.exercises.forEach { history.add(0, ExerciseHistoryEntry(sessionId, ended.startedAt, it)) }
     }
@@ -169,11 +172,24 @@ class FakeSessionRepository(private val clock: TestClock) : SessionRepository {
         emptyList()
     )
 
-    override suspend fun lastForSlotAndVariant(slotId: String, variantId: String, limit: Int): List<ExerciseHistoryEntry> =
-        history.filter { it.exercise.slotId == slotId && it.exercise.variantId == variantId }.take(limit)
+    override suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?) =
+        editSession(sessionId) { it.copy(startedAt = startedAt, endedAt = endedAt) }
 
-    override suspend fun lastForVariant(variantId: String, limit: Int): List<ExerciseHistoryEntry> =
-        history.filter { it.exercise.variantId == variantId }.take(limit)
+    override suspend fun lastForSlotAndVariant(
+        slotId: String,
+        variantId: String,
+        limit: Int,
+        before: Long?,
+    ): List<ExerciseHistoryEntry> = history(before).filter {
+        it.exercise.slotId == slotId && it.exercise.variantId == variantId
+    }.take(limit)
+
+    override suspend fun lastForVariant(variantId: String, limit: Int, before: Long?): List<ExerciseHistoryEntry> =
+        history(before).filter { it.exercise.variantId == variantId }.take(limit)
+
+    /** Like the SQL: latest start first, only sessions started before [before]. */
+    private fun history(before: Long?) =
+        history.filter { before == null || it.sessionStartedAt < before }.sortedByDescending { it.sessionStartedAt }
 
     private fun SetInput.toLog(id: String, exerciseId: String, position: Int) = SetLog(
         id = id,

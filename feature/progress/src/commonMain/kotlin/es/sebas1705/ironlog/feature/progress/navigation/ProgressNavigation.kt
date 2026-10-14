@@ -17,14 +17,15 @@ import org.koin.core.parameter.parametersOf
 @Serializable
 data object ProgressRoute
 
-/** Read-only detail of a finished session (nested in the Progress tab). */
+/** Detail of a saved session, with its edit actions (nested in the Progress tab). */
 @Serializable
 internal data class ProgressSessionRoute(val sessionId: String)
 
 /**
  * Registers the progress destinations. The app shell calls this from its NavHost.
  * [onOpenSession] opens a session (in progress or finished) in feature:session; Progress uses it for
- * sessions still in progress and shows finished ones in its own read-only detail.
+ * sessions still in progress, for a session just logged on a calendar day and for "Edit sets" of a saved
+ * one (feature:session opens it in log mode); finished sessions show in its own detail.
  */
 fun NavGraphBuilder.progressGraph(
     navController: NavController,
@@ -32,6 +33,7 @@ fun NavGraphBuilder.progressGraph(
 ) {
     composable<ProgressRoute> {
         ProgressScreen(
+            onOpenSessionId = onOpenSession,
             onOpenSession = { session ->
                 if (session.inProgress) {
                     onOpenSession(session.id)
@@ -44,6 +46,11 @@ fun NavGraphBuilder.progressGraph(
     composable<ProgressSessionRoute> { entry ->
         val sessionId = entry.toRoute<ProgressSessionRoute>().sessionId
         val viewModel = koinViewModel<SessionDetailViewModel> { parametersOf(sessionId) }
-        SessionDetailScreen(viewModel = viewModel, onBack = { navController.popBackStack() })
+        SessionDetailScreen(
+            viewModel = viewModel,
+            onBack = { navController.popBackStack() },
+            // Editing sets opens the saved session in feature:session, which derives log mode from it.
+            onEditSets = { onOpenSession(sessionId) },
+        )
     }
 }

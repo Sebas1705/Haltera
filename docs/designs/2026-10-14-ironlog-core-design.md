@@ -127,7 +127,9 @@ The calendar is derived from `WorkoutSession` rows; there is no calendar table.
 
 ### 3.4 Cycle position
 
-Sequential, never date-anchored: the next suggested day is the day after the last *completed* training day of the active routine, skipping `REST` days (rest days are informational — "today the plan says rest"). The user can always pick a different day or start a free session. Completing day k sets the pointer to k + 1 (mod N). Changing a routine's structure clamps the pointer to a valid day.
+Sequential, never date-anchored: the next suggested day is the day after the routine's most recent session by `startedAt` (finished or not), skipping `REST` days (rest days are informational — "today the plan says rest"). The pointer is derived from the sessions, not stored, so logging past sessions in any order, editing a session's date or deleting one keeps it right: if the latest session trained day k, the next day is k + 1 (mod N). The user can always pick a different day or start a free session. Picking the next day in Today stores a manual override (`nextDayIndex` + `nextDayIndexSetAt`) that wins until a session of the routine starts after it. Changing a routine's structure clamps the pointer to a valid day.
+
+**Logbook, not coach.** Any session can be logged after the fact (any date, any routine day or free) and everything stays editable afterwards: date and time, duration, exercises, sets and loads. The only confirmation is before a delete. History reads (prefill, progression, PRs) are ordered by `startedAt` and a session only sees sessions that started before it.
 
 ### 3.5 Progression engine
 
@@ -176,7 +178,8 @@ Suggestions are never applied silently: the next session prefills the suggested 
 - **Keep screen on** during the session, configurable.
 - **Entry.** Each set is prefilled from the last session of that slot/variant or the progression suggestion; confirming is one tap. The load keypad adapts to `loadType` (barbell: total ↔ plates per side; machine: kg or plate #; bodyweight: +/− selector; band: level). Flexible slots show the variant picker when reached, with the last load for each variant.
 - **Editing during a session** (add, remove, reorder, substitute an exercise, add sets) changes the session only. On finish, if it diverged from the routine, the app offers "Save changes to routine?".
-- **Finish** shows a summary (duration, volume, PRs, progression suggestions earned) and advances the cycle pointer.
+- **Finish** shows a summary (duration, volume, PRs, progression suggestions earned); the cycle follows from the session (§3.4).
+- **Log mode.** A session already saved, or one in progress started more than 12 h ago, opens in log mode: the same editor without rest timer, notifications, foreground service or keep-screen-on, titled with its date, and "Save" instead of "Finish" (it keeps the saved end time; a never-ended session gets 60 min). Past sessions are created already saved with their start and duration (Today "Log past session", Progress "Add session on this day"), then open in log mode; Progress "Edit sets" opens a saved session the same way. The mode is derived from the session, so `SessionRoute(sessionId)` is unchanged.
 
 ## 6. Exercise catalogue and media
 

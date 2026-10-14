@@ -1,4 +1,5 @@
--- Routines (spec §3.2). At most one row has isActive = 1; nextDayIndex is the cycle pointer (spec §3.4).
+-- Routines (spec §3.2). At most one row has isActive = 1. nextDayIndex is the manual cycle override
+-- (spec §3.4): it applies only while no session of the routine started after nextDayIndexSetAt.
 CREATE TABLE RoutineEntity (
     id               TEXT NOT NULL PRIMARY KEY,
     name             TEXT NOT NULL,
@@ -8,7 +9,10 @@ CREATE TABLE RoutineEntity (
     isActive         INTEGER NOT NULL DEFAULT 0, -- 0/1
     nextDayIndex     INTEGER NOT NULL DEFAULT 0, -- 0-based day position, clamped on read
     createdAt        INTEGER NOT NULL,
-    updatedAt        INTEGER NOT NULL
+    updatedAt        INTEGER NOT NULL,
+    -- Added in migration 1 (so it is last, as ALTER TABLE leaves it): epoch millis of the manual override;
+    -- null when never set.
+    nextDayIndexSetAt INTEGER
 );
 
 insert:
@@ -39,5 +43,10 @@ UPDATE RoutineEntity SET isActive = 0 WHERE isActive = 1;
 markActive:
 UPDATE RoutineEntity SET isActive = 1 WHERE id = ?;
 
+-- Manual override of the next day (Today's day picker), stamped with when it was chosen.
 setNextDayIndex:
+UPDATE RoutineEntity SET nextDayIndex = :nextDayIndex, nextDayIndexSetAt = :setAt WHERE id = :id;
+
+-- Keeps the override in range after a day is deleted, without changing when it was chosen.
+clampNextDayIndex:
 UPDATE RoutineEntity SET nextDayIndex = :nextDayIndex WHERE id = :id;

@@ -34,7 +34,11 @@ private enum class ProgressTab(val label: StringResource) {
 
 /** Root of the Progress tab (the shell draws the top bar): calendar, exercises, body weight and volume. */
 @Composable
-internal fun ProgressScreen(onOpenSession: (SessionSummary) -> Unit, modifier: Modifier = Modifier) {
+internal fun ProgressScreen(
+    onOpenSession: (SessionSummary) -> Unit,
+    onOpenSessionId: (sessionId: String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     var selected by rememberSaveable { mutableIntStateOf(0) }
     Column(modifier.fillMaxSize()) {
         PrimaryScrollableTabRow(selectedTabIndex = selected, edgePadding = 8.dp) {
@@ -47,7 +51,7 @@ internal fun ProgressScreen(onOpenSession: (SessionSummary) -> Unit, modifier: M
             }
         }
         when (ProgressTab.entries[selected]) {
-            ProgressTab.CALENDAR -> CalendarTab(onOpenSession)
+            ProgressTab.CALENDAR -> CalendarTab(onOpenSession, onLogged = onOpenSessionId)
             ProgressTab.EXERCISES -> ExerciseProgressTab()
             ProgressTab.BODY_WEIGHT -> BodyWeightTab()
             ProgressTab.VOLUME -> MuscleVolumeTab()

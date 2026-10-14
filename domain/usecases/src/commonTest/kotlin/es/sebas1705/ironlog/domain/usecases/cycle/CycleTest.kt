@@ -3,6 +3,7 @@ package es.sebas1705.ironlog.domain.usecases.cycle
 import es.sebas1705.ironlog.data.models.DayKind
 import es.sebas1705.ironlog.data.models.Routine
 import es.sebas1705.ironlog.data.models.RoutineDay
+import es.sebas1705.ironlog.data.models.WorkoutSession
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -61,5 +62,62 @@ class CycleTest {
     fun `routine overload uses its pointer`() {
         val routine = Routine(id = "r", name = "R", days = days(r, t), nextDayIndex = 0)
         assertEquals(1, Cycle.nextPendingDay(routine)!!.dayIndex)
+    }
+
+    // Derived pointer: the day after the routine's most recent session by startedAt.
+
+    private val routine = Routine(id = "r", name = "R", days = days(t, t, r, t))
+
+    private fun session(id: String, dayIndex: Int, startedAt: Long, routineId: String = "r") =
+        WorkoutSession(id, startedAt, endedAt = startedAt + 1, routineId = routineId, routineDayIndex = dayIndex)
+
+    private fun next(routine: Routine, logged: List<WorkoutSession>): Int? =
+        Cycle.nextPendingDay(routine, Cycle.latestOf(routine.id, logged))?.dayIndex
+
+    @Test
+    fun `logging past days in order advances the cycle`() {
+        val logged = mutableListOf<WorkoutSession>()
+        assertEquals(0, next(routine, logged))
+        logged += session("a", 0, startedAt = 1_000)
+        assertEquals(1, next(routine, logged))
+        logged += session("b", 1, startedAt = 2_000)
+        // Day 2 is a rest day: skipped and reported.
+        val nextDay = Cycle.nextPendingDay(routine, Cycle.latestOf("r", logged))!!
+        assertEquals(3, nextDay.dayIndex)
+        assertTrue(nextDay.planSaysRest)
+        logged += session("c", 3, startedAt = 3_000)
+        assertEquals(0, next(routine, logged))
+    }
+
+    @Test
+    fun `logging past days out of order follows the latest start, not the latest insert`() {
+        val logged = mutableListOf(session("late", 1, startedAt = 5_000))
+        assertEquals(3, next(routine, logged))
+        // An older day logged afterwards does not move the cycle back.
+        logged += session("early", 3, startedAt = 1_000)
+        assertEquals(3, next(routine, logged))
+        // Other routines and free sessions are ignored.
+        logged += session("other", 0, startedAt = 9_000, routineId = "x")
+        logged += WorkoutSession("free", startedAt = 9_500)
+        assertEquals(3, next(routine, logged))
+    }
+
+    @Test
+    fun `a manual override wins until a newer session starts`() {
+        val logged = mutableListOf(session("a", 0, startedAt = 1_000))
+        val overridden = routine.copy(nextDayIndex = 3, nextDayIndexSetAt = 2_000)
+        assertEquals(3, next(overridden, logged))
+        // A past session older than the override does not cancel it.
+        logged += session("past", 1, startedAt = 1_500)
+        assertEquals(3, next(overridden, logged))
+        // A session started after the override takes over again.
+        logged += session("new", 3, startedAt = 2_500)
+        assertEquals(0, next(overridden, logged))
+    }
+
+    @Test
+    fun `without sessions the override (or day 0) is used`() {
+        assertEquals(0, next(routine, emptyList()))
+        assertEquals(1, next(routine.copy(nextDayIndex = 1, nextDayIndexSetAt = 5), emptyList()))
     }
 }

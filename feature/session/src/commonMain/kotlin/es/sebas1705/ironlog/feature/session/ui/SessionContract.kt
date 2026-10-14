@@ -60,6 +60,9 @@ data class ExercisePicker(val query: String = "", val results: List<Exercise> = 
 sealed interface SessionDialog {
     data object ConfirmFinish : SessionDialog
     data object ConfirmDiscard : SessionDialog
+
+    /** Log mode: deleting a saved session. */
+    data object ConfirmDelete : SessionDialog
     data object AddExercise : SessionDialog
 }
 
@@ -84,22 +87,35 @@ data class SessionState(
     val dayName: String? = null,
     val startedAt: Long = 0,
     val endedAt: Long? = null,
+    /**
+     * Log mode: the session is being logged or edited after the fact (already saved, or started more than
+     * [SessionViewModel.LOG_MODE_AFTER_MS] ago). No rest timer, notifications, foreground service or
+     * keep-screen-on; "Save" instead of "Finish"; the title shows the date. Decided once, when the session
+     * is first loaded.
+     */
+    val logMode: Boolean = false,
     val settings: UserSettings = UserSettings(),
     val cards: List<ExerciseCard> = emptyList(),
-    /** The persisted timer, only when it belongs to this session. */
+    /** The persisted timer, only when it belongs to this session (always idle in log mode). */
     val timer: TimerSnapshot = TimerSnapshot(),
     val editor: SetEditor? = null,
     val dialog: SessionDialog? = null,
     val picker: ExercisePicker = ExercisePicker(),
     val summary: FinishSummary? = null,
-    /** Finishing: writes in flight. */
+    /** Finishing or saving: writes in flight. */
     val busy: Boolean = false,
-    /** Finished in this screen (not a past session opened later): "Done" leaves via `onFinished`. */
+    /** Finished live in this screen: "Done" leaves via `onFinished` (back to Today). */
     val finishedHere: Boolean = false,
-    /** Discarded in this screen: the screen leaves via `onFinished`. */
+    /** Discarded (or deleted, in log mode) in this screen: the screen leaves. */
     val discarded: Boolean = false,
 ) : MVIBaseState {
     val inProgress: Boolean get() = !loading && !missing && endedAt == null
+
+    /** A live session in progress: rest timer, notifications and keep-screen-on apply. */
+    val live: Boolean get() = inProgress && !logMode
+
+    /** Sets and exercises can be changed: a live session, or any session in log mode until it is saved. */
+    val editable: Boolean get() = !loading && !missing && summary == null && (endedAt == null || logMode)
 
     /** The exercise being worked: the first one with a pending set, else the first without sets. */
     val currentCardId: String?
@@ -138,6 +154,10 @@ sealed interface SessionIntent : MVIBaseIntent {
     data object SkipRest : SessionIntent
 
     data object RequestFinish : SessionIntent
+
+    /** Log mode: keeps the completed sets and shows the summary (no confirmation). */
+    data object Save : SessionIntent
+
     data object ConfirmFinish : SessionIntent
     data object RequestDiscard : SessionIntent
     data object ConfirmDiscard : SessionIntent

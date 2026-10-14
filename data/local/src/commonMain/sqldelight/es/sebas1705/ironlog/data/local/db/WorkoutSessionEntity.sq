@@ -19,6 +19,10 @@ VALUES (?, ?, NULL, ?, ?, ?, '', NULL);
 finish:
 UPDATE WorkoutSessionEntity SET endedAt = :endedAt WHERE id = :id AND endedAt IS NULL;
 
+-- Start and end can be changed at any time: everything stays editable.
+updateTimes:
+UPDATE WorkoutSessionEntity SET startedAt = :startedAt, endedAt = :endedAt WHERE id = :id;
+
 updateNotes:
 UPDATE WorkoutSessionEntity SET notes = :notes WHERE id = :id;
 
@@ -30,6 +34,10 @@ SELECT * FROM WorkoutSessionEntity WHERE id = ?;
 
 selectInProgress:
 SELECT * FROM WorkoutSessionEntity WHERE endedAt IS NULL ORDER BY startedAt DESC LIMIT 1;
+
+-- The routine's most recent session by start time, finished or not (drives the cycle, spec §3.4).
+selectLatestForRoutine:
+SELECT * FROM WorkoutSessionEntity WHERE routineId = ? ORDER BY startedAt DESC LIMIT 1;
 
 selectFinished:
 SELECT * FROM WorkoutSessionEntity WHERE endedAt IS NOT NULL ORDER BY startedAt DESC LIMIT :limit;

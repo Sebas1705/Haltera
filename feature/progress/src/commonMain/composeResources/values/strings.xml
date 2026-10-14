@@ -169,4 +169,23 @@
     <string name="progress_equipment_cardio_machine">Cardio machine</string>
     <string name="progress_equipment_other">Other</string>
     <string name="progress_equipment_none">No equipment</string>
+
+    <string name="progress_add_session">Add session on this day</string>
+    <string name="progress_log_failed">Could not log the session</string>
+    <string name="progress_log_title">Log a session</string>
+    <string name="progress_log_date">Date</string>
+    <string name="progress_log_start">Start time</string>
+    <string name="progress_log_duration">Duration (min)</string>
+    <string name="progress_log_trained">What did you train?</string>
+    <string name="progress_log_day">Day %1$d · %2$s</string>
+    <string name="progress_log_other">Other</string>
+    <string name="progress_log_confirm">Log</string>
+    <string name="progress_ok">OK</string>
+    <string name="progress_edit_sets">Edit sets</string>
+    <string name="progress_edit_times">Edit date and time</string>
+    <string name="progress_delete_session">Delete session</string>
+    <string name="progress_delete_session_title">Delete this session?</string>
+    <string name="progress_delete_session_text">Its exercises and sets are deleted for good.</string>
+    <string name="progress_more">More options</string>
+    <string name="progress_change_failed">Could not save the change</string>
 </resources>

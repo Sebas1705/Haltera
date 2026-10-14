@@ -65,7 +65,7 @@ internal class SqlRoutineRepository(
     override suspend fun setNextDayIndex(routineId: String, index: Int) = write {
         val count = db.routineDayEntityQueries.countByRoutine(routineId).executeAsOne().toInt()
         val clamped = if (count == 0) 0 else index.coerceIn(0, count - 1)
-        db.routineEntityQueries.setNextDayIndex(nextDayIndex = clamped.toLong(), id = routineId)
+        db.routineEntityQueries.setNextDayIndex(nextDayIndex = clamped.toLong(), setAt = now(), id = routineId)
     }
 
     override suspend fun addDay(routineId: String, name: String, kind: DayKind): String = io {
@@ -93,7 +93,7 @@ internal class SqlRoutineRepository(
             days.forEachIndexed { index, day -> db.routineDayEntityQueries.setPosition(index.toLong(), day.id) }
             val routine = db.routineEntityQueries.selectById(routineId).executeAsOne()
             val clamped = if (days.isEmpty()) 0L else routine.nextDayIndex.coerceIn(0L, days.lastIndex.toLong())
-            db.routineEntityQueries.setNextDayIndex(nextDayIndex = clamped, id = routineId)
+            db.routineEntityQueries.clampNextDayIndex(nextDayIndex = clamped, id = routineId)
             touch(routineId)
         }
     }

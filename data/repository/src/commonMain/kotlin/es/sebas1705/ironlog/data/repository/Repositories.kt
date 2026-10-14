@@ -84,7 +84,10 @@ interface RoutineRepository {
     /** Makes [id] the only active routine; null deactivates all. */
     suspend fun setActive(id: String?)
 
-    /** Sets the cycle pointer; clamped to the routine's days. */
+    /**
+     * Manual override of the next day (Today's day picker), clamped to the routine's days and stamped
+     * with now. It applies until a session of the routine starts after it (spec §3.4, `Cycle`).
+     */
     suspend fun setNextDayIndex(routineId: String, index: Int)
 
     /** Appends a day and returns its id. */
@@ -115,7 +118,7 @@ interface RoutineRepository {
 }
 
 /** Workout sessions (spec §3.3, §5). Every write is persisted immediately. */
-@Suppress("TooManyFunctions") // One method per live-session operation.
+@Suppress("TooManyFunctions") // One method per session operation.
 interface SessionRepository {
     /** The session in progress (endedAt == null) with exercises and sets, or null. */
     fun observeInProgress(): Flow<WorkoutSession?>
@@ -127,14 +130,24 @@ interface SessionRepository {
     suspend fun getSession(id: String): WorkoutSession?
 
     /**
-     * Starts a session for day [dayIndex] of a routine, with one exercise per slot and no sets. A flexible
-     * slot uses the variant last used in that slot, else its first allowed variant, else the exercise's
-     * first variant. If a session is already in progress, nothing is created and its id is returned.
+     * The routine's most recent session by `startedAt`, finished or not, or null. It drives the cycle
+     * (spec §3.4): the next day is the one after it.
      */
-    suspend fun startFromRoutineDay(routineId: String, dayIndex: Int): String
+    fun observeLatestForRoutine(routineId: String): Flow<WorkoutSession?>
 
-    /** Starts an empty free session, or returns the id of the one in progress. */
-    suspend fun startFree(): String
+    /**
+     * Starts a session for day [dayIndex] of a routine, with one exercise per slot and no sets. A flexible
+     * slot uses the variant last used in that slot (before the start), else its first allowed variant,
+     * else the exercise's first variant.
+     *
+     * A live start ([startedAt] null) starts now; if a session is already in progress, nothing is created
+     * and its id is returned. A start at a given time (a past session being logged) always creates a new
+     * session, whatever is in progress.
+     */
+    suspend fun startFromRoutineDay(routineId: String, dayIndex: Int, startedAt: Long? = null): String
+
+    /** Starts an empty free session; same [startedAt] rules as [startFromRoutineDay]. */
+    suspend fun startFree(startedAt: Long? = null): String
 
     /** Appends an exercise to a session and returns its id. */
     suspend fun addExercise(sessionId: String, variantId: String, slotId: String? = null): String
@@ -148,7 +161,10 @@ interface SessionRepository {
 
     suspend fun updateExerciseNotes(sessionExerciseId: String, notes: String)
 
-    /** Appends a set and returns its id; `completedAt` is set now when the input is completed. */
+    /**
+     * Appends a set and returns its id; `completedAt` is set now when the input is completed. Works on
+     * finished sessions too (editing a saved session never reopens it).
+     */
     suspend fun logSet(sessionExerciseId: String, input: SetInput): String
 
     /** Replaces a set's values; `completedAt` is kept, set now, or cleared to match `completed`. */
@@ -159,25 +175,40 @@ interface SessionRepository {
     suspend fun updateSessionNotes(sessionId: String, notes: String)
 
     /**
-     * Ends the session. For a routine session, the routine's cycle pointer moves to the day after the
-     * one trained (mod the number of days, spec §3.4). Finishing twice does nothing.
+     * Ends the session at [endedAt] (now if null). Finishing twice does nothing: the first end time is
+     * kept (use [updateTimes] to change it). The cycle needs no update: it is derived from the sessions.
      */
-    suspend fun finish(sessionId: String)
+    suspend fun finish(sessionId: String, endedAt: Long? = null)
+
+    /**
+     * Changes when a session started and ended ([endedAt] null makes it in progress again). An end
+     * before the start is moved to the start.
+     */
+    suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?)
 
     /** Deletes a session with its exercises and sets (e.g. a discarded session). */
     suspend fun deleteSession(sessionId: String)
 
-    /** Finished sessions with exercises and sets, latest first. */
+    /** Finished sessions with exercises and sets, latest `startedAt` first. */
     fun observeHistory(limit: Int = DEFAULT_LIMIT): Flow<List<WorkoutSession>>
 
     /** Sessions (any state) with exercises and sets started in [fromMillis, toMillis), oldest first. */
     fun observeSessionsBetween(fromMillis: Long, toMillis: Long): Flow<List<WorkoutSession>>
 
-    /** Last finished performances of a routine slot with one variant, latest first (progression input). */
-    suspend fun lastForSlotAndVariant(slotId: String, variantId: String, limit: Int = 10): List<ExerciseHistoryEntry>
+    /**
+     * Last finished performances of a routine slot with one variant, latest `startedAt` first
+     * (progression input). [before] keeps only sessions started strictly before it (a past session's
+     * prefill must not see what came after it); null means no bound.
+     */
+    suspend fun lastForSlotAndVariant(
+        slotId: String,
+        variantId: String,
+        limit: Int = 10,
+        before: Long? = null,
+    ): List<ExerciseHistoryEntry>
 
-    /** Last finished performances of a variant in any context, latest first (set prefill). */
-    suspend fun lastForVariant(variantId: String, limit: Int = 10): List<ExerciseHistoryEntry>
+    /** Last finished performances of a variant in any context, latest first (set prefill); [before] as above. */
+    suspend fun lastForVariant(variantId: String, limit: Int = 10, before: Long? = null): List<ExerciseHistoryEntry>
 
     companion object {
         const val DEFAULT_LIMIT = 200

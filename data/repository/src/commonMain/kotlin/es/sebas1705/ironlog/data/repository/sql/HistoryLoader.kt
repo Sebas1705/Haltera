@@ -42,22 +42,30 @@ internal class HistoryLoader(private val db: AppDatabase) {
         }
     }
 
-    fun byVariant(variantId: String, limit: Int): List<ExerciseHistoryEntry> = entries(
-        db.sessionExerciseEntityQueries.historyByVariant(variantId, limit.toLong(), ::HistoryRow).executeAsList(),
+    // History is ordered by session start (not insertion) and limited to sessions started before [before].
+
+    fun byVariant(variantId: String, limit: Int, before: Long? = null): List<ExerciseHistoryEntry> = entries(
+        db.sessionExerciseEntityQueries.historyByVariant(variantId, bound(before), limit.toLong(), ::HistoryRow)
+            .executeAsList(),
     )
 
     fun byExercise(exerciseId: String, limit: Int): List<ExerciseHistoryEntry> = entries(
-        db.sessionExerciseEntityQueries.historyByExercise(exerciseId, limit.toLong(), ::HistoryRow).executeAsList(),
+        db.sessionExerciseEntityQueries.historyByExercise(exerciseId, bound(null), limit.toLong(), ::HistoryRow)
+            .executeAsList(),
     )
 
-    fun bySlotAndVariant(slotId: String, variantId: String, limit: Int): List<ExerciseHistoryEntry> = entries(
-        db.sessionExerciseEntityQueries.historyBySlotAndVariant(
-            slotId,
-            variantId,
-            limit.toLong(),
-            ::HistoryRow
-        ).executeAsList(),
-    )
+    fun bySlotAndVariant(slotId: String, variantId: String, limit: Int, before: Long? = null): List<ExerciseHistoryEntry> =
+        entries(
+            db.sessionExerciseEntityQueries.historyBySlotAndVariant(
+                slotId,
+                variantId,
+                bound(before),
+                limit.toLong(),
+                ::HistoryRow,
+            ).executeAsList(),
+        )
+
+    private fun bound(before: Long?): Long = before ?: Long.MAX_VALUE
 
     private fun entries(rows: List<HistoryRow>): List<ExerciseHistoryEntry> {
         val exercises = withSets(rows.map { it.exercise }).associateBy { it.id }

@@ -81,3 +81,20 @@ test('null entries and non-string names are reported instead of crashing', () =>
   assert.ok(errors.some((e) => e.includes('bench-press: missing name.es')));
   assert.ok(errors.some((e) => e.includes('bench-press: variant entry must be an object')));
 });
+
+test('variants sharing equipment need distinct names', () => {
+  const twoCables = (a, b) => exercise({ variants: [
+    variant({ id: 'bench-press.wide', equipment: 'CABLE', loadType: 'MACHINE', name: a }),
+    variant({ id: 'bench-press.close', equipment: 'CABLE', loadType: 'MACHINE', name: b }),
+  ] });
+  const unnamed = validateCatalog(catalog([twoCables(null, { en: 'Close', es: 'Cerrado' })]));
+  assert.ok(unnamed.some((e) => e.includes('bench-press.wide: variants sharing CABLE need a name')));
+  const same = validateCatalog(catalog([twoCables({ en: 'Grip', es: 'Agarre' }, { en: 'Grip', es: 'Otro' })]));
+  assert.ok(same.some((e) => e.includes('bench-press: duplicate variant name.en "Grip"')));
+  assert.deepEqual(validateCatalog(catalog([twoCables({ en: 'Wide', es: 'Ancho' }, { en: 'Close', es: 'Cerrado' })])), []);
+});
+
+test('a variant name must have en and es', () => {
+  const errors = validateCatalog(catalog([exercise({ variants: [variant({ name: { en: 'Wide' } })] })]));
+  assert.ok(errors.some((e) => e.includes('bench-press.barbell: variant name needs en and es')));
+});

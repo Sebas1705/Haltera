@@ -19,6 +19,12 @@ exclude:
   - Reverse_Band_Deadlift
   - Reverse_Band_Power_Squat
   - Reverse_Band_Sumo_Deadlift
+  - Floor_Press_with_Chains
+  - Chain_Press
+  - Chain_Handle_Extension
+# Duplicates of other source exercises.
+  - Jogging_Treadmill
+  - Two-Arm_Kettlebell_Jerk
 
 # Per-source corrections applied before grouping.
 patches:
@@ -147,10 +153,13 @@ groups:
     variants:
       - source: Wide-Grip_Lat_Pulldown
         suffix: wide-grip
+        name: { en: Wide grip, es: Agarre ancho }
       - source: Close-Grip_Front_Lat_Pulldown
         suffix: close-grip
+        name: { en: Close grip, es: Agarre cerrado }
       - source: V-Bar_Pulldown
         suffix: v-bar
+        name: { en: V-bar, es: Con barra en V }
   - id: biceps-curl
     name: { en: Biceps Curl, es: Curl de bíceps }
     variants:
@@ -162,7 +171,7 @@ groups:
   - id: hammer-curl
     name: { en: Hammer Curl, es: Curl martillo }
     variants:
-      - source: Alternate_Hammer_Curl
+      - source: Hammer_Curls
       - source: Cable_Hammer_Curls_-_Rope_Attachment
   - id: preacher-curl
     name: { en: Preacher Curl, es: Curl en banco Scott }
@@ -176,10 +185,13 @@ groups:
     variants:
       - source: Triceps_Pushdown
         suffix: bar
+        name: { en: Bar, es: Con barra }
       - source: Triceps_Pushdown_-_Rope_Attachment
         suffix: rope
+        name: { en: Rope, es: Con cuerda }
       - source: Triceps_Pushdown_-_V-Bar_Attachment
         suffix: v-bar
+        name: { en: V-bar, es: Con barra en V }
   - id: skull-crusher
     name: { en: Skull Crusher, es: Press francés }
     variants:
@@ -245,14 +257,30 @@ groups:
     variants:
       - source: Lying_Leg_Curls
         suffix: lying
+        name: { en: Lying, es: Tumbado }
       - source: Seated_Leg_Curl
         suffix: seated
+        name: { en: Seated, es: Sentado }
       - source: Standing_Leg_Curl
         suffix: standing
+        name: { en: Standing, es: De pie }
   - id: running
     name: { en: Running, es: Correr }
+    instructions:
+      en: ["Run at a steady pace, on a treadmill or outdoors.", "Log the distance and the total time."]
+      es: ["Corre a un ritmo constante, en cinta o al aire libre.", "Registra la distancia y el tiempo total."]
     variants:
-      - source: Jogging_Treadmill
+      - source: Running_Treadmill
+        suffix: treadmill
+      - suffix: outdoor
+        equipment: NONE
+  - id: walking
+    name: { en: Walking, es: Caminar }
+    instructions:
+      en: ["Walk at a brisk pace, on a treadmill or outdoors.", "Log the distance and the total time."]
+      es: ["Camina a paso ligero, en cinta o al aire libre.", "Registra la distancia y el tiempo total."]
+    variants:
+      - source: Walking_Treadmill
         suffix: treadmill
       - suffix: outdoor
         equipment: NONE

@@ -100,7 +100,7 @@ export function buildCatalog({ sources, wger, overrides, custom, es, lockedIds }
       level: group.level ?? primary.level,
       primaryMuscles: group.primaryMuscles ?? primary.primaryMuscles,
       secondaryMuscles: group.secondaryMuscles ?? primary.secondaryMuscles,
-      instructions: instructionsOf(primary),
+      instructions: group.instructions ?? instructionsOf(primary),
       variants,
     });
   }

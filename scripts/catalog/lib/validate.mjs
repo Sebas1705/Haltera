@@ -31,6 +31,26 @@ function checkMuscles(where, field, list, errors) {
   return list;
 }
 
+/** Variants that share equipment are told apart only by their names, so those names must exist and differ. */
+function checkVariantNames(e, errors) {
+  const variants = e.variants.filter(isObject);
+  const byEquipment = new Map();
+  for (const v of variants) byEquipment.set(v.equipment, [...(byEquipment.get(v.equipment) ?? []), v]);
+  for (const [equipment, list] of byEquipment) {
+    if (list.length < 2) continue;
+    for (const v of list) if (v.name == null) errors.push(`${v.id}: variants sharing ${equipment} need a name`);
+  }
+  for (const lang of ['en', 'es']) {
+    const seen = new Set();
+    for (const v of variants) {
+      const name = v.name?.[lang];
+      if (typeof name !== 'string') continue;
+      if (seen.has(name)) errors.push(`${e.id}: duplicate variant name.${lang} "${name}"`);
+      seen.add(name);
+    }
+  }
+}
+
 export function validateCatalog(catalog) {
   const errors = [];
   if (!Number.isInteger(catalog.catalogVersion) || catalog.catalogVersion < 1) errors.push('catalogVersion must be a positive integer');
@@ -84,7 +104,9 @@ export function validateCatalog(catalog) {
         errors.push(`${v.id}: BODYWEIGHT_REPS exercise with loadType ${v.loadType}`);
       }
       checkInstructions(v.id, v.instructions, errors, { required: false });
+      if (v.name != null && !(isText(v.name.en) && isText(v.name.es))) errors.push(`${v.id}: variant name needs en and es`);
     }
+    checkVariantNames(e, errors);
   }
   return errors;
 }

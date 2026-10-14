@@ -148,3 +148,24 @@ test('groups and custom exercises without variants are clear errors', () => {
   assert.throws(() => run({ sources: [source('A')], overrides: { ...base, groups: [{ id: 'g', name: { en: 'G', es: 'G' } }] } }), /Group g: variants must be a non-empty list/);
   assert.throws(() => run({ custom: { exercises: [{ id: 'padel', name: { en: 'Padel', es: 'Pádel' } }] } }), /Custom exercise padel: variants must be a non-empty list/);
 });
+
+test('a name-only Spanish entry is enough for a source without steps', () => {
+  const { catalog, missingEs } = run({ sources: [source('Push_Press', { instructions: [] })], es: { Push_Press: { name: 'Push press' } } });
+  assert.deepEqual(missingEs, []);
+  assert.deepEqual(catalog.exercises[0].name, { en: 'Push Press', es: 'Push press' });
+  assert.deepEqual(catalog.exercises[0].instructions, { en: [], es: [] });
+});
+
+test('group instructions override the primary source and inline variants keep null', () => {
+  const instructions = { en: ['Run.'], es: ['Corre.'] };
+  const overrides = { ...base, groups: [{ id: 'running', name: { en: 'Running', es: 'Correr' }, instructions, variants: [{ source: 'Running_Treadmill', suffix: 'treadmill' }, { suffix: 'outdoor', equipment: 'NONE' }] }] };
+  const { catalog } = run({ sources: [source('Running_Treadmill')], es: es(['Running_Treadmill']), overrides });
+  assert.deepEqual(catalog.exercises[0].instructions, instructions);
+  assert.equal(catalog.exercises[0].variants[1].instructions, null);
+});
+
+test('variant names from groups and custom exercises are kept', () => {
+  const overrides = { ...base, groups: [{ id: 'leg-curl', name: { en: 'Leg Curl', es: 'Curl femoral' }, variants: [{ source: 'Lying_Leg_Curls', suffix: 'lying', name: { en: 'Lying', es: 'Tumbado' } }] }] };
+  const { catalog } = run({ sources: [source('Lying_Leg_Curls')], es: es(['Lying_Leg_Curls']), overrides });
+  assert.deepEqual(catalog.exercises[0].variants[0].name, { en: 'Lying', es: 'Tumbado' });
+});

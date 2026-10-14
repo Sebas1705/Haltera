@@ -11,20 +11,8 @@ exercises:
       en: ["Swim at a steady pace, keeping a regular breathing rhythm.", "Log the distance and the total time."]
       es: [Nada a un ritmo constante manteniendo una respiración regular., Registra la distancia y el tiempo total.]
     variants:
-      - { suffix: pool, equipment: NONE }
-      - { suffix: open-water, equipment: NONE }
-  - id: walking
-    name: { en: Walking, es: Caminar }
-    category: CARDIO
-    trackingType: DISTANCE_TIME
-    level: BEGINNER
-    primaryMuscles: [FULL_BODY]
-    secondaryMuscles: []
-    instructions:
-      en: [Walk at a brisk pace., Log the distance and the total time.]
-      es: [Camina a paso ligero., Registra la distancia y el tiempo total.]
-    variants:
-      - { suffix: outdoor, equipment: NONE }
+      - { suffix: pool, equipment: NONE, name: { en: Pool, es: Piscina } }
+      - { suffix: open-water, equipment: NONE, name: { en: Open water, es: Aguas abiertas } }
   - id: burpee
     name: { en: Burpee, es: Burpee }
     category: PLYOMETRICS
@@ -60,8 +48,8 @@ exercises:
       en: [Support yourself on parallel bars or the floor with straight arms., Lift your legs straight in front of you until they are parallel to the floor., Hold the position.]
       es: [Apóyate en paralelas o en el suelo con los brazos estirados., Eleva las piernas estiradas al frente hasta que queden paralelas al suelo., Mantén la posición.]
     variants:
-      - { suffix: parallel-bars, equipment: BODYWEIGHT }
-      - { suffix: floor, equipment: BODYWEIGHT }
+      - { suffix: parallel-bars, equipment: BODYWEIGHT, name: { en: On parallel bars, es: En paralelas } }
+      - { suffix: floor, equipment: BODYWEIGHT, name: { en: On the floor, es: En el suelo } }
   - id: handstand-hold
     name: { en: Handstand Hold, es: Pino }
     category: CALISTHENICS
@@ -73,8 +61,8 @@ exercises:
       en: ["Kick up into a handstand, against a wall or freestanding.", "Keep your body in a straight line with your arms locked.", "Hold the position."]
       es: ["Sube al pino, contra la pared o libre.", "Mantén el cuerpo en línea recta con los brazos bloqueados.", "Mantén la posición."]
     variants:
-      - { suffix: wall, equipment: BODYWEIGHT }
-      - { suffix: freestanding, equipment: BODYWEIGHT }
+      - { suffix: wall, equipment: BODYWEIGHT, name: { en: Against the wall, es: Contra la pared } }
+      - { suffix: freestanding, equipment: BODYWEIGHT, name: { en: Freestanding, es: Libre } }
   - id: hollow-body-hold
     name: { en: Hollow Body Hold, es: Hollow body }
     category: CALISTHENICS
@@ -161,5 +149,5 @@ exercises:
     secondaryMuscles: [FOREARMS, LATS]
     instructions: { en: [Log the climbing time.], es: [Registra el tiempo de escalada.] }
     variants:
-      - { suffix: bouldering, equipment: NONE }
-      - { suffix: rope, equipment: NONE }
+      - { suffix: bouldering, equipment: NONE, name: { en: Bouldering, es: Búlder } }
+      - { suffix: rope, equipment: NONE, name: { en: Rope, es: Con cuerda } }

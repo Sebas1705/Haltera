@@ -44,7 +44,8 @@ Same proven stack as Owlsplit, started fresh from the Templetry `kmp/modular-fea
 | `id` | Stable string id (`bench-press`), never reused |
 | `name` | `{es, en}` |
 | `category` | `STRENGTH`, `CARDIO`, `MOBILITY`, `PLYOMETRICS`, `CALISTHENICS`, `SPORT` |
-| `primaryMuscles`, `secondaryMuscles` | Fixed muscle enum |
+| `level` | `BEGINNER`, `INTERMEDIATE`, `EXPERT` |
+| `primaryMuscles`, `secondaryMuscles` | Fixed muscle enum: `ABDOMINALS`, `ABDUCTORS`, `ADDUCTORS`, `BICEPS`, `CALVES`, `CHEST`, `FOREARMS`, `GLUTES`, `HAMSTRINGS`, `LATS`, `LOWER_BACK`, `MIDDLE_BACK`, `NECK`, `QUADRICEPS`, `SHOULDERS`, `TRAPS`, `TRICEPS`, `FULL_BODY` (whole-body work: sports, swimming, burpees) |
 | `instructions` | `{es, en}` list of steps |
 | `trackingType` | What a set records — see below |
 | `source` | `CATALOG` or `USER` |
@@ -66,7 +67,7 @@ Same proven stack as Owlsplit, started fresh from the Templetry `kmp/modular-fea
 |---|---|
 | `id` | Stable (`bench-press.barbell`) |
 | `exerciseId` | Parent base exercise |
-| `equipment` | `BARBELL`, `EZ_BAR`, `DUMBBELL`, `KETTLEBELL`, `SMITH`, `MACHINE`, `CABLE`, `BAND`, `BODYWEIGHT`, `CARDIO_MACHINE`, `OTHER`, `NONE` |
+| `equipment` | `BARBELL`, `EZ_BAR`, `TRAP_BAR`, `DUMBBELL`, `KETTLEBELL`, `SMITH`, `MACHINE`, `CABLE`, `BAND`, `BODYWEIGHT`, `MEDICINE_BALL`, `SWISS_BALL`, `FOAM_ROLLER`, `CARDIO_MACHINE`, `OTHER`, `NONE` |
 | `loadType` | How load is entered — see below |
 | `media` | Media references (see 6.4) |
 | `name` | Optional `{es, en}` override; default is "<exercise> (<equipment>)" |
@@ -76,7 +77,7 @@ Same proven stack as Owlsplit, started fresh from the Templetry `kmp/modular-fea
 | Value | Entry | Stored total |
 |---|---|---|
 | `BARBELL` | Bar weight (configurable: 20/15/10 kg, EZ, custom) + plates per side, or total with plate breakdown shown | bar + 2 × plates |
-| `DUMBBELL` | Weight of one dumbbell; `bilateral` flag on the slot doubles volume | one dumbbell |
+| `DUMBBELL` | Weight of one implement (dumbbell, kettlebell, medicine ball); `bilateral` flag on the slot doubles volume | one implement |
 | `MACHINE` | Either kg or stack position ("plate #7"), chosen per variant by the user; history is per variant so different machines never mix | kg, or plate index |
 | `BODYWEIGHT` | Added (+) or assisting (−) load | signed load |
 | `BAND` | Band level (user-defined labels/colours) | level id |
@@ -184,7 +185,7 @@ Suggestions are never applied silently: the next session prefills the suggested 
 | Source | Use | License |
 |---|---|---|
 | free-exercise-db (yuhonas) | Base data (~800 exercises) + 2 frames per exercise | Unlicense (public domain) |
-| wger | Spanish names/instructions where available | CC-BY-SA 4.0, attribution required |
+| wger | Spanish names | CC-BY-SA 3.0/4.0 or CC0, per exercise |
 | Own curation | Variant grouping, tracking/load types, Spanish gaps, missing categories | Ours |
 
 Rejected for a published app: ExerciseDB GIFs (no clear media licence; commercial dataset sold separately), API Ninjas (free tier forbids commercial use, no images), MuscleWiki (paid, streaming only, no offline). They remain possible later behind the media interface if a licence is obtained.

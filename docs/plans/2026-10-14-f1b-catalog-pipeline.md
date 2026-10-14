@@ -6,7 +6,7 @@
 
 **Architecture:** Two commands. `fetch` (network) refreshes committed snapshots of the sources under `catalog/sources/`. `build` (offline, deterministic) reads the snapshots and the curation files (`catalog/overrides.yaml`, `catalog/custom.yaml`, `catalog/i18n/es.yaml`), groups source exercises into base exercises with equipment variants, applies mappings and patches, validates, and writes `composeApp/src/commonMain/composeResources/files/catalog.json`, `catalog/ATTRIBUTION.md` and `catalog/ids.lock.json`. `build --check` (CI) fails if the committed outputs are stale. All logic lives in pure functions under `scripts/catalog/lib/`, tested with `node:test`.
 
-**Tech Stack:** Node 22 (ES modules, `node:test`), `yaml` 2.8.1.
+**Tech Stack:** Node 22 (ES modules, `node:test`), `yaml` 2.8.3.
 
 **Platform:** tooling (output consumed by KMP in F1c)
 
@@ -19,7 +19,7 @@
 - Commits: configured identity, no co-author trailers.
 - Sources and licences (spec §6.1): free-exercise-db is Unlicense (public domain); wger data is CC-BY-SA — every Spanish name taken from wger must be listed in `ATTRIBUTION.md` with its licence and author.
 - free-exercise-db pinned commit: `f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5` (2026-09-27, 876 exercises).
-- wger API: `https://wger.de/api/v2/exerciseinfo/?limit=100&offset=N`, no key. Language ids: English `2`, Spanish `4`. Send `User-Agent: Ironlog-catalog/1.0 (sebssgarcia502580@gmail.com)`.
+- wger API: `https://wger.de/api/v2/exerciseinfo/?limit=100&offset=N`, no key. Language ids: English `2`, Spanish `4`. Send `User-Agent: Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)`.
 - Spanish style: Spain gym vocabulary (see the glossary in Task 8).
 
 ## Output format (`catalog.json`)
@@ -108,10 +108,10 @@ mkdir -p scripts/catalog/lib scripts/catalog/test catalog/sources catalog/i18n
     "fetch": "node fetch.mjs",
     "build": "node build.mjs",
     "check": "node build.mjs --check",
-    "test": "node --test test/"
+    "test": "node --test \"test/*.test.mjs\""
   },
   "dependencies": {
-    "yaml": "2.8.1"
+    "yaml": "2.8.3"
   }
 }
 ```
@@ -396,7 +396,7 @@ import { fileURLToPath } from 'node:url';
 import { reduceWger } from './lib/wger.mjs';
 
 const root = fileURLToPath(new URL('../../catalog/sources/', import.meta.url));
-const userAgent = 'Ironlog-catalog/1.0 (sebssgarcia502580@gmail.com)';
+const userAgent = 'Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)';
 
 async function getJson(url) {
   const response = await fetch(url, { headers: { 'User-Agent': userAgent, Accept: 'application/json' } });
@@ -1638,3 +1638,45 @@ Expected: the `catalog` job is green. Merge (merge commit) when CI is green and 
 - `node scripts/catalog/build.mjs --check` prints `Catalogue up to date`.
 - `node scripts/catalog/build.mjs --missing-es` prints `[]`.
 - `catalog.json` contains `bench-press` with variants `barbell`, `dumbbell`, `smith`, `machine`, and `running` with `treadmill` and `outdoor`.
+
+## Deviations during execution
+
+Tasks 1–5 were executed as written, then amended after code review. The committed code is the reference where it differs from the snippets above.
+
+- `package.json`: the test script is `node --test "test/*.test.mjs"`, because Node 24 rejects a directory argument. `yaml` is pinned to 2.8.3 (2.8.1 has advisory GHSA-48c2-rrv3-qjmp).
+- `.gitattributes` (`* text=auto eol=lf`) keeps generated outputs LF on every platform. `build.mjs` also normalises CRLF when it compares outputs in `--check`.
+- `build-catalog.mjs`: exercises are sorted by code unit, not with `localeCompare`, so the order and `contentHash` do not depend on the locale. It throws on `patches` or `exclude` entries that name unknown sources, on a source used twice in groups, and on a source that is both excluded and grouped. `equipmentOf(source, category)` takes the patched category for the null-equipment default.
+- `validate.mjs`: malformed entries are reported, not thrown: non-array muscles or variants, and exercise `instructions` that are not `{ en: string[], es: string[] }`. Any mismatch between `es` and `en` step counts is an error, including Spanish steps with no English.
+- `build.mjs`: a missing required input (`sources.json`, `free-exercise-db.json`) fails with "missing <file>". A leading UTF-8 BOM is stripped before parsing JSON or YAML. A write prints the newly deprecated ids.
+- `lib/text.mjs` exports `stripDiacritics` (`/[\u0300-\u036f]/g`), shared by `slug.mjs` and `wger.mjs`. `indexWger` sorts by wger id itself, so the lowest id wins whatever the input order.
+- `attribution.mjs` escapes `|` and flattens line breaks in table cells.
+- `fetch.mjs` fetches everything before writing any file, uses a 30 s timeout per request, checks that the payloads are arrays, and sends a User-Agent without a personal email.
+- Extra tests: `test/wger.test.mjs`, `test/attribution.test.mjs`, plus error paths and edge cases in the mapping, builder and validation suites.
+- Task 6: `overrides.yaml` was used exactly as written. Every source id exists, nothing is duplicated, and the build reports no non-Spanish errors. Note that `build.mjs` prints only the first 50 errors, so the Step 2 grep check was confirmed by validating the full error list.
+- Task 7: in `custom.yaml`, commas inside YAML flow sequences split instruction steps (for example "Swim at a steady pace, keeping…" became two steps). That broke the step counts of `swimming` and `front-lever-hold`, and silently corrupted `burpee` and `handstand-hold`, whose counts still matched. The affected `en`/`es` lists now double-quote each step; the text is unchanged. Use quoted steps for any instruction that contains a comma.
+- Task 8: the Spanish for all source exercises (`catalog/i18n/es.yaml`) was produced in 9 parallel batches of source ids, then a consistency pass over the whole file. That pass:
+  - converted units to metric only in Spanish;
+  - removed source artefacts carried over from free-exercise-db;
+  - unified the register;
+  - aligned terms with the Task 8 glossary;
+  - fixed individual exercise names.
+  
+  `es.yaml` names take precedence over wger, so `ATTRIBUTION.md` credits only the wger names still used: one, at generation time. `--missing-es` prints `[]`. The generated catalogue v1 has 807 exercises and 883 variants, and `build.mjs --check` passes.
+- Task 9: `catalog/README.md` follows the plan's text, extended for the `released` flag, where the Spanish comes from (`i18n/es.yaml`, else wger for names) and quoting commas in flow lists. The `catalog` CI job (Step 1) is **deferred**: `.github/workflows/ci.yml` is created by F1a, which is not merged yet. The job is added as given in Step 1 when this branch is rebased onto main after F1a. Step 3 was run locally: 44 tests pass and `Catalogue up to date: v1, 807 exercises`.
+- Task 10: the push and PR (Step 3) are left to the coordinator.
+- Final review fixes (v1 still unreleased). These supersede the counts above.
+  - **Push press:** its Spanish name came from a wrong wger match. It now has a name-only `es.yaml` entry, since the source has no steps. With that, no wger data is used, and `ATTRIBUTION.md` says so instead of printing an empty table.
+  - **Variant names:** new validator rule — variants that share equipment within an exercise need a `{ en, es }` name, and names must be distinct. Names were set for lat-pulldown, triceps-pushdown, leg-curl, handstand-hold, l-sit, climbing and swimming.
+  - **Patches:** 43 loaded "other" or misfiled exercises were patched with load and tracking types. This adds `WEIGHT_TIME` for carries, sleds and holds; `BODYWEIGHT_REPS` for dips, chins and suspension work; and `WEIGHT_REPS` for plates and strongman objects. All the patched source ids exist.
+  - **Duplicates:**
+    - `running` now uses `Running_Treadmill`, and `Jogging_Treadmill` is excluded.
+    - `walking` moved from `custom.yaml` to a group (a `Walking_Treadmill` variant plus an inline outdoor variant). Its muscles now come from the source (quadriceps) instead of `FULL_BODY`.
+    - `hammer-curl.dumbbell` is now `Hammer_Curls`, and `Alternate_Hammer_Curl` stays a separate exercise.
+    - `Two-Arm_Kettlebell_Jerk` and the remaining chain setups are excluded.
+  - **Group instructions:** `group.instructions` overrides the primary source's steps. `running` and `walking` use generic steps, and their outdoor variants keep `instructions: null`.
+  - **Spanish text:**
+    - "banco Scott" replaces "predicador" everywhere.
+    - Notes pointing to a non-existent "foot positions section" and first-person remarks were removed. Step counts are unchanged.
+    - `Lunge_Sprint` became "Zancada con salto alterno en multipower", to match its Smith-machine steps.
+    - `One-Arm_Kettlebell_Para_Press` became "Press con kettlebell a una mano con el codo abierto". The source describes an elbow-out overhead press, not a floor press, and a separate `One-Arm_Kettlebell_Floor_Press` exists.
+  - **Regeneration:** `ids.lock.json` was reset to `[]` before regenerating, so renames do not ship as deprecated ids. Result: v1 with 801 exercises, 878 variants and `deprecatedIds: []`. Tracking types: WEIGHT_REPS 469, TIME 139, BODYWEIGHT_REPS 95, REPS 75, DISTANCE_TIME 13, WEIGHT_TIME 10. 50 tests pass.

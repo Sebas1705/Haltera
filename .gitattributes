@@ -3,3 +3,10 @@
 *.jar binary
 *.png binary
 *.jpg binary
+*.webp binary
+*.ico binary
+*.gif binary
+*.ttf binary
+*.otf binary
+*.jks binary
+*.keystore binary

@@ -1,0 +1,5282 @@
+[
+ {
+  "wgerId": 12,
+  "en": "Seated Hip Adduction",
+  "enAliases": [],
+  "es": "Aducción de Cadera en Máquina",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 20,
+  "en": "Arnold Shoulder Press",
+  "enAliases": [
+   "Schwarzenegger Press",
+   "Palm-to-Palm Overhead Press",
+   "Rotational Dumbbell Press",
+   "Dumbbell Corkscrew Press"
+  ],
+  "es": "Press Arnold",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 31,
+  "en": "Axe Hold",
+  "enAliases": [],
+  "es": "Sostenimiento Lateral Isométrico",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 41,
+  "en": "Barbell Ab Rollout",
+  "enAliases": [],
+  "es": "Rollout Abdominal con Barra",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 43,
+  "en": "Barbell Hack Squats",
+  "enAliases": [],
+  "es": "Sentadilla Hack con Barra",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 46,
+  "en": "Barbell Lunges Standing",
+  "enAliases": [],
+  "es": "Zancadas con Barra",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 48,
+  "en": "Barbell Reverse Wrist Curl",
+  "enAliases": [],
+  "es": "Curl de Muñeca Inverso con Barra",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 50,
+  "en": "Barbell Triceps Extension",
+  "enAliases": [],
+  "es": "Extensión de triceps",
+  "license": "CC-BY-SA 4",
+  "author": "sevae"
+ },
+ {
+  "wgerId": 51,
+  "en": "Barbell Wrist Curl",
+  "enAliases": [
+   "Forearm Curls"
+  ],
+  "es": "Curl de Muñeca con Barra (Agarre Supino)",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 56,
+  "en": "Abdominal Stabilization",
+  "enAliases": [],
+  "es": "Estabilización abdominal",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 57,
+  "en": "Bear Walk 2",
+  "enAliases": [],
+  "es": "Caminata del Oso",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 71,
+  "en": "Single Leg Extension",
+  "enAliases": [],
+  "es": "Extensión de Cuádriceps a una Pierna",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 73,
+  "en": "Bench Press",
+  "enAliases": [],
+  "es": "Press de Banca",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 75,
+  "en": "Benchpress Dumbbells",
+  "enAliases": [],
+  "es": "Press de banca con mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 76,
+  "en": "Bench Press Narrow Grip",
+  "enAliases": [
+   "Close-Grip Bench Press"
+  ],
+  "es": "Press de Banca con Agarre Cerrado",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 79,
+  "en": "Bent High Pulls",
+  "enAliases": [],
+  "es": "Jalón Alto Inclinado con Mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 81,
+  "en": "Bent Over Dumbbell Rows (Single Arm)",
+  "enAliases": [
+   "One Arm DB Rows"
+  ],
+  "es": "Remo con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "sebk"
+ },
+ {
+  "wgerId": 82,
+  "en": "Bent-over Lateral Raises",
+  "enAliases": [],
+  "es": "Elevaciones Posteriores",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 83,
+  "en": "Bent Over Rowing",
+  "enAliases": [],
+  "es": "Remo Inclinado con Barra (agarre prono)",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 84,
+  "en": "Bent Over Rowing Reverse",
+  "enAliases": [],
+  "es": "Remo inclinado con agarre invertido",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 91,
+  "en": "Biceps Curls With Barbell",
+  "enAliases": [],
+  "es": "Curl con barra",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 92,
+  "en": "Biceps Curls With Dumbbell",
+  "enAliases": [],
+  "es": "Curl de bíceps con mancuerna",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 94,
+  "en": "Biceps Curls With SZ-bar",
+  "enAliases": [],
+  "es": "Curl de biceps con barra Z",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 95,
+  "en": "Biceps Curl With Cable",
+  "enAliases": [],
+  "es": "Curl de Bíceps en Polea",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 112,
+  "en": "Body-Ups",
+  "enAliases": [
+   "Body up"
+  ],
+  "es": "Plancha a Flexión",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 124,
+  "en": "Braced Squat",
+  "enAliases": [],
+  "es": "Sentadilla con Disco al Frente",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 129,
+  "en": "Chest Press",
+  "enAliases": [
+   "Machine Chest Press"
+  ],
+  "es": "Press de Pecho en Máquina",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 132,
+  "en": "Burpees",
+  "enAliases": [],
+  "es": "Burpees",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 135,
+  "en": "Butterfly",
+  "enAliases": [],
+  "es": "Aperturas en máquina",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 137,
+  "en": "Butterfly Narrow Grip",
+  "enAliases": [],
+  "es": "Pectoral en Máquina",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 139,
+  "en": "Butterfly Reverse",
+  "enAliases": [],
+  "es": "Pec-Deck Inverso",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 142,
+  "en": "Cable External Rotation",
+  "enAliases": [],
+  "es": "Rotación externa con polea",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 145,
+  "en": "Cable Woodchoppers",
+  "enAliases": [],
+  "es": "Leñadores en Polea",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 146,
+  "en": "Calf Press Using Leg Press Machine",
+  "enAliases": [],
+  "es": "Gemelos en prensa",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 148,
+  "en": "Calf Raises on Hackenschmitt Machine",
+  "enAliases": [],
+  "es": "Elevación de Pantorrillas en Hack",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 152,
+  "en": "Chin Up",
+  "enAliases": [],
+  "es": "Dominadas con Agarre Supino",
+  "license": "CC0",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 158,
+  "en": "Close-grip Lat Pull Down",
+  "enAliases": [],
+  "es": "Jalón al Pecho con Agarre Cerrado",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 161,
+  "en": "Cross-Bench Dumbbell Pullovers",
+  "enAliases": [],
+  "es": "Pullover con Mancuerna",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 165,
+  "en": "Ball crunches",
+  "enAliases": [],
+  "es": "Abdominales en Bola de Estabilidad",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 167,
+  "en": "Crunches",
+  "enAliases": [],
+  "es": "Abdominales",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 171,
+  "en": "Incline Crunches",
+  "enAliases": [],
+  "es": "Abdominales en Banco Inclinado",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 172,
+  "en": "Crunches on Machine",
+  "enAliases": [],
+  "es": "Abdominales en Máquina",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 173,
+  "en": "Crunches With Cable",
+  "enAliases": [],
+  "es": "Encogimientos abdominales en polea",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 174,
+  "en": "Crunches With Legs Up",
+  "enAliases": [],
+  "es": "Encogimientos con Piernas Elevadas",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 177,
+  "en": "Cycling",
+  "enAliases": [],
+  "es": "Ciclismo",
+  "license": "CC0",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 178,
+  "en": "Deadbug",
+  "enAliases": [],
+  "es": "Bicho Muerto",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 182,
+  "en": "Deadhang",
+  "enAliases": [],
+  "es": "Suspensiones en Regleta",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 184,
+  "en": "Deadlifts",
+  "enAliases": [],
+  "es": "Peso Muerto Convencional",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 185,
+  "en": "Decline Bench Press Barbell",
+  "enAliases": [],
+  "es": "Press de Banca Declinado con Barra",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 186,
+  "en": "Decline Bench Press Dumbbell",
+  "enAliases": [],
+  "es": "Press de Banca Declinado con Mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 189,
+  "en": "Deficit Deadlift",
+  "enAliases": [],
+  "es": "Peso Muerto con Déficit",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 193,
+  "en": "Diagonal Shoulder Press",
+  "enAliases": [],
+  "es": "Press Diagonal para Hombros",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 194,
+  "en": "Dips",
+  "enAliases": [
+   "Weighted Dips"
+  ],
+  "es": "Fondos en Paralelas",
+  "license": "CC0",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 197,
+  "en": "Dips Between Two Benches",
+  "enAliases": [],
+  "es": "Fondos entre Bancos",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 202,
+  "en": "Dumbbell Concentration Curl",
+  "enAliases": [],
+  "es": "Curl de concentración con mancuerna",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 203,
+  "en": "Dumbbell Goblet Squat",
+  "enAliases": [],
+  "es": "Sentadilla con disco",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 204,
+  "en": "Dumbbell Incline Curl",
+  "enAliases": [],
+  "es": "Curl Inclinado con Mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 205,
+  "en": "Dumbbell Lunges Standing",
+  "enAliases": [],
+  "es": "Zancadas con Mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 206,
+  "en": "Dumbbell Lunges Walking",
+  "enAliases": [
+   "Walking Lunges"
+  ],
+  "es": "Zancadas Caminando con Mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 208,
+  "en": "Dumbbells on Scott Machine",
+  "enAliases": [],
+  "es": "Curl con Mancuernas en Banco Scott",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 211,
+  "en": "Dumbbell Triceps Extension",
+  "enAliases": [],
+  "es": "Press Francés con Mancuerna",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 222,
+  "en": "Facepull",
+  "enAliases": [
+   "Face pull"
+  ],
+  "es": "Jalón a la Cara",
+  "license": "CC-BY-SA 4",
+  "author": "abeworld"
+ },
+ {
+  "wgerId": 235,
+  "en": "Flutter Kicks",
+  "enAliases": [],
+  "es": "Patadas de Aleteo",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 237,
+  "en": "Fly With Cable",
+  "enAliases": [],
+  "es": "Cruce de Poleas para Pecho",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 238,
+  "en": "Fly With Dumbbells",
+  "enAliases": [],
+  "es": "Aperturas con Mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 239,
+  "en": "Fly With Dumbbells, Decline Bench",
+  "enAliases": [],
+  "es": "Aperturas con Mancuernas Declinadas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 245,
+  "en": "Skullcrusher Dumbbells",
+  "enAliases": [
+   "French Press Dumbbells"
+  ],
+  "es": "Press Francés con Mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 246,
+  "en": "Skullcrusher SZ-bar",
+  "enAliases": [
+   "French Press SZ-bar"
+  ],
+  "es": "Press Francés con Barra SZ",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 254,
+  "en": "Front Raises with Plates",
+  "enAliases": [],
+  "es": "Elevaciones Frontales con Disco",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 256,
+  "en": "Front Raises",
+  "enAliases": [
+   "dumbbell front raises",
+   "DB Front Raises"
+  ],
+  "es": "Elevaciones frontales",
+  "license": "CC-BY-SA 3",
+  "author": "Manu, wikipedia"
+ },
+ {
+  "wgerId": 257,
+  "en": "Front Squats",
+  "enAliases": [],
+  "es": "Sentadilla Frontal",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 260,
+  "en": "Full Sit Outs",
+  "enAliases": [],
+  "es": "Sit Outs completos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 265,
+  "en": "Glute Bridge",
+  "enAliases": [],
+  "es": "Puente de glúteos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 272,
+  "en": "Hammer Curls",
+  "enAliases": [],
+  "es": "Curl Martillo",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 275,
+  "en": "Hammercurls on Cable",
+  "enAliases": [],
+  "es": "Biceps concentrado martillo con cable",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 279,
+  "en": "Hand Grip",
+  "enAliases": [],
+  "es": "Fortalecedor de Agarre",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 282,
+  "en": "Handstand Pushup",
+  "enAliases": [],
+  "es": "Flexiones en pino",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 283,
+  "en": "Hanging Leg Raises",
+  "enAliases": [],
+  "es": "Elevaciones de Piernas (Colgado)",
+  "license": "CC-BY-SA 3",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 285,
+  "en": "High Knee Jumps",
+  "enAliases": [],
+  "es": "Saltos al Pecho",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 289,
+  "en": "High Pull",
+  "enAliases": [],
+  "es": "High pull",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 291,
+  "en": "Hindu Squats",
+  "enAliases": [],
+  "es": "Sentadillas Hindúes",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 292,
+  "en": "Hip Raise, Lying",
+  "enAliases": [],
+  "es": "Elevación de cadera tumbado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 294,
+  "en": "Hip Thrust",
+  "enAliases": [],
+  "es": "Hip thrust con barra",
+  "license": "CC-BY-SA 4",
+  "author": "Bret Contreras"
+ },
+ {
+  "wgerId": 297,
+  "en": "Hollow Hold",
+  "enAliases": [],
+  "es": "Hollow hold",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 301,
+  "en": "Hyperextensions",
+  "enAliases": [],
+  "es": "Extensiones lumbares a 45°",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 308,
+  "en": "Incline Dumbbell Fly",
+  "enAliases": [],
+  "es": "Aperturas con mancuernas en banco inclinado",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 310,
+  "en": "Incline Dumbbell Row",
+  "enAliases": [],
+  "es": "Remo con mancuernas en banco inclinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 312,
+  "en": "Incline Plank With Alternate Floor Touch",
+  "enAliases": [],
+  "es": "Plancha inclinada con toque alterno al suelo",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 314,
+  "en": "Isometric Wipers",
+  "enAliases": [],
+  "es": "Limpiaparabrisas isométricos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 320,
+  "en": "Jumping Jacks",
+  "enAliases": [],
+  "es": "Polichilenas",
+  "license": "CC-BY-SA 4",
+  "author": "student1234"
+ },
+ {
+  "wgerId": 323,
+  "en": "Cable Cross-over",
+  "enAliases": [],
+  "es": "Aperturas en polea",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 331,
+  "en": "Kettlebell Swings",
+  "enAliases": [],
+  "es": "Kettlebell Swings",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 348,
+  "en": "Lateral Raises",
+  "enAliases": [
+   "Shoulder fly",
+   "Side raises"
+  ],
+  "es": "Elevación lateral con mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 349,
+  "en": "Lateral Rows on Cable, One Armed",
+  "enAliases": [
+   "Side raises on Cable"
+  ],
+  "es": "Remo lateral en polea a un brazo",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 351,
+  "en": "Lateral-to-Front Raises",
+  "enAliases": [],
+  "es": "Elevaciones lateral a frontal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 354,
+  "en": "Lat Pull Down (Leaning Back)",
+  "enAliases": [],
+  "es": "Jalón al pecho (inclinado)",
+  "license": "CC-BY-SA 3",
+  "author": "LEBRERO"
+ },
+ {
+  "wgerId": 355,
+  "en": "Lat Pull Down (Straight Back)",
+  "enAliases": [],
+  "es": "Jalón al pecho",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 364,
+  "en": "Leg Curl",
+  "enAliases": [],
+  "es": "Curl femoral",
+  "license": "CC0",
+  "author": "BFad07"
+ },
+ {
+  "wgerId": 365,
+  "en": "Leg Curls (laying)",
+  "enAliases": [],
+  "es": "Curl de piernas (tumbado)",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 366,
+  "en": "Leg Curls (sitting)",
+  "enAliases": [],
+  "es": "Curl femoral sentado",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 369,
+  "en": "Leg Extension",
+  "enAliases": [],
+  "es": "Curl cuadriceps",
+  "license": "CC0",
+  "author": "BFad07"
+ },
+ {
+  "wgerId": 371,
+  "en": "Leg Press",
+  "enAliases": [],
+  "es": "Prensa de piernas",
+  "license": "CC0",
+  "author": "BFad07"
+ },
+ {
+  "wgerId": 373,
+  "en": "Leg Presses (narrow)",
+  "enAliases": [],
+  "es": "Prensa de piernas cerrada",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 374,
+  "en": "Leg Presses (wide)",
+  "enAliases": [],
+  "es": "Press de piernas abierto",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 376,
+  "en": "Leg Raise",
+  "enAliases": [],
+  "es": "Levantamiento de piernas",
+  "license": "CC0",
+  "author": "BFad07"
+ },
+ {
+  "wgerId": 377,
+  "en": "Leg Raises, Lying",
+  "enAliases": [],
+  "es": "Elevaciones de piernas tumbado",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 378,
+  "en": "Leg Raises, Standing",
+  "enAliases": [],
+  "es": "Elevaciones de piernas de pie",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 379,
+  "en": "Leverage Machine Chest Press",
+  "enAliases": [],
+  "es": "Press de pecho con máquina",
+  "license": "CC-BY-SA 3",
+  "author": "bel"
+ },
+ {
+  "wgerId": 386,
+  "en": "Diamond push ups",
+  "enAliases": [],
+  "es": "Flexiones diamante",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 394,
+  "en": "Long-Pulley (low Row)",
+  "enAliases": [],
+  "es": "Remo sentado",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 395,
+  "en": "Long-Pulley, Narrow",
+  "enAliases": [],
+  "es": "Remo en polea baja, agarre estrecho",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 397,
+  "en": "Low Box Squat - Wide Stance",
+  "enAliases": [],
+  "es": "Sentadilla a cajón bajo con stance ancho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 406,
+  "en": "Lying Rotator Cuff Exercise",
+  "enAliases": [],
+  "es": "Ejercicio del manguito rotador tumbado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 418,
+  "en": "Military Press mit SZ-Bar",
+  "enAliases": [],
+  "es": "Press militar",
+  "license": "CC-BY-SA 3",
+  "author": "mbozi1"
+ },
+ {
+  "wgerId": 423,
+  "en": "Muscle up",
+  "enAliases": [],
+  "es": "Muscle-up",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 427,
+  "en": "Negative Crunches",
+  "enAliases": [],
+  "es": "Crunches negativos",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 441,
+  "en": "Overhead Squat",
+  "enAliases": [],
+  "es": "Sentadilla por encima de la cabeza",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 445,
+  "en": "Pause Bench",
+  "enAliases": [],
+  "es": "Press de banca con pausa",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 448,
+  "en": "Pendelay Rows",
+  "enAliases": [],
+  "es": "Remo Pendlay",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 454,
+  "en": "Pike Push Ups",
+  "enAliases": [],
+  "es": "Flexiones de pica",
+  "license": "CC-BY-SA 4",
+  "author": "Nash"
+ },
+ {
+  "wgerId": 456,
+  "en": "Pistol Squat",
+  "enAliases": [],
+  "es": "Sentadillas en pistol izquierda",
+  "license": "CC-BY-SA 3",
+  "author": "minifigmaster125"
+ },
+ {
+  "wgerId": 458,
+  "en": "Plank",
+  "enAliases": [],
+  "es": "Plancha de antebrazo",
+  "license": "CC-BY-SA 3",
+  "author": "YYCfit / BFad07"
+ },
+ {
+  "wgerId": 465,
+  "en": "Preacher Curls",
+  "enAliases": [],
+  "es": "Curl en banco Scott",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 468,
+  "en": "Prone Scapular Retraction - Arms at Side",
+  "enAliases": [],
+  "es": "Retracción escapular en prono – brazos en cruz",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 475,
+  "en": "Pull-ups",
+  "enAliases": [],
+  "es": "Dominadas",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 478,
+  "en": "Push Press",
+  "enAliases": [],
+  "es": "Press de hombro con mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 484,
+  "en": "Rack Deadlift",
+  "enAliases": [],
+  "es": "Peso muerto en rack",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 487,
+  "en": "Rear Delt Raises",
+  "enAliases": [],
+  "es": "Elevaciones de deltoides posterior",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 490,
+  "en": "Renegade Row",
+  "enAliases": [],
+  "es": "Remo renegado",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 495,
+  "en": "Reverse Curl",
+  "enAliases": [],
+  "es": "Curl invertido",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 505,
+  "en": "Roman Chair Crunch",
+  "enAliases": [],
+  "es": "Crunch en silla romana",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 507,
+  "en": "Romanian Deadlift",
+  "enAliases": [
+   "RDL"
+  ],
+  "es": "Peso muerto rumano con barra",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 508,
+  "en": "Row",
+  "enAliases": [],
+  "es": "Remo maquina abierto",
+  "license": "CC0",
+  "author": "admin"
+ },
+ {
+  "wgerId": 512,
+  "en": "Rowing seated, narrow grip",
+  "enAliases": [],
+  "es": "Remo Gironda",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 513,
+  "en": "Rowing, T-bar",
+  "enAliases": [],
+  "es": "Remo en \"T\"",
+  "license": "CC-BY-SA 3",
+  "author": "LEBRERO"
+ },
+ {
+  "wgerId": 530,
+  "en": "Run - Treadmill",
+  "enAliases": [],
+  "es": "Correr en cinta",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 537,
+  "en": "Incline Bench Press - Dumbbell",
+  "enAliases": [
+   "Incline Dumbbell Press"
+  ],
+  "es": "Press inclinado con mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 538,
+  "en": "Incline Bench Press - Barbell",
+  "enAliases": [],
+  "es": "Press de banca inclinado",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 543,
+  "en": "Shoulder Press, on Machine",
+  "enAliases": [],
+  "es": "Press de hombro con maquina",
+  "license": "CC-BY-SA 3",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 545,
+  "en": "Scissors",
+  "enAliases": [],
+  "es": "Tijeras",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 549,
+  "en": "Seated Triceps Press",
+  "enAliases": [],
+  "es": "Press de tríceps sentado",
+  "license": "CC-BY-SA 4",
+  "author": "richmr2174@gmail.com"
+ },
+ {
+  "wgerId": 562,
+  "en": "Shotgun Row",
+  "enAliases": [],
+  "es": "Shotgun Row",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 566,
+  "en": "Shoulder Press, Barbell",
+  "enAliases": [
+   "OHP Barbell",
+   "Overhead press Barbell",
+   "Military Press with Barbell"
+  ],
+  "es": "Press de hombros con barra",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 567,
+  "en": "Shoulder Press, Dumbbells",
+  "enAliases": [
+   "OHP Dumbbells",
+   "Overhead press Dumbbells",
+   "Military Press with Dumbbells"
+  ],
+  "es": "Press Militar mancuerna",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 569,
+  "en": "Shoulder Press, on Multi Press",
+  "enAliases": [],
+  "es": "Press de hombros en multipower",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 570,
+  "en": "Shoulder Shrug",
+  "enAliases": [],
+  "es": "Encogimiento de hombros",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 571,
+  "en": "Shrugs, Barbells",
+  "enAliases": [],
+  "es": "Encogimientos de hombros con barra",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 572,
+  "en": "Shrugs, Dumbbells",
+  "enAliases": [],
+  "es": "Encogimientos de hombros con mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 577,
+  "en": "Side Dumbbell Trunk Flexion",
+  "enAliases": [
+   "Side bends"
+  ],
+  "es": "Flexión lateral del tronco con mancuerna",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 578,
+  "en": "Side-lying External Rotation",
+  "enAliases": [],
+  "es": "Rotación externa tumbado de lado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 580,
+  "en": "Side Plank",
+  "enAliases": [],
+  "es": "Plancha de lado izquierdo",
+  "license": "CC-BY-SA 4",
+  "author": "http://www.bodybuilding.com/"
+ },
+ {
+  "wgerId": 583,
+  "en": "Side to Side Push Ups",
+  "enAliases": [],
+  "es": "Flexiones de lado a lado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 584,
+  "en": "Single-arm Preacher Curl",
+  "enAliases": [],
+  "es": "Curl en banco Scott a un brazo",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 590,
+  "en": "Sitting Calf Raises",
+  "enAliases": [],
+  "es": "Elevación de talón sentados",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 591,
+  "en": "Sit-ups",
+  "enAliases": [],
+  "es": "Abdominales",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 595,
+  "en": "Skipping - Standard",
+  "enAliases": [],
+  "es": "Saltar a la comba – estándar",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 598,
+  "en": "Smith Machine Close-grip Bench Press",
+  "enAliases": [],
+  "es": "Press de banca con agarre cerrado en multipower",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 599,
+  "en": "Snatch",
+  "enAliases": [],
+  "es": "Arrancada (Snatch)",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 607,
+  "en": "Splinter Sit-ups",
+  "enAliases": [],
+  "es": "Abdominales splinter",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 615,
+  "en": "Squats",
+  "enAliases": [],
+  "es": "Sentadillas",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 616,
+  "en": "Squat Thrust",
+  "enAliases": [],
+  "es": "Sentadilla con salto (squat thrust)",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 621,
+  "en": "Standing Bicep Curl",
+  "enAliases": [],
+  "es": "Curl de bíceps de pie",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 622,
+  "en": "Standing Calf Raises",
+  "enAliases": [],
+  "es": "Elevación de talón de pie",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 623,
+  "en": "Standing Rope Forearm",
+  "enAliases": [],
+  "es": "Antebrazo con rodillo de muñeca de pie",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 628,
+  "en": "Straight-arm Pull Down (bar Attachment)",
+  "enAliases": [],
+  "es": "Jalón con brazos rectos (agarre de barra)",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 629,
+  "en": "Straight-arm Pull Down (rope Attachment)",
+  "enAliases": [],
+  "es": "Jalón con brazos rectos (agarre de cuerda)",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 630,
+  "en": "Sumo Deadlift",
+  "enAliases": [],
+  "es": "Peso muerto sumo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 632,
+  "en": "Sumo Squats",
+  "enAliases": [],
+  "es": "Sentadillas sumo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 636,
+  "en": "Superman",
+  "enAliases": [],
+  "es": "Superman",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 650,
+  "en": "Thruster",
+  "enAliases": [],
+  "es": "Thruster",
+  "license": "CC0",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 655,
+  "en": "Tricep Dumbbell Kickback",
+  "enAliases": [],
+  "es": "Contragolpe de tríceps con mancuernas",
+  "license": "CC-BY-SA 3",
+  "author": "http://www.bodybuilding.com/"
+ },
+ {
+  "wgerId": 659,
+  "en": "Triceps Extensions on Cable",
+  "enAliases": [],
+  "es": "Extension de triceps polea",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 660,
+  "en": "Triceps Extensions on Cable With Bar",
+  "enAliases": [],
+  "es": "Extensiones de tríceps en polea con barra",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 661,
+  "en": "Triceps on Machine",
+  "enAliases": [],
+  "es": "Tríceps en máquina",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 684,
+  "en": "Underhand Lat Pull Down",
+  "enAliases": [],
+  "es": "Jalón al pecho con agarre supino",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 691,
+  "en": "Upright Row, on Multi Press",
+  "enAliases": [],
+  "es": "Remo al mentón en multipower",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 693,
+  "en": "Upright Row, SZ-bar",
+  "enAliases": [],
+  "es": "Remo al Menton",
+  "license": "CC-BY-SA 3",
+  "author": "admin"
+ },
+ {
+  "wgerId": 694,
+  "en": "Upright Row w/ Dumbbells",
+  "enAliases": [],
+  "es": "Remo al mentón con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 702,
+  "en": "Calf raises, one legged",
+  "enAliases": [],
+  "es": "Elevación de pantorrilla izquierda",
+  "license": "CC-BY-SA 4",
+  "author": "McMarcel13"
+ },
+ {
+  "wgerId": 711,
+  "en": "Wall Handstand",
+  "enAliases": [],
+  "es": "Flexión a pino contra la pared",
+  "license": "CC-BY-SA 4",
+  "author": "Nash"
+ },
+ {
+  "wgerId": 716,
+  "en": "Wall Slides",
+  "enAliases": [],
+  "es": "Deslizamientos en la pared",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 718,
+  "en": "Wall Squat",
+  "enAliases": [],
+  "es": "Asiento en pared",
+  "license": "CC0",
+  "author": "Blablabla"
+ },
+ {
+  "wgerId": 723,
+  "en": "Wide-grip Pulldown",
+  "enAliases": [
+   "Lat Pulldown (Wide Grip)",
+   "Lat Pulldown (Wide Grip)"
+  ],
+  "es": "Jalón con agarre ancho",
+  "license": "CC-BY-SA 3",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 801,
+  "en": "Dumbbell Push-Up",
+  "enAliases": [],
+  "es": "Flexiones con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 802,
+  "en": "Barbell Lunges Walking",
+  "enAliases": [],
+  "es": "Zancadas Caminando con Barra",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 803,
+  "en": "One Arm Triceps Extensions on Cable",
+  "enAliases": [],
+  "es": "Extensión de Tríceps a una Mano en Polea",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 804,
+  "en": "Sloper hanging",
+  "enAliases": [],
+  "es": "Suspensión en Romos",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 805,
+  "en": "Tricep Pushdown on Cable",
+  "enAliases": [],
+  "es": "Empuje de tríceps en cable",
+  "license": "CC-BY-SA 4",
+  "author": "cshep442"
+ },
+ {
+  "wgerId": 820,
+  "en": "Fingerboard 20 mm edge",
+  "enAliases": [],
+  "es": "Suspensión en regleta de 20 mm",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 821,
+  "en": "Pullup on fingerboard",
+  "enAliases": [],
+  "es": "Dominadas en Tabla de Multipresas",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 822,
+  "en": "Cable Rear Delt Fly",
+  "enAliases": [],
+  "es": "Aperturas Posteriores en Polea",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 828,
+  "en": "Incline Bench Reverse Fly",
+  "enAliases": [],
+  "es": "Aperturas Inversas",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 908,
+  "en": "Zone 2 Running",
+  "enAliases": [],
+  "es": "Carrera en Zona 2",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 909,
+  "en": "Reverse Nordic Curl",
+  "enAliases": [],
+  "es": "Curl Nórdico Inverso",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 910,
+  "en": "Nordic Curl",
+  "enAliases": [],
+  "es": "Curl Nórdico",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 912,
+  "en": "Straight Bar Cable Curls",
+  "enAliases": [],
+  "es": "Curl en Polea con Barra Recta",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 913,
+  "en": "Reverse Preacher Curl (Close Grip)",
+  "enAliases": [],
+  "es": "Curl de Predicador Inverso",
+  "license": "CC-BY-SA 4",
+  "author": "novadani"
+ },
+ {
+  "wgerId": 914,
+  "en": "Reverse EZ Bar Cable Curls",
+  "enAliases": [],
+  "es": "Curl Inverso con Barra EZ en Polea",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 915,
+  "en": "Bus Drivers",
+  "enAliases": [],
+  "es": "Volante",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 916,
+  "en": "Smith Press",
+  "enAliases": [],
+  "es": "Prensa Smith",
+  "license": "CC-BY-SA 4",
+  "author": "bel"
+ },
+ {
+  "wgerId": 917,
+  "en": "Straight Bar Cable Front Raise",
+  "enAliases": [],
+  "es": "Elevación frontal con cable",
+  "license": "CC-BY-SA 4",
+  "author": "novadani"
+ },
+ {
+  "wgerId": 925,
+  "en": "Smith Machine Slight Incline Press",
+  "enAliases": [],
+  "es": "Press Inclinado Ligero en Máquina Smith",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 926,
+  "en": "Machine chest fly",
+  "enAliases": [],
+  "es": "Aperturas en Máquina para Pecho",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 927,
+  "en": "Suspended crossess",
+  "enAliases": [
+   "croci",
+   "sospensione",
+   "trx"
+  ],
+  "es": "flexiones en TRX",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 957,
+  "en": "Quadriped Arm and Leg Raise",
+  "enAliases": [],
+  "es": "Elevación de brazo y pierna en cuadrupedia",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 958,
+  "en": "Biceps with TRX",
+  "enAliases": [],
+  "es": "Biceps con TRX",
+  "license": "CC-BY-SA 4",
+  "author": "clafal"
+ },
+ {
+  "wgerId": 959,
+  "en": "TRX Rows",
+  "enAliases": [],
+  "es": "Remo en TRX",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 960,
+  "en": "Kettlebell Swing",
+  "enAliases": [],
+  "es": "Swing con Kettlebell",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 961,
+  "en": "Swimming 50m sprints",
+  "enAliases": [],
+  "es": "Piques de 50m en Natación",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 962,
+  "en": "Elliptical",
+  "enAliases": [],
+  "es": "La Elíptica",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 974,
+  "en": "Curl with kettlebell two hands",
+  "enAliases": [],
+  "es": "Curl con pesa rusa a dos manos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 975,
+  "en": "one-handed kettlebell curls",
+  "enAliases": [],
+  "es": "Curl de Bíceps con Kettlebell a una Mano",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 976,
+  "en": "Medicine ball booklet crunch",
+  "enAliases": [],
+  "es": "Abdominales en V con Balón Medicinal",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 977,
+  "en": "Box squat",
+  "enAliases": [],
+  "es": "Sentadilla al Cajón",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 978,
+  "en": "Knee Raises",
+  "enAliases": [],
+  "es": "Elevaciones de Rodillas en Barra",
+  "license": "CC-BY-SA 4",
+  "author": "clafal"
+ },
+ {
+  "wgerId": 979,
+  "en": "Leg raises pull up bar",
+  "enAliases": [],
+  "es": "Elevaciones de Piernas en Barra",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 980,
+  "en": "commando pull-ups",
+  "enAliases": [],
+  "es": "Dominadas comando",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 981,
+  "en": "Step-ups",
+  "enAliases": [
+   "Chair steps"
+  ],
+  "es": "Subida a peldaño",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 983,
+  "en": "High knees",
+  "enAliases": [
+   "Running in place"
+  ],
+  "es": "Rodillas elevadas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 984,
+  "en": "Lunges",
+  "enAliases": [],
+  "es": "Zancadas con peso",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 985,
+  "en": "Push-up rotations",
+  "enAliases": [
+   "Push up rotations",
+   "Pushup rotations"
+  ],
+  "es": "Flexiones a rotación",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 986,
+  "en": "Side split squats left",
+  "enAliases": [],
+  "es": "Sentadilla de lado izquierdo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 987,
+  "en": "Side split squats right",
+  "enAliases": [],
+  "es": "Sentadilla de lado derecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 988,
+  "en": "Bulgarian split squats left",
+  "enAliases": [],
+  "es": "Sentadilla búlgara izquierda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 989,
+  "en": "Bulgarian split squats right",
+  "enAliases": [],
+  "es": "Sentadilla búlgara derecha",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 990,
+  "en": "Kneeling kickbacks",
+  "enAliases": [],
+  "es": "Patada de rodilla",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 991,
+  "en": "Split squats left",
+  "enAliases": [],
+  "es": "Media sentadillas izquierda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 992,
+  "en": "Split squats right",
+  "enAliases": [],
+  "es": "Media sentadillas derecha",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 993,
+  "en": "Jump rope: basic jumps",
+  "enAliases": [],
+  "es": "Saltar la cuerda: saltos básicos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 994,
+  "en": "Forward arm circles",
+  "enAliases": [],
+  "es": "Círculos de brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 995,
+  "en": "Backward arm circles",
+  "enAliases": [],
+  "es": "Círculos con los Brazos Hacia Atrás",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 996,
+  "en": "Mountain climbers",
+  "enAliases": [],
+  "es": "Montañeros",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 997,
+  "en": "4-count burpees",
+  "enAliases": [],
+  "es": "Burpees de 4 Tiempos",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 998,
+  "en": "No push-up burpees",
+  "enAliases": [
+   "No push up burpees",
+   "No pushup burpees"
+  ],
+  "es": "Burpees sin Flexión",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 999,
+  "en": "Reverse lunges",
+  "enAliases": [],
+  "es": "Arremetidas inversas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1000,
+  "en": "Floor dips",
+  "enAliases": [],
+  "es": "Fondos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1001,
+  "en": "High plank",
+  "enAliases": [],
+  "es": "Plancha Alta",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1002,
+  "en": "Child's pose",
+  "enAliases": [
+   "Prayer pose",
+   "Prayer pose"
+  ],
+  "es": "Postura del Niño",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1003,
+  "en": "Kettlebell deadlifts",
+  "enAliases": [],
+  "es": "Peso Muerto con Kettlebell",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1004,
+  "en": "Forward shoulder rotation",
+  "enAliases": [],
+  "es": "Rotación de Hombros Hacia Adelante",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1005,
+  "en": "Backward shoulder rotation",
+  "enAliases": [],
+  "es": "Rotación de Hombros Hacia Atrás",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1006,
+  "en": "Chin tuck",
+  "enAliases": [],
+  "es": "Retracción Cervical",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1007,
+  "en": "Head turns",
+  "enAliases": [],
+  "es": "Rotación de Cabeza",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1008,
+  "en": "Left neck stretch",
+  "enAliases": [],
+  "es": "Estiramiento Lateral Izquierdo de Cuello",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1009,
+  "en": "Right neck stretch",
+  "enAliases": [],
+  "es": "Estiramiento Lateral Derecho de Cuello",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1010,
+  "en": "Back neck stretch",
+  "enAliases": [],
+  "es": "Estiramiento Posterior de Cuello (Nuca)",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1011,
+  "en": "Front neck stretch",
+  "enAliases": [],
+  "es": "Estiramiento del cuello frontal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1012,
+  "en": "Alternating bicep curls",
+  "enAliases": [],
+  "es": "Curl de biceps alterno",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1013,
+  "en": "Left levator scapulae stretch",
+  "enAliases": [],
+  "es": "Estiramiento del Elevador de la Escápula",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1014,
+  "en": "Right levator scapulae stretch",
+  "enAliases": [],
+  "es": "Estiramiento del Elevador de la Escápula",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1015,
+  "en": "Clockwise neck circles",
+  "enAliases": [],
+  "es": "Círculos de Cuello (Sentido Horario)",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1016,
+  "en": "Counterclockwise neck circles",
+  "enAliases": [],
+  "es": "Círculos de Cuello (Sentido Antihorario)",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1017,
+  "en": "Neck half circles",
+  "enAliases": [],
+  "es": "Medios Círculos de Cuello (Media Luna)",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1018,
+  "en": "Head tilts",
+  "enAliases": [],
+  "es": "Inclinaciones Laterales de Cabeza",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1019,
+  "en": "Side plank right",
+  "enAliases": [],
+  "es": "Plancha de lado derecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1020,
+  "en": "Pistol squats right",
+  "enAliases": [],
+  "es": "Sentadillas en pistol derecha",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1021,
+  "en": "Calf raises, right leg",
+  "enAliases": [],
+  "es": "Elevación de pantorrilla derecha",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1022,
+  "en": "Single Arm Plank to Row",
+  "enAliases": [],
+  "es": "Remo en Plancha con un Brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wgerjhn"
+ },
+ {
+  "wgerId": 1027,
+  "en": "Elevated prayer stretch",
+  "enAliases": [],
+  "es": "Estiramiento de oración elevado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1028,
+  "en": "Quadruped thoracic rotation left",
+  "enAliases": [],
+  "es": "Rotación torácica en cuadrupedia izquierda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1029,
+  "en": "Quadruped thoracic rotation right",
+  "enAliases": [],
+  "es": "Rotación torácica en cuadrupedia derecha",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1080,
+  "en": "Hindu Pushups",
+  "enAliases": [],
+  "es": "Hindu Pushups",
+  "license": "CC-BY-SA 4",
+  "author": "Imobard"
+ },
+ {
+  "wgerId": 1081,
+  "en": "Shoulder dislocates",
+  "enAliases": [],
+  "es": "Dislocaciones de hombro",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1082,
+  "en": "Bent over row to external rotation",
+  "enAliases": [],
+  "es": "Remo inclinado con rotación externa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1083,
+  "en": "YWTs",
+  "enAliases": [],
+  "es": "YWTs",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1084,
+  "en": "Dumbbell Floor Press",
+  "enAliases": [],
+  "es": "Press de suelo con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1086,
+  "en": "Close-grip Press-ups",
+  "enAliases": [],
+  "es": "Flexiones con agarre estrecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1087,
+  "en": "Dumbbell Hang Power Cleans",
+  "enAliases": [],
+  "es": "Cargada de potencia desde colgado con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1088,
+  "en": "Dumbbell sumo deadlift",
+  "enAliases": [],
+  "es": "Peso muerto sumo con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1089,
+  "en": "Medicine ball twist",
+  "enAliases": [],
+  "es": "Abdominales rusas",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1091,
+  "en": "Plank Shoulder Taps",
+  "enAliases": [],
+  "es": "Plancha a una mano alterna",
+  "license": "CC-BY-SA 4",
+  "author": "clafal"
+ },
+ {
+  "wgerId": 1092,
+  "en": "Bag training",
+  "enAliases": [],
+  "es": "Entrenamiento con saco",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1094,
+  "en": "Seated Bench Press",
+  "enAliases": [],
+  "es": "Press Banca Sentado",
+  "license": "CC-BY-SA 4",
+  "author": "colundrum"
+ },
+ {
+  "wgerId": 1096,
+  "en": "Abduction while standing",
+  "enAliases": [],
+  "es": "Abducción de pie",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1099,
+  "en": "Dynamic side hold",
+  "enAliases": [],
+  "es": "Sujeción lateral dinámica",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1103,
+  "en": "walking bridge",
+  "enAliases": [],
+  "es": "Puente caminante",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1109,
+  "en": "Cable Concentration Curl",
+  "enAliases": [],
+  "es": "Biceps concentrado",
+  "license": "CC-BY-SA 4",
+  "author": "cshep442"
+ },
+ {
+  "wgerId": 1111,
+  "en": "Push-Ups | Incline",
+  "enAliases": [],
+  "es": "Flexiones | inclinadas (incline)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1112,
+  "en": "Push-Ups | Decline",
+  "enAliases": [],
+  "es": "Flexiones | declinadas (decline)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1113,
+  "en": "Push-Ups | Parallettes",
+  "enAliases": [],
+  "es": "Flexiones | parallettes",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1115,
+  "en": "3D lunge warmup",
+  "enAliases": [],
+  "es": "Zancada 3D de calentamiento",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1117,
+  "en": "Seated Cable Row",
+  "enAliases": [],
+  "es": "Remo gironda agarre cerrado",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1125,
+  "en": "Wide-grip supinated lat pulldown",
+  "enAliases": [],
+  "es": "Jalón abierto supino",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1127,
+  "en": "Close-grip supinated lat pulldown",
+  "enAliases": [],
+  "es": "Jalón cerrado supino",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1131,
+  "en": "Cable glute extension",
+  "enAliases": [],
+  "es": "Extensión de glúteos en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1132,
+  "en": "Machine glute extension",
+  "enAliases": [],
+  "es": "Extensión de glúteo en máquina",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1136,
+  "en": "Neutral-grip chest pulldown",
+  "enAliases": [],
+  "es": "Jalón al pecho con agarre neutro",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1137,
+  "en": "High-pulley pullover",
+  "enAliases": [],
+  "es": "Pull over en polea alta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1141,
+  "en": "Arabesque",
+  "enAliases": [],
+  "es": "Arabesco",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1185,
+  "en": "Triceps Pushdown",
+  "enAliases": [],
+  "es": "Extensión de tríceps en polea con cuerda",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1188,
+  "en": "Side bend",
+  "enAliases": [],
+  "es": "Flexión lateral",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1192,
+  "en": "Alternating Biceps Curls With Dumbbell",
+  "enAliases": [],
+  "es": "Curls de bíceps alternos con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1193,
+  "en": "Russian Twist",
+  "enAliases": [],
+  "es": "Abdominales rusas",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1194,
+  "en": "Pallof Press",
+  "enAliases": [],
+  "es": "Pallof Press",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1195,
+  "en": "Side Slides + Squats",
+  "enAliases": [],
+  "es": "Deslizamientos laterales + sentadillas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1196,
+  "en": "Wall Drills",
+  "enAliases": [],
+  "es": "Ejercicios contra la pared",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1198,
+  "en": "Inverted Rows",
+  "enAliases": [
+   "horizontal pull-ups"
+  ],
+  "es": "Remo invertido",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1200,
+  "en": "Tibialis raises",
+  "enAliases": [],
+  "es": "Elevación tibial anterior",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 1201,
+  "en": "Dragon squat",
+  "enAliases": [],
+  "es": "Dragon squat",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1202,
+  "en": "Side Lying Hip Abduction",
+  "enAliases": [],
+  "es": "Abducción de cadera en decúbito lateral",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1203,
+  "en": "Calf raises, left leg",
+  "enAliases": [],
+  "es": "Elevación de gemelos, pierna izquierda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1205,
+  "en": "Wrist curl, dumbbells",
+  "enAliases": [],
+  "es": "Curl de muñeca con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1207,
+  "en": "Scorpion Kick",
+  "enAliases": [],
+  "es": "Patada de escorpión",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1208,
+  "en": "Prisoner Squat",
+  "enAliases": [],
+  "es": "Sentadilla del prisionero",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1209,
+  "en": "Shoulder width three-point push-up",
+  "enAliases": [],
+  "es": "Flexión a tres puntos al ancho de los hombros",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1210,
+  "en": "Skydiver with arms in T-position",
+  "enAliases": [],
+  "es": "Paracaidista con brazos en posición de T",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1214,
+  "en": "Front lever tuck",
+  "enAliases": [],
+  "es": "Front lever agrupado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1215,
+  "en": "Reverse Snow Angel",
+  "enAliases": [],
+  "es": "Ángel de nieve invertido",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1216,
+  "en": "Recruitment Pulls",
+  "enAliases": [],
+  "es": "Recruitment Pulls",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1217,
+  "en": "Finger Pushup",
+  "enAliases": [
+   "Flexão de dedo"
+  ],
+  "es": "Flexión sobre los dedos",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1218,
+  "en": "knee push-ups",
+  "enAliases": [],
+  "es": "Flexiones de rodillas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1219,
+  "en": "Australian pull-ups",
+  "enAliases": [],
+  "es": "Dominadas australianas (remo invertido)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1224,
+  "en": "Dumbbell drag curls",
+  "enAliases": [],
+  "es": "Drag curls con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1225,
+  "en": "Dumbbell wide bicep curls",
+  "enAliases": [],
+  "es": "Curls de bíceps abiertos con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1226,
+  "en": "Dumbbell bicep curl to press",
+  "enAliases": [],
+  "es": "Curl de bíceps con press de hombros con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1227,
+  "en": "Dumbbell rear delt row",
+  "enAliases": [],
+  "es": "Remo para deltoides posterior con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1228,
+  "en": "Dumbbell close grip bench press",
+  "enAliases": [],
+  "es": "Press de banca con agarre cerrado con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1230,
+  "en": "Triceps stretch left",
+  "enAliases": [],
+  "es": "Estiramiento de tríceps izquierdo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1231,
+  "en": "Triceps stretch right",
+  "enAliases": [],
+  "es": "Estiramiento de tríceps derecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1232,
+  "en": "Standing biceps stretch left",
+  "enAliases": [],
+  "es": "Estiramiento de bíceps de pie izquierdo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1233,
+  "en": "Standing biceps stretch right",
+  "enAliases": [],
+  "es": "Estiramiento de bíceps de pie derecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1234,
+  "en": "Dumbbell Single-leg Hip Thrust",
+  "enAliases": [],
+  "es": "Empuje de cadera a una pierna con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1238,
+  "en": "Frog stand",
+  "enAliases": [],
+  "es": "Postura de la rana",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1239,
+  "en": "Standing Calf Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de gemelos de pie",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1242,
+  "en": "Exercise Band Plantarflexion",
+  "enAliases": [],
+  "es": "Flexión plantar con banda elástica",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1243,
+  "en": "Double Leg Calf Raise",
+  "enAliases": [],
+  "es": "Elevación de talones a dos piernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1244,
+  "en": "Yoga exercise: Cow-cat",
+  "enAliases": [],
+  "es": "Gato-Vaca (movilidad espinal)",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1246,
+  "en": "TRX roll out",
+  "enAliases": [],
+  "es": "TRX roll out",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1248,
+  "en": "Ice cream maker",
+  "enAliases": [],
+  "es": "Ice Scream maker",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1259,
+  "en": "TRX Obliques",
+  "enAliases": [],
+  "es": "Oblicuos en TRX",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 1260,
+  "en": "TRX hammer curl",
+  "enAliases": [],
+  "es": "TRX hammer curl",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1261,
+  "en": "TRX gorilla biceps curl",
+  "enAliases": [],
+  "es": "TRX- biceps gorila",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 1262,
+  "en": "Trx Single Arm Bicep Curl",
+  "enAliases": [],
+  "es": "TRX - curl de bíceps a un brazo",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 1263,
+  "en": "Back bridge",
+  "enAliases": [],
+  "es": "Puente con propio peso",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1266,
+  "en": "TRX Tricep Extension",
+  "enAliases": [],
+  "es": "extensiones de triceps con trx",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 1269,
+  "en": "TRX dips",
+  "enAliases": [],
+  "es": "Fondos en TRX",
+  "license": "CC-BY-SA 4",
+  "author": "cynomops"
+ },
+ {
+  "wgerId": 1270,
+  "en": "Low Pulley Cable Fly",
+  "enAliases": [],
+  "es": "Aperturas en polea baja",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1280,
+  "en": "Biceps Close Grip Pull Down",
+  "enAliases": [],
+  "es": "Jalón al pecho con agarre estrecho para bíceps",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1283,
+  "en": "Incline Chest-Supported Dumbbell Row",
+  "enAliases": [],
+  "es": "Remo con mancuernas en banco inclinado con apoyo en el pecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1284,
+  "en": "Pseudo Planche Push-up",
+  "enAliases": [],
+  "es": "Flexión pseudo planche",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1286,
+  "en": "Dynamic Planche",
+  "enAliases": [],
+  "es": "Planche dinámica",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1287,
+  "en": "Reach ups",
+  "enAliases": [],
+  "es": "Reach ups",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1288,
+  "en": "Dynamic side plank",
+  "enAliases": [],
+  "es": "Plancha lateral dinámica",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1289,
+  "en": "Seated Dumbbell Curls",
+  "enAliases": [],
+  "es": "Curl con mancuernas sentado",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1290,
+  "en": "Reverse Grip Barbell Curls",
+  "enAliases": [],
+  "es": "Curl de bíceps con barra en agarre invertido",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1296,
+  "en": "Low-Cable Cross-Over - NB",
+  "enAliases": [],
+  "es": "Cruce de poleas bajas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1298,
+  "en": "High-Cable Cross Tricep Extention - NB",
+  "enAliases": [],
+  "es": "Extensión de tríceps cruzada en polea alta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1302,
+  "en": "JM Press",
+  "enAliases": [],
+  "es": "JM Press",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1303,
+  "en": "Helms Row",
+  "enAliases": [],
+  "es": "Remo Helms",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1304,
+  "en": "Meadows Row",
+  "enAliases": [],
+  "es": "Remo Meadows",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1307,
+  "en": "Front Plank",
+  "enAliases": [],
+  "es": "Plancha frontal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1312,
+  "en": "Bodyweight Squat HD",
+  "enAliases": [],
+  "es": "Bodyweight Squat HD",
+  "license": "CC-BY-SA 4",
+  "author": "hektkaso"
+ },
+ {
+  "wgerId": 1314,
+  "en": "Jumping Jack HD",
+  "enAliases": [],
+  "es": "Jumping Jack HD",
+  "license": "CC-BY-SA 4",
+  "author": "hektkaso"
+ },
+ {
+  "wgerId": 1318,
+  "en": "High Knee Skips HD",
+  "enAliases": [],
+  "es": "Saltos Altos De Rodilla HD",
+  "license": "CC-BY-SA 4",
+  "author": "hektkaso"
+ },
+ {
+  "wgerId": 1320,
+  "en": "Bench Dips On Floor HD",
+  "enAliases": [],
+  "es": "Inmersiones De Banco En El Piso HD",
+  "license": "CC-BY-SA 4",
+  "author": "hektkaso"
+ },
+ {
+  "wgerId": 1324,
+  "en": "Bodyweight lunge HD",
+  "enAliases": [],
+  "es": "Zancada con el peso corporal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1336,
+  "en": "Triceps Overhead (Dumbbell)",
+  "enAliases": [],
+  "es": "Extensión de tríceps sobre la cabeza (mancuerna)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1338,
+  "en": "Shoulder Raise (Dumbbell)",
+  "enAliases": [],
+  "es": "Elevación de hombros (mancuerna)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1348,
+  "en": "Lower Back Extensions",
+  "enAliases": [],
+  "es": "Extensiones de espalda baja",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1353,
+  "en": "Dumbbell Hex Press",
+  "enAliases": [],
+  "es": "Press hex con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1360,
+  "en": "Double Kettlebell Clean and Press",
+  "enAliases": [],
+  "es": "Clean and press con doble kettlebell",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1377,
+  "en": "Torso Twist",
+  "enAliases": [],
+  "es": "Giro de torso",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1378,
+  "en": "Cable Lateral Raises (Single Arm)",
+  "enAliases": [],
+  "es": "Elevaciones laterales en polea (a un brazo)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1380,
+  "en": "Band pull-aparts",
+  "enAliases": [],
+  "es": "Aperturas con banda elástica",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1381,
+  "en": "Upper Back",
+  "enAliases": [],
+  "es": "Espalda alta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1387,
+  "en": "Hamstring Kicks",
+  "enAliases": [],
+  "es": "Patadas de isquiotibiales",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1388,
+  "en": "Single Leg RDL",
+  "enAliases": [
+   "Single Leg Romanian Deadlift"
+  ],
+  "es": "Peso muerto rumano a una pierna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1390,
+  "en": "Toe Touch",
+  "enAliases": [
+   "Standing Forward Bend"
+  ],
+  "es": "Tocar los dedos del pie",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1391,
+  "en": "Elephant Walks",
+  "enAliases": [
+   "Walking Hamstring Stretch"
+  ],
+  "es": "Caminata del elefante",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1392,
+  "en": "Good Morning",
+  "enAliases": [
+   "Hip Hinge"
+  ],
+  "es": "Good Morning",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1393,
+  "en": "Single Leg Hamstring Stretch",
+  "enAliases": [
+   "Seated Single Leg Stretch"
+  ],
+  "es": "Estiramiento de isquiotibiales a una pierna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1394,
+  "en": "Sit & Reach",
+  "enAliases": [
+   "Seated Forward Bend",
+   "Seated Toe Touches"
+  ],
+  "es": "Sit & Reach",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1395,
+  "en": "Crossbody Leg Swings",
+  "enAliases": [
+   "Lateral Leg Swings"
+  ],
+  "es": "Balanceos de pierna cruzados",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1396,
+  "en": "Standing Pancake",
+  "enAliases": [],
+  "es": "Pancake de pie",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1397,
+  "en": "Standing Pancake Good Morning",
+  "enAliases": [
+   "Wide-Stance Good Morning"
+  ],
+  "es": "Buenos días de pie con apertura (pancake)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1398,
+  "en": "Hamstring Chokes",
+  "enAliases": [
+   "Dynamic Hamstring Stretch"
+  ],
+  "es": "Hamstring Chokes",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1399,
+  "en": "Roll Down",
+  "enAliases": [],
+  "es": "Roll Down",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1400,
+  "en": "Crossbody Hamstring Stretch",
+  "enAliases": [
+   "Standing Cross-Leg Hamstring Stretch"
+  ],
+  "es": "Estiramiento cruzado de isquiotibiales",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1407,
+  "en": "Cossack squat",
+  "enAliases": [],
+  "es": "Sentadilla cosaca",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1408,
+  "en": "Wall-sit",
+  "enAliases": [],
+  "es": "Sentadilla en pared",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1409,
+  "en": "Dragon-flag",
+  "enAliases": [],
+  "es": "Dragon flag",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1410,
+  "en": "Plank with Alternating Leg Lift",
+  "enAliases": [],
+  "es": "Plancha con elevación de pierna",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1411,
+  "en": "Heel Touches",
+  "enAliases": [],
+  "es": "Toques de Talón",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1412,
+  "en": "bicycle crunches",
+  "enAliases": [],
+  "es": "Abdominales en bicicleta",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1414,
+  "en": "Hack Squats",
+  "enAliases": [
+   "Machine Squat"
+  ],
+  "es": "Sentadillas Hack",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1415,
+  "en": "Dumbbell Crunches",
+  "enAliases": [],
+  "es": "Abdominales con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1424,
+  "en": "Biceps Curl Machine",
+  "enAliases": [],
+  "es": "Curl de bíceps sentado",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1425,
+  "en": "Toe Taps",
+  "enAliases": [],
+  "es": "Toques de pie alternados",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1426,
+  "en": "Standing Side Crunches",
+  "enAliases": [],
+  "es": "Crunch lateral de pie",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1429,
+  "en": "Dumbbell Shoulder Rotations",
+  "enAliases": [],
+  "es": "Rotaciones de hombro con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1430,
+  "en": "Plate Pinch Hold",
+  "enAliases": [],
+  "es": "Sostén con pellizco de disco",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1433,
+  "en": "Reverse Wood Chops",
+  "enAliases": [],
+  "es": "Leñador inverso",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1436,
+  "en": "Pin Bench Press BB",
+  "enAliases": [],
+  "es": "Press de banca con pines (barra)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1437,
+  "en": "Pin Squat",
+  "enAliases": [],
+  "es": "Sentadilla con pines",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1440,
+  "en": "Push OHP",
+  "enAliases": [],
+  "es": "Push Press",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1441,
+  "en": "Incline OHP DB",
+  "enAliases": [],
+  "es": "Press militar en banco inclinado con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1442,
+  "en": "Kreis Press DB",
+  "enAliases": [],
+  "es": "Press circular con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1443,
+  "en": "Shoulder Raise Side and Front DB",
+  "enAliases": [],
+  "es": "Elevación lateral y frontal con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1445,
+  "en": "Jerk OL",
+  "enAliases": [],
+  "es": "Jerk (envión)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1447,
+  "en": "Snatch OL",
+  "enAliases": [],
+  "es": "Snatch (arrancada)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1448,
+  "en": "Seated W Curl",
+  "enAliases": [],
+  "es": "Curl inclinado con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1449,
+  "en": "ClimbMill",
+  "enAliases": [],
+  "es": "Escaladora",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1450,
+  "en": "Cobra Stretch",
+  "enAliases": [],
+  "es": "Postura de la Cobra (en Yoga)",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1451,
+  "en": "Torso rotation stretch",
+  "enAliases": [],
+  "es": "Estiramiento de rotación del torso",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1452,
+  "en": "Knee to Chest Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de rodilla al pecho",
+  "license": "CC-BY-SA 4",
+  "author": "hpmbala@gmail.com"
+ },
+ {
+  "wgerId": 1455,
+  "en": "Towel Superman",
+  "enAliases": [],
+  "es": "Superman con toalla",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1457,
+  "en": "Cable Press Around",
+  "enAliases": [],
+  "es": "Cable Press Around",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1461,
+  "en": "No Leg Drive Dumbbell Chest Press",
+  "enAliases": [],
+  "es": "Press de pecho con mancuernas sin impulso de piernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1463,
+  "en": "Dumbbell Underhand Dead Row",
+  "enAliases": [],
+  "es": "Remo con mancuernas en supinación desde parada muerta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1464,
+  "en": "Pause Hack Squats",
+  "enAliases": [],
+  "es": "Hack squats con pausa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1465,
+  "en": "Spider Curl",
+  "enAliases": [],
+  "es": "Curl Araña",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1468,
+  "en": "Floor Skull Crusher",
+  "enAliases": [],
+  "es": "Press francés en el suelo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1474,
+  "en": "W-Raise",
+  "enAliases": [],
+  "es": "W-Raise",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1475,
+  "en": "Black Widow Knee Slides",
+  "enAliases": [],
+  "es": "Black Widow Knee Slides",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1476,
+  "en": "Butterfly Sit Up",
+  "enAliases": [],
+  "es": "Abdominal mariposa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1477,
+  "en": "Seated Corkscrew",
+  "enAliases": [],
+  "es": "Sacacorchos sentado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1478,
+  "en": "Levitation Crunch",
+  "enAliases": [],
+  "es": "Crunch de levitación",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1479,
+  "en": "Sit Up Elbow Thrust",
+  "enAliases": [],
+  "es": "Abdominal con golpe de codo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1480,
+  "en": "Lying Triceps Extensions",
+  "enAliases": [],
+  "es": "Extensiones de tríceps tumbado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1481,
+  "en": "Drag Pushdown",
+  "enAliases": [],
+  "es": "Drag pushdown",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1482,
+  "en": "Dumbbell Cheat Curl",
+  "enAliases": [],
+  "es": "Curl con trampa con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1483,
+  "en": "Bizeps Curls Trifecta",
+  "enAliases": [],
+  "es": "Curl de bíceps trifecta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1484,
+  "en": "Omni Cable Cross-over",
+  "enAliases": [],
+  "es": "Cruce de poleas omni",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1485,
+  "en": "Rocking Triceps Pushdown",
+  "enAliases": [],
+  "es": "Rocking triceps pushdown",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1486,
+  "en": "Alternating High Cable Row",
+  "enAliases": [],
+  "es": "Remo alto en polea alternado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1487,
+  "en": "Hyper Y W Combo",
+  "enAliases": [],
+  "es": "Combinación hiperextensión Y-W",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1490,
+  "en": "Lying Triceps Kickback",
+  "enAliases": [],
+  "es": "Patada de tríceps tumbado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1496,
+  "en": "DB Upper Chest Variation",
+  "enAliases": [],
+  "es": "Variación con mancuerna para el pecho superior",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1501,
+  "en": "Alternative DB Gorilla rows",
+  "enAliases": [],
+  "es": "Remo gorila alternativo con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1504,
+  "en": "Dumbbell Bradford press",
+  "enAliases": [],
+  "es": "Press Bradford con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1509,
+  "en": "Cable Tricep Kickback",
+  "enAliases": [],
+  "es": "Patada de tríceps en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1511,
+  "en": "Kong Curl",
+  "enAliases": [],
+  "es": "Kong Curl",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1512,
+  "en": "Drop Curl",
+  "enAliases": [],
+  "es": "Drop Curl",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1513,
+  "en": "Overhead Cable Tricep Extension",
+  "enAliases": [],
+  "es": "Extensión de tríceps sobre la cabeza en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1514,
+  "en": "Lateral Walk",
+  "enAliases": [],
+  "es": "Caminata lateral",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1519,
+  "en": "Overhead Triceps Extension",
+  "enAliases": [],
+  "es": "Extensión de tríceps por encima de la cabeza",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1521,
+  "en": "Pendular hack",
+  "enAliases": [],
+  "es": "Pendular hack",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1523,
+  "en": "Sled Push",
+  "enAliases": [],
+  "es": "Empuje de trineo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1524,
+  "en": "Battle Ropes",
+  "enAliases": [],
+  "es": "Cuerdas de batalla",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1525,
+  "en": "Ball Slams",
+  "enAliases": [],
+  "es": "Lanzamientos de balón",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1526,
+  "en": "Ski Machine",
+  "enAliases": [],
+  "es": "Máquina de esquí",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1528,
+  "en": "Glute Drive",
+  "enAliases": [],
+  "es": "Glute Drive",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1529,
+  "en": "Toes to bar",
+  "enAliases": [],
+  "es": "Toes to bar (pies a la barra)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1530,
+  "en": "Lying Dumbbell Curls",
+  "enAliases": [],
+  "es": "Curls con mancuernas tumbado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1545,
+  "en": "Archer Pull Up",
+  "enAliases": [],
+  "es": "Dominada de arquero",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1548,
+  "en": "Stair Master",
+  "enAliases": [],
+  "es": "Stair Master",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1551,
+  "en": "Push-Up",
+  "enAliases": [],
+  "es": "Push-Up",
+  "license": "CC-BY-SA 4",
+  "author": "Settebello"
+ },
+ {
+  "wgerId": 1554,
+  "en": "Clap Push-UP",
+  "enAliases": [],
+  "es": "Flexión con palmada",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1556,
+  "en": "Devil’s Press",
+  "enAliases": [],
+  "es": "Devil's Press",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1567,
+  "en": "Alternating dumbbell hammer curl",
+  "enAliases": [],
+  "es": "Curl alterno de martillo con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1572,
+  "en": "Bird Dog",
+  "enAliases": [],
+  "es": "Bird Dog",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1573,
+  "en": "Ab wheel",
+  "enAliases": [],
+  "es": "Rueda abdominal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1576,
+  "en": "Snap Down",
+  "enAliases": [],
+  "es": "Snap Down",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1577,
+  "en": "Bretzel stretch",
+  "enAliases": [],
+  "es": "Estiramiento Bretzel",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1578,
+  "en": "Hip hinge",
+  "enAliases": [],
+  "es": "Hip Hinge",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1579,
+  "en": "Bronco",
+  "enAliases": [],
+  "es": "Bronco",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1580,
+  "en": "Perpendicular Unilateral Landmine Row",
+  "enAliases": [],
+  "es": "Remo unilateral perpendicular en landmine",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1581,
+  "en": "Trap press",
+  "enAliases": [],
+  "es": "Press de trapecio",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1582,
+  "en": "Side-laying interior rotation",
+  "enAliases": [],
+  "es": "Rotación interna tumbado de lado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1584,
+  "en": "March or jog in place",
+  "enAliases": [],
+  "es": "Marcha o trote en el lugar",
+  "license": "CC-BY-SA 4",
+  "author": "admin"
+ },
+ {
+  "wgerId": 1590,
+  "en": "Arm and neck stretch",
+  "enAliases": [],
+  "es": "Estiramiento de brazos y cuello",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1592,
+  "en": "Guided or free meditation",
+  "enAliases": [],
+  "es": "Meditación guiada o libre",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1593,
+  "en": "Smith Machine Split Squat",
+  "enAliases": [],
+  "es": "Sentadilla split en máquina Smith",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1602,
+  "en": "Dumbbell Scaption",
+  "enAliases": [],
+  "es": "Scaption con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1604,
+  "en": "Sliding Lateral Lunge",
+  "enAliases": [],
+  "es": "Zancada lateral deslizante",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1605,
+  "en": "Copenhagen Adduction Exercise",
+  "enAliases": [
+   "Copenhagen Plank",
+   "Adductor Side Plank"
+  ],
+  "es": "Ejercicio de aducción Copenhagen",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1606,
+  "en": "Arm Raises (T/Y/I)",
+  "enAliases": [],
+  "es": "Elevaciones de brazos (T/Y/I)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1607,
+  "en": "Typewriter Pull-ups",
+  "enAliases": [],
+  "es": "Dominadas typewriter",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1608,
+  "en": "Bodyweight Biceps Curl",
+  "enAliases": [],
+  "es": "Curl de bíceps con el peso corporal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1612,
+  "en": "kettlebell sumo deadlift",
+  "enAliases": [],
+  "es": "Sentadilla con pesa rusa",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1613,
+  "en": "rubber band glute kickback",
+  "enAliases": [],
+  "es": "Patada de glúteo con banda elástica",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1615,
+  "en": "Treadmill Cardio",
+  "enAliases": [],
+  "es": "Cinta de correr",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1616,
+  "en": "Dumbbell donkey kick",
+  "enAliases": [],
+  "es": "Patada de burro con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1618,
+  "en": "Stationary bike cardio",
+  "enAliases": [],
+  "es": "Cardio en bicicleta estática",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1620,
+  "en": "Seated Dumbbell Calf Raise",
+  "enAliases": [],
+  "es": "Elevación de gemelos sentado con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1621,
+  "en": "Unilateral Cable row",
+  "enAliases": [
+   "Single-arm cable row"
+  ],
+  "es": "Remo unilateral en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1630,
+  "en": "Blaze",
+  "enAliases": [],
+  "es": "Blaze",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1634,
+  "en": "Rope Pullover/row",
+  "enAliases": [],
+  "es": "Pullover/remo con cuerda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1637,
+  "en": "Single arm row",
+  "enAliases": [],
+  "es": "Remo a un brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1638,
+  "en": "Barbell Clean and press",
+  "enAliases": [],
+  "es": "Cargada y press con barra",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1639,
+  "en": "Dumbbell Bent Over Face Pull",
+  "enAliases": [],
+  "es": "Face pull inclinado con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1640,
+  "en": "Dumbbell Front Squat",
+  "enAliases": [],
+  "es": "Sentadilla frontal con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1641,
+  "en": "Kettlebell One Legged Deadlift",
+  "enAliases": [],
+  "es": "Peso muerto a una pierna con pesa rusa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1642,
+  "en": "Dumbbell Hip Thrust",
+  "enAliases": [],
+  "es": "Empuje de cadera con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1648,
+  "en": "Weighted Crunch",
+  "enAliases": [],
+  "es": "Crunch con peso",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1650,
+  "en": "Dumbbell Side Bend",
+  "enAliases": [],
+  "es": "Flexión lateral con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1651,
+  "en": "Dumbbell Rear Lunge",
+  "enAliases": [],
+  "es": "Zancada hacia atrás con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1652,
+  "en": "Dumbbell Romanian Deadlift",
+  "enAliases": [],
+  "es": "Peso muerto rumano con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1653,
+  "en": "Dumbbell Side Squat",
+  "enAliases": [],
+  "es": "Sentadilla lateral con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1654,
+  "en": "Machine Lateral Raise",
+  "enAliases": [],
+  "es": "Elevación lateral en máquina",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1656,
+  "en": "Cable Chest Press - Decline",
+  "enAliases": [],
+  "es": "Press de pecho en polea - declinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1657,
+  "en": "Preacher Curl - Internally Rotated",
+  "enAliases": [],
+  "es": "Curl en banco Scott con rotación interna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1658,
+  "en": "Preacher Curl - Externally Rotated",
+  "enAliases": [],
+  "es": "Curl en banco Scott - rotación externa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1659,
+  "en": "Lat Pulldown - Cross Body Single Arm",
+  "enAliases": [],
+  "es": "Jalón al pecho a un brazo cruzado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1660,
+  "en": "Cable Chest Press - Incline",
+  "enAliases": [],
+  "es": "Press de pecho en polea inclinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1661,
+  "en": "Cable Triceps Press",
+  "enAliases": [],
+  "es": "Press de tríceps en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1662,
+  "en": "Cable Tri Extension - Internal Rotation",
+  "enAliases": [],
+  "es": "Extensión de tríceps en polea con rotación interna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1666,
+  "en": "Curl  - With Shoulder Elevated",
+  "enAliases": [],
+  "es": "Curl con el hombro elevado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1668,
+  "en": "One Arm Overhead Cable Tricep Extension",
+  "enAliases": [],
+  "es": "Extensión de tríceps sobre la cabeza a una mano en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1670,
+  "en": "Leg Swings (Front–Back)",
+  "enAliases": [],
+  "es": "Balanceo de piernas (adelante y atrás)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1672,
+  "en": "Seated Hip Abduction",
+  "enAliases": [],
+  "es": "Abducción de cadera sentado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1679,
+  "en": "Wall Angels",
+  "enAliases": [],
+  "es": "Wall Angels",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1680,
+  "en": "seated figure four",
+  "enAliases": [],
+  "es": "Estiramiento de cuatro sentado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1683,
+  "en": "Zottman curl",
+  "enAliases": [],
+  "es": "Curl Zottman",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1684,
+  "en": "Dumbbell Thruster",
+  "enAliases": [],
+  "es": "Thruster con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1686,
+  "en": "Glute Bridge Single-Arm Press",
+  "enAliases": [],
+  "es": "Puente de glúteos con press a un brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1687,
+  "en": "Bear crawl pull through",
+  "enAliases": [],
+  "es": "Bear crawl pull through",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1689,
+  "en": "Cable Fly Middle Chest",
+  "enAliases": [],
+  "es": "Aperturas en polea para el pecho medio",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1690,
+  "en": "Cable Fly Upper Chest",
+  "enAliases": [],
+  "es": "Aperturas en polea para el pecho superior",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1691,
+  "en": "Cable Fly Lower Chest",
+  "enAliases": [],
+  "es": "Aperturas en polea para el pecho inferior",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1693,
+  "en": "Incline Static Hold",
+  "enAliases": [],
+  "es": "Sostenimiento estático en banco inclinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1694,
+  "en": "Flat Machine Press",
+  "enAliases": [],
+  "es": "Press de pecho en máquina (plano)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1695,
+  "en": "Pull-Ups (Wide Grip)",
+  "enAliases": [],
+  "es": "Dominadas (agarre ancho)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1696,
+  "en": "Pull-Ups (Neutral Grip)",
+  "enAliases": [],
+  "es": "Dominadas (agarre neutro)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1698,
+  "en": "Barbell Row (Overhand)",
+  "enAliases": [],
+  "es": "Remo con barra (agarre prono)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1699,
+  "en": "Barbell Row (Underhand)",
+  "enAliases": [],
+  "es": "Remo con barra (agarre supino)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1700,
+  "en": "Barbell Romanian Deadlift (RDL)",
+  "enAliases": [],
+  "es": "Peso muerto rumano con barra (RDL)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1701,
+  "en": "One-Arm Heavy Row",
+  "enAliases": [],
+  "es": "Remo pesado a una mano",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1702,
+  "en": "Jalón al pecho con agarre ancho",
+  "enAliases": [],
+  "es": "Jalón al pecho con agarre ancho",
+  "license": "CC-BY-SA 4",
+  "author": "Mariano_O"
+ },
+ {
+  "wgerId": 1703,
+  "en": "Patadas traseras",
+  "enAliases": [],
+  "es": "Patadas traseras",
+  "license": "CC-BY-SA 4",
+  "author": "Mariano_O"
+ },
+ {
+  "wgerId": 1704,
+  "en": "Tuck L-sit",
+  "enAliases": [],
+  "es": "L-sit agrupado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1706,
+  "en": "Bulgarian Squat with Dumbbells",
+  "enAliases": [],
+  "es": "Sentadilla búlgara con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1707,
+  "en": "Elevación lateral polea",
+  "enAliases": [],
+  "es": "Elevacion lateral polea",
+  "license": "CC-BY-SA 4",
+  "author": "polloperro"
+ },
+ {
+  "wgerId": 1709,
+  "en": "Reverse Fly Standing",
+  "enAliases": [],
+  "es": "Pájaro de pie",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1710,
+  "en": "Butchers Block Stretch",
+  "enAliases": [],
+  "es": "Estiramiento Butcher's Block",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1711,
+  "en": "Sleeper Stretch",
+  "enAliases": [],
+  "es": "Sleeper Stretch",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1712,
+  "en": "Horizontal Shoulder Flexion Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de flexión horizontal del hombro",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1713,
+  "en": "Doorway Pectoral Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de pectoral en el marco de la puerta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1714,
+  "en": "Shoulder Dumbbell Pendular Exercise",
+  "enAliases": [],
+  "es": "Ejercicio pendular de hombro con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1715,
+  "en": "Shoulder External Rotation with Dumbbell",
+  "enAliases": [],
+  "es": "Rotación externa de hombro con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1716,
+  "en": "Incline Shoulder Press Up",
+  "enAliases": [],
+  "es": "Push-up escapular en banco inclinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1717,
+  "en": "Neck extension",
+  "enAliases": [],
+  "es": "Codo unilateral polea alta",
+  "license": "CC-BY-SA 4",
+  "author": "polloperro"
+ },
+ {
+  "wgerId": 1718,
+  "en": "Remo alto polea alta",
+  "enAliases": [],
+  "es": "Remo alto desde polea",
+  "license": "CC-BY-SA 4",
+  "author": "polloperro"
+ },
+ {
+  "wgerId": 1719,
+  "en": "Jalon caballero unialteral",
+  "enAliases": [],
+  "es": "Jalón caballero unialteral",
+  "license": "CC-BY-SA 4",
+  "author": "polloperro"
+ },
+ {
+  "wgerId": 1724,
+  "en": "Standing Adduction (Cable)",
+  "enAliases": [],
+  "es": "Aducción de pie (polea)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1725,
+  "en": "Seated Row (Machine)",
+  "enAliases": [],
+  "es": "Remo sentado (máquina)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1726,
+  "en": "Straight-Arm Pulldown (Cable)",
+  "enAliases": [],
+  "es": "Jalón con brazos rectos (polea)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1727,
+  "en": "Side Straight-Arm Pulldown (Cable)",
+  "enAliases": [],
+  "es": "Jalón lateral con brazo recto (polea)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1728,
+  "en": "Shoulder Internal Rotation (Cable)",
+  "enAliases": [],
+  "es": "Rotación interna de hombro (polea)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1729,
+  "en": "Shoulder External Rotation (Cable)",
+  "enAliases": [],
+  "es": "Rotación externa de hombro (polea)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1732,
+  "en": "Face pulls with yellow/green band",
+  "enAliases": [],
+  "es": "Face pulls con banda amarilla/verde",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1733,
+  "en": "Isometric Squat to Failure",
+  "enAliases": [],
+  "es": "Sentadilla isometrica al fallo",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1734,
+  "en": "Single-Leg Lunge with Kettlebell:",
+  "enAliases": [],
+  "es": "Zancada con pesa rusa a una pierna",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1735,
+  "en": "Single-leg side glute press",
+  "enAliases": [],
+  "es": "Gluteo en prensa de lado con una pierna",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1736,
+  "en": "Single-Leg Deadlift with Dumbbell",
+  "enAliases": [],
+  "es": "Peso muerto a una pierna con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1738,
+  "en": "Neutral-grip pull-ups or TRX rows",
+  "enAliases": [],
+  "es": "Dominadas en agarre neutro o remo TRX",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1743,
+  "en": "Windshield Wipers",
+  "enAliases": [],
+  "es": "Limpiaparabrisas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1744,
+  "en": "Machine Side Lateral Raises",
+  "enAliases": [],
+  "es": "Elevación lateral en maquina",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1745,
+  "en": "Cable Front Raise with a small bar",
+  "enAliases": [],
+  "es": "Elevación frontal en polea con barra",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1747,
+  "en": "Smith machine squat",
+  "enAliases": [],
+  "es": "Sentadilla multipower",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1748,
+  "en": "Machine Hip Abduction",
+  "enAliases": [],
+  "es": "Abducción en máquina",
+  "license": "CC-BY-SA 4",
+  "author": "Tierrasverdes"
+ },
+ {
+  "wgerId": 1751,
+  "en": "Cable pull through",
+  "enAliases": [],
+  "es": "Cable pull through",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1766,
+  "en": "Plank Reach",
+  "enAliases": [],
+  "es": "Plancha con extensión de brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1771,
+  "en": "Wrist curl, cable",
+  "enAliases": [],
+  "es": "Curl de muñeca en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1772,
+  "en": "Reverse crunch",
+  "enAliases": [],
+  "es": "Crunch inverso",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1774,
+  "en": "Chair dips",
+  "enAliases": [],
+  "es": "Fondos en silla",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1775,
+  "en": "Pec deck rear delt fly",
+  "enAliases": [],
+  "es": "Pájaro para deltoides posterior en máquina pec deck",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1779,
+  "en": "Landmine Rotation",
+  "enAliases": [],
+  "es": "Rotación con landmine",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1795,
+  "en": "unilateral cross body cable pull down",
+  "enAliases": [],
+  "es": "Jalón cruzado unilateral en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1801,
+  "en": "Barbell Full Squat",
+  "enAliases": [],
+  "es": "Sentadilla profunda con barra",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1803,
+  "en": "Trap Bar Squat",
+  "enAliases": [],
+  "es": "Sentadilla con barra hexagonal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1804,
+  "en": "ankle dorsiflexion rocks",
+  "enAliases": [],
+  "es": "Dorsiflexión de tobillo",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1807,
+  "en": "Behind the Back Cable Lateral Raise",
+  "enAliases": [],
+  "es": "Elevación lateral en polea por detrás de la espalda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1808,
+  "en": "Parallel Bar Hold",
+  "enAliases": [],
+  "es": "Sujeción en barras paralelas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1809,
+  "en": "Reverse Hyperextension",
+  "enAliases": [],
+  "es": "Hiperextensión inversa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1810,
+  "en": "Sphinx",
+  "enAliases": [],
+  "es": "Esfinge",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1822,
+  "en": "Open Book",
+  "enAliases": [],
+  "es": "Libro abierto",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1823,
+  "en": "Clamshell",
+  "enAliases": [],
+  "es": "Almeja (clamshell)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1824,
+  "en": "Dumbell Tate Press",
+  "enAliases": [],
+  "es": "Tate press con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1825,
+  "en": "Chest-Supported Rear Delt Raise",
+  "enAliases": [],
+  "es": "Elevación posterior de hombro con apoyo en el pecho",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1826,
+  "en": "Band pull-apart with external rotation",
+  "enAliases": [],
+  "es": "Apertura con banda y rotación externa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1827,
+  "en": "Double-Leg Abdominal Press",
+  "enAliases": [],
+  "es": "Presión abdominal con ambas piernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1828,
+  "en": "Abdominal Draw-In",
+  "enAliases": [],
+  "es": "Activación del transverso abdominal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1829,
+  "en": "Landmine Squat to Press",
+  "enAliases": [],
+  "es": "Sentadilla con barra landmine y press",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1830,
+  "en": "Barbell Step Back Lunge",
+  "enAliases": [
+   "Barbell Reverse Lunge"
+  ],
+  "es": "Zancada hacia atrás con barra",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1831,
+  "en": "Hammerstrength Decline Chest Press",
+  "enAliases": [
+   "Hammerstrength Decline Press"
+  ],
+  "es": "Press de pecho declinado en Hammer Strength",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1832,
+  "en": "Ring Support Hold",
+  "enAliases": [],
+  "es": "Mantenimiento en apoyo en anillas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1833,
+  "en": "Floor Glider Hamstring Curls",
+  "enAliases": [],
+  "es": "Curl de isquiotibiales en el suelo con discos deslizantes",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1834,
+  "en": "Trap-3 Raise",
+  "enAliases": [],
+  "es": "Elevación Trap-3",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1835,
+  "en": "External Rotation Stretch",
+  "enAliases": [],
+  "es": "Estiramiento con rotación externa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1838,
+  "en": "Banded Shoulder Drills",
+  "enAliases": [],
+  "es": "Ejercicios de hombro con banda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1841,
+  "en": "Seated Shoulder Extension Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de extensión de hombro sentado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1842,
+  "en": "Banded Clamshell",
+  "enAliases": [],
+  "es": "Almeja con banda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1843,
+  "en": "Butterfly Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de mariposa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1844,
+  "en": "Frog Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de rana",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1845,
+  "en": "Seated Pancake Good Morning",
+  "enAliases": [],
+  "es": "Buenos días sentado con apertura (pancake)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1846,
+  "en": "Horse Stance (Side Splits)",
+  "enAliases": [],
+  "es": "Postura del jinete (split lateral)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1847,
+  "en": "Straddle L-Sit",
+  "enAliases": [],
+  "es": "L-Sit en straddle",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1852,
+  "en": "L-sit",
+  "enAliases": [],
+  "es": "L-Sit",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1854,
+  "en": "Calves foam roller",
+  "enAliases": [],
+  "es": "Foam Roller Gemelos",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1855,
+  "en": "Hamstring Foam roller",
+  "enAliases": [],
+  "es": "Foam Roller isquitobiales",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1856,
+  "en": "Foam Roller Anterior tibialis",
+  "enAliases": [],
+  "es": "Foam Roller Tibial anterior",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1857,
+  "en": "Foam Roller Iliotibial band",
+  "enAliases": [],
+  "es": "Foam Roller Cintillar iliotibial",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1858,
+  "en": "Foam Roller quadriceps",
+  "enAliases": [],
+  "es": "Foam Roller cuadriceps",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1859,
+  "en": "Foam Roller Gluteus",
+  "enAliases": [],
+  "es": "Foam roller Gluteo",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1860,
+  "en": "Foam Roller Adductors",
+  "enAliases": [],
+  "es": "Foam Roller Aductores",
+  "license": "CC-BY-SA 4",
+  "author": "Davidgj32"
+ },
+ {
+  "wgerId": 1877,
+  "en": "Banded Scapular Retraction",
+  "enAliases": [],
+  "es": "Retracción escapular con banda",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1879,
+  "en": "Incline DB Y-Raise",
+  "enAliases": [],
+  "es": "Elevación en Y con mancuernas en banco inclinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1881,
+  "en": "DB Wrist Extension",
+  "enAliases": [],
+  "es": "Extensión de muñeca con mancuernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1882,
+  "en": "High-Cable Lateral Raise",
+  "enAliases": [],
+  "es": "Elevación lateral en polea alta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1884,
+  "en": "Shinbox IR Stretch",
+  "enAliases": [],
+  "es": "Estiramiento de rotación interna en shinbox",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1885,
+  "en": "YTWL Exercise",
+  "enAliases": [],
+  "es": "Ejercicio YTWL",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1886,
+  "en": "Supine Hip Abduction",
+  "enAliases": [],
+  "es": "Abducción de cadera en supino",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1889,
+  "en": "Decline Bench Leg Raise",
+  "enAliases": [],
+  "es": "Elevación de piernas en banco declinado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1893,
+  "en": "Overhead Barbell Press",
+  "enAliases": [
+   "Military Press"
+  ],
+  "es": "Press de barra por encima de la cabeza",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1900,
+  "en": "Tricep Rope Pushdowns",
+  "enAliases": [],
+  "es": "Extensiones de tríceps con cuerda en polea",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1901,
+  "en": "Clean and Press",
+  "enAliases": [
+   "Clean & Press",
+   "Barbell Clean and Press",
+   "Olympic Clean and Press"
+  ],
+  "es": "Cargada y press",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1902,
+  "en": "Weighted push-ups",
+  "enAliases": [],
+  "es": "Flexiones con peso",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1905,
+  "en": "Pullback",
+  "enAliases": [],
+  "es": "Pullback",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1906,
+  "en": "Hip Bridge",
+  "enAliases": [],
+  "es": "Puente de cadera",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1909,
+  "en": "Leg Wheel",
+  "enAliases": [],
+  "es": "Círculos con las piernas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1910,
+  "en": "Kneeling Superman",
+  "enAliases": [],
+  "es": "Superman de rodillas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1911,
+  "en": "Cat Plank",
+  "enAliases": [],
+  "es": "Plancha del gato",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1912,
+  "en": "Core Rotation",
+  "enAliases": [],
+  "es": "Rotación de core",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1914,
+  "en": "Isometria alle parallele",
+  "enAliases": [],
+  "es": "Isometría en las paralelas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1915,
+  "en": "Quadruped Hip Abduction",
+  "enAliases": [],
+  "es": "Abducción de cadera en cuadrupedia",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1922,
+  "en": "Seated Cable chest fly",
+  "enAliases": [],
+  "es": "Aperturas de pecho en polea sentado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1925,
+  "en": "Barbell Silverback Shrug",
+  "enAliases": [],
+  "es": "Encogimiento Silverback con barra",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1927,
+  "en": "Inverted Lat Pull Down",
+  "enAliases": [],
+  "es": "Jalón al pecho con agarre supino",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1928,
+  "en": "Seated V-Grip Row",
+  "enAliases": [],
+  "es": "Remo sentado con agarre en V",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1929,
+  "en": "Assisted Pull-Up",
+  "enAliases": [],
+  "es": "Dominada asistida",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1931,
+  "en": "Dumbbell Curl",
+  "enAliases": [],
+  "es": "Curl con mancuerna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1933,
+  "en": "Abdominal Crunch",
+  "enAliases": [],
+  "es": "Crunch abdominal",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1935,
+  "en": "Belt Squat",
+  "enAliases": [],
+  "es": "Sentadilla con cinturón",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1936,
+  "en": "Cable Rear-Delt Fly (single arm)",
+  "enAliases": [],
+  "es": "Aperturas para deltoides posterior en polea (un brazo)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1947,
+  "en": "dumbbell snatch",
+  "enAliases": [],
+  "es": "Arrancada con mancuerna (dumbbell snatch)",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1948,
+  "en": "1 Leg Box Squat",
+  "enAliases": [],
+  "es": "Sentadilla a cajón a una pierna",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1949,
+  "en": "Limber 11",
+  "enAliases": [],
+  "es": "Limber 11",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1959,
+  "en": "Seated Piriformis Stretch",
+  "enAliases": [],
+  "es": "Estiramiento del piriforme sentado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1960,
+  "en": "Rear-foot-elevated Hip Flexor Stretch",
+  "enAliases": [],
+  "es": "Estiramiento del flexor de cadera con pie trasero elevado",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1962,
+  "en": "Step Jack",
+  "enAliases": [
+   "Side Step Jack",
+   "Low Impact Jumping Jack"
+  ],
+  "es": "Step Jack",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1963,
+  "en": "Slow Squat",
+  "enAliases": [
+   "Tempo Squat",
+   "​3-1-1 Squat"
+  ],
+  "es": "Sentadilla lenta",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1964,
+  "en": "Wide Push-Up",
+  "enAliases": [
+   "Wide Grip Push-Up"
+  ],
+  "es": "Flexión con manos abiertas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1965,
+  "en": "Marching High Knees",
+  "enAliases": [
+   "High Knee March",
+   "​Standing Knee Drives"
+  ],
+  "es": "Marcha con rodillas altas",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1966,
+  "en": "1/2 Kneeling Thoracic Rotation",
+  "enAliases": [],
+  "es": "Rotación torácica en media rodilla",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1968,
+  "en": "Single-arm dumbbell shoulder press",
+  "enAliases": [],
+  "es": "Press de hombro con mancuerna a un brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1969,
+  "en": "Single-arm cable pushdown",
+  "enAliases": [],
+  "es": "Extensión de tríceps en polea a un brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1970,
+  "en": "Kettlebell sumo high pull",
+  "enAliases": [],
+  "es": "Sumo high pull con kettlebell",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1971,
+  "en": "Mentzer Pulldown",
+  "enAliases": [],
+  "es": "Jalón Mentzer",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 1972,
+  "en": "Single-Arm Lat Pulldown",
+  "enAliases": [],
+  "es": "Jalón al pecho a un brazo",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 2447,
+  "en": "Hip Airplane",
+  "enAliases": [],
+  "es": "Hip airplane",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 2448,
+  "en": "Reverse Clamshell",
+  "enAliases": [],
+  "es": "Almeja inversa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 2449,
+  "en": "Clamshell to Reverse Clamshell",
+  "enAliases": [],
+  "es": "Almeja a almeja inversa",
+  "license": "CC-BY-SA 4",
+  "author": "wger.de"
+ },
+ {
+  "wgerId": 2452,
+  "en": "Curl De Muñeca Con Barra",
+  "enAliases": [],
+  "es": "Curl De Muñeca Con Barra",
+  "license": "CC-BY-SA 4",
+  "author": "xWan"
+ },
+ {
+  "wgerId": 2672,
+  "en": "kelso shrugs",
+  "enAliases": [],
+  "es": "Encogimientos kelso",
+  "license": "CC-BY-SA 4",
+  "author": "Friend7857"
+ }
+]

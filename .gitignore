@@ -61,3 +61,6 @@ GoogleService-Info.plist
 # XcodeGen output
 iosApp/*.xcodeproj/
 iosApp/iosApp/Info.plist
+
+# Catalogue pipeline (scripts/catalog)
+scripts/catalog/node_modules/

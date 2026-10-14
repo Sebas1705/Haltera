@@ -1,0 +1,165 @@
+# Exercises not in free-exercise-db (spec §6.2 step 4). No media yet.
+exercises:
+  - id: swimming
+    name: { en: Swimming, es: Natación }
+    category: CARDIO
+    trackingType: DISTANCE_TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions:
+      en: ["Swim at a steady pace, keeping a regular breathing rhythm.", "Log the distance and the total time."]
+      es: [Nada a un ritmo constante manteniendo una respiración regular., Registra la distancia y el tiempo total.]
+    variants:
+      - { suffix: pool, equipment: NONE }
+      - { suffix: open-water, equipment: NONE }
+  - id: walking
+    name: { en: Walking, es: Caminar }
+    category: CARDIO
+    trackingType: DISTANCE_TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions:
+      en: [Walk at a brisk pace., Log the distance and the total time.]
+      es: [Camina a paso ligero., Registra la distancia y el tiempo total.]
+    variants:
+      - { suffix: outdoor, equipment: NONE }
+  - id: burpee
+    name: { en: Burpee, es: Burpee }
+    category: PLYOMETRICS
+    trackingType: REPS
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions:
+      en: ["From standing, squat and place your hands on the floor.", "Jump your feet back into a plank and do a push-up.", "Jump your feet back to your hands and jump up with your arms overhead."]
+      es: ["De pie, agáchate y apoya las manos en el suelo.", "Lleva los pies atrás de un salto hasta la plancha y haz una flexión.", "Vuelve a llevar los pies hacia las manos y salta con los brazos por encima de la cabeza."]
+    variants:
+      - { suffix: bodyweight, equipment: BODYWEIGHT, loadType: NONE }
+  - id: pistol-squat
+    name: { en: Pistol Squat, es: Sentadilla pistol }
+    category: CALISTHENICS
+    trackingType: BODYWEIGHT_REPS
+    level: EXPERT
+    primaryMuscles: [QUADRICEPS]
+    secondaryMuscles: [GLUTES, HAMSTRINGS]
+    instructions:
+      en: [Stand on one leg with the other leg straight in front of you., Squat down on the standing leg as low as you can while keeping the heel down., Drive back up to standing.]
+      es: [Apóyate sobre una pierna con la otra estirada al frente., Baja en sentadilla sobre la pierna de apoyo todo lo que puedas sin despegar el talón., Sube de nuevo hasta estar de pie.]
+    variants:
+      - { suffix: bodyweight, equipment: BODYWEIGHT }
+  - id: l-sit
+    name: { en: L-Sit, es: L-sit }
+    category: CALISTHENICS
+    trackingType: TIME
+    level: INTERMEDIATE
+    primaryMuscles: [ABDOMINALS]
+    secondaryMuscles: [TRICEPS, QUADRICEPS]
+    instructions:
+      en: [Support yourself on parallel bars or the floor with straight arms., Lift your legs straight in front of you until they are parallel to the floor., Hold the position.]
+      es: [Apóyate en paralelas o en el suelo con los brazos estirados., Eleva las piernas estiradas al frente hasta que queden paralelas al suelo., Mantén la posición.]
+    variants:
+      - { suffix: parallel-bars, equipment: BODYWEIGHT }
+      - { suffix: floor, equipment: BODYWEIGHT }
+  - id: handstand-hold
+    name: { en: Handstand Hold, es: Pino }
+    category: CALISTHENICS
+    trackingType: TIME
+    level: INTERMEDIATE
+    primaryMuscles: [SHOULDERS]
+    secondaryMuscles: [TRICEPS, ABDOMINALS]
+    instructions:
+      en: ["Kick up into a handstand, against a wall or freestanding.", "Keep your body in a straight line with your arms locked.", "Hold the position."]
+      es: ["Sube al pino, contra la pared o libre.", "Mantén el cuerpo en línea recta con los brazos bloqueados.", "Mantén la posición."]
+    variants:
+      - { suffix: wall, equipment: BODYWEIGHT }
+      - { suffix: freestanding, equipment: BODYWEIGHT }
+  - id: hollow-body-hold
+    name: { en: Hollow Body Hold, es: Hollow body }
+    category: CALISTHENICS
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [ABDOMINALS]
+    secondaryMuscles: []
+    instructions:
+      en: [Lie on your back with your arms overhead., Press your lower back into the floor and lift your shoulders and legs off the floor., Hold the position.]
+      es: [Túmbate boca arriba con los brazos por encima de la cabeza., Pega la zona lumbar al suelo y despega los hombros y las piernas., Mantén la posición.]
+    variants:
+      - { suffix: bodyweight, equipment: BODYWEIGHT }
+  - id: dead-hang
+    name: { en: Dead Hang, es: Colgarse de la barra }
+    category: CALISTHENICS
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [FOREARMS]
+    secondaryMuscles: [LATS, SHOULDERS]
+    instructions:
+      en: [Grab a pull-up bar with an overhand grip., Hang with your arms straight and your shoulders active., Hold the position.]
+      es: [Agarra la barra de dominadas en pronación., Cuélgate con los brazos estirados y los hombros activos., Mantén la posición.]
+    variants:
+      - { suffix: bodyweight, equipment: BODYWEIGHT }
+  - id: front-lever-hold
+    name: { en: Front Lever Hold, es: Front lever }
+    category: CALISTHENICS
+    trackingType: TIME
+    level: EXPERT
+    primaryMuscles: [LATS]
+    secondaryMuscles: [ABDOMINALS, SHOULDERS]
+    instructions:
+      en: ["Hang from a bar with straight arms.", "Pull your body up to horizontal, face up, keeping it straight.", "Hold the position (use a tuck or a band to scale it)."]
+      es: ["Cuélgate de una barra con los brazos estirados.", "Eleva el cuerpo hasta la horizontal, boca arriba y en línea recta.", "Mantén la posición (encoge las piernas o usa una goma para facilitarlo)."]
+    variants:
+      - { suffix: bodyweight, equipment: BODYWEIGHT }
+      - { suffix: band-assisted, equipment: BAND }
+  - id: football
+    name: { en: Football, es: Fútbol }
+    category: SPORT
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions: { en: [Log the playing time.], es: [Registra el tiempo de juego.] }
+    variants:
+      - { suffix: match, equipment: NONE }
+  - id: padel
+    name: { en: Padel, es: Pádel }
+    category: SPORT
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions: { en: [Log the playing time.], es: [Registra el tiempo de juego.] }
+    variants:
+      - { suffix: match, equipment: NONE }
+  - id: tennis
+    name: { en: Tennis, es: Tenis }
+    category: SPORT
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions: { en: [Log the playing time.], es: [Registra el tiempo de juego.] }
+    variants:
+      - { suffix: match, equipment: NONE }
+  - id: basketball
+    name: { en: Basketball, es: Baloncesto }
+    category: SPORT
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: []
+    instructions: { en: [Log the playing time.], es: [Registra el tiempo de juego.] }
+    variants:
+      - { suffix: match, equipment: NONE }
+  - id: climbing
+    name: { en: Climbing, es: Escalada }
+    category: SPORT
+    trackingType: TIME
+    level: BEGINNER
+    primaryMuscles: [FULL_BODY]
+    secondaryMuscles: [FOREARMS, LATS]
+    instructions: { en: [Log the climbing time.], es: [Registra el tiempo de escalada.] }
+    variants:
+      - { suffix: bouldering, equipment: NONE }
+      - { suffix: rope, equipment: NONE }

@@ -48,7 +48,10 @@ class IosRoutineShareBridge(private val channel: IncomingRoutineChannel) : Routi
         val presenter = topController() ?: return null
         val url = suspendCancellableCoroutine<NSURL?> { cont ->
             val delegate = object : NSObject(), UIDocumentPickerDelegateProtocol {
-                override fun documentPicker(controller: UIDocumentPickerViewController, didPickDocumentsAtURLs: List<*>) {
+                override fun documentPicker(
+                    controller: UIDocumentPickerViewController,
+                    didPickDocumentsAtURLs: List<*>
+                ) {
                     pickerDelegate = null
                     if (cont.isActive) cont.resume(didPickDocumentsAtURLs.firstOrNull() as? NSURL)
                 }

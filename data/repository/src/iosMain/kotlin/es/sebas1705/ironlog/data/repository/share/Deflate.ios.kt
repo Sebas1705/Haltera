@@ -20,6 +20,8 @@ import platform.zlib.uncompress
 
 private const val BEST_COMPRESSION = 9
 private const val MAX_GROWTH_STEPS = 12
+private const val INITIAL_RATIO = 4
+private const val INITIAL_EXTRA = 64
 
 internal actual fun deflateBytes(data: ByteArray): ByteArray = memScoped {
     val bound = compressBound(data.size.convert()).toInt()
@@ -44,7 +46,7 @@ internal actual fun deflateBytes(data: ByteArray): ByteArray = memScoped {
 
 internal actual fun inflateBytes(data: ByteArray): ByteArray {
     require(data.isNotEmpty()) { "empty input" }
-    var capacity = data.size * 4 + 64
+    var capacity = data.size * INITIAL_RATIO + INITIAL_EXTRA
     repeat(MAX_GROWTH_STEPS) {
         val result = memScoped {
             val out = ByteArray(capacity)
@@ -52,7 +54,12 @@ internal actual fun inflateBytes(data: ByteArray): ByteArray {
             length.value = capacity.convert()
             val status = out.usePinned { o ->
                 data.usePinned { i ->
-                    uncompress(o.addressOf(0).reinterpret(), length.ptr, i.addressOf(0).reinterpret(), data.size.convert())
+                    uncompress(
+                        o.addressOf(0).reinterpret(),
+                        length.ptr,
+                        i.addressOf(0).reinterpret(),
+                        data.size.convert()
+                    )
                 }
             }
             when (status) {

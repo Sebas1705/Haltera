@@ -138,7 +138,13 @@ internal class DefaultRoutineSharing(
     private fun remap(target: SlotTarget, idMap: Map<String, String>, missing: Set<String>, drop: Boolean): SlotTarget? =
         when (target) {
             is SlotTarget.Fixed ->
-                if (drop && target.variantId in missing) null else SlotTarget.Fixed(idMap[target.variantId] ?: target.variantId)
+                if (drop && target.variantId in missing) {
+                    null
+                } else {
+                    SlotTarget.Fixed(
+                        idMap[target.variantId] ?: target.variantId
+                    )
+                }
             is SlotTarget.Flexible -> {
                 if (drop && target.exerciseId in missing) {
                     null

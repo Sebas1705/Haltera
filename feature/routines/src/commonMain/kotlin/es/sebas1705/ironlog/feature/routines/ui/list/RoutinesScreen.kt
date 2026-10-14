@@ -82,6 +82,7 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** Routines tab root: my routines with the active badge, and the ways to add one. */
 @Composable
+@Suppress("LongMethod") // Wires the list, the add/import buttons and the export overlays.
 internal fun RoutinesScreen(
     onOpenRoutine: (routineId: String) -> Unit,
     onOpenCatalogue: () -> Unit,
@@ -117,7 +118,13 @@ internal fun RoutinesScreen(
         contentWindowInsets = WindowInsets(0),
         snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = {
-            if (state.routines.isNotEmpty()) AddButtons(onCreate = { if (!state.creating) create() }, onOpenCatalogue, onImport)
+            if (state.routines.isNotEmpty()) {
+                AddButtons(
+                    onCreate = { if (!state.creating) create() },
+                    onOpenCatalogue,
+                    onImport
+                )
+            }
         },
     ) { padding ->
         when {

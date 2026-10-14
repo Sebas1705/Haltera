@@ -39,7 +39,11 @@ data class RoutineFile(
 data class SharedRoutine(val name: String, val description: String = "", val days: List<SharedDay> = emptyList())
 
 @Serializable
-data class SharedDay(val name: String, val kind: String = DayKind.TRAINING.name, val slots: List<SharedSlot> = emptyList())
+data class SharedDay(
+    val name: String,
+    val kind: String = DayKind.TRAINING.name,
+    val slots: List<SharedSlot> = emptyList()
+)
 
 @Serializable
 data class SharedSlot(
@@ -139,6 +143,7 @@ object RoutineExport {
     fun encode(file: RoutineFile): String = json.encodeToString(RoutineFile.serializer(), file)
 
     /** Reads [text]; never throws. */
+    @Suppress("ReturnCount") // One early return per kind of bad input reads best.
     fun decode(text: String): RoutineDecodeResult {
         val root = try {
             json.parseToJsonElement(text).jsonObject

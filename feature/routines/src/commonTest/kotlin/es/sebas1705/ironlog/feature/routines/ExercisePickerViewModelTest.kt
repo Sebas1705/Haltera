@@ -64,7 +64,10 @@ class ExercisePickerViewModelTest {
         vm.onEvent(ExercisePickerIntent.CategorySelected(ExerciseCategory.CARDIO))
         vm.onEvent(ExercisePickerIntent.MuscleSelected(Muscle.CHEST))
         advanceTimeBy(300)
-        assertEquals(ExerciseFilter(category = ExerciseCategory.CARDIO, muscle = Muscle.CHEST, equipment = Equipment.DUMBBELL), exercises.filters.last())
+        assertEquals(
+            ExerciseFilter(category = ExerciseCategory.CARDIO, muscle = Muscle.CHEST, equipment = Equipment.DUMBBELL),
+            exercises.filters.last()
+        )
         assertTrue(vm.uiState.value.results.isEmpty())
 
         vm.onEvent(ExercisePickerIntent.ClearFilters)

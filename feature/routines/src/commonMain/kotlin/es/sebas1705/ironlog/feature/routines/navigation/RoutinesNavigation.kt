@@ -42,6 +42,7 @@ internal data class ImportRoutineRoute(val source: String)
  * Registers the routines destinations. The app shell calls this from its NavHost.
  * Nested destinations (editor, slot editor, exercise picker, catalogue) draw their own top bar.
  */
+@Suppress("LongMethod") // One composable per destination.
 fun NavGraphBuilder.routinesGraph(
     navController: NavController,
 ) {

@@ -1,0 +1,772 @@
+# Bundled generic foods (nutrition design §2). The pipeline (scripts/nutrition/build.mjs) reads the USDA
+# snapshot in sources/usda-foods.json and keeps only the foods listed here, with these English names; the
+# Spanish names live in i18n/es.yaml. See nutrition/README.md for the rules.
+#
+# Entry fields:
+#   fdc      USDA FoodData Central id (the food id is `usda-<fdc>`, stable forever)
+#   en       English display name (short, "Food, state" style)
+#   unit     G (default) or ML for drinks: values stay per 100 g and 1 ml is taken as 1 g
+#   serving  [kind, grams or ml] — one typical serving; kinds are listed under `servingKinds`
+foodsVersion: 1
+released: false
+
+servingKinds:
+  unit: { en: "unit", es: "unidad" }
+  slice: { en: "slice", es: "rebanada" }
+  glass: { en: "glass", es: "vaso" }
+  cup: { en: "cup", es: "taza" }
+  bowl: { en: "bowl", es: "cuenco" }
+  tbsp: { en: "tablespoon", es: "cucharada" }
+  tsp: { en: "teaspoon", es: "cucharadita" }
+  handful: { en: "handful", es: "puñado" }
+  pot: { en: "pot", es: "tarrina" }
+  can: { en: "can", es: "lata" }
+  portion: { en: "portion", es: "ración" }
+  fillet: { en: "fillet", es: "filete" }
+  scoop: { en: "scoop", es: "bola" }
+  measure: { en: "scoop", es: "cacito" }
+  square: { en: "square", es: "onza" }
+  clove: { en: "clove", es: "diente" }
+  pat: { en: "pat", es: "porción" }
+
+foods:
+  # Dairy and eggs
+  - { fdc: 171265, en: "Whole milk", unit: ML, serving: [glass, 250] }
+  - { fdc: 171267, en: "Semi-skimmed milk (2%)", unit: ML, serving: [glass, 250] }
+  - { fdc: 170872, en: "Semi-skimmed milk (1%)", unit: ML, serving: [glass, 250] }
+  - { fdc: 171269, en: "Skimmed milk", unit: ML, serving: [glass, 250] }
+  - { fdc: 171278, en: "Goat milk", unit: ML, serving: [glass, 250] }
+  - { fdc: 170882, en: "Sheep milk", unit: ML, serving: [glass, 250] }
+  - { fdc: 170874, en: "Buttermilk, low fat", unit: ML, serving: [glass, 250] }
+  - { fdc: 171275, en: "Sweetened condensed milk", serving: [tbsp, 20] }
+  - { fdc: 171276, en: "Evaporated milk", serving: [tbsp, 15] }
+  - { fdc: 170876, en: "Whole milk powder", serving: [tbsp, 8] }
+  - { fdc: 172195, en: "Skimmed milk powder", serving: [tbsp, 7] }
+  - { fdc: 170879, en: "Chocolate milk", unit: ML, serving: [glass, 250] }
+  - { fdc: 171284, en: "Plain yogurt", serving: [pot, 125] }
+  - { fdc: 170886, en: "Plain yogurt, low fat", serving: [pot, 125] }
+  - { fdc: 170887, en: "Plain yogurt, skimmed", serving: [pot, 125] }
+  - { fdc: 171304, en: "Greek yogurt, plain", serving: [pot, 125] }
+  - { fdc: 170903, en: "Greek yogurt, plain, low fat", serving: [pot, 125] }
+  - { fdc: 330137, en: "Greek yogurt, plain, fat free", serving: [pot, 125] }
+  - { fdc: 170889, en: "Fruit yogurt, low fat", serving: [pot, 125] }
+  - { fdc: 170888, en: "Vanilla yogurt, low fat", serving: [pot, 125] }
+  - { fdc: 170845, en: "Mozzarella, fresh", serving: [portion, 125] }
+  - { fdc: 171244, en: "Mozzarella, shredded (pizza)", serving: [handful, 30] }
+  - { fdc: 170848, en: "Parmesan cheese", serving: [portion, 30] }
+  - { fdc: 171247, en: "Parmesan, grated", serving: [tbsp, 5] }
+  - { fdc: 171249, en: "Pecorino romano cheese", serving: [portion, 30] }
+  - { fdc: 171251, en: "Emmental (Swiss) cheese", serving: [slice, 20] }
+  - { fdc: 171242, en: "Gruyère cheese", serving: [portion, 30] }
+  - { fdc: 171241, en: "Gouda cheese", serving: [slice, 20] }
+  - { fdc: 173419, en: "Edam cheese", serving: [slice, 20] }
+  - { fdc: 172177, en: "Brie cheese", serving: [portion, 30] }
+  - { fdc: 172178, en: "Camembert cheese", serving: [portion, 30] }
+  - { fdc: 172175, en: "Blue cheese", serving: [portion, 30] }
+  - { fdc: 171250, en: "Roquefort cheese", serving: [portion, 30] }
+  - { fdc: 173420, en: "Feta cheese", serving: [portion, 30] }
+  - { fdc: 328637, en: "Cheddar cheese", serving: [slice, 20] }
+  - { fdc: 170850, en: "Provolone cheese", serving: [slice, 20] }
+  - { fdc: 170851, en: "Ricotta cheese", serving: [tbsp, 30] }
+  - { fdc: 172179, en: "Cottage cheese", serving: [portion, 100] }
+  - { fdc: 172182, en: "Cottage cheese, low fat", serving: [portion, 100] }
+  - { fdc: 173418, en: "Cream cheese", serving: [tbsp, 15] }
+  - { fdc: 169079, en: "Cream cheese, light", serving: [tbsp, 15] }
+  - { fdc: 173435, en: "Goat cheese, soft", serving: [portion, 30] }
+  - { fdc: 173433, en: "Goat cheese, semi-cured", serving: [portion, 30] }
+  - { fdc: 172197, en: "Goat cheese, cured", serving: [portion, 30] }
+  - { fdc: 172223, en: "Fresh cheese (queso fresco)", serving: [portion, 50] }
+  - { fdc: 170853, en: "Processed cheese slices", serving: [slice, 20] }
+  - { fdc: 171254, en: "Processed cheese spread", serving: [portion, 16] }
+  - { fdc: 170859, en: "Whipping cream", serving: [tbsp, 15] }
+  - { fdc: 170857, en: "Light cream (cooking cream)", serving: [tbsp, 15] }
+  - { fdc: 170860, en: "Whipped cream, spray", serving: [tbsp, 5] }
+  - { fdc: 171257, en: "Sour cream", serving: [tbsp, 15] }
+  - { fdc: 173430, en: "Butter, unsalted", serving: [pat, 10] }
+  - { fdc: 173410, en: "Butter, salted", serving: [pat, 10] }
+  - { fdc: 171314, en: "Ghee (clarified butter)", serving: [tbsp, 13] }
+  - { fdc: 171287, en: "Egg, whole, raw", serving: [unit, 50] }
+  - { fdc: 172183, en: "Egg white, raw", serving: [unit, 33] }
+  - { fdc: 172184, en: "Egg yolk, raw", serving: [unit, 17] }
+  - { fdc: 173424, en: "Egg, hard-boiled", serving: [unit, 50] }
+  - { fdc: 173423, en: "Egg, fried", serving: [unit, 46] }
+  - { fdc: 172187, en: "Scrambled eggs", serving: [portion, 100] }
+  - { fdc: 172185, en: "Plain omelette", serving: [unit, 120] }
+  - { fdc: 172186, en: "Egg, poached", serving: [unit, 50] }
+  - { fdc: 172191, en: "Quail egg", serving: [unit, 9] }
+  - { fdc: 173461, en: "Dulce de leche", serving: [tbsp, 20] }
+  - { fdc: 167575, en: "Vanilla ice cream", serving: [scoop, 66] }
+  - { fdc: 168809, en: "Chocolate ice cream", serving: [scoop, 66] }
+  - { fdc: 168810, en: "Strawberry ice cream", serving: [scoop, 66] }
+  - { fdc: 167577, en: "Orange sherbet", serving: [scoop, 74] }
+  - { fdc: 168105, en: "Frozen yogurt", serving: [scoop, 72] }
+  - { fdc: 167574, en: "Crème caramel (flan)", serving: [unit, 100] }
+  - { fdc: 169608, en: "Vanilla custard pudding", serving: [pot, 125] }
+  - { fdc: 168778, en: "Chocolate pudding", serving: [pot, 125] }
+  - { fdc: 168782, en: "Rice pudding", serving: [pot, 125] }
+  - { fdc: 173177, en: "Whey protein isolate", serving: [measure, 30] }
+  - { fdc: 173180, en: "Whey protein powder", serving: [measure, 30] }
+  - { fdc: 173181, en: "Soy protein powder", serving: [measure, 30] }
+
+  # Fats and oils
+  - { fdc: 171413, en: "Olive oil", serving: [tbsp, 14] }
+  - { fdc: 171025, en: "Sunflower oil", serving: [tbsp, 14] }
+  - { fdc: 172338, en: "Sunflower oil, high oleic", serving: [tbsp, 14] }
+  - { fdc: 172336, en: "Rapeseed (canola) oil", serving: [tbsp, 14] }
+  - { fdc: 171411, en: "Soybean oil", serving: [tbsp, 14] }
+  - { fdc: 171029, en: "Corn oil", serving: [tbsp, 14] }
+  - { fdc: 171410, en: "Peanut oil", serving: [tbsp, 14] }
+  - { fdc: 171412, en: "Coconut oil", serving: [tbsp, 14] }
+  - { fdc: 171016, en: "Sesame oil", serving: [tbsp, 14] }
+  - { fdc: 167702, en: "Flaxseed oil", serving: [tbsp, 14] }
+  - { fdc: 171401, en: "Lard", serving: [tbsp, 13] }
+  - { fdc: 173587, en: "Margarine", serving: [pat, 10] }
+  - { fdc: 171009, en: "Mayonnaise", serving: [tbsp, 14] }
+  - { fdc: 173594, en: "Mayonnaise, light", serving: [tbsp, 15] }
+  - { fdc: 169055, en: "Caesar dressing", serving: [tbsp, 15] }
+  - { fdc: 171402, en: "Thousand Island dressing", serving: [tbsp, 16] }
+  - { fdc: 171043, en: "Honey mustard dressing", serving: [tbsp, 15] }
+  - { fdc: 173592, en: "Ranch dressing", serving: [tbsp, 15] }
+
+  # Fish and seafood
+  - { fdc: 171955, en: "Cod, raw", serving: [fillet, 150] }
+  - { fdc: 171956, en: "Cod, cooked", serving: [fillet, 130] }
+  - { fdc: 174190, en: "Salt cod, dried", serving: [portion, 50] }
+  - { fdc: 173725, en: "Alaska pollock, raw", serving: [fillet, 150] }
+  - { fdc: 171964, en: "Haddock, raw", serving: [fillet, 150] }
+  - { fdc: 173713, en: "Whiting, raw", serving: [fillet, 120] }
+  - { fdc: 174196, en: "Sole, raw", serving: [fillet, 120] }
+  - { fdc: 174200, en: "Halibut, raw", serving: [fillet, 150] }
+  - { fdc: 173710, en: "Turbot, raw", serving: [fillet, 150] }
+  - { fdc: 175142, en: "Sea bass, raw", serving: [fillet, 150] }
+  - { fdc: 173676, en: "Monkfish, raw", serving: [portion, 150] }
+  - { fdc: 173697, en: "Dogfish (shark), raw", serving: [portion, 150] }
+  - { fdc: 173703, en: "Swordfish, raw", serving: [fillet, 150] }
+  - { fdc: 175159, en: "Tuna, fresh, raw", serving: [fillet, 150] }
+  - { fdc: 173709, en: "Tuna, canned in water, drained", serving: [can, 56] }
+  - { fdc: 173708, en: "Tuna, canned in oil, drained", serving: [can, 56] }
+  - { fdc: 175167, en: "Salmon, raw", serving: [fillet, 150] }
+  - { fdc: 175168, en: "Salmon, cooked", serving: [fillet, 130] }
+  - { fdc: 173686, en: "Wild salmon, raw", serving: [fillet, 150] }
+  - { fdc: 173687, en: "Smoked salmon", serving: [slice, 20] }
+  - { fdc: 173717, en: "Rainbow trout, raw", serving: [unit, 150] }
+  - { fdc: 175119, en: "Mackerel, raw", serving: [fillet, 120] }
+  - { fdc: 175116, en: "Herring, raw", serving: [fillet, 120] }
+  - { fdc: 175139, en: "Sardines, canned in oil, drained", serving: [can, 85] }
+  - { fdc: 175140, en: "Sardines in tomato sauce, drained", serving: [can, 85] }
+  - { fdc: 174182, en: "Anchovy (boquerón), raw", serving: [portion, 100] }
+  - { fdc: 174183, en: "Anchovies, canned in oil", serving: [unit, 4] }
+  - { fdc: 174195, en: "Fish sticks", serving: [unit, 28] }
+  - { fdc: 174203, en: "Crab sticks (surimi)", serving: [unit, 17] }
+  - { fdc: 175179, en: "Prawns, raw", serving: [portion, 100] }
+  - { fdc: 175180, en: "Prawns, cooked", serving: [portion, 100] }
+  - { fdc: 174208, en: "Lobster, raw", serving: [portion, 150] }
+  - { fdc: 174211, en: "Spiny lobster, raw", serving: [portion, 150] }
+  - { fdc: 174204, en: "Crab, raw", serving: [portion, 100] }
+  - { fdc: 174214, en: "Clams, raw", serving: [portion, 100] }
+  - { fdc: 171975, en: "Clams, cooked", serving: [portion, 100] }
+  - { fdc: 174216, en: "Mussels, raw", serving: [portion, 100] }
+  - { fdc: 174217, en: "Mussels, cooked", serving: [portion, 100] }
+  - { fdc: 171978, en: "Oysters, raw", serving: [unit, 15] }
+  - { fdc: 174218, en: "Octopus, raw", serving: [portion, 150] }
+  - { fdc: 174249, en: "Octopus, cooked", serving: [portion, 100] }
+  - { fdc: 174223, en: "Squid, raw", serving: [portion, 150] }
+  - { fdc: 171982, en: "Squid, fried", serving: [portion, 100] }
+  - { fdc: 167742, en: "Scallops, cooked", serving: [unit, 20] }
+  - { fdc: 167744, en: "Snails, raw", serving: [portion, 100] }
+
+  # Poultry and rabbit
+  - { fdc: 171077, en: "Chicken breast, raw", serving: [fillet, 150] }
+  - { fdc: 171534, en: "Chicken breast, grilled", serving: [fillet, 120] }
+  - { fdc: 171477, en: "Chicken breast, roasted", serving: [portion, 120] }
+  - { fdc: 2646171, en: "Chicken thigh, skinless, raw", serving: [unit, 100] }
+  - { fdc: 172385, en: "Chicken thigh with skin, raw", serving: [unit, 120] }
+  - { fdc: 172388, en: "Chicken thigh, roasted (no skin)", serving: [unit, 90] }
+  - { fdc: 172373, en: "Chicken drumstick with skin, raw", serving: [unit, 100] }
+  - { fdc: 173617, en: "Chicken leg with skin, roasted", serving: [unit, 180] }
+  - { fdc: 172390, en: "Chicken wings, raw", serving: [unit, 50] }
+  - { fdc: 173630, en: "Chicken wings, roasted", serving: [unit, 35] }
+  - { fdc: 171447, en: "Chicken with skin, raw", serving: [portion, 150] }
+  - { fdc: 171450, en: "Roast chicken with skin", serving: [portion, 150] }
+  - { fdc: 171054, en: "Roast chicken, no skin", serving: [portion, 150] }
+  - { fdc: 171116, en: "Ground chicken, raw", serving: [portion, 125] }
+  - { fdc: 171060, en: "Chicken liver, raw", serving: [portion, 100] }
+  - { fdc: 174515, en: "Turkey breast, raw", serving: [fillet, 150] }
+  - { fdc: 174516, en: "Turkey breast, roasted", serving: [portion, 120] }
+  - { fdc: 172941, en: "Turkey breast, deli slices", serving: [slice, 10] }
+  - { fdc: 173874, en: "Chicken breast, deli slices", serving: [slice, 10] }
+  - { fdc: 171505, en: "Ground turkey, raw", serving: [portion, 125] }
+  - { fdc: 171531, en: "Turkey thigh, raw", serving: [portion, 150] }
+  - { fdc: 172410, en: "Duck, skinless, raw", serving: [portion, 150] }
+  - { fdc: 171510, en: "Duck breast with skin, roasted", serving: [portion, 150] }
+  - { fdc: 172521, en: "Rabbit, raw", serving: [portion, 150] }
+  - { fdc: 172522, en: "Rabbit, roasted", serving: [portion, 150] }
+
+  # Pork and cold cuts
+  - { fdc: 168230, en: "Pork loin, raw", serving: [fillet, 120] }
+  - { fdc: 168233, en: "Pork loin, roasted", serving: [fillet, 100] }
+  - { fdc: 168249, en: "Pork tenderloin, raw", serving: [portion, 150] }
+  - { fdc: 168250, en: "Pork tenderloin, roasted", serving: [portion, 120] }
+  - { fdc: 2727575, en: "Pork chop, raw", serving: [unit, 150] }
+  - { fdc: 168260, en: "Pork shoulder steak, raw", serving: [portion, 150] }
+  - { fdc: 167902, en: "Ground pork, raw", serving: [portion, 125] }
+  - { fdc: 167853, en: "Pork spare ribs, raw", serving: [portion, 200] }
+  - { fdc: 169178, en: "Pork spare ribs, roasted", serving: [portion, 150] }
+  - { fdc: 2727576, en: "Pork belly, raw", serving: [portion, 100] }
+  - { fdc: 168277, en: "Bacon, raw", serving: [slice, 20] }
+  - { fdc: 167914, en: "Bacon, cooked", serving: [slice, 8] }
+  - { fdc: 173864, en: "Cooked ham, sliced", serving: [slice, 15] }
+  - { fdc: 173859, en: "Chorizo, fresh, raw", serving: [unit, 60] }
+  - { fdc: 172938, en: "Dry-cured salami", serving: [slice, 10] }
+  - { fdc: 174575, en: "Pepperoni", serving: [slice, 2] }
+  - { fdc: 174573, en: "Mortadella", serving: [slice, 15] }
+  - { fdc: 172968, en: "Frankfurter sausage", serving: [unit, 45] }
+  - { fdc: 171624, en: "Chicken frankfurter", serving: [unit, 45] }
+  - { fdc: 171620, en: "Bratwurst, cooked", serving: [unit, 85] }
+  - { fdc: 174579, en: "Fresh pork and beef sausage, cooked", serving: [unit, 50] }
+  - { fdc: 171618, en: "Blood sausage", serving: [slice, 30] }
+  - { fdc: 173870, en: "Liver pâté", serving: [tbsp, 15] }
+  - { fdc: 174570, en: "Roast beef, deli slices", serving: [slice, 15] }
+  - { fdc: 170604, en: "Dried cured beef (cecina)", serving: [slice, 5] }
+  - { fdc: 167536, en: "Beef jerky", serving: [portion, 28] }
+  - { fdc: 167961, en: "Pork rinds", serving: [portion, 15] }
+
+  # Beef, veal, lamb and game
+  - { fdc: 171790, en: "Ground beef, extra lean (5% fat), raw", serving: [portion, 125] }
+  - { fdc: 174030, en: "Ground beef (10% fat), raw", serving: [portion, 125] }
+  - { fdc: 171796, en: "Ground beef (15% fat), raw", serving: [portion, 125] }
+  - { fdc: 174036, en: "Ground beef (20% fat), raw", serving: [portion, 125] }
+  - { fdc: 174031, en: "Beef burger (10% fat), grilled", serving: [unit, 85] }
+  - { fdc: 171797, en: "Beef burger (20% fat), grilled", serving: [unit, 85] }
+  - { fdc: 171768, en: "Beef tenderloin, raw", serving: [fillet, 150] }
+  - { fdc: 170642, en: "Beef tenderloin, grilled", serving: [fillet, 120] }
+  - { fdc: 173380, en: "Ribeye steak, raw", serving: [unit, 250] }
+  - { fdc: 172144, en: "Ribeye steak, grilled", serving: [unit, 200] }
+  - { fdc: 2727572, en: "Striploin steak, raw", serving: [unit, 200] }
+  - { fdc: 2727574, en: "Sirloin steak, raw", serving: [fillet, 150] }
+  - { fdc: 168635, en: "Sirloin steak, grilled", serving: [fillet, 120] }
+  - { fdc: 171758, en: "Beef round steak, raw", serving: [fillet, 150] }
+  - { fdc: 169471, en: "Beef round steak, grilled", serving: [fillet, 120] }
+  - { fdc: 171763, en: "Beef eye of round, raw", serving: [portion, 150] }
+  - { fdc: 168609, en: "Flank steak, raw", serving: [fillet, 150] }
+  - { fdc: 168657, en: "Beef brisket, raw", serving: [portion, 150] }
+  - { fdc: 169445, en: "Beef chuck, raw", serving: [portion, 150] }
+  - { fdc: 169451, en: "Beef liver, raw", serving: [portion, 100] }
+  - { fdc: 168627, en: "Beef liver, pan-fried", serving: [portion, 100] }
+  - { fdc: 175269, en: "Veal cutlet, raw", serving: [fillet, 120] }
+  - { fdc: 175272, en: "Veal cutlet, pan-fried", serving: [fillet, 100] }
+  - { fdc: 175271, en: "Veal cutlet, breaded and fried", serving: [fillet, 120] }
+  - { fdc: 175290, en: "Ground veal, raw", serving: [portion, 125] }
+  - { fdc: 172491, en: "Lamb loin, raw", serving: [portion, 150] }
+  - { fdc: 172493, en: "Lamb rack (chops), raw", serving: [portion, 150] }
+  - { fdc: 172494, en: "Lamb chops, grilled", serving: [unit, 40] }
+  - { fdc: 172486, en: "Leg of lamb, raw", serving: [portion, 150] }
+  - { fdc: 172487, en: "Leg of lamb, roasted", serving: [portion, 150] }
+  - { fdc: 172496, en: "Lamb shoulder, raw", serving: [portion, 150] }
+  - { fdc: 174370, en: "Ground lamb, raw", serving: [portion, 125] }
+  - { fdc: 172508, en: "Lamb stew meat, raw", serving: [portion, 150] }
+  - { fdc: 173855, en: "Venison, raw", serving: [portion, 150] }
+  - { fdc: 175297, en: "Wild boar, raw", serving: [portion, 150] }
+  - { fdc: 175303, en: "Goat meat, raw", serving: [portion, 150] }
+
+  # Legumes and soy
+  - { fdc: 172420, en: "Lentils, dry", serving: [portion, 70] }
+  - { fdc: 172421, en: "Lentils, boiled", serving: [portion, 200] }
+  - { fdc: 173756, en: "Chickpeas, dry", serving: [portion, 70] }
+  - { fdc: 173757, en: "Chickpeas, boiled", serving: [portion, 200] }
+  - { fdc: 173801, en: "Chickpeas, canned, drained", serving: [portion, 130] }
+  - { fdc: 173734, en: "Black beans, dry", serving: [portion, 70] }
+  - { fdc: 173735, en: "Black beans, boiled", serving: [portion, 200] }
+  - { fdc: 175193, en: "Red kidney beans, dry", serving: [portion, 70] }
+  - { fdc: 173740, en: "Red kidney beans, boiled", serving: [portion, 200] }
+  - { fdc: 173741, en: "Red kidney beans, canned", serving: [portion, 130] }
+  - { fdc: 175190, en: "White beans, dry", serving: [portion, 70] }
+  - { fdc: 175191, en: "White beans, boiled", serving: [portion, 200] }
+  - { fdc: 175192, en: "White beans, canned", serving: [portion, 130] }
+  - { fdc: 175199, en: "Pinto beans, dry", serving: [portion, 70] }
+  - { fdc: 175200, en: "Pinto beans, boiled", serving: [portion, 200] }
+  - { fdc: 173758, en: "Black-eyed peas, dry", serving: [portion, 70] }
+  - { fdc: 173759, en: "Black-eyed peas, boiled", serving: [portion, 200] }
+  - { fdc: 175205, en: "Dried broad beans, dry", serving: [portion, 70] }
+  - { fdc: 173753, en: "Dried broad beans, boiled", serving: [portion, 200] }
+  - { fdc: 172428, en: "Split peas, dry", serving: [portion, 70] }
+  - { fdc: 172429, en: "Split peas, boiled", serving: [portion, 200] }
+  - { fdc: 174270, en: "Soybeans, dry", serving: [portion, 70] }
+  - { fdc: 174271, en: "Soybeans, boiled", serving: [portion, 200] }
+  - { fdc: 174252, en: "Butter beans (lima), dry", serving: [portion, 70] }
+  - { fdc: 174253, en: "Butter beans (lima), boiled", serving: [portion, 200] }
+  - { fdc: 174256, en: "Mung beans, dry", serving: [portion, 70] }
+  - { fdc: 172430, en: "Peanuts, raw", serving: [handful, 30] }
+  - { fdc: 173806, en: "Peanuts, roasted, unsalted", serving: [handful, 30] }
+  - { fdc: 174262, en: "Peanuts, roasted, salted", serving: [handful, 30] }
+  - { fdc: 174294, en: "Peanut butter", serving: [tbsp, 16] }
+  - { fdc: 172470, en: "Peanut butter, unsalted", serving: [tbsp, 16] }
+  - { fdc: 172469, en: "Peanut butter, crunchy, unsalted", serving: [tbsp, 16] }
+  - { fdc: 172475, en: "Tofu, firm", serving: [portion, 100] }
+  - { fdc: 172476, en: "Tofu, regular", serving: [portion, 100] }
+  - { fdc: 174272, en: "Tempeh", serving: [portion, 100] }
+  - { fdc: 168147, en: "Vital wheat gluten (for seitan)", serving: [portion, 30] }
+  - { fdc: 174289, en: "Hummus", serving: [tbsp, 30] }
+  - { fdc: 172455, en: "Falafel", serving: [unit, 17] }
+  - { fdc: 174288, en: "Chickpea flour", serving: [portion, 30] }
+  - { fdc: 174277, en: "Soy sauce", serving: [tbsp, 16] }
+  - { fdc: 172473, en: "Soy sauce, low sodium", serving: [tbsp, 16] }
+  - { fdc: 172446, en: "Soy drink", unit: ML, serving: [glass, 250] }
+  - { fdc: 175215, en: "Soy drink, unsweetened, with calcium", unit: ML, serving: [glass, 250] }
+
+  # Nuts and seeds
+  - { fdc: 170567, en: "Almonds, raw", serving: [handful, 30] }
+  - { fdc: 170568, en: "Almonds, blanched", serving: [handful, 30] }
+  - { fdc: 170158, en: "Almonds, roasted, unsalted", serving: [handful, 30] }
+  - { fdc: 323294, en: "Almonds, roasted, salted", serving: [handful, 30] }
+  - { fdc: 170187, en: "Walnuts", serving: [handful, 30] }
+  - { fdc: 170581, en: "Hazelnuts", serving: [handful, 30] }
+  - { fdc: 170583, en: "Hazelnuts, roasted", serving: [handful, 30] }
+  - { fdc: 170162, en: "Cashews, raw", serving: [handful, 30] }
+  - { fdc: 170571, en: "Cashews, roasted", serving: [handful, 30] }
+  - { fdc: 170184, en: "Pistachios, raw", serving: [handful, 30] }
+  - { fdc: 170185, en: "Pistachios, roasted, unsalted", serving: [handful, 30] }
+  - { fdc: 169426, en: "Pistachios, roasted, salted", serving: [handful, 30] }
+  - { fdc: 170591, en: "Pine nuts", serving: [tbsp, 10] }
+  - { fdc: 170182, en: "Pecans", serving: [handful, 30] }
+  - { fdc: 170178, en: "Macadamia nuts", serving: [handful, 30] }
+  - { fdc: 170569, en: "Brazil nuts", serving: [handful, 30] }
+  - { fdc: 170585, en: "Mixed nuts, roasted, unsalted", serving: [handful, 30] }
+  - { fdc: 167561, en: "Trail mix (nuts and raisins)", serving: [handful, 30] }
+  - { fdc: 170575, en: "Chestnuts, raw", serving: [portion, 100] }
+  - { fdc: 170190, en: "Chestnuts, roasted", serving: [portion, 100] }
+  - { fdc: 170169, en: "Coconut, fresh", serving: [portion, 45] }
+  - { fdc: 170170, en: "Desiccated coconut", serving: [tbsp, 5] }
+  - { fdc: 170562, en: "Sunflower seeds, shelled", serving: [handful, 30] }
+  - { fdc: 325524, en: "Sunflower seeds, roasted, salted", serving: [handful, 30] }
+  - { fdc: 170556, en: "Pumpkin seeds, shelled", serving: [tbsp, 10] }
+  - { fdc: 170150, en: "Sesame seeds", serving: [tbsp, 9] }
+  - { fdc: 169414, en: "Flaxseed", serving: [tbsp, 10] }
+  - { fdc: 170554, en: "Chia seeds", serving: [tbsp, 12] }
+  - { fdc: 170148, en: "Hemp seeds, hulled", serving: [tbsp, 10] }
+  - { fdc: 170189, en: "Tahini (sesame paste)", serving: [tbsp, 15] }
+  - { fdc: 168588, en: "Almond butter", serving: [tbsp, 16] }
+  - { fdc: 170160, en: "Almond paste", serving: [portion, 30] }
+  - { fdc: 170173, en: "Coconut milk, canned", unit: ML, serving: [portion, 100] }
+  - { fdc: 170174, en: "Coconut water", unit: ML, serving: [glass, 250] }
+
+  # Grains, pasta and flours
+  - { fdc: 168877, en: "White rice, long grain, raw", serving: [portion, 80] }
+  - { fdc: 168878, en: "White rice, long grain, cooked", serving: [portion, 200] }
+  - { fdc: 168879, en: "White rice, medium grain, raw", serving: [portion, 80] }
+  - { fdc: 168880, en: "White rice, medium grain, cooked", serving: [portion, 200] }
+  - { fdc: 168881, en: "White rice, short grain, raw", serving: [portion, 80] }
+  - { fdc: 168882, en: "White rice, short grain, cooked", serving: [portion, 200] }
+  - { fdc: 169703, en: "Brown rice, raw", serving: [portion, 80] }
+  - { fdc: 169704, en: "Brown rice, cooked", serving: [portion, 200] }
+  - { fdc: 169707, en: "Parboiled rice, raw", serving: [portion, 80] }
+  - { fdc: 169708, en: "Parboiled rice, cooked", serving: [portion, 200] }
+  - { fdc: 169736, en: "Pasta, dry", serving: [portion, 80] }
+  - { fdc: 169737, en: "Pasta, cooked", serving: [portion, 200] }
+  - { fdc: 169738, en: "Whole-wheat pasta, dry", serving: [portion, 80] }
+  - { fdc: 168910, en: "Whole-wheat pasta, cooked", serving: [portion, 200] }
+  - { fdc: 169727, en: "Fresh pasta, raw", serving: [portion, 125] }
+  - { fdc: 169728, en: "Fresh pasta, cooked", serving: [portion, 200] }
+  - { fdc: 169731, en: "Egg noodles, dry", serving: [portion, 80] }
+  - { fdc: 169732, en: "Egg noodles, cooked", serving: [portion, 200] }
+  - { fdc: 168899, en: "Gluten-free pasta (corn), dry", serving: [portion, 80] }
+  - { fdc: 174258, en: "Glass noodles (mung bean), dry", serving: [portion, 60] }
+  - { fdc: 169699, en: "Couscous, dry", serving: [portion, 70] }
+  - { fdc: 169700, en: "Couscous, cooked", serving: [portion, 150] }
+  - { fdc: 168874, en: "Quinoa, raw", serving: [portion, 70] }
+  - { fdc: 168917, en: "Quinoa, cooked", serving: [portion, 150] }
+  - { fdc: 170688, en: "Bulgur, dry", serving: [portion, 70] }
+  - { fdc: 170287, en: "Bulgur, cooked", serving: [portion, 150] }
+  - { fdc: 170284, en: "Pearl barley, raw", serving: [portion, 70] }
+  - { fdc: 170285, en: "Pearl barley, cooked", serving: [portion, 150] }
+  - { fdc: 170286, en: "Buckwheat, raw", serving: [portion, 70] }
+  - { fdc: 169702, en: "Millet, raw", serving: [portion, 70] }
+  - { fdc: 173904, en: "Rolled oats", serving: [portion, 40] }
+  - { fdc: 173905, en: "Porridge (oats cooked in water)", serving: [bowl, 250] }
+  - { fdc: 168872, en: "Oat bran", serving: [tbsp, 6] }
+  - { fdc: 169722, en: "Wheat bran", serving: [tbsp, 4] }
+  - { fdc: 173896, en: "Wheat germ, toasted", serving: [tbsp, 7] }
+  - { fdc: 168894, en: "Wheat flour", serving: [tbsp, 8] }
+  - { fdc: 168893, en: "Whole-wheat flour", serving: [tbsp, 8] }
+  - { fdc: 2003587, en: "Spelt flour, whole grain", serving: [tbsp, 8] }
+  - { fdc: 168886, en: "Rye flour", serving: [tbsp, 8] }
+  - { fdc: 2261421, en: "Oat flour", serving: [tbsp, 8] }
+  - { fdc: 170290, en: "Corn flour, whole grain", serving: [tbsp, 8] }
+  - { fdc: 169698, en: "Cornstarch", serving: [tbsp, 8] }
+  - { fdc: 169715, en: "Semolina", serving: [tbsp, 10] }
+  - { fdc: 171654, en: "Polenta (corn grits), dry", serving: [portion, 60] }
+  - { fdc: 169717, en: "Tapioca pearls", serving: [tbsp, 10] }
+
+  # Breakfast cereals
+  - { fdc: 174648, en: "Corn flakes", serving: [bowl, 30] }
+  - { fdc: 172990, en: "Frosted corn flakes", serving: [bowl, 30] }
+  - { fdc: 173888, en: "Bran flakes", serving: [bowl, 30] }
+  - { fdc: 173887, en: "Crisp rice cereal", serving: [bowl, 30] }
+  - { fdc: 173912, en: "Puffed rice", serving: [bowl, 15] }
+  - { fdc: 173913, en: "Puffed wheat", serving: [bowl, 15] }
+  - { fdc: 171646, en: "Granola, homemade", serving: [bowl, 40] }
+  - { fdc: 172973, en: "Chocolate puffed corn cereal", serving: [bowl, 30] }
+  - { fdc: 169077, en: "Wheat cereal with nuts and fruit (muesli style)", serving: [bowl, 40] }
+
+  # Bread and bakery
+  - { fdc: 174924, en: "White sandwich bread", serving: [slice, 25] }
+  - { fdc: 172688, en: "Whole-wheat sandwich bread", serving: [slice, 28] }
+  - { fdc: 168013, en: "Multigrain bread", serving: [slice, 26] }
+  - { fdc: 172675, en: "White bread (baguette)", serving: [portion, 60] }
+  - { fdc: 174091, en: "Whole-wheat baguette", serving: [portion, 60] }
+  - { fdc: 172684, en: "Rye bread", serving: [slice, 32] }
+  - { fdc: 172795, en: "Bread roll", serving: [unit, 38] }
+  - { fdc: 172796, en: "Burger bun", serving: [unit, 45] }
+  - { fdc: 174915, en: "Pita bread", serving: [unit, 60] }
+  - { fdc: 174916, en: "Pita bread, whole-wheat", serving: [unit, 64] }
+  - { fdc: 171845, en: "Naan bread", serving: [unit, 90] }
+  - { fdc: 175036, en: "Corn tortilla", serving: [unit, 26] }
+  - { fdc: 175037, en: "Flour tortilla (wrap)", serving: [unit, 45] }
+  - { fdc: 174081, en: "Whole-wheat tortilla", serving: [unit, 45] }
+  - { fdc: 174100, en: "Gluten-free bread", serving: [slice, 30] }
+  - { fdc: 174928, en: "Breadcrumbs", serving: [tbsp, 7] }
+  - { fdc: 172751, en: "Croutons", serving: [handful, 10] }
+  - { fdc: 172746, en: "Saltine crackers", serving: [unit, 3] }
+  - { fdc: 172749, en: "Whole-wheat crackers", serving: [unit, 4] }
+  - { fdc: 172744, en: "Rye crispbread", serving: [unit, 10] }
+  - { fdc: 171867, en: "Marie biscuits", serving: [unit, 7] }
+  - { fdc: 174950, en: "Butter cookies", serving: [unit, 7] }
+  - { fdc: 172716, en: "Chocolate chip cookies", serving: [unit, 10] }
+  - { fdc: 172725, en: "Oatmeal cookies", serving: [unit, 15] }
+  - { fdc: 174987, en: "Butter croissant", serving: [unit, 57] }
+  - { fdc: 172765, en: "Blueberry muffin", serving: [unit, 60] }
+  - { fdc: 172706, en: "Sponge cake", serving: [portion, 40] }
+  - { fdc: 174940, en: "Pound cake", serving: [slice, 30] }
+  - { fdc: 174934, en: "Chocolate cake with frosting", serving: [portion, 64] }
+  - { fdc: 172711, en: "Cheesecake", serving: [portion, 80] }
+  - { fdc: 175011, en: "Apple pie", serving: [portion, 125] }
+  - { fdc: 174990, en: "Doughnut, plain", serving: [unit, 47] }
+  - { fdc: 172757, en: "Cream-filled doughnut", serving: [unit, 85] }
+  - { fdc: 167534, en: "Cream puff (éclair)", serving: [unit, 60] }
+  - { fdc: 172738, en: "Puff pastry, baked", serving: [portion, 30] }
+  - { fdc: 172791, en: "Phyllo dough", serving: [unit, 19] }
+  - { fdc: 175009, en: "Pancakes", serving: [unit, 38] }
+  - { fdc: 175039, en: "Waffles", serving: [unit, 75] }
+  - { fdc: 170317, en: "Cheese pizza", serving: [slice, 100] }
+  - { fdc: 170373, en: "Cheese pizza, thin crust", serving: [slice, 80] }
+  - { fdc: 167945, en: "Focaccia", serving: [portion, 60] }
+
+  # Snacks and sweets
+  - { fdc: 169677, en: "Potato crisps, salted", serving: [handful, 30] }
+  - { fdc: 167558, en: "Tortilla chips", serving: [handful, 30] }
+  - { fdc: 170247, en: "Popcorn, popped in oil, salted", serving: [bowl, 30] }
+  - { fdc: 167959, en: "Popcorn, air-popped", serving: [bowl, 25] }
+  - { fdc: 167555, en: "Pretzels", serving: [handful, 30] }
+  - { fdc: 170250, en: "Rice cakes, brown rice", serving: [unit, 9] }
+  - { fdc: 167537, en: "Corn snacks (puffs)", serving: [handful, 30] }
+  - { fdc: 168849, en: "Banana chips", serving: [handful, 30] }
+  - { fdc: 174796, en: "Vegetable crisps", serving: [handful, 30] }
+  - { fdc: 167542, en: "Cereal bar, crunchy", serving: [unit, 25] }
+  - { fdc: 167954, en: "Cereal bar, chewy", serving: [unit, 28] }
+  - { fdc: 167587, en: "Milk chocolate", serving: [square, 10] }
+  - { fdc: 170271, en: "Dark chocolate (45-59% cocoa)", serving: [square, 10] }
+  - { fdc: 170272, en: "Dark chocolate (60-69% cocoa)", serving: [square, 10] }
+  - { fdc: 170273, en: "Dark chocolate (70-85% cocoa)", serving: [square, 10] }
+  - { fdc: 167571, en: "White chocolate", serving: [square, 10] }
+  - { fdc: 168000, en: "Chocolate hazelnut spread", serving: [tbsp, 19] }
+  - { fdc: 169593, en: "Cocoa powder, unsweetened", serving: [tbsp, 5] }
+  - { fdc: 174122, en: "Cocoa drink mix, powder", serving: [tbsp, 15] }
+  - { fdc: 169655, en: "Sugar, white", serving: [tsp, 4] }
+  - { fdc: 168833, en: "Sugar, brown", serving: [tsp, 4] }
+  - { fdc: 169656, en: "Icing sugar", serving: [tbsp, 8] }
+  - { fdc: 169640, en: "Honey", serving: [tbsp, 21] }
+  - { fdc: 169641, en: "Jam", serving: [tbsp, 20] }
+  - { fdc: 168819, en: "Orange marmalade", serving: [tbsp, 20] }
+  - { fdc: 167706, en: "Jam, reduced sugar", serving: [tbsp, 20] }
+  - { fdc: 169661, en: "Maple syrup", serving: [tbsp, 20] }
+  - { fdc: 170277, en: "Agave syrup", serving: [tbsp, 21] }
+  - { fdc: 170679, en: "Stevia sweetener, powder", serving: [tsp, 1] }
+  - { fdc: 167990, en: "Hard candies", serving: [unit, 6] }
+  - { fdc: 167989, en: "Gummy sweets", serving: [portion, 30] }
+  - { fdc: 167995, en: "Marshmallows", serving: [unit, 7] }
+  - { fdc: 167974, en: "Toffees (caramels)", serving: [unit, 10] }
+  - { fdc: 169596, en: "Jelly dessert, prepared", serving: [pot, 100] }
+
+  # Sauces, soups and condiments
+  - { fdc: 171192, en: "Tomato pasta sauce", serving: [portion, 125] }
+  - { fdc: 2685579, en: "Tomato sauce, canned", serving: [portion, 100] }
+  - { fdc: 2685581, en: "Crushed tomatoes, canned", serving: [portion, 100] }
+  - { fdc: 2685578, en: "Whole peeled tomatoes, canned", serving: [portion, 100] }
+  - { fdc: 2685580, en: "Tomato paste", serving: [tbsp, 16] }
+  - { fdc: 746777, en: "Tomato salsa", serving: [tbsp, 16] }
+  - { fdc: 168556, en: "Ketchup", serving: [tbsp, 17] }
+  - { fdc: 172234, en: "Mustard", serving: [tsp, 5] }
+  - { fdc: 171579, en: "Pesto", serving: [tbsp, 16] }
+  - { fdc: 174523, en: "Barbecue sauce", serving: [tbsp, 17] }
+  - { fdc: 171610, en: "Worcestershire sauce", serving: [tsp, 6] }
+  - { fdc: 171186, en: "Sriracha sauce", serving: [tsp, 6] }
+  - { fdc: 174527, en: "Hot pepper sauce", serving: [tsp, 5] }
+  - { fdc: 171167, en: "Teriyaki sauce", serving: [tbsp, 18] }
+  - { fdc: 174066, en: "Sweet and sour sauce", serving: [tbsp, 19] }
+  - { fdc: 174542, en: "White sauce (béchamel)", serving: [portion, 60] }
+  - { fdc: 171191, en: "Cheese sauce", serving: [tbsp, 18] }
+  - { fdc: 172240, en: "Red wine vinegar", serving: [tbsp, 15] }
+  - { fdc: 172241, en: "Balsamic vinegar", serving: [tbsp, 16] }
+  - { fdc: 173469, en: "Cider vinegar", serving: [tbsp, 15] }
+  - { fdc: 172238, en: "Capers", serving: [tbsp, 9] }
+  - { fdc: 173468, en: "Table salt", serving: [tsp, 6] }
+  - { fdc: 172884, en: "Chicken stock, homemade", unit: ML, serving: [bowl, 240] }
+  - { fdc: 172883, en: "Beef stock, homemade", unit: ML, serving: [bowl, 240] }
+  - { fdc: 172885, en: "Fish stock, homemade", unit: ML, serving: [bowl, 240] }
+  - { fdc: 171583, en: "Vegetable broth", unit: ML, serving: [bowl, 240] }
+  - { fdc: 171563, en: "Chicken stock cube", serving: [unit, 4] }
+  - { fdc: 171176, en: "Tomato soup, prepared", unit: ML, serving: [bowl, 250] }
+  - { fdc: 172909, en: "Chicken noodle soup, prepared", unit: ML, serving: [bowl, 250] }
+  - { fdc: 172913, en: "Minestrone soup, prepared", unit: ML, serving: [bowl, 250] }
+
+  # Herbs and spices
+  - { fdc: 171329, en: "Paprika", serving: [tsp, 2] }
+  - { fdc: 170931, en: "Black pepper", serving: [tsp, 2] }
+  - { fdc: 170923, en: "Cumin", serving: [tsp, 2] }
+  - { fdc: 171320, en: "Cinnamon, ground", serving: [tsp, 3] }
+  - { fdc: 171328, en: "Oregano, dried", serving: [tsp, 1] }
+  - { fdc: 171333, en: "Rosemary, dried", serving: [tsp, 1] }
+  - { fdc: 170938, en: "Thyme, dried", serving: [tsp, 1] }
+  - { fdc: 170934, en: "Saffron", serving: [tsp, 1] }
+  - { fdc: 172231, en: "Turmeric, ground", serving: [tsp, 3] }
+  - { fdc: 170924, en: "Curry powder", serving: [tsp, 2] }
+  - { fdc: 171325, en: "Garlic powder", serving: [tsp, 3] }
+  - { fdc: 170926, en: "Ginger, ground", serving: [tsp, 2] }
+  - { fdc: 170917, en: "Bay leaf", serving: [unit, 1] }
+  - { fdc: 171326, en: "Nutmeg, ground", serving: [tsp, 2] }
+  - { fdc: 170932, en: "Cayenne pepper", serving: [tsp, 2] }
+  - { fdc: 171317, en: "Basil, dried", serving: [tsp, 1] }
+  - { fdc: 172232, en: "Basil, fresh", serving: [tbsp, 3] }
+  - { fdc: 170416, en: "Parsley, fresh", serving: [tbsp, 4] }
+  - { fdc: 169997, en: "Coriander (cilantro), fresh", serving: [tbsp, 2] }
+  - { fdc: 169994, en: "Chives, fresh", serving: [tbsp, 3] }
+  - { fdc: 173471, en: "Vanilla extract", serving: [tsp, 4] }
+
+  # Fruit
+  - { fdc: 171688, en: "Apple", serving: [unit, 180] }
+  - { fdc: 171689, en: "Apple, peeled", serving: [unit, 160] }
+  - { fdc: 168202, en: "Golden apple", serving: [unit, 180] }
+  - { fdc: 168203, en: "Granny Smith apple", serving: [unit, 180] }
+  - { fdc: 168204, en: "Gala apple", serving: [unit, 170] }
+  - { fdc: 167793, en: "Fuji apple", serving: [unit, 190] }
+  - { fdc: 168201, en: "Red Delicious apple", serving: [unit, 180] }
+  - { fdc: 169118, en: "Pear", serving: [unit, 180] }
+  - { fdc: 167776, en: "Williams (Bartlett) pear", serving: [unit, 180] }
+  - { fdc: 173944, en: "Banana", serving: [unit, 120] }
+  - { fdc: 169097, en: "Orange", serving: [unit, 140] }
+  - { fdc: 169105, en: "Mandarin", serving: [unit, 75] }
+  - { fdc: 168195, en: "Clementine", serving: [unit, 75] }
+  - { fdc: 173033, en: "Grapefruit", serving: [unit, 230] }
+  - { fdc: 167746, en: "Lemon", serving: [unit, 60] }
+  - { fdc: 168155, en: "Lime", serving: [unit, 65] }
+  - { fdc: 167747, en: "Lemon juice", unit: ML, serving: [tbsp, 15] }
+  - { fdc: 168156, en: "Lime juice", unit: ML, serving: [tbsp, 15] }
+  - { fdc: 167762, en: "Strawberries", serving: [portion, 150] }
+  - { fdc: 167755, en: "Raspberries", serving: [portion, 125] }
+  - { fdc: 171711, en: "Blueberries", serving: [portion, 125] }
+  - { fdc: 173946, en: "Blackberries", serving: [portion, 125] }
+  - { fdc: 171722, en: "Cranberries", serving: [portion, 100] }
+  - { fdc: 171719, en: "Cherries", serving: [portion, 100] }
+  - { fdc: 173954, en: "Sour cherries", serving: [portion, 100] }
+  - { fdc: 174683, en: "Grapes", serving: [portion, 150] }
+  - { fdc: 169928, en: "Peach", serving: [unit, 150] }
+  - { fdc: 169914, en: "Nectarine", serving: [unit, 140] }
+  - { fdc: 171697, en: "Apricot", serving: [unit, 35] }
+  - { fdc: 169949, en: "Plum", serving: [unit, 66] }
+  - { fdc: 173021, en: "Fig", serving: [unit, 50] }
+  - { fdc: 169910, en: "Mango", serving: [unit, 200] }
+  - { fdc: 169926, en: "Papaya", serving: [portion, 150] }
+  - { fdc: 169124, en: "Pineapple", serving: [portion, 150] }
+  - { fdc: 168153, en: "Kiwi", serving: [unit, 75] }
+  - { fdc: 171705, en: "Avocado", serving: [unit, 136] }
+  - { fdc: 169092, en: "Cantaloupe melon", serving: [slice, 150] }
+  - { fdc: 169911, en: "Melon (honeydew)", serving: [slice, 150] }
+  - { fdc: 167765, en: "Watermelon", serving: [slice, 280] }
+  - { fdc: 169134, en: "Pomegranate", serving: [portion, 100] }
+  - { fdc: 169941, en: "Persimmon (kaki)", serving: [unit, 170] }
+  - { fdc: 169086, en: "Lychee", serving: [unit, 10] }
+  - { fdc: 169108, en: "Passion fruit", serving: [unit, 18] }
+  - { fdc: 173953, en: "Cherimoya", serving: [unit, 235] }
+  - { fdc: 173044, en: "Guava", serving: [unit, 55] }
+  - { fdc: 167758, en: "Rhubarb", serving: [portion, 100] }
+  - { fdc: 171726, en: "Dates", serving: [unit, 7] }
+  - { fdc: 168191, en: "Medjool dates", serving: [unit, 24] }
+  - { fdc: 168165, en: "Raisins", serving: [handful, 30] }
+  - { fdc: 168162, en: "Prunes", serving: [unit, 10] }
+  - { fdc: 173941, en: "Dried apricots", serving: [unit, 8] }
+  - { fdc: 174665, en: "Dried figs", serving: [unit, 20] }
+  - { fdc: 171723, en: "Dried cranberries", serving: [handful, 30] }
+  - { fdc: 169094, en: "Black olives", serving: [unit, 4] }
+  - { fdc: 169096, en: "Green olives", serving: [unit, 4] }
+  - { fdc: 332791, en: "Manzanilla olives stuffed with pimiento", serving: [unit, 4] }
+  - { fdc: 169098, en: "Orange juice, fresh", unit: ML, serving: [glass, 200] }
+  - { fdc: 169100, en: "Orange juice, packaged", unit: ML, serving: [glass, 200] }
+  - { fdc: 173933, en: "Apple juice", unit: ML, serving: [glass, 200] }
+  - { fdc: 168187, en: "Pineapple juice", unit: ML, serving: [glass, 200] }
+  - { fdc: 2003592, en: "Grape juice", unit: ML, serving: [glass, 200] }
+  - { fdc: 173039, en: "Grapefruit juice", unit: ML, serving: [glass, 200] }
+  - { fdc: 167787, en: "Pomegranate juice", unit: ML, serving: [glass, 200] }
+  - { fdc: 169930, en: "Peaches, canned in juice", serving: [portion, 125] }
+  - { fdc: 169112, en: "Peaches in syrup", serving: [portion, 125] }
+  - { fdc: 169126, en: "Pineapple, canned in juice", serving: [portion, 125] }
+  - { fdc: 169944, en: "Pineapple in syrup", serving: [portion, 125] }
+  - { fdc: 174668, en: "Fruit cocktail, canned in juice", serving: [portion, 125] }
+  - { fdc: 2346414, en: "Apple compote, unsweetened", serving: [pot, 100] }
+
+  # Vegetables
+  - { fdc: 170457, en: "Tomato", serving: [unit, 120] }
+  - { fdc: 321360, en: "Cherry tomatoes", serving: [portion, 100] }
+  - { fdc: 1999634, en: "Plum (roma) tomato", serving: [unit, 80] }
+  - { fdc: 168567, en: "Sun-dried tomatoes", serving: [portion, 20] }
+  - { fdc: 169384, en: "Sun-dried tomatoes in oil, drained", serving: [portion, 20] }
+  - { fdc: 170000, en: "Onion", serving: [unit, 110] }
+  - { fdc: 790577, en: "Red onion", serving: [unit, 110] }
+  - { fdc: 170005, en: "Spring onion", serving: [unit, 15] }
+  - { fdc: 170499, en: "Shallot", serving: [unit, 25] }
+  - { fdc: 169246, en: "Leek", serving: [unit, 90] }
+  - { fdc: 169230, en: "Garlic", serving: [clove, 3] }
+  - { fdc: 170393, en: "Carrot", serving: [unit, 60] }
+  - { fdc: 170394, en: "Carrot, boiled", serving: [portion, 100] }
+  - { fdc: 170108, en: "Red pepper", serving: [unit, 120] }
+  - { fdc: 170427, en: "Green pepper", serving: [unit, 120] }
+  - { fdc: 169383, en: "Yellow pepper", serving: [unit, 120] }
+  - { fdc: 169394, en: "Italian green pepper", serving: [unit, 60] }
+  - { fdc: 168546, en: "Roasted red peppers, canned", serving: [portion, 50] }
+  - { fdc: 170106, en: "Red chilli pepper", serving: [unit, 45] }
+  - { fdc: 168576, en: "Jalapeño pepper", serving: [unit, 14] }
+  - { fdc: 169291, en: "Courgette", serving: [unit, 200] }
+  - { fdc: 169228, en: "Aubergine", serving: [unit, 250] }
+  - { fdc: 168409, en: "Cucumber", serving: [unit, 200] }
+  - { fdc: 169225, en: "Cucumber, peeled", serving: [unit, 180] }
+  - { fdc: 169247, en: "Romaine lettuce", serving: [portion, 50] }
+  - { fdc: 169248, en: "Iceberg lettuce", serving: [portion, 50] }
+  - { fdc: 169249, en: "Green leaf lettuce", serving: [portion, 50] }
+  - { fdc: 168429, en: "Butterhead lettuce", serving: [portion, 50] }
+  - { fdc: 169387, en: "Rocket (arugula)", serving: [portion, 30] }
+  - { fdc: 169219, en: "Lamb's lettuce", serving: [portion, 30] }
+  - { fdc: 170068, en: "Watercress", serving: [portion, 30] }
+  - { fdc: 168412, en: "Endive (escarole)", serving: [portion, 50] }
+  - { fdc: 168564, en: "Radicchio", serving: [portion, 40] }
+  - { fdc: 168462, en: "Spinach, raw", serving: [portion, 100] }
+  - { fdc: 168463, en: "Spinach, boiled", serving: [portion, 150] }
+  - { fdc: 169991, en: "Swiss chard, raw", serving: [portion, 100] }
+  - { fdc: 170401, en: "Swiss chard, boiled", serving: [portion, 150] }
+  - { fdc: 168421, en: "Kale, raw", serving: [portion, 50] }
+  - { fdc: 170379, en: "Broccoli, raw", serving: [portion, 150] }
+  - { fdc: 169967, en: "Broccoli, boiled", serving: [portion, 150] }
+  - { fdc: 169986, en: "Cauliflower, raw", serving: [portion, 150] }
+  - { fdc: 170397, en: "Cauliflower, boiled", serving: [portion, 150] }
+  - { fdc: 170383, en: "Brussels sprouts, raw", serving: [portion, 150] }
+  - { fdc: 169971, en: "Brussels sprouts, boiled", serving: [portion, 150] }
+  - { fdc: 169975, en: "White cabbage, raw", serving: [portion, 100] }
+  - { fdc: 169976, en: "White cabbage, boiled", serving: [portion, 150] }
+  - { fdc: 169977, en: "Red cabbage", serving: [portion, 100] }
+  - { fdc: 170388, en: "Savoy cabbage", serving: [portion, 100] }
+  - { fdc: 169279, en: "Sauerkraut", serving: [portion, 100] }
+  - { fdc: 2685572, en: "Bok choy", serving: [portion, 100] }
+  - { fdc: 169961, en: "Green beans, raw", serving: [portion, 150] }
+  - { fdc: 169141, en: "Green beans, boiled", serving: [portion, 150] }
+  - { fdc: 169143, en: "Green beans, canned, drained", serving: [portion, 150] }
+  - { fdc: 170010, en: "Snow peas", serving: [portion, 100] }
+  - { fdc: 170419, en: "Green peas, raw", serving: [portion, 100] }
+  - { fdc: 170420, en: "Green peas, boiled", serving: [portion, 150] }
+  - { fdc: 170017, en: "Frozen peas, boiled", serving: [portion, 150] }
+  - { fdc: 170015, en: "Green peas, canned, drained", serving: [portion, 100] }
+  - { fdc: 170377, en: "Broad beans, fresh", serving: [portion, 100] }
+  - { fdc: 168389, en: "Green asparagus, raw", serving: [portion, 100] }
+  - { fdc: 168390, en: "Green asparagus, boiled", serving: [portion, 100] }
+  - { fdc: 169207, en: "Asparagus, canned", serving: [portion, 100] }
+  - { fdc: 169205, en: "Artichoke, raw", serving: [unit, 120] }
+  - { fdc: 168386, en: "Artichoke, boiled", serving: [unit, 120] }
+  - { fdc: 169251, en: "Mushrooms, raw", serving: [portion, 100] }
+  - { fdc: 169252, en: "Mushrooms, boiled", serving: [portion, 100] }
+  - { fdc: 169253, en: "Mushrooms, sautéed", serving: [portion, 100] }
+  - { fdc: 169254, en: "Mushrooms, canned, drained", serving: [portion, 100] }
+  - { fdc: 168434, en: "Brown (crimini) mushrooms", serving: [portion, 100] }
+  - { fdc: 169255, en: "Portobello mushroom", serving: [unit, 85] }
+  - { fdc: 169242, en: "Shiitake mushrooms", serving: [portion, 100] }
+  - { fdc: 1999627, en: "Oyster mushrooms", serving: [portion, 100] }
+  - { fdc: 170026, en: "Potato, raw", serving: [unit, 170] }
+  - { fdc: 170440, en: "Potato, boiled, peeled", serving: [portion, 200] }
+  - { fdc: 170438, en: "Potato, boiled in skin", serving: [portion, 200] }
+  - { fdc: 170093, en: "Baked potato", serving: [unit, 170] }
+  - { fdc: 168555, en: "Mashed potatoes, homemade", serving: [portion, 200] }
+  - { fdc: 169264, en: "Oven chips (frozen fries, baked)", serving: [portion, 150] }
+  - { fdc: 170698, en: "French fries (fast food)", serving: [portion, 110] }
+  - { fdc: 168482, en: "Sweet potato, raw", serving: [unit, 130] }
+  - { fdc: 168483, en: "Sweet potato, baked", serving: [unit, 115] }
+  - { fdc: 168484, en: "Sweet potato, boiled", serving: [portion, 150] }
+  - { fdc: 169998, en: "Sweetcorn, raw", serving: [unit, 90] }
+  - { fdc: 169214, en: "Sweetcorn, canned, drained", serving: [portion, 80] }
+  - { fdc: 168448, en: "Pumpkin, raw", serving: [portion, 150] }
+  - { fdc: 169295, en: "Butternut squash, raw", serving: [portion, 150] }
+  - { fdc: 169296, en: "Butternut squash, baked", serving: [portion, 150] }
+  - { fdc: 169145, en: "Beetroot, raw", serving: [unit, 80] }
+  - { fdc: 169146, en: "Beetroot, boiled", serving: [unit, 80] }
+  - { fdc: 169988, en: "Celery", serving: [unit, 40] }
+  - { fdc: 170400, en: "Celeriac", serving: [portion, 100] }
+  - { fdc: 169385, en: "Fennel", serving: [unit, 230] }
+  - { fdc: 169276, en: "Radishes", serving: [unit, 5] }
+  - { fdc: 170465, en: "Turnip", serving: [unit, 120] }
+  - { fdc: 2747659, en: "Parsnip", serving: [unit, 130] }
+  - { fdc: 169231, en: "Ginger root, fresh", serving: [tsp, 2] }
+  - { fdc: 170071, en: "Yam", serving: [portion, 150] }
+  - { fdc: 167714, en: "Hearts of palm", serving: [portion, 50] }
+  - { fdc: 169261, en: "Okra, boiled", serving: [portion, 100] }
+  - { fdc: 170472, en: "Mixed vegetables, frozen, boiled", serving: [portion, 150] }
+  - { fdc: 170064, en: "Mixed vegetables, canned", serving: [portion, 150] }
+  - { fdc: 168558, en: "Pickled gherkins", serving: [unit, 15] }
+  - { fdc: 169378, en: "Sweet pickles", serving: [unit, 15] }
+  - { fdc: 168458, en: "Nori seaweed", serving: [portion, 10] }
+  - { fdc: 170496, en: "Wakame seaweed", serving: [portion, 10] }
+  - { fdc: 170495, en: "Spirulina, dried", serving: [tsp, 3] }
+
+  # Drinks
+  - { fdc: 173647, en: "Tap water", unit: ML, serving: [glass, 250] }
+  - { fdc: 174158, en: "Bottled water", unit: ML, serving: [glass, 250] }
+  - { fdc: 174842, en: "Sparkling water (soda)", unit: ML, serving: [glass, 250] }
+  - { fdc: 171890, en: "Coffee, filter", unit: ML, serving: [cup, 150] }
+  - { fdc: 171891, en: "Espresso", unit: ML, serving: [cup, 30] }
+  - { fdc: 171889, en: "Decaffeinated coffee", unit: ML, serving: [cup, 150] }
+  - { fdc: 171893, en: "Instant coffee, powder", serving: [tsp, 2] }
+  - { fdc: 173227, en: "Black tea", unit: ML, serving: [cup, 240] }
+  - { fdc: 171917, en: "Green tea", unit: ML, serving: [cup, 240] }
+  - { fdc: 173232, en: "Herbal tea", unit: ML, serving: [cup, 240] }
+  - { fdc: 174156, en: "Chamomile tea", unit: ML, serving: [cup, 240] }
+  - { fdc: 174160, en: "Cocoa drink mix with whole milk", unit: ML, serving: [glass, 250] }
+  - { fdc: 174852, en: "Cola", unit: ML, serving: [can, 330] }
+  - { fdc: 171876, en: "Diet cola", unit: ML, serving: [can, 330] }
+  - { fdc: 173205, en: "Lemon-lime soda", unit: ML, serving: [can, 330] }
+  - { fdc: 174854, en: "Orange soda", unit: ML, serving: [can, 330] }
+  - { fdc: 174846, en: "Ginger ale", unit: ML, serving: [can, 330] }
+  - { fdc: 171869, en: "Tonic water", unit: ML, serving: [can, 200] }
+  - { fdc: 174859, en: "Lemonade", unit: ML, serving: [glass, 250] }
+  - { fdc: 174821, en: "Energy drink", unit: ML, serving: [can, 250] }
+  - { fdc: 174822, en: "Energy drink, sugar free", unit: ML, serving: [can, 250] }
+  - { fdc: 171914, en: "Fruit drink", unit: ML, serving: [glass, 250] }
+  - { fdc: 171942, en: "Rice drink", unit: ML, serving: [glass, 250] }
+  - { fdc: 174832, en: "Almond drink, unsweetened", unit: ML, serving: [glass, 250] }
+  - { fdc: 168751, en: "Almond drink, sweetened", unit: ML, serving: [glass, 250] }
+  - { fdc: 2257046, en: "Oat drink, unsweetened", unit: ML, serving: [glass, 250] }
+  - { fdc: 171941, en: "Rice horchata (Mexican style)", unit: ML, serving: [glass, 250] }
+  - { fdc: 168746, en: "Beer", unit: ML, serving: [can, 330] }
+  - { fdc: 168749, en: "Light beer", unit: ML, serving: [can, 330] }
+  - { fdc: 171906, en: "Strong beer", unit: ML, serving: [can, 330] }
+  - { fdc: 174863, en: "Alcohol-free beer", unit: ML, serving: [can, 330] }
+  - { fdc: 173190, en: "Red wine", unit: ML, serving: [glass, 150] }
+  - { fdc: 174837, en: "White wine", unit: ML, serving: [glass, 150] }
+  - { fdc: 171908, en: "Rosé wine", unit: ML, serving: [glass, 150] }
+  - { fdc: 173176, en: "Sweet dessert wine", unit: ML, serving: [glass, 75] }
+  - { fdc: 171919, en: "Spirits, 40% (gin, rum, vodka, whisky)", unit: ML, serving: [glass, 40] }
+
+  # Dishes and fast food
+  - { fdc: 170694, en: "Hamburger in a bun", serving: [unit, 110] }
+  - { fdc: 170691, en: "Cheeseburger in a bun", serving: [unit, 115] }
+  - { fdc: 170718, en: "Chicken nuggets", serving: [unit, 16] }
+  - { fdc: 170756, en: "Fried chicken breast, breaded", serving: [unit, 160] }
+  - { fdc: 172039, en: "Bean and cheese burrito", serving: [unit, 185] }
+  - { fdc: 170291, en: "Nachos with cheese", serving: [portion, 110] }
+  - { fdc: 172114, en: "Meat lasagne", serving: [portion, 250] }
+  - { fdc: 169770, en: "Macaroni and cheese", serving: [portion, 200] }
+  - { fdc: 169269, en: "Potato salad with mayonnaise", serving: [portion, 150] }
+  - { fdc: 175160, en: "Tuna salad with mayonnaise", serving: [portion, 100] }

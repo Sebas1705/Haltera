@@ -64,6 +64,7 @@ iosApp/iosApp/Info.plist
 
 # Catalogue pipeline (scripts/catalog)
 scripts/catalog/node_modules/
+scripts/nutrition/node_modules/
 
 # Kotlin compiler daemon state
 .kotlin/

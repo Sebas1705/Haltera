@@ -175,6 +175,61 @@ class RoutineScorerTest {
     }
 
     @Test
+    fun `pulling movements give no shoulder credit and the split is reported`() {
+        val pulldown = exercise("lat-pulldown", listOf(Muscle.LATS), listOf(Muscle.SHOULDERS, Muscle.BICEPS))
+        val withPull = ScoringCatalogue(listOf(bench, pulldown, press))
+        val routine = routine(
+            train("A", spec(bench, 4), spec(pulldown, 4), spec(press, 3)),
+            rest,
+            rest,
+            rest,
+            rest,
+            rest,
+            rest,
+        )
+        val score = RoutineScorer.score(routine, withPull)
+        // 3 direct (press) + 2 from the bench press; the pulldown adds nothing.
+        assertEquals(5.0, score.weeklySets[MuscleGroup.SHOULDERS])
+        assertEquals(
+            GroupSets(MuscleGroup.SHOULDERS, 5.0, direct = 3.0, secondary = 2.0),
+            score.weeklySplit[MuscleGroup.SHOULDERS]
+        )
+        // Biceps still get half a set per pulldown set.
+        assertEquals(
+            GroupSets(MuscleGroup.BICEPS, 2.0, direct = 0.0, secondary = 2.0),
+            score.weeklySplit[MuscleGroup.BICEPS]
+        )
+    }
+
+    @Test
+    fun `too much shoulder work points at the overlap, never at trimming direct work`() {
+        val raise = exercise("lateral-raise", listOf(Muscle.SHOULDERS))
+        val withRaise = ScoringCatalogue(listOf(bench, press, raise))
+        val day = train("Push", spec(bench, 4), spec(press, 4), spec(raise, 6))
+        val score = RoutineScorer.score(routine(day, rest), withRaise)
+        // (4 + 6) direct + 2 secondary, 3.5 times a week.
+        val shoulders = GroupSets(MuscleGroup.SHOULDERS, 42.0, direct = 35.0, secondary = 7.0)
+        val volume = score.criterion(CriterionId.VOLUME)
+        assertTrue(volume.advice.filterIsInstance<Advice.RemoveSets>().none { it.group == MuscleGroup.SHOULDERS })
+        assertEquals(
+            Advice.ShoulderOverlap(shoulders),
+            volume.advice.filterIsInstance<Advice.ShoulderOverlap>().single()
+        )
+        assertTrue(shoulders in assertIs<Finding.Volume>(volume.finding).high)
+    }
+
+    @Test
+    fun `advice numbers are rounded like the chart`() {
+        // Hamstrings only from squats: 3 sets × 0.5 × 3.5 = 5.25, shown as 5.3 on the chart and in the advice.
+        val score = score(routine(train("Legs", spec(squat, 3)), rest))
+        val advice = score.criterion(CriterionId.VOLUME).advice.filterIsInstance<Advice.AddSets>()
+        assertTrue(advice.isNotEmpty())
+        advice.forEach {
+            assertEquals(score.weeklySets[it.group] ?: 0.0, it.weeklySets, "${it.group}")
+        }
+    }
+
+    @Test
     fun `a cycle without rest days assumes three sessions a week`() {
         val ab = routine(train("A", spec(bench, 4), spec(squat, 4)), train("B", spec(row, 4), spec(squat, 4)))
         val score = score(ab)
@@ -214,7 +269,7 @@ class RoutineScorerTest {
         val finding = assertIs<Finding.Volume>(volume.finding)
         assertTrue(finding.low.any { it.group == MuscleGroup.HAMSTRINGS && it.sets == 3.0 }, "$finding")
         val advice = volume.advice.filterIsInstance<Advice.AddSets>().first { it.group == MuscleGroup.HAMSTRINGS }
-        assertEquals(3, advice.weeklySets)
+        assertEquals(3.0, advice.weeklySets)
         assertEquals(listOf("romanian-deadlift", "leg-curl"), advice.exerciseIds)
         assertTrue(advice.day == "Legs" || advice.day == "Legs 2", "lower-body day, got ${advice.day}")
         assertTrue(advice.addMin in 2..advice.addMax)

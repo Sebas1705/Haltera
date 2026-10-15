@@ -152,6 +152,8 @@ internal fun ComparisonTile(
     metric: Metric,
     modifier: Modifier = Modifier,
     footnote: String? = null,
+    /** Shown when there is neither a change nor a [footnote]; "No previous period" by default. */
+    noComparison: String? = null,
 ) {
     val change = comparison?.let { changeText(it, formatDelta) } ?: footnote
     val description = listOfNotNull(title, value, change).joinToString(", ")
@@ -179,7 +181,7 @@ internal fun ComparisonTile(
                 modifier = Modifier.padding(end = 12.dp).clearAndSetSemantics { },
             )
             Text(
-                change ?: stringResource(Res.string.progress_change_none),
+                change ?: noComparison ?: stringResource(Res.string.progress_change_none),
                 style = MaterialTheme.typography.bodySmall.tabularFigures(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,

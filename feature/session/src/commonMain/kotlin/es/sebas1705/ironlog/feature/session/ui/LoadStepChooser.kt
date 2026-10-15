@@ -49,6 +49,10 @@ internal object LoadStepOptions {
 
     fun plates(): List<Long> = (1..MAX_PLATES).toList()
 
+    /** The preset chips next to "Default (x)": every preset except the one equal to the default. */
+    fun presets(plateMode: Boolean, unit: WeightUnit, default: Long): List<Long> =
+        (if (plateMode) plates() else weights(unit)).filter { it != default }
+
     /** A typed custom step: a positive number of plates, or a positive weight in [unit] (comma or dot). */
     fun parse(text: String, plateMode: Boolean, unit: WeightUnit): Long? {
         val clean = text.trim().replace(',', '.')
@@ -109,7 +113,7 @@ private fun LoadStepDialog(
 ) {
     var custom by rememberSaveable { mutableStateOf("") }
     val parsed = LoadStepOptions.parse(custom, plateMode, unit)
-    val options = if (plateMode) LoadStepOptions.plates() else LoadStepOptions.weights(unit)
+    val options = LoadStepOptions.presets(plateMode, unit, default)
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(stringResource(Res.string.session_load_step_title)) },
@@ -118,7 +122,7 @@ private fun LoadStepDialog(
                 Text(stringResource(Res.string.session_load_step_text), style = MaterialTheme.typography.bodyMedium)
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
-                        selected = chosen == null,
+                        selected = chosen == null || chosen == default,
                         onClick = { onChoose(null) },
                         label = {
                             Text(

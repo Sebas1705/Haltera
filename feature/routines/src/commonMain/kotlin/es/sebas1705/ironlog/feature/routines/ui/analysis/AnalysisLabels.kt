@@ -134,7 +134,18 @@ internal fun findingLines(finding: Finding, language: String): List<String> {
                 add(stringResource(Res.string.routines_finding_volume_low, list.joinToString(", ")))
             }
             if (finding.high.isNotEmpty()) {
-                val list = finding.high.map { "${groupLabel(it.group)} ${formatOne(it.sets, language)}" }
+                val list = finding.high.map { sets ->
+                    val split = if (sets.secondary > 0.0) {
+                        " (" + stringResource(
+                            Res.string.routines_sets_split,
+                            formatOne(sets.direct, language),
+                            formatOne(sets.secondary, language),
+                        ) + ")"
+                    } else {
+                        ""
+                    }
+                    "${groupLabel(sets.group)} ${formatOne(sets.sets, language)}$split"
+                }
                 add(stringResource(Res.string.routines_finding_volume_high, list.joinToString(", ")))
             }
         }
@@ -224,7 +235,7 @@ internal fun adviceText(advice: Advice, language: String, exerciseName: (String)
     is Advice.AddSets -> stringResource(
         Res.string.routines_advice_add_sets,
         groupLabel(advice.group),
-        advice.weeklySets,
+        formatOne(advice.weeklySets, language),
         advice.addMin,
         advice.addMax,
         exercises(advice.exerciseIds, exerciseName),
@@ -233,7 +244,7 @@ internal fun adviceText(advice: Advice, language: String, exerciseName: (String)
     is Advice.RemoveSets -> stringResource(
         Res.string.routines_advice_remove_sets,
         groupLabel(advice.group),
-        advice.weeklySets,
+        formatOne(advice.weeklySets, language),
         advice.removeMin,
         advice.removeMax,
     )
@@ -241,8 +252,14 @@ internal fun adviceText(advice: Advice, language: String, exerciseName: (String)
         Res.string.routines_advice_spread,
         groupLabel(advice.group),
         formatOne(advice.perWeek, language),
-        advice.weeklySets,
+        formatOne(advice.weeklySets, language),
         dayOrAny(advice.day),
+    )
+    is Advice.ShoulderOverlap -> stringResource(
+        Res.string.routines_advice_shoulder_overlap,
+        formatOne(advice.sets.sets, language),
+        formatOne(advice.sets.direct, language),
+        formatOne(advice.sets.secondary, language),
     )
     is Advice.Cover -> stringResource(
         Res.string.routines_advice_cover,

@@ -224,7 +224,7 @@
     <string name="routines_analysis_empty">Add exercises to training days to see an analysis.</string>
     <string name="routines_analysis_missing">This routine no longer exists.</string>
     <string name="routines_analysis_chart_title">Weekly sets per muscle</string>
-    <string name="routines_analysis_chart_legend">Shaded band: 10 to 20 sets a week, the usual target for muscle growth. Secondary muscles count half a set.</string>
+    <string name="routines_analysis_chart_legend">Shaded band: 10 to 20 sets a week, the usual target for muscle growth. Solid: direct sets (primary muscle); lighter: secondary muscles, half a set each.</string>
     <string name="routines_analysis_chart_value">%1$s: %2$s sets a week</string>
     <string name="routines_analysis_weight">Weight %1$d</string>
     <string name="routines_analysis_how">How this is calculated</string>
@@ -271,7 +271,7 @@
     <string name="routines_criterion_session_length">Session length</string>
     <string name="routines_criterion_adherence">Adherence</string>
     <string name="routines_criterion_load_progress">Load progress</string>
-    <string name="routines_info_volume">Working sets are counted per muscle group each week: one set for each primary muscle and half a set for each secondary muscle. A cycle of N days is scaled to 7 days; a cycle without rest days is assumed to run 3 sessions a week (or one cycle a week from 5 days). Meta-analyses find that muscle growth rises with weekly sets, with about 10 to 20 hard sets per muscle a good target and smaller returns beyond that; strength needs less. Groups under 10 sets score lower (strength routines from 6), groups over 20 a little lower, and groups under 6 or over 25 are flagged. Large groups weigh twice as much as small ones.</string>
+    <string name="routines_info_volume">Working sets are counted per muscle group each week: one set for each primary muscle and half a set for each secondary muscle. Pulling movements (rows, pulldowns, pull-ups) give no shoulder credit: the rear delt only helps there. Progress › Muscles counts primary muscles only, so it matches the direct part of these numbers. A cycle of N days is scaled to 7 days; a cycle without rest days is assumed to run 3 sessions a week (or one cycle a week from 5 days). Meta-analyses find that muscle growth rises with weekly sets, with about 10 to 20 hard sets per muscle a good target and smaller returns beyond that; strength needs less. Groups under 10 sets score lower (strength routines from 6), groups over 20 a little lower, and groups under 6 or over 25 are flagged. Large groups weigh twice as much as small ones.</string>
     <string name="routines_info_frequency">A group counts as trained on a day when it gets at least 2 sets there (secondary muscles count half). Training a muscle twice a week or more beats once a week for growth, although with equal volume the difference is small. Each group with at least 6 weekly sets scores fully from twice a week, 40 points at once a week and less below that.</string>
     <string name="routines_info_coverage">Each major group (chest, back, shoulders, quads, hamstrings, glutes, biceps, triceps, calves and abs) should get at least about one set a week. Position stands recommend training all major muscle groups. Large groups count double.</string>
     <string name="routines_info_balance">Push work (chest and shoulder presses, dips) is compared with pull work (rows, pull-downs, face pulls), and quad-dominant work (squats, leg presses, lunges) with hip-dominant work (deadlifts, hip hinges, leg curls). Balancing opposing muscle groups is a common guideline, and the hamstring to quadriceps ratio is a classic marker of muscle balance. Ratios between 2:3 and 3:2 for push and pull, and between 1:2 and 2:1 for the legs, score fully; the score falls as the ratio moves away. These bands are a heuristic, not an exact rule.</string>
@@ -300,9 +300,9 @@
     <string name="routines_finding_adherence">%1$d of %2$d planned sessions in the last %3$d weeks, with %4$s of the planned sets.</string>
     <string name="routines_finding_load_progress">%1$d of %2$d tracked exercises progressed in the last %3$d weeks.</string>
     <!-- Advice -->
-    <string name="routines_advice_add_sets">%1$s: %2$d sets a week. Add %3$d to %4$d sets of %5$s on %6$s.</string>
-    <string name="routines_advice_remove_sets">%1$s: %2$d sets a week. Beyond about 25 the extra sets add little; trimming %3$d to %4$d would save time and recovery.</string>
-    <string name="routines_advice_spread">%1$s: trained %2$s× a week. Move about half of its %3$d weekly sets to %4$s.</string>
+    <string name="routines_advice_add_sets">%1$s: %2$s sets a week. Add %3$d to %4$d sets of %5$s on %6$s.</string>
+    <string name="routines_advice_remove_sets">%1$s: %2$s sets a week. Beyond about 25 the extra sets add little; trimming %3$d to %4$d would save time and recovery.</string>
+    <string name="routines_advice_spread">%1$s: trained %2$s× a week. Move about half of its %3$s weekly sets to %4$s.</string>
     <string name="routines_advice_cover">%1$s: not trained. Add about 3 sets of %2$s on %3$s.</string>
     <string name="routines_advice_more_pull">Pull work is low (push to pull %1$s). Add 3 to 4 sets of %2$s on %3$s.</string>
     <string name="routines_advice_more_push">Push work is low (push to pull %1$s). Add 3 to 4 sets of %2$s on %3$s.</string>
@@ -317,4 +317,7 @@
     <string name="routines_advice_progression">%1$d of %2$d exercises have no progression rule. Add double or linear progression so loads go up over time.</string>
     <string name="routines_advice_schedule">%1$d of %2$d planned sessions done. Fewer training days or a shorter cycle may fit your week better.</string>
     <string name="routines_advice_plateau">No recent progress on %1$s. Consider a lighter week, a different rep range or another variant.</string>
+    <string name="routines_sets_split">%1$s direct + %2$s secondary</string>
+    <string name="routines_analysis_chart_value_split">%1$s: %2$s sets a week (%3$s direct + %4$s secondary)</string>
+    <string name="routines_advice_shoulder_overlap">Shoulders: %1$s sets a week (%2$s direct + %3$s secondary from presses). The group covers the front, side and rear delts, and presses already train the front one. Keep the lateral raise and rear-delt work; if recovery suffers, trim pressing sets first.</string>
 </resources>

@@ -15,6 +15,8 @@ data class RoutineScore(
     val weeklySets: Map<MuscleGroup, Double>,
     /** The sessions per week the weekly numbers assume (see the design, "Schedule"). */
     val sessionsPerWeek: Double,
+    /** [weeklySets] split into direct (primary) and secondary sets, for the stacked chart. */
+    val weeklySplit: Map<MuscleGroup, GroupSets> = emptyMap(),
 ) {
     /** Conditioning or empty routines get no number: the criteria target resistance training. */
     val scored: Boolean get() = verdict != Verdict.NOT_SCORED
@@ -117,8 +119,11 @@ data class Criterion(
     val evidence: List<Reference>,
 )
 
-/** Weekly sets of one group, rounded to one decimal. */
-data class GroupSets(val group: MuscleGroup, val sets: Double)
+/**
+ * Weekly sets of one group, rounded to one decimal: [sets] = [direct] (the group is a primary muscle) +
+ * [secondary] (half a set where it is a credited secondary muscle).
+ */
+data class GroupSets(val group: MuscleGroup, val sets: Double, val direct: Double = sets, val secondary: Double = 0.0)
 
 /** How often a group is trained per week. */
 data class GroupFrequency(val group: MuscleGroup, val perWeek: Double, val weeklySets: Double)
@@ -164,7 +169,8 @@ sealed interface Advice {
     /** "Hamstrings get 4 sets/week: add 3–6 sets of Romanian deadlift or leg curl on Lower A". */
     data class AddSets(
         val group: MuscleGroup,
-        val weeklySets: Int,
+        /** Rounded to one decimal, like the chart. */
+        val weeklySets: Double,
         val addMin: Int,
         val addMax: Int,
         val exerciseIds: List<String>,
@@ -172,10 +178,22 @@ sealed interface Advice {
     ) : Advice
 
     /** "Chest gets 28 sets/week: drop 4–8 sets; more is unlikely to add much". */
-    data class RemoveSets(val group: MuscleGroup, val weeklySets: Int, val removeMin: Int, val removeMax: Int) : Advice
+    data class RemoveSets(
+        val group: MuscleGroup,
+        val weeklySets: Double,
+        val removeMin: Int,
+        val removeMax: Int
+    ) : Advice
+
+    /**
+     * Shoulders over the flag: [sets] split into direct and secondary work. Shoulders lump three delt heads and
+     * presses already credit the front one, so the advice points at that double counting and at pressing
+     * volume, never at the only direct side and rear-delt work.
+     */
+    data class ShoulderOverlap(val sets: GroupSets) : Advice
 
     /** "Chest is trained 1×/week: move about half of its 12 sets to Upper B". */
-    data class SpreadAcrossDays(val group: MuscleGroup, val perWeek: Double, val weeklySets: Int, val day: String?) :
+    data class SpreadAcrossDays(val group: MuscleGroup, val perWeek: Double, val weeklySets: Double, val day: String?) :
         Advice
 
     /** "Calves are not trained: add 3 sets of standing calf raise to Legs". */

@@ -122,7 +122,7 @@ private fun AnalysisContent(
     ) {
         item(key = "summary") { SummaryCard(state, score) }
         if (score.weeklySets.isNotEmpty() && score.scored) {
-            item(key = "chart") { WeeklySetsCard(score.weeklySets, state.language) }
+            item(key = "chart") { WeeklySetsCard(score.weeklySets, score.weeklySplit, state.language) }
         }
         items(planCriteria, key = { it.id.name }) { CriterionCard(it, state, onInfo) }
         if (sessionCriteria.isNotEmpty()) {

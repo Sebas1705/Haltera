@@ -63,7 +63,8 @@ class SchemaQueriesTest {
         CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
 
         assertEquals(listOf("running"), search(category = "CARDIO"))
-        assertEquals(listOf("running", "squat"), search(muscle = "QUADRICEPS"))
+        // Strength before cardio when there is no query.
+        assertEquals(listOf("squat", "running"), search(muscle = "QUADRICEPS"))
         assertEquals(emptyList(), search(muscle = "GLUTES"))
         assertEquals(listOf("bench-press"), search(equipment = "DUMBBELL"))
         assertEquals(listOf("bench-press", "squat"), search(equipment = "BARBELL"))
@@ -71,11 +72,21 @@ class SchemaQueriesTest {
     }
 
     @Test
-    fun `results are sorted by name in the requested language`() {
+    fun `results are sorted by name in the requested language, strength first`() {
         CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
 
-        assertEquals(listOf("bench-press", "running", "squat", "tricep-extension"), search(language = "en"))
-        assertEquals(listOf("running", "tricep-extension", "bench-press", "squat"), search(language = "es"))
+        assertEquals(listOf("bench-press", "squat", "tricep-extension", "running"), search(language = "en"))
+        assertEquals(listOf("tricep-extension", "bench-press", "squat", "running"), search(language = "es"))
+    }
+
+    @Test
+    fun `names starting with the query come before names containing it`() {
+        CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
+
+        // "Squat" starts with "s"; the others only contain it.
+        assertEquals(listOf("squat", "bench-press", "tricep-extension"), search("s", language = "en"))
+        // "Triceps Extension" has a word starting with "e"; the others (Spanish names too) only contain it.
+        assertEquals(listOf("tricep-extension", "bench-press", "running", "squat"), search("e", language = "en"))
     }
 
     @Test

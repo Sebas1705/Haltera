@@ -62,3 +62,17 @@ FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
 WHERE se.slotId = :slotId AND se.variantId = :variantId AND s.endedAt IS NOT NULL AND s.startedAt < :before
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;
+
+-- The most recently used of :variantIds in any finished session (any slot, routine or free session) started
+-- before :before, counting only performances with a completed working set (flexible-slot default).
+lastUsedVariant:
+SELECT se.variantId
+FROM SessionExerciseEntity se
+JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+WHERE se.variantId IN :variantIds AND s.endedAt IS NOT NULL AND s.startedAt < :before
+  AND EXISTS (
+    SELECT 1 FROM SetLogEntity sl
+    WHERE sl.sessionExerciseId = se.id AND sl.kind = 'WORKING' AND sl.completed = 1
+  )
+ORDER BY s.startedAt DESC, se.position DESC
+LIMIT 1;

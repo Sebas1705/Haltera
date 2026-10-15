@@ -58,7 +58,7 @@
     <string name="session_reps">Reps</string>
     <string name="session_duration">Time</string>
     <string name="session_distance">Distance</string>
-    <string name="session_per_side">Bar %1$s + per side: %2$s</string>
+    <string name="session_per_side">Bar %1$s + %2$s per side</string>
     <string name="session_bar_only">Empty bar (%1$s)</string>
     <string name="session_plates_missing">Your plates reach %1$s</string>
     <string name="session_decrease">Decrease</string>

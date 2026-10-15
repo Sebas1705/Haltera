@@ -70,14 +70,15 @@ object RoutineScorer {
     ): RoutineScore {
         val plan = RoutinePlan(routine, catalogue)
         val weekly = plan.weeklySets.filterValues { it > 0.0 }.mapValues { (_, v) -> round1(v) }
+        val split = weekly.keys.associateWith(plan::groupSets)
         val focus = focusOf(plan)
         if (focus == RoutineFocus.CONDITIONING || focus == RoutineFocus.EMPTY) {
-            return RoutineScore(0, Verdict.NOT_SCORED, focus, emptyList(), weekly, plan.sessionsPerWeek)
+            return RoutineScore(0, Verdict.NOT_SCORED, focus, emptyList(), weekly, plan.sessionsPerWeek, split)
         }
         val criteria = PlanCriteria(plan, focus).all() + SessionCriteria(routine, plan, catalogue, sessions, now).all()
         val weightSum = criteria.sumOf { it.weight }
         val total = if (weightSum == 0) 0 else (criteria.sumOf { it.score * it.weight }.toDouble() / weightSum).roundToInt()
-        return RoutineScore(total, Verdict.of(total), focus, criteria, weekly, plan.sessionsPerWeek)
+        return RoutineScore(total, Verdict.of(total), focus, criteria, weekly, plan.sessionsPerWeek, split)
     }
 
     private fun focusOf(plan: RoutinePlan): RoutineFocus {

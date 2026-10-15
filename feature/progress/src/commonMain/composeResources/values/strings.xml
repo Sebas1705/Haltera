@@ -191,6 +191,7 @@
     <string name="progress_change_from_zero">%1$s %2$s (from 0)</string>
     <string name="progress_change_same">= same as the previous period</string>
     <string name="progress_change_none">No previous period</string>
+    <string name="progress_change_no_sets">No sets in the previous period</string>
     <string name="progress_legend_this_period">This period</string>
     <string name="progress_legend_previous_period">Previous period</string>
     <string name="progress_chart_previous">Previous: %1$s</string>
@@ -414,7 +415,7 @@
     <string name="progress_metric_muscle_sets_title">Weekly sets per muscle</string>
     <string name="progress_metric_muscle_sets_summary">Effective sets per week for each muscle group, this period against the previous one.</string>
     <string name="progress_metric_muscle_sets_formula">Effective sets of the exercises whose primary muscles include the group ÷ weeks in the period.</string>
-    <string name="progress_metric_muscle_sets_counts">Primary muscles only, each in full: a set of an exercise with two primary muscles counts once for each. Secondary muscles are not counted.</string>
+    <string name="progress_metric_muscle_sets_counts">Primary muscles only, each in full: a set of an exercise with two primary muscles counts once for each. Secondary muscles are not counted. The routine analysis also adds half a set for secondary muscles, so its totals are higher; its direct part is what is counted here.</string>
     <string name="progress_metric_muscle_sets_limits">Muscles come from the exercise catalogue, a simplification of how exercises really load them.</string>
 
     <string name="progress_metric_muscle_volume_title">Weekly volume per muscle</string>

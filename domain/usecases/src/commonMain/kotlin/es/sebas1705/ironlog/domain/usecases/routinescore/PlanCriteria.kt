@@ -2,7 +2,6 @@ package es.sebas1705.ironlog.domain.usecases.routinescore
 
 import es.sebas1705.ironlog.data.models.ProgressionRule
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.ln
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -69,7 +68,7 @@ internal class PlanCriteria(private val plan: RoutinePlan, private val focus: Ro
                     add(
                         Advice.AddSets(
                             group,
-                            floor(weekly).toInt(), // Rounded down: 9.5 must not read as the 10-set target.
+                            round1(weekly), // As the chart shows it.
                             addMin,
                             addMax,
                             RoutineScorer.SUGGESTED_EXERCISES[group].orEmpty().take(2),
@@ -79,10 +78,14 @@ internal class PlanCriteria(private val plan: RoutinePlan, private val focus: Ro
                 }
             high.forEach { group ->
                 val weekly = plan.weekly(group)
+                if (group == MuscleGroup.SHOULDERS) {
+                    add(Advice.ShoulderOverlap(plan.groupSets(group)))
+                    return@forEach
+                }
                 add(
                     Advice.RemoveSets(
                         group,
-                        weekly.roundToInt(),
+                        round1(weekly),
                         ceil(weekly - FLAG_HIGH).toInt().coerceAtLeast(MIN_ADD),
                         ceil(weekly - TARGET_HIGH).toInt().coerceAtLeast(MIN_ADD + 1),
                     ),
@@ -93,8 +96,8 @@ internal class PlanCriteria(private val plan: RoutinePlan, private val focus: Ro
             CriterionId.VOLUME,
             weightedMean(scores),
             Finding.Volume(
-                low = low.map { GroupSets(it, round1(plan.weekly(it))) },
-                high = high.map { GroupSets(it, round1(plan.weekly(it))) },
+                low = low.map(plan::groupSets),
+                high = high.map(plan::groupSets),
                 inRange = MuscleGroup.majors.count { plan.weekly(it) in TARGET_LOW..TARGET_HIGH },
                 counted = MuscleGroup.majors.size,
             ),
@@ -128,7 +131,7 @@ internal class PlanCriteria(private val plan: RoutinePlan, private val focus: Ro
             Advice.SpreadAcrossDays(
                 group,
                 round1(plan.frequency(group)),
-                plan.weekly(group).roundToInt(),
+                round1(plan.weekly(group)),
                 plan.dayFor(group, true)
             )
         }

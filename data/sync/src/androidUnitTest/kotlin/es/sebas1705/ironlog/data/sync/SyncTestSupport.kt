@@ -81,6 +81,7 @@ class FakeAccount(initial: AccountSession = AccountSession.SignedIn("uid-1", isA
     override suspend fun linkGoogle(credentials: GoogleIdToken): LinkResult = LinkResult.Linked
     override suspend fun signInWithGoogle(credentials: GoogleIdToken) = Unit
     override suspend fun signOut() = set(AccountSession.SignedOut)
+    override suspend fun reauthenticate(credentials: GoogleIdToken) = Unit
     override suspend fun deleteUser() = set(AccountSession.SignedOut)
 }
 

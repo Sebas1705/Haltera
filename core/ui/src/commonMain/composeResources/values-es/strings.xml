@@ -1,4 +1,8 @@
 <resources>
     <string name="retry">Reintentar</string>
     <string name="pr_badge">PR</string>
+    <string name="health_disclaimer_general">Esta app es un cuaderno de registro. No ofrece consejo médico ni de entrenamiento, y nada de lo que muestra sustituye a un médico, dietista o entrenador cualificado. Si tienes alguna condición de salud o una lesión, consulta a un profesional.</string>
+    <string name="health_disclaimer_statistics">Las estadísticas describen lo que has registrado; no son consejo médico ni de entrenamiento.</string>
+    <string name="health_disclaimer_analysis">La puntuación y los consejos comparan tu rutina con pautas generales; no son consejo médico ni de entrenamiento.</string>
+    <string name="health_disclaimer_nutrition">Estos objetivos son estimaciones con una fórmula general, no consejo médico ni nutricional. Si tienes alguna condición de salud, consulta a un médico o dietista.</string>
 </resources>

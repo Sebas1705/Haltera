@@ -36,7 +36,10 @@
     <string name="account_sign_out">Sign out</string>
     <string name="account_delete">Delete account</string>
     <string name="account_delete_title">Delete your account?</string>
-    <string name="account_delete_text">Your cloud copy and your account are deleted for good. The data on this device is kept.</string>
+    <string name="account_delete_text">This deletes your cloud copy and your account for good. The data on this phone stays unless you also choose to erase it below. For security, Google may ask you to sign in again to confirm.</string>
+    <string name="account_delete_erase_local">Also erase data on this device</string>
+    <string name="account_delete_erase_local_hint">Removes your routines, sessions, body weight, foods and settings from this phone. The exercise catalogue stays.</string>
+    <string name="account_reauth_cancelled">The account was not deleted because the sign-in was not confirmed. Your cloud copy is already removed: try again to finish.</string>
     <string name="account_delete_confirm">Delete</string>
     <string name="account_cancel">Cancel</string>
     <string name="account_linked">Google linked. Your data is backed up to your Google account.</string>
@@ -50,4 +53,12 @@
     <string name="sync_syncing">Syncing… %1$d pending</string>
     <string name="sync_offline">Offline. %1$d changes waiting.</string>
     <string name="sync_error">Sync error (%1$d pending): %2$s</string>
+    <string name="settings_about">About</string>
+    <string name="about_title">About</string>
+    <string name="about_version">Version %1$s (%2$s)</string>
+    <string name="about_license">Free and open source, under the MIT licence.</string>
+    <string name="about_privacy">Privacy policy</string>
+    <string name="about_delete_account">Delete my account and data</string>
+    <string name="about_legal">Legal</string>
+    <string name="about_health">Health information</string>
 </resources>

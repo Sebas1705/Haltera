@@ -43,8 +43,15 @@ interface AccountService {
 
     suspend fun signOut()
 
+    /** Re-confirms the current user with a fresh Google credential (before a sensitive action). */
+    suspend fun reauthenticate(credentials: GoogleIdToken)
+
+    /** Deletes the signed-in user. Throws [RecentLoginRequiredException] when the sign-in is too old. */
     suspend fun deleteUser()
 }
+
+/** The credential is too old for a sensitive action such as deleting the account: [AccountService.reauthenticate]. */
+class RecentLoginRequiredException(message: String? = null) : Exception(message)
 
 /** The engine (workstream B). */
 interface SyncEngine {

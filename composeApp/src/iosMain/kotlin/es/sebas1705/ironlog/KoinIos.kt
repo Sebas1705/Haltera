@@ -12,6 +12,7 @@ import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
 import es.sebas1705.ironlog.feature.nutrition.scan.NoBarcodeScanner
 import platform.Foundation.NSBundle
 import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.ironlog.settings.AppInfo
 import es.sebas1705.ironlog.share.IosRoutineShareBridge
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -33,6 +34,12 @@ fun startIronlogKoin(googleSignIn: GoogleSignInBridge?) {
                 single<RoutineShareBridge> { IosRoutineShareBridge(get()) }
                 // Product barcode scanning is not available on iOS yet (an AVFoundation scanner is future work).
                 single<BarcodeScanner> { NoBarcodeScanner }
+                single {
+                    AppInfo(
+                        versionName = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: "dev",
+                        versionCode = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleVersion") as? String ?: "?",
+                    )
+                }
                 single {
                     AppVersionName(NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: "dev")
                 }

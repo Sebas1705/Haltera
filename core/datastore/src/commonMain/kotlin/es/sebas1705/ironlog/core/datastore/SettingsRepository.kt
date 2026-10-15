@@ -70,6 +70,9 @@ interface SettingsRepository {
 
     /** Replaces the nutrition goals. The default does nothing, for test fakes that do not need goals. */
     fun setNutrition(nutrition: NutritionSettings) = Unit
+
+    /** Back to the defaults, nutrition goals included ("Also erase data on this device"). */
+    fun reset() = Unit
 }
 
 /** [SettingsRepository] on multiplatform-settings (SharedPreferences / NSUserDefaults). */
@@ -102,6 +105,8 @@ class KeyValueSettingsRepository(private val store: Settings) : SettingsReposito
     override fun setRestVibration(enabled: Boolean) = write { it.copy(restVibration = enabled) }
 
     override fun setNutrition(nutrition: NutritionSettings) = write { it.copy(nutrition = nutrition) }
+
+    override fun reset() = write { UserSettings() }
 
     private fun write(change: (UserSettings) -> UserSettings) {
         state.update(change)

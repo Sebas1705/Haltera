@@ -2,6 +2,11 @@ package es.sebas1705.ironlog.account
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.selection.toggleable
+import androidx.compose.material3.Checkbox
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.semantics.Role
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.padding
@@ -25,6 +30,9 @@ import es.sebas1705.ironlog.resources.account_anonymous
 import es.sebas1705.ironlog.resources.account_cancel
 import es.sebas1705.ironlog.resources.account_delete
 import es.sebas1705.ironlog.resources.account_delete_confirm
+import es.sebas1705.ironlog.resources.account_delete_erase_local
+import es.sebas1705.ironlog.resources.account_delete_erase_local_hint
+import es.sebas1705.ironlog.resources.account_reauth_cancelled
 import es.sebas1705.ironlog.resources.account_delete_text
 import es.sebas1705.ironlog.resources.account_delete_title
 import es.sebas1705.ironlog.resources.account_deleted
@@ -79,7 +87,7 @@ fun AccountSection(viewModel: AccountViewModel = koinViewModel()) {
         AlertDialog(
             onDismissRequest = { viewModel.onEvent(AccountIntent.DismissDelete) },
             title = { Text(stringResource(Res.string.account_delete_title)) },
-            text = { Text(stringResource(Res.string.account_delete_text)) },
+            text = { DeleteDialogBody(state.eraseLocal) { viewModel.onEvent(AccountIntent.SetEraseLocal(it)) } },
             confirmButton = {
                 TextButton(onClick = { viewModel.onEvent(AccountIntent.ConfirmDelete) }) {
                     Text(stringResource(Res.string.account_delete_confirm), color = MaterialTheme.colorScheme.error)
@@ -91,6 +99,28 @@ fun AccountSection(viewModel: AccountViewModel = koinViewModel()) {
                 }
             },
         )
+    }
+}
+
+/** What is deleted, and the unticked-by-default box to also wipe this phone. */
+@Composable
+private fun DeleteDialogBody(eraseLocal: Boolean, onEraseLocal: (Boolean) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(stringResource(Res.string.account_delete_text))
+        Row(
+            Modifier.toggleable(value = eraseLocal, role = Role.Checkbox, onValueChange = onEraseLocal),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Checkbox(checked = eraseLocal, onCheckedChange = null)
+            Column(Modifier.padding(start = 12.dp)) {
+                Text(stringResource(Res.string.account_delete_erase_local), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(Res.string.account_delete_erase_local_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 
@@ -154,6 +184,7 @@ private fun messageLine(message: AccountMessage, error: String?): String = when 
     AccountMessage.MERGED -> stringResource(Res.string.account_merged)
     AccountMessage.SIGNED_IN -> stringResource(Res.string.account_signing_in)
     AccountMessage.DELETED -> stringResource(Res.string.account_deleted)
+    AccountMessage.REAUTH_CANCELLED -> stringResource(Res.string.account_reauth_cancelled)
     AccountMessage.FAILED -> stringResource(Res.string.account_failed, error.orEmpty())
 }
 

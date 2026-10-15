@@ -25,6 +25,7 @@ import platform.UserNotifications.UNUserNotificationCenter
 actual val sessionPlatformModule: Module = module {
     single<RestAlert> { IosRestAlert() }
     single<LiveSessionIndicator> { NoLiveSessionIndicator }
+    single { ExactAlarmPrompt(NoExactAlarmAccess, InMemoryExactAlarmPromptStore()) }
 }
 
 /** Local notifications at the absolute instants, rescheduled on every change (spec §5). */

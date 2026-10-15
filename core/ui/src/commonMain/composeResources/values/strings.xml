@@ -1,4 +1,8 @@
 <resources>
     <string name="retry">Retry</string>
     <string name="pr_badge">PR</string>
+    <string name="health_disclaimer_general">This app is a logbook. It does not give medical or training advice, and nothing in it replaces a doctor, dietitian or qualified coach. If you have a health condition or an injury, check with a professional.</string>
+    <string name="health_disclaimer_statistics">Statistics describe what you logged; they are not medical or training advice.</string>
+    <string name="health_disclaimer_analysis">The score and the advice compare your routine with general guidelines; they are not medical or training advice.</string>
+    <string name="health_disclaimer_nutrition">These goals are estimates from a general formula, not medical or nutritional advice. If you have a health condition, ask a doctor or dietitian.</string>
 </resources>

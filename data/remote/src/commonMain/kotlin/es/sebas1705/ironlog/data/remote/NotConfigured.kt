@@ -27,6 +27,8 @@ object NotConfiguredAccountService : AccountService {
 
     override suspend fun signOut() = Unit
 
+    override suspend fun reauthenticate(credentials: GoogleIdToken) = error(NOT_CONFIGURED)
+
     override suspend fun deleteUser() = Unit
 }
 

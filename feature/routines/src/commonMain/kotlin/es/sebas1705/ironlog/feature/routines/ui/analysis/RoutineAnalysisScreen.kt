@@ -41,6 +41,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.components.HealthDisclaimer
+import es.sebas1705.ironlog.core.ui.components.HealthDisclaimerKind
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.core.ui.components.PlaceholderScreen
 import es.sebas1705.ironlog.core.ui.theme.tabularFigures
@@ -122,6 +124,7 @@ private fun AnalysisContent(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item(key = "summary") { SummaryCard(state, score) }
+        item(key = "disclaimer") { HealthDisclaimer(HealthDisclaimerKind.ANALYSIS) }
         if (score.weeklySets.isNotEmpty() && score.scored) {
             item(key = "chart") { WeeklySetsCard(score.weeklySets, score.weeklySplit, state.language) }
         }
@@ -270,6 +273,7 @@ private fun InfoDialog(criterion: Criterion, onDismiss: () -> Unit) {
         text = {
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(stringResource(criterionInfoRes(criterion.id)), style = MaterialTheme.typography.bodyMedium)
+                HealthDisclaimer(HealthDisclaimerKind.ANALYSIS)
                 if (criterion.evidence.isNotEmpty()) {
                     Text(
                         stringResource(

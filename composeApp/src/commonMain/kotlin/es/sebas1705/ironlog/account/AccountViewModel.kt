@@ -8,6 +8,7 @@ import es.sebas1705.ironlog.data.sync.AccountService
 import es.sebas1705.ironlog.data.sync.AccountSession
 import es.sebas1705.ironlog.data.sync.GoogleIdToken
 import es.sebas1705.ironlog.data.sync.LinkResult
+import es.sebas1705.ironlog.data.sync.RecentLoginRequiredException
 import es.sebas1705.ironlog.data.sync.RemoteStore
 import es.sebas1705.ironlog.data.sync.SyncEngine
 import es.sebas1705.ironlog.data.sync.SyncStatus
@@ -15,7 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
 /** One-off outcome shown under the Account section. */
-enum class AccountMessage { LINKED, MERGED, SIGNED_IN, DELETED, FAILED }
+enum class AccountMessage { LINKED, MERGED, SIGNED_IN, DELETED, REAUTH_CANCELLED, FAILED }
 
 data class AccountState(
     val session: AccountSession = AccountSession.NotConfigured,
@@ -24,6 +25,8 @@ data class AccountState(
     val googleAvailable: Boolean = false,
     val busy: Boolean = false,
     val confirmDelete: Boolean = false,
+    /** The "Also erase data on this device" checkbox of the delete dialog (default off). */
+    val eraseLocal: Boolean = false,
     val message: AccountMessage? = null,
     val error: String? = null,
 ) : MVIBaseState
@@ -35,6 +38,7 @@ sealed interface AccountIntent : MVIBaseIntent {
     data object RequestDelete : AccountIntent
     data object DismissDelete : AccountIntent
     data object ConfirmDelete : AccountIntent
+    data class SetEraseLocal(val erase: Boolean) : AccountIntent
     data object DismissMessage : AccountIntent
 }
 
@@ -44,6 +48,7 @@ class AccountViewModel(
     private val remote: RemoteStore,
     private val google: GoogleSignInLauncher,
     private val engine: SyncEngine,
+    private val eraser: LocalDataEraser,
 ) : MVIBaseViewModel<AccountState, AccountIntent>(
     AccountState(
         session = account.session.value,
@@ -70,7 +75,8 @@ class AccountViewModel(
             account.signOut()
             null
         }
-        AccountIntent.RequestDelete -> execute { updateState { it.copy(confirmDelete = true) } }
+        AccountIntent.RequestDelete -> execute { updateState { it.copy(confirmDelete = true, eraseLocal = false) } }
+        is AccountIntent.SetEraseLocal -> execute { updateState { it.copy(eraseLocal = intent.erase) } }
         AccountIntent.DismissDelete -> execute { updateState { it.copy(confirmDelete = false) } }
         AccountIntent.ConfirmDelete -> {
             updateState { it.copy(confirmDelete = false) }
@@ -94,8 +100,35 @@ class AccountViewModel(
         // Stop syncing this uid and drop its pending uploads first, so nothing is re-uploaded after the delete.
         engine.forgetAccount()
         remote.deleteAll(session.uid)
-        account.deleteUser()
+        val outcome = deleteUserReauthenticating(session)
+        if (outcome != null) return outcome
+        if (currentState.eraseLocal) eraser.erase()
         return AccountMessage.DELETED
+    }
+
+    /**
+     * Deletes the user. When the sign-in is too old, a Google account signs in again once and the deletion is
+     * retried once; an anonymous user has nothing to re-confirm, so it is just signed out (its cloud data is
+     * already gone). Returns a message when the deletion did not complete, null when it did.
+     */
+    private suspend fun deleteUserReauthenticating(session: AccountSession.SignedIn): AccountMessage? {
+        try {
+            account.deleteUser()
+        } catch (_: RecentLoginRequiredException) {
+            if (session.isAnonymous) {
+                account.signOut()
+                return null
+            }
+            when (val result = google.requestToken()) {
+                is GoogleSignInResult.Token -> {
+                    account.reauthenticate(result.token)
+                    account.deleteUser() // A second failure is reported as it is.
+                }
+                GoogleSignInResult.Cancelled -> return AccountMessage.REAUTH_CANCELLED
+                is GoogleSignInResult.Failed -> throw AccountException(result.message)
+            }
+        }
+        return null
     }
 
     private suspend fun withGoogleToken(block: suspend (GoogleIdToken) -> AccountMessage): AccountMessage? =

@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.data.remote
 
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseAuth
+import dev.gitlive.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.GoogleAuthProvider
@@ -9,6 +10,7 @@ import es.sebas1705.ironlog.data.sync.AccountService
 import es.sebas1705.ironlog.data.sync.AccountSession
 import es.sebas1705.ironlog.data.sync.GoogleIdToken
 import es.sebas1705.ironlog.data.sync.LinkResult
+import es.sebas1705.ironlog.data.sync.RecentLoginRequiredException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,8 +64,17 @@ class FirebaseAccountService(private val auth: FirebaseAuth, scope: CoroutineSco
 
     override suspend fun signOut() = auth.signOut()
 
+    override suspend fun reauthenticate(credentials: GoogleIdToken) {
+        auth.currentUser?.reauthenticate(credentials.toCredential())
+    }
+
+    @Suppress("SwallowedException") // Mapped to the contract exception the UI reacts to.
     override suspend fun deleteUser() {
-        auth.currentUser?.delete()
+        try {
+            auth.currentUser?.delete()
+        } catch (e: FirebaseAuthRecentLoginRequiredException) {
+            throw RecentLoginRequiredException(e.message)
+        }
     }
 
     @Suppress("TooGenericExceptionCaught")

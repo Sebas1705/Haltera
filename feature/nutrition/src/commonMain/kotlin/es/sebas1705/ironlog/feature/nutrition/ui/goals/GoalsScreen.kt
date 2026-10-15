@@ -29,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.components.HealthDisclaimer
+import es.sebas1705.ironlog.core.ui.components.HealthDisclaimerKind
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.core.ui.theme.tabularFigures
 import es.sebas1705.ironlog.data.models.ActivityLevel
@@ -302,6 +304,7 @@ private fun CalculatorCard(state: GoalsState, onEvent: (GoalsIntent) -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) { Text(stringResource(Res.string.nutrition_calc_use)) }
         }
+        HealthDisclaimer(HealthDisclaimerKind.NUTRITION)
     }
 }
 

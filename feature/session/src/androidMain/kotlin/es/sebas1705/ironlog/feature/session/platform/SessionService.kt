@@ -11,6 +11,7 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
+import es.sebas1705.ironlog.data.repository.SessionRepository
 import es.sebas1705.ironlog.feature.session.R
 import es.sebas1705.ironlog.feature.session.timer.RestTimerController
 import es.sebas1705.ironlog.feature.session.timer.TimerMath
@@ -22,6 +23,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -33,6 +35,7 @@ import org.koin.core.component.inject
  */
 class SessionService : Service(), KoinComponent {
     private val timer: RestTimerController by inject()
+    private val sessions: SessionRepository by inject()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -42,6 +45,11 @@ class SessionService : Service(), KoinComponent {
         SessionNotifications.ensureChannels(this)
         startInForeground(build(timer.state.value, System.currentTimeMillis()))
         scope.launch { timer.state.collectLatest { render(it) } }
+        // The notification never outlives its session, whoever ended it (finished, discarded or deleted).
+        scope.launch {
+            sessions.observeInProgress().first { it == null }
+            shutDown()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -49,7 +57,19 @@ class SessionService : Service(), KoinComponent {
             ACTION_SKIP -> timer.skip()
             ACTION_PLUS -> timer.adjustRest(PLUS_SECONDS)
         }
-        return START_STICKY
+        // Not sticky: a killed service must not come back on its own without a session to show.
+        return START_NOT_STICKY
+    }
+
+    /** The app was swiped away from recents: the timer notification goes with it (rest alarms stay armed). */
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        shutDown()
+        super.onTaskRemoved(rootIntent)
+    }
+
+    private fun shutDown() {
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        stopSelf()
     }
 
     override fun onDestroy() {
@@ -60,8 +80,7 @@ class SessionService : Service(), KoinComponent {
     /** Re-posts the notification now and at each phase end, until the timer changes (collectLatest). */
     private suspend fun render(snapshot: TimerSnapshot) {
         if (snapshot.sessionId == null) {
-            stopForeground(STOP_FOREGROUND_REMOVE)
-            stopSelf()
+            shutDown()
             return
         }
         val manager = getSystemService(NotificationManager::class.java) ?: return

@@ -1,6 +1,8 @@
 package es.sebas1705.ironlog.di
 
 import es.sebas1705.ironlog.account.AccountViewModel
+import es.sebas1705.ironlog.account.DatabaseLocalDataEraser
+import es.sebas1705.ironlog.account.LocalDataEraser
 import es.sebas1705.ironlog.account.SyncStarter
 import es.sebas1705.ironlog.core.datastore.datastoreModule
 import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
@@ -28,7 +30,8 @@ val appModule = module {
     single { SyncStarter(get(), get()) }
     viewModel { StartupViewModel(get(), get(), onImported = { get<SyncStarter>().start() }) }
     viewModelOf(::SettingsViewModel)
-    viewModel { AccountViewModel(get(), get(), get(), get()) }
+    single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get()) }
+    viewModel { AccountViewModel(get(), get(), get(), get(), get()) }
     single { IncomingRoutineChannel() }
 }
 

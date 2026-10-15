@@ -66,6 +66,16 @@
     <string name="session_save">Guardar</string>
     <string name="session_cancel">Cancelar</string>
     <string name="session_delete_set">Borrar serie</string>
+    <string name="session_load_step">Paso: %1$s ✎</string>
+    <string name="session_load_step_title">Paso de carga</string>
+    <string name="session_load_step_text">Cuánto cambian − y + la carga de esta variante del ejercicio.</string>
+    <string name="session_load_step_default">Por defecto (%1$s)</string>
+    <string name="session_load_step_custom">Paso personalizado</string>
+    <string name="session_load_step_use">Usar</string>
+    <plurals name="session_load_step_plates">
+        <item quantity="one">%1$d placa</item>
+        <item quantity="other">%1$d placas</item>
+    </plurals>
 
     <string name="session_get_ready">Preparado</string>
     <string name="session_work">Trabajo</string>

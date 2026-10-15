@@ -68,8 +68,23 @@ object LoadSteps {
     private const val LB_SMALL = 5.0
     private const val LB_MACHINE = 10.0
 
-    /** Grams added or removed by one tap of the load stepper (1 for plate numbers and band levels). */
-    fun stepGrams(loadType: LoadType, unit: WeightUnit, plates: List<Long>, machinePlate: Boolean = false): Long =
+    /** Whether the user can choose the step for this load type (band levels always move by one). */
+    fun customizable(loadType: LoadType): Boolean = loadType != LoadType.BAND && loadType != LoadType.NONE
+
+    /**
+     * Grams added or removed by one tap of the load stepper (1 for plate numbers and band levels). A positive
+     * [override] (the step the user chose for the variant) replaces the default where a step can be chosen.
+     */
+    fun stepGrams(
+        loadType: LoadType,
+        unit: WeightUnit,
+        plates: List<Long>,
+        machinePlate: Boolean = false,
+        override: Long? = null,
+    ): Long = override?.takeIf { it > 0 && customizable(loadType) } ?: defaultStep(loadType, unit, plates, machinePlate)
+
+    /** The step for [loadType] when the user chose none (spec §3.2 defaults, plate logic for barbells). */
+    fun defaultStep(loadType: LoadType, unit: WeightUnit, plates: List<Long>, machinePlate: Boolean = false): Long =
         when (loadType) {
             LoadType.BARBELL -> PlateCalculator.smallestIncrement(plates).takeIf { it > 0 }
                 ?: if (unit == WeightUnit.KG) KG_BARBELL else Weights.lbToGrams(LB_SMALL)
@@ -94,8 +109,9 @@ object LoadSteps {
         plates: List<Long>,
         barGrams: Long,
         machinePlate: Boolean = false,
+        override: Long? = null,
     ): Long {
-        val step = stepGrams(loadType, unit, plates, machinePlate)
+        val step = stepGrams(loadType, unit, plates, machinePlate, override)
         val base = current ?: if (loadType == LoadType.BARBELL) barGrams else 0
         val next = base + steps * step
         return when (loadType) {

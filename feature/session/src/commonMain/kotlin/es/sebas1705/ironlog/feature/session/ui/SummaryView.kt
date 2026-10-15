@@ -62,28 +62,13 @@ internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () ->
         if (summary.records.isEmpty()) {
             Text(stringResource(Res.string.session_summary_no_records), style = MaterialTheme.typography.bodyMedium)
         }
-        summary.records.forEach { line ->
-            Column {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(line.name.title(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
-                    PrBadge()
-                }
-                Text(
-                    line.kinds.sortedBy { it.ordinal }.map { stringResource(recordLabel(it)) }.joinToString(" · "),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = IronlogTheme.colors.prGold,
-                )
-            }
-        }
+        summary.records.forEach { RecordRow(it) }
         if (summary.increases.isNotEmpty()) {
             Text(stringResource(Res.string.session_summary_increases), style = MaterialTheme.typography.titleMedium)
             summary.increases.forEach { line ->
                 val detail = if (line.plate) LoadDetail.encode(LoadDetail.MachinePlate) else null
                 Text(
-                    "↑ ${line.name.title()}: " + stringResource(
+                    "↑ ${line.name.fullTitle()}: " + stringResource(
                         Res.string.session_summary_increase_line,
                         loadText(line.fromGrams, detail, line.loadType, unit),
                         loadText(line.toGrams, detail, line.loadType, unit),
@@ -115,4 +100,19 @@ private fun recordLabel(kind: RecordKind): StringResource = when (kind) {
     RecordKind.ESTIMATED_ONE_RM -> Res.string.session_record_one_rm
     RecordKind.MOST_REPS -> Res.string.session_record_reps
     RecordKind.SESSION_VOLUME -> Res.string.session_record_volume
+}
+
+@Composable
+private fun RecordRow(line: RecordLine) {
+    Column {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(line.name.fullTitle(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+            PrBadge()
+        }
+        Text(
+            line.kinds.sortedBy { it.ordinal }.map { stringResource(recordLabel(it)) }.joinToString(" · "),
+            style = MaterialTheme.typography.bodyMedium,
+            color = IronlogTheme.colors.prGold,
+        )
+    }
 }

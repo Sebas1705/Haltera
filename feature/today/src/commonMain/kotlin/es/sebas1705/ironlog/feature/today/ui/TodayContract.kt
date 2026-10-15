@@ -53,12 +53,15 @@ internal data class NextDayUi(
 /** One slot of the next day. [name] is null if the exercise is not in the catalogue. */
 internal data class SlotUi(
     val slotId: String,
+    /** The exercise name (never the variant's own name). */
     val name: LocalizedText?,
     /** Equipment of a fixed variant; null for a flexible slot (variant chosen in the session). */
     val equipment: Equipment?,
     val flexible: Boolean,
     val sets: Int,
     val prescription: Prescription,
+    /** The fixed variant's own name ("Wide grip"), shown instead of the equipment. */
+    val variantName: LocalizedText? = null,
 )
 
 internal data class DayOptionUi(val index: Int, val name: String, val isRest: Boolean)

@@ -59,7 +59,6 @@ import es.sebas1705.ironlog.feature.progress.ui.components.equipmentLabel
 import es.sebas1705.ironlog.feature.progress.ui.components.formatDate
 import es.sebas1705.ironlog.feature.progress.ui.components.formatVolume
 import es.sebas1705.ironlog.feature.progress.ui.components.formatWeight
-import es.sebas1705.ironlog.feature.progress.ui.components.variantLabel
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -166,7 +165,7 @@ private fun VariantChips(variants: List<VariantInfo>, selectedId: String?, onSel
                 onClick = { onSelect(variant.variantId) },
                 label = {
                     Text(
-                        if (variant.variantName != null) variantLabel(variant) else equipmentLabel(variant.equipment)
+                        variant.variantName?.get(currentLanguage()) ?: equipmentLabel(variant.equipment)
                     )
                 },
             )

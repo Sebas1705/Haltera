@@ -1,6 +1,7 @@
 package es.sebas1705.ironlog.feature.session.ui
 
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.ironlog.core.datastore.LoadStepStore
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.Prescription
@@ -36,6 +37,7 @@ class SessionViewModel(
     private val settings: SettingsRepository,
     private val timer: RestTimerController,
     private val indicator: LiveSessionIndicator,
+    private val loadSteps: LoadStepStore,
     private val now: () -> Long = ::systemNow,
 ) : MVIBaseViewModel<SessionState, SessionIntent>(
     SessionState(sessionId = sessionId, settings = settings.settings.value)
@@ -73,13 +75,18 @@ class SessionViewModel(
             is SessionIntent.StartTimedSet -> startTimedSet(intent.setId)
             SessionIntent.StopTimedSet -> stopTimedSet()
             is SessionIntent.EditSet -> findSet(intent.setId)?.let { (card, set) ->
-                updateState { it.copy(editor = SetEditor(card.id, set.id, set.toInput())) }
+                val editor = SetEditor(
+                    cardId = card.id,
+                    setId = set.id,
+                    draft = set.toInput(),
+                    weightStep = loadSteps.step(card.variantId, plates = false),
+                    plateStep = loadSteps.step(card.variantId, plates = true),
+                )
+                updateState { it.copy(editor = editor) }
             }
             is SessionIntent.ChangeDraft -> updateState { it.copy(editor = it.editor?.copy(draft = intent.draft)) }
-            SessionIntent.SaveDraft -> currentState.editor?.let { editor ->
-                updateState { it.copy(editor = null) }
-                sessions.updateSet(editor.setId, editor.draft)
-            }
+            SessionIntent.SaveDraft -> currentState.editor?.let { saveDraft(it) }
+            is SessionIntent.SetLoadStep -> setLoadStep(intent.step, intent.plates)
             SessionIntent.DeleteEditedSet -> currentState.editor?.let { editor ->
                 updateState { it.copy(editor = null) }
                 sessions.deleteSet(editor.setId)
@@ -268,6 +275,38 @@ class SessionViewModel(
             sessions.updateSet(setId, set.toInput().copy(completed = false))
         } else {
             sessions.updateSet(setId, set.toInput().copy(durationS = worked, completed = true))
+        }
+    }
+
+    /**
+     * Saves the edited set. A changed set counts as edited by the user, and the pending working rows below it
+     * that still follow it take its new load and reps ([Prefill.followers]).
+     */
+    private suspend fun saveDraft(editor: SetEditor) {
+        val (card, original) = findSet(editor.setId) ?: run {
+            updateState { it.copy(editor = null) }
+            return
+        }
+        val changed = original.toInput() != editor.draft
+        updateState {
+            it.copy(editor = null, editedSetIds = if (changed) it.editedSetIds + editor.setId else it.editedSetIds)
+        }
+        sessions.updateSet(editor.setId, editor.draft)
+        Prefill.followers(card.sets, original, editor.draft, currentState.editedSetIds).forEach { (id, input) ->
+            sessions.updateSet(id, input)
+        }
+    }
+
+    /** Remembers the stepper increment of the edited card's variant (null: back to the default). */
+    private fun setLoadStep(step: Long?, plates: Boolean) {
+        val editor = currentState.editor ?: return
+        val card = currentState.cards.firstOrNull { it.id == editor.cardId } ?: return
+        val value = step?.takeIf { it > 0 }
+        loadSteps.setStep(card.variantId, plates, value)
+        updateState { state ->
+            state.copy(
+                editor = state.editor?.let { if (plates) it.copy(plateStep = value) else it.copy(weightStep = value) }
+            )
         }
     }
 

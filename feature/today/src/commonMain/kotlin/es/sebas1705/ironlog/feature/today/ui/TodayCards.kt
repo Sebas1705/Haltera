@@ -186,7 +186,7 @@ private fun SlotRow(slot: SlotUi) {
     val language = currentLanguage()
     val detail = when {
         slot.flexible -> stringResource(Res.string.today_flexible)
-        else -> slot.equipment?.let { equipmentLabel(it) }?.let { stringResource(it) }
+        else -> slot.variantName?.get(language) ?: slot.equipment?.let { equipmentLabel(it) }?.let { stringResource(it) }
     }
     Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {

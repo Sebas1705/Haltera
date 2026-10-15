@@ -192,6 +192,7 @@ internal class TodayViewModel(
         return SlotUi(
             slotId = slot.id,
             name = resolved.name,
+            variantName = resolved.variantName,
             equipment = resolved.equipment,
             flexible = slot.target is SlotTarget.Flexible,
             sets = slot.sets,
@@ -201,14 +202,15 @@ internal class TodayViewModel(
 
     private suspend fun resolve(target: SlotTarget): ResolvedName = when (target) {
         is SlotTarget.Fixed -> {
+            // Title = the exercise; the variant's own name goes under it (ExerciseNaming).
             val variant = attempt { exercises.getVariant(target.variantId) }
-            val name = variant?.name ?: variant?.let { attempt { exercises.getExercise(it.exerciseId) }?.name }
-            ResolvedName(name, variant?.equipment)
+            val exercise = variant?.let { attempt { exercises.getExercise(it.exerciseId) }?.name }
+            ResolvedName(exercise ?: variant?.name, variant?.name, variant?.equipment)
         }
-        is SlotTarget.Flexible -> ResolvedName(attempt { exercises.getExercise(target.exerciseId) }?.name, null)
+        is SlotTarget.Flexible -> ResolvedName(attempt { exercises.getExercise(target.exerciseId) }?.name, null, null)
     }
 
-    private data class ResolvedName(val name: LocalizedText?, val equipment: Equipment?)
+    private data class ResolvedName(val name: LocalizedText?, val variantName: LocalizedText?, val equipment: Equipment?)
 
     companion object {
         /** Upper bound for a body weight entry in either unit; anything above is a typo. */

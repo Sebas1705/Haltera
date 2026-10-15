@@ -6,7 +6,7 @@
 | `core:common` | MVI base (`MVIBaseViewModel(initialState)`, intents, state), `AppResult`, flow extensions |
 | `core:ui` | `AppTheme` (brand colours from `brand/tokens.json`, Barlow Semi Condensed + Inter, light + dark; docs/BRAND.md), `IronlogTheme.colors` (accent, PR gold, semantic), `tabularFigures()`, `IronlogLogo`, `PrBadge`, `readFontLicences`, `LoadingScreen`, `ErrorScreen`, `PlaceholderScreen`, `PastSessionDialog` (date, start, duration, what was trained; labels passed in) |
 | `core:units` | `WeightUnit`, `Weights` (kg/lb ↔ grams, `format`), `roundToIncrement`, `PlateCalculator` (plates per side for a total) |
-| `core:datastore` | `SettingsRepository` / `UserSettings` (unit, bar weight, available plates, keep screen on, rest sound/vibration) on multiplatform-settings; `datastoreModule` |
+| `core:datastore` | `SettingsRepository` / `UserSettings` (unit, bar weight, available plates, keep screen on, rest sound/vibration) on multiplatform-settings; `LoadStepStore` (per-variant load step, device-local, never synced); `datastoreModule` |
 | `core:logging` | Kermit logger |
 | `core:testing` | Coroutine test rule |
 | `data:models` | Domain types of spec §3 (`Exercise`, `ExerciseVariant`, `Routine`, `RoutineDay`, `RoutineSlot`, `SlotTarget`, `Prescription`, `ProgressionRule`, `LoadIncrement`, `WorkoutSession`, `SessionExercise`, `SetLog`, `BodyWeightEntry`, `RoutineTemplate`…), lenient enum parsing, `ModelJson` (slot JSON columns) |
@@ -15,7 +15,7 @@
 | `data:routines` | `FamousRoutines.all`: the bundled famous-routine templates (spec §6.3), checked against `catalog.json` by a test |
 | `data:remote` | Firebase (GitLive): `FirestoreRemoteStore` (`users/{uid}/{collection}/{id}` with `payload`, `updatedAt`, `deleted`, `schema`), `FirebaseAccountService` (anonymous, link/sign in with Google, sign out, delete), `NotConfigured*` no-ops without Firebase config, `FirebaseConfig` / `isFirebaseConfigured`, `remoteModule` |
 | `data:repository` | Repository interfaces (`CatalogRepository`, `ExerciseRepository`, `RoutineRepository`, `SessionRepository`, `BodyWeightRepository`) with internal SQL implementations bound in `repositoryModule` |
-| `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats`; use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`) |
+| `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats`; `ExerciseNaming` (title = exercise, subtitle = variant label); use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`) |
 | `feature:today` | Today tab (spec §7) |
 | `feature:routines` | Routines tab: my routines, editor, famous routines |
 | `feature:exercises` | Exercises tab: search, filters, detail, custom exercises |

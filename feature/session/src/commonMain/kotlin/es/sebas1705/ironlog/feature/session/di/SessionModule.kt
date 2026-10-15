@@ -28,6 +28,7 @@ val sessionModule = module {
             settings = get(),
             timer = get(),
             indicator = get(),
+            loadSteps = get(),
         )
     }
 }

@@ -263,6 +263,9 @@ private fun SessionOverlays(state: SessionState, onEvent: (SessionIntent) -> Uni
         card = card,
         draft = editor.draft,
         settings = state.settings,
+        steps = VariantSteps(editor.weightStep, editor.plateStep) { step, plates ->
+            onEvent(SessionIntent.SetLoadStep(step, plates))
+        },
         onChange = { onEvent(SessionIntent.ChangeDraft(it)) },
         onSave = { onEvent(SessionIntent.SaveDraft) },
         onDelete = { onEvent(SessionIntent.DeleteEditedSet) },

@@ -109,13 +109,13 @@ internal fun formatDuration(millis: Long): String {
     }
 }
 
-/** The variant's display name: its override, else "<exercise> (<equipment>)". */
+/** "<exercise> (<variant label>)": the variant's own name, else its equipment (ExerciseNaming). */
 @Composable
 internal fun variantLabel(info: VariantInfo?): String {
     if (info == null) return stringResource(Res.string.progress_unknown_exercise)
     val language = currentLanguage()
-    return info.variantName?.get(language)
-        ?: stringResource(Res.string.progress_variant_name, info.exerciseName.get(language), equipmentLabel(info.equipment))
+    val label = info.variantName?.get(language) ?: equipmentLabel(info.equipment)
+    return stringResource(Res.string.progress_variant_name, info.exerciseName.get(language), label)
 }
 
 @Composable

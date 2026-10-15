@@ -66,6 +66,16 @@
     <string name="session_save">Save</string>
     <string name="session_cancel">Cancel</string>
     <string name="session_delete_set">Delete set</string>
+    <string name="session_load_step">Step: %1$s ✎</string>
+    <string name="session_load_step_title">Load step</string>
+    <string name="session_load_step_text">How much − and + change the load of this exercise variant.</string>
+    <string name="session_load_step_default">Default (%1$s)</string>
+    <string name="session_load_step_custom">Custom step</string>
+    <string name="session_load_step_use">Use</string>
+    <plurals name="session_load_step_plates">
+        <item quantity="one">%1$d plate</item>
+        <item quantity="other">%1$d plates</item>
+    </plurals>
 
     <string name="session_get_ready">Get ready</string>
     <string name="session_work">Work</string>

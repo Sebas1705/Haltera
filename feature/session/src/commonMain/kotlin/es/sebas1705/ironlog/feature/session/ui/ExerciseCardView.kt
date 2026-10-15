@@ -239,6 +239,7 @@ private fun VariantPicker(card: ExerciseCard, settings: UserSettings, onChoose: 
                 FilterChip(
                     selected = option.variantId == card.variantId,
                     onClick = { onChoose(option.variantId) },
+                    // Chips tell the variants apart: the variant label, never the (shared) exercise name.
                     label = { Text("${option.name.subtitle() ?: option.name.title()} · $last") },
                 )
             }

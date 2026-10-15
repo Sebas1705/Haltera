@@ -2,13 +2,14 @@
 //   node scripts/catalog/build.mjs            write catalog.json, ATTRIBUTION.md (also bundled in the app) and ids.lock.json
 //   node scripts/catalog/build.mjs --check    fail if the committed outputs are stale (CI)
 //   node scripts/catalog/build.mjs --missing-es  print the source ids that still need Spanish
+//   node scripts/catalog/build.mjs --labels      print the variant labels of multi-variant exercises and odd ones
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'yaml';
 import { buildCatalog } from './lib/build-catalog.mjs';
-import { validateCatalog } from './lib/validate.mjs';
+import { reviewVariantLabels, validateCatalog } from './lib/validate.mjs';
 import { renderAttribution } from './lib/attribution.mjs';
 
 const repo = fileURLToPath(new URL('../../', import.meta.url));
@@ -55,6 +56,13 @@ const result = buildCatalog({
 if (process.argv.includes('--missing-es')) {
   console.log(JSON.stringify(result.missingEs, null, 1));
   process.exit(0);
+}
+
+if (process.argv.includes('--labels')) {
+  const { rows, warnings } = reviewVariantLabels(result.catalog);
+  console.log(rows.join('\n'));
+  console.log(warnings.length === 0 ? 'No odd variant labels.' : `Odd variant labels (${warnings.length}):\n  ${warnings.join('\n  ')}`);
+  process.exit(warnings.length === 0 ? 0 : 1);
 }
 
 const errors = validateCatalog(result.catalog);

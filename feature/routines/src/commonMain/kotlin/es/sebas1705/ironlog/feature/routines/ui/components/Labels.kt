@@ -77,15 +77,14 @@ internal fun levelLabel(level: Level): String = stringResource(
     },
 )
 
-/** "Bench press (Barbell)", or the variant's own name when it has one. */
+/** "Bench press (Barbell)", "Lat Pulldown (Wide grip)": the exercise, then the variant label (ExerciseNaming). */
 @Composable
 internal fun variantLabel(variant: ExerciseVariant, exercise: Exercise?, language: String): String =
-    variant.name?.get(language)
-        ?: stringResource(
-            Res.string.routines_variant_name,
-            exercise?.name?.get(language) ?: stringResource(Res.string.routines_slot_unknown_exercise),
-            equipmentLabel(variant.equipment),
-        )
+    stringResource(
+        Res.string.routines_variant_name,
+        exercise?.name?.get(language) ?: stringResource(Res.string.routines_slot_unknown_exercise),
+        variantShortLabel(variant, language),
+    )
 
 /** Just the variant's distinguishing part: its own name or its equipment. */
 @Composable

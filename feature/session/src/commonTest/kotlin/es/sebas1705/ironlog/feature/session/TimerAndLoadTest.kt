@@ -57,6 +57,17 @@ class TimerAndLoadTest {
         assertEquals(22_500, LoadSteps.step(null, 1, LoadType.BARBELL, WeightUnit.KG, kgPlates, 20_000))
         assertEquals(1, LoadSteps.step(1, -1, LoadType.BAND, WeightUnit.KG, kgPlates, 20_000))
         assertEquals(-2_500, LoadSteps.step(0, -1, LoadType.BODYWEIGHT, WeightUnit.KG, kgPlates, 20_000))
+        // A step chosen for the variant replaces the default, except for band levels.
+        assertEquals(
+            21_250,
+            LoadSteps.step(20_000, 1, LoadType.BARBELL, WeightUnit.KG, kgPlates, 20_000, override = 1_250)
+        )
+        assertEquals(
+            3,
+            LoadSteps.step(1, 1, LoadType.MACHINE, WeightUnit.KG, kgPlates, 20_000, machinePlate = true, override = 2)
+        )
+        assertEquals(2, LoadSteps.step(1, 1, LoadType.BAND, WeightUnit.KG, kgPlates, 20_000, override = 5))
+        assertEquals(2_500, LoadSteps.stepGrams(LoadType.BARBELL, WeightUnit.KG, kgPlates, override = 0))
     }
 
     @Test

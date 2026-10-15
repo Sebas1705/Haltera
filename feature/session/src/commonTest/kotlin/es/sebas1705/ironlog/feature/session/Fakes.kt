@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.session
 
+import es.sebas1705.ironlog.core.datastore.LoadStepStore
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
 import es.sebas1705.ironlog.core.datastore.UserSettings
 import es.sebas1705.ironlog.core.units.WeightUnit
@@ -325,5 +326,15 @@ class FakeIndicator : LiveSessionIndicator {
     override fun hide() {
         shown = null
         hidden++
+    }
+}
+
+class FakeLoadStepStore : LoadStepStore {
+    val steps = mutableMapOf<Pair<String, Boolean>, Long>()
+
+    override fun step(variantId: String, plates: Boolean): Long? = steps[variantId to plates]
+
+    override fun setStep(variantId: String, plates: Boolean, step: Long?) {
+        if (step == null || step <= 0) steps.remove(variantId to plates) else steps[variantId to plates] = step
     }
 }

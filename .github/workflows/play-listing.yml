@@ -1,0 +1,44 @@
+name: Play listing
+
+# The Google Play store listing lives in fastlane/metadata/android (texts per language, icon,
+# feature graphic and screenshots; graphics from scripts/brand.mjs --png). Changing it on main
+# publishes it. It does nothing until Google Play is set up and the first AAB is in the PLAY_TRACK
+# track (docs/play/PLAY-CONSOLE-GUIDE.md).
+on:
+  push:
+    branches: [main]
+    paths: ["fastlane/metadata/android/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: play
+  cancel-in-progress: false
+
+jobs:
+  listing:
+    # supply only updates a listing through a release: the latest tag's build in PLAY_TRACK.
+    # Until the first AAB is in that track (and the variable is set) there is nothing to attach to.
+    if: vars.PLAY_TRACK != ''
+    runs-on: ubuntu-latest
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      # The versionCode of a release is the commit count of its tag (build-release).
+      - name: Latest release in the track
+        id: code
+        run: |
+          TAG=$(git describe --tags --abbrev=0 --match 'v*')
+          echo "version-code=$(git rev-list --count "$TAG")" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/play
+        with:
+          args: >-
+            --track ${{ vars.PLAY_TRACK }} --version_code ${{ steps.code.outputs.version-code }}
+            --metadata_path fastlane/metadata/android
+            --skip_upload_apk true --skip_upload_aab true --skip_upload_changelogs true
+            --sync_image_upload true

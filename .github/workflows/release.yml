@@ -1,0 +1,146 @@
+name: Release
+
+# A version: pushing a `vX.Y.Z` tag (or running this workflow by hand with a version) builds the
+# signed APK and AAB, creates a GitHub Release with both, their SHA-256 and notes generated from
+# the PRs since the previous tag, and uploads the APK to Firebase App Distribution (group
+# `testers`) and, once Google Play is set up, the AAB to the Play track in the PLAY_TRACK variable
+# (docs/play/PLAY-CONSOLE-GUIDE.md; play-promote.yml moves it on). Builds of main reach the testers through distribute.yml. Every secret comes from
+# Doppler: GitHub only holds DOPPLER_TOKEN, a read-only service token of ironlog/prd.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version without prefix, e.g. 1.0.0 (or 1.0.0-beta.1 for a pre-release)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+# Never cancel a release halfway: two tags in a row queue up.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve version and tag
+        id: ver
+        env:
+          EVENT: ${{ github.event_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT" = "workflow_dispatch" ]; then RAW="$INPUT_VERSION"; else RAW="$GITHUB_REF_NAME"; fi
+          VERSION="${RAW#v}"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::Invalid version '$RAW'. Expected X.Y.Z or X.Y.Z-suffix (e.g. 1.0.0, 1.0.0-beta.1)"
+            exit 1
+          fi
+          TAG="v$VERSION"
+          if [ "$EVENT" = "workflow_dispatch" ] && gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::Release $TAG already exists. Pick another version."
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          case "$VERSION" in *-*) echo "prerelease=--prerelease" >> "$GITHUB_OUTPUT" ;; *) echo "prerelease=" >> "$GITHUB_OUTPUT" ;; esac
+
+      - uses: ./.github/actions/build-release
+        with:
+          version-name: ${{ steps.ver.outputs.version }}
+          extra-secrets: FIREBASE_SERVICE_ACCOUNT_JSON
+
+      - name: Prepare release assets
+        id: assets
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+        run: |
+          NAME="$(node scripts/lib/app-name.mjs)"
+          APK="$NAME-$TAG.apk"
+          AAB="$NAME-$TAG.aab"
+          cp composeApp/build/outputs/apk/release/composeApp-release.apk "$RUNNER_TEMP/$APK"
+          cp composeApp/build/outputs/bundle/release/composeApp-release.aab "$RUNNER_TEMP/$AAB"
+          (cd "$RUNNER_TEMP" && sha256sum "$APK" "$AAB" > "$NAME-$TAG.sha256")
+          echo "apk=$RUNNER_TEMP/$APK" >> "$GITHUB_OUTPUT"
+          echo "aab=$RUNNER_TEMP/$AAB" >> "$GITHUB_OUTPUT"
+          echo "sha=$RUNNER_TEMP/$NAME-$TAG.sha256" >> "$GITHUB_OUTPUT"
+
+      # A pushed tag gets the release attached to it (--verify-tag); a manual run lets `gh` create
+      # the tag on the run's commit (--target).
+      - name: Create the GitHub Release
+        env:
+          EVENT: ${{ github.event_name }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          PRERELEASE: ${{ steps.ver.outputs.prerelease }}
+          APK: ${{ steps.assets.outputs.apk }}
+          AAB: ${{ steps.assets.outputs.aab }}
+          SHA: ${{ steps.assets.outputs.sha }}
+        run: |
+          if [ "$EVENT" = "workflow_dispatch" ]; then REF_FLAG="--target $GITHUB_SHA"; else REF_FLAG="--verify-tag"; fi
+          # shellcheck disable=SC2086
+          gh release create "$TAG" "$APK" "$AAB" "$SHA" --title "$TAG" --generate-notes $PRERELEASE $REF_FLAG
+
+      # What testers and stores read: the user-facing PR titles of the notes GitHub just generated
+      # (scripts/release-notes.mjs), in en-US and es-ES.
+      - name: Release notes
+        id: notes
+        env:
+          TAG: ${{ steps.ver.outputs.tag }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          gh release view "$TAG" --json body -q .body > "$RUNNER_TEMP/release-body.md"
+          node scripts/release-notes.mjs "$VERSION" "$RUNNER_TEMP/release-body.md" "$RUNNER_TEMP/notes"
+          echo "dir=$RUNNER_TEMP/notes" >> "$GITHUB_OUTPUT"
+
+      - name: Upload to Firebase App Distribution
+        env:
+          TESTER_GROUP: ${{ vars.FIREBASE_TESTER_GROUP || 'testers' }}
+          NOTES_DIR: ${{ steps.notes.outputs.dir }}
+        run: |
+          export NOTES="$(cat "$NOTES_DIR/en-US.txt")"
+          doppler run -- bash -c '
+            umask 077
+            printf "%s" "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-sa.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+            npx --yes firebase-tools@15.32.1 appdistribution:distribute composeApp/build/outputs/apk/release/composeApp-release.apk \
+              --app "$FIREBASE_ANDROID_APP_ID" \
+              --groups "$TESTER_GROUP" \
+              --release-notes "$NOTES"'
+
+      # The same notes per language for Google Play (500 characters each, keyed by versionCode).
+      # Nothing happens until PLAY_TRACK is set and the key is in Doppler.
+      - name: Play release notes
+        if: vars.PLAY_TRACK != ''
+        env:
+          NOTES_DIR: ${{ steps.notes.outputs.dir }}
+        run: |
+          CODE=$(git rev-list --count HEAD)
+          for LOCALE in es-ES en-US; do
+            mkdir -p "fastlane/metadata/android/$LOCALE/changelogs"
+            cp "$NOTES_DIR/$LOCALE.txt" "fastlane/metadata/android/$LOCALE/changelogs/$CODE.txt"
+          done
+
+      - name: Upload to Google Play
+        if: vars.PLAY_TRACK != ''
+        uses: ./.github/actions/play
+        with:
+          args: >-
+            --aab ${{ steps.assets.outputs.aab }} --track ${{ vars.PLAY_TRACK }} --release_status ${{ vars.PLAY_RELEASE_STATUS || 'completed' }}
+            --metadata_path fastlane/metadata/android --skip_upload_metadata true --skip_upload_images true
+            --skip_upload_screenshots true --mapping composeApp/build/outputs/mapping/release/mapping.txt
+
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks" "$RUNNER_TEMP/firebase-sa.json" composeApp/google-services.json

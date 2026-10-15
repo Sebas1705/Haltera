@@ -1,0 +1,55 @@
+name: Play promote
+
+# Moves the latest release of one Google Play track to another: closed testing → production once
+# Google grants production access, optionally as a staged rollout (0.1 = 10 % of users), and then
+# raises that rollout by running it again with the same track. Track names as Play Console shows
+# them: internal, alpha (the default closed testing), beta (open testing), production, or the name
+# of a custom closed track.
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: "Track to take the release from"
+        required: true
+        default: alpha
+      to:
+        description: "Track to put it in (same as 'from' to only change the rollout)"
+        required: true
+        default: production
+      rollout:
+        description: "Share of users, 0.01–1 (1 = everyone)"
+        required: true
+        default: "1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: play
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Check the inputs
+        id: args
+        env:
+          FROM: ${{ inputs.from }}
+          TO: ${{ inputs.to }}
+          ROLLOUT: ${{ inputs.rollout }}
+        run: |
+          [[ "$FROM" =~ ^[a-z0-9:_.-]+$ && "$TO" =~ ^[a-z0-9:_.-]+$ ]] || { echo "::error::Invalid track name"; exit 1; }
+          [[ "$ROLLOUT" =~ ^(1|1\.0+|0\.[0-9]+)$ ]] || { echo "::error::Rollout must be between 0.01 and 1"; exit 1; }
+          # A rollout below 1 is a staged release; 1 completes it.
+          if [ "$ROLLOUT" = "1" ] || [[ "$ROLLOUT" =~ ^1\.0+$ ]]; then STAGE="--release_status completed"
+          else STAGE="--release_status inProgress --rollout $ROLLOUT"; fi
+          ARGS="--track $FROM $STAGE --skip_upload_apk true --skip_upload_aab true --skip_upload_metadata true --skip_upload_changelogs true --skip_upload_images true --skip_upload_screenshots true"
+          [ "$FROM" = "$TO" ] || ARGS="$ARGS --track_promote_to $TO"
+          echo "args=$ARGS" >> "$GITHUB_OUTPUT"
+      - uses: ./.github/actions/play
+        with:
+          args: ${{ steps.args.outputs.args }}

@@ -1,0 +1,46 @@
+-- Food log (nutrition design §2): one row per food eaten, in one of the four meals of a local date.
+-- Nutrients are computed from the food at read time, so editing a user food updates past days too.
+-- foodId has no foreign key: synced days may arrive before the foods they use, and foods that are still
+-- logged are deprecated instead of deleted.
+CREATE TABLE MealEntryEntity (
+    id        TEXT NOT NULL PRIMARY KEY,
+    date      TEXT NOT NULL,      -- local date yyyy-MM-dd
+    meal      TEXT NOT NULL,      -- BREAKFAST | LUNCH | DINNER | SNACK
+    foodId    TEXT NOT NULL,
+    grams     REAL NOT NULL,      -- grams, or ml for foods measured in ml
+    servings  REAL,               -- the amount as typed in servings, when it was; grams stay the truth
+    position  INTEGER NOT NULL,   -- order inside the meal
+    createdAt INTEGER NOT NULL    -- epoch millis
+);
+
+CREATE INDEX MealEntryEntity_date ON MealEntryEntity(date);
+CREATE INDEX MealEntryEntity_foodId ON MealEntryEntity(foodId);
+
+insert:
+INSERT INTO MealEntryEntity(id, date, meal, foodId, grams, servings, position, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateAmount:
+UPDATE MealEntryEntity SET grams = :grams, servings = :servings WHERE id = :id;
+
+moveTo:
+UPDATE MealEntryEntity SET date = :date, meal = :meal, position = :position WHERE id = :id;
+
+delete:
+DELETE FROM MealEntryEntity WHERE id = ?;
+
+selectById:
+SELECT * FROM MealEntryEntity WHERE id = ?;
+
+selectByDate:
+SELECT * FROM MealEntryEntity WHERE date = ? ORDER BY meal, position;
+
+selectByDateAndMeal:
+SELECT * FROM MealEntryEntity WHERE date = ? AND meal = ? ORDER BY position;
+
+-- Dates are yyyy-MM-dd, so text order is date order. Both bounds included.
+selectBetween:
+SELECT * FROM MealEntryEntity WHERE date >= :from AND date <= :to ORDER BY date, meal, position;
+
+nextPosition:
+SELECT COALESCE(MAX(position) + 1, 0) FROM MealEntryEntity WHERE date = ? AND meal = ?;

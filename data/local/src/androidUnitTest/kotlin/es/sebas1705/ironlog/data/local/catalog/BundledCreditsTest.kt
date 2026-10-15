@@ -14,6 +14,11 @@ class BundledCreditsTest {
     }
 
     @Test
+    fun `bundled foods attribution matches nutrition ATTRIBUTION md`() {
+        assertEquals(File("../../nutrition/ATTRIBUTION.md").readText(), files.resolve("FOODS_ATTRIBUTION.md").readText())
+    }
+
+    @Test
     fun `bundled licence matches LICENSE`() {
         assertEquals(File("../../LICENSE").readText(), files.resolve("LICENSE.txt").readText())
     }

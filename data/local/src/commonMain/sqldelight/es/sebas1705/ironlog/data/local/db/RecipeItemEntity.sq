@@ -1,0 +1,21 @@
+-- Ingredients of a recipe (nutrition design §2): a RECIPE food made of other foods with amounts. foodId has no
+-- foreign key, like MealEntryEntity: a synced recipe may arrive before an ingredient it uses.
+CREATE TABLE RecipeItemEntity (
+    id       TEXT NOT NULL PRIMARY KEY,
+    recipeId TEXT NOT NULL REFERENCES FoodEntity(id) ON DELETE CASCADE,
+    foodId   TEXT NOT NULL,
+    grams    REAL NOT NULL,
+    position INTEGER NOT NULL
+);
+
+CREATE INDEX RecipeItemEntity_recipeId ON RecipeItemEntity(recipeId);
+CREATE INDEX RecipeItemEntity_foodId ON RecipeItemEntity(foodId);
+
+insert:
+INSERT INTO RecipeItemEntity(id, recipeId, foodId, grams, position) VALUES (?, ?, ?, ?, ?);
+
+selectByRecipe:
+SELECT * FROM RecipeItemEntity WHERE recipeId = ? ORDER BY position;
+
+deleteByRecipe:
+DELETE FROM RecipeItemEntity WHERE recipeId = ?;

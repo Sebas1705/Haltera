@@ -2,9 +2,11 @@ package es.sebas1705.ironlog.data.repository.di
 
 import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
 import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.ironlog.data.local.foods.FoodImporter
 import es.sebas1705.ironlog.data.repository.BodyWeightRepository
 import es.sebas1705.ironlog.data.repository.CatalogRepository
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
+import es.sebas1705.ironlog.data.repository.NutritionRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
 import es.sebas1705.ironlog.data.repository.SessionRepository
 import es.sebas1705.ironlog.data.repository.share.DefaultRoutineSharing
@@ -13,6 +15,9 @@ import es.sebas1705.ironlog.data.repository.sql.HistoryLoader
 import es.sebas1705.ironlog.data.repository.sql.SqlBodyWeightRepository
 import es.sebas1705.ironlog.data.repository.sql.SqlCatalogRepository
 import es.sebas1705.ironlog.data.repository.sql.SqlExerciseRepository
+import es.sebas1705.ironlog.data.repository.sql.SqlNutritionRepository
+import es.sebas1705.ironlog.data.repository.off.OpenFoodFactsClient
+import es.sebas1705.ironlog.data.repository.off.openFoodFactsHttpClient
 import es.sebas1705.ironlog.data.repository.sql.SqlRoutineRepository
 import es.sebas1705.ironlog.data.repository.sql.SqlSessionRepository
 import es.sebas1705.ironlog.data.routines.FamousRoutines
@@ -25,6 +30,9 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 private val IoDispatcher = named("io")
+
+/** The app version name, for the Open Food Facts User-Agent; bound by the app ("dev" when absent). */
+data class AppVersionName(val value: String)
 
 /** Binds every repository. Needs an [AppDatabase] from the app module. */
 @OptIn(ExperimentalTime::class)
@@ -39,4 +47,11 @@ val repositoryModule = module {
     single<SessionRepository> { SqlSessionRepository(get(), get(), get(IoDispatcher), get(named("now"))) }
     single<BodyWeightRepository> { SqlBodyWeightRepository(get(), get(IoDispatcher), get(named("now"))) }
     single<RoutineSharing> { DefaultRoutineSharing(get(), get(), get(named("now"))) }
+    single { FoodImporter(get<AppDatabase>(), now = get(named("now"))) }
+    single {
+        OpenFoodFactsClient(openFoodFactsHttpClient(), getOrNull<AppVersionName>()?.value ?: "dev", now = get(named("now")))
+    }
+    single<NutritionRepository> {
+        SqlNutritionRepository(get(), get(), get(), get(), get(IoDispatcher), get(named("now")))
+    }
 }

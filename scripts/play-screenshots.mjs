@@ -171,7 +171,9 @@ async function prepare(dev, { locale, lang, resize }) {
   dev.key(4); await sleep(1000);
 
   // food
-    const foods = [["breakfast", "oat bran", 80], ["lunch", "chicken breast", 200], ["lunch", "rice", 150], ["dinner", "salmon", 150], ["snacks", "banana", 120]];
+    const foods = lang === "es"
+    ? [["breakfast", "salvado de avena", 80], ["lunch", "pechuga de pollo a la", 200], ["lunch", "arroz integral, cocido", 150], ["dinner", "salmon cocinado", 150], ["snacks", "platano", 120]]
+    : [["breakfast", "oat bran", 80], ["lunch", "chicken breast, grilled", 200], ["lunch", "brown rice, cooked", 150], ["dinner", "salmon, cooked", 150], ["snacks", "banana", 120]];
   for (const [meal, query, grams] of foods) {
     await tab("tab_nutrition");
     const keys = { breakfast: "nutrition_meal_breakfast", lunch: "nutrition_meal_lunch", dinner: "nutrition_meal_dinner", snacks: "nutrition_meal_snack" };
@@ -192,9 +194,9 @@ async function prepare(dev, { locale, lang, resize }) {
     dev.tap(search.cx, search.cy); dev.type(query); await sleep(1500);
     const hit = await dev.find((n) => /^100 (g|ml)/.test(n.text));
     dev.tap(W / 2, hit.y1 - 40); await sleep(1500);
-    await press(L("nutrition_mode_grams"));
-    const amount = await dev.find((n) => n.text === L("nutrition_amount_grams") && n.y1 > 500);
-    dev.tap(W / 2, amount.cy - 20); dev.selectAll(); dev.type(String(grams));
+    try { await press(L("nutrition_mode_grams")); } catch { /* liquids use millilitres: keep the unit */ }
+    const amount = await dev.find((n) => /^[0-9.,]+$/.test(n.text) && n.y1 > 500 && n.y1 < H * 0.6);
+    dev.tap(W / 2, amount.cy); dev.selectAll(); dev.type(String(grams));
     await hideKeyboard();
     const prefix = L("nutrition_add_to_meal").split("%1$s")[0];
     const add = await dev.find((n) => n.text.startsWith(prefix) && n.text.length > prefix.length);

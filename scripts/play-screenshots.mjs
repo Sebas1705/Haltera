@@ -110,10 +110,10 @@ async function prepare(dev, { locale, lang, resize }) {
   };
   // Bottom-bar tabs: go back until the bar is visible (sub-screens hide it).
   const tab = async (key) => {
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < 8; i++) {
       const hit = dev.nodes().filter((n) => label(n, L(key))).sort((a, b) => b.y1 - a.y1)[0];
       const { w, h } = dev.size();
-      if (hit && (w > h ? hit.x1 < w * 0.2 : hit.y1 > h * 0.85)) { dev.tap(hit.cx, hit.cy); await sleep(900); return; }
+      if (hit && (hit.x1 < w * 0.2 || hit.y1 > h * 0.85)) { dev.tap(hit.cx, hit.cy); await sleep(900); return; }
       dev.key(4); await sleep(600);
     }
     throw new Error("Cannot reach tab " + key);
@@ -188,15 +188,15 @@ async function prepare(dev, { locale, lang, resize }) {
       }
       if (!target) { dev.swipe(W / 2, H * 0.75, W / 2, H * 0.35); await sleep(700); }
     }
-    if (!target) throw new Error("No Add food button for " + meal);
+    if (!target) { console.warn("No Add food button for " + meal + ": skipped"); continue; }
     dev.tap(target.cx, target.cy); await sleep(1200);
     const search = await dev.find((n) => n.text.startsWith(L("nutrition_search_hint").slice(0, 8)));
     dev.tap(search.cx, search.cy); dev.type(query); await sleep(1500);
     const hit = await dev.find((n) => /^100 (g|ml)/.test(n.text));
-    dev.tap(W / 2, hit.y1 - 40); await sleep(1500);
+    dev.tap(hit.x1 + 40, hit.y1 - 40); await sleep(1500);
     try { await press(L("nutrition_mode_grams")); } catch { /* liquids use millilitres: keep the unit */ }
-    const amount = await dev.find((n) => /^[0-9.,]+$/.test(n.text) && n.y1 > 500 && n.y1 < H * 0.6);
-    dev.tap(W / 2, amount.cy); dev.selectAll(); dev.type(String(grams));
+    const amount = await dev.find((n) => /^[0-9.,]+$/.test(n.text) && n.y1 > 300 && n.y1 < H * 0.6);
+    dev.tap(amount.x1 + 40, amount.cy); dev.selectAll(); dev.type(String(grams));
     await hideKeyboard();
     const prefix = L("nutrition_add_to_meal").split("%1$s")[0];
     const add = await dev.find((n) => n.text.startsWith(prefix) && n.text.length > prefix.length);

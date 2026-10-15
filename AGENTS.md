@@ -36,6 +36,8 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Every UI string is a resource** — English in `composeResources/values/strings.xml`, Spanish in `values-es/strings.xml`, same keys; no hard-coded user-facing text
 - **Loads are grams (`Long`), times epoch millis** — convert only for display (`core:units`)
 - **Secrets live only in Doppler** (project `ironlog`, config `prd`), never in the repository: no keystores, passwords, service account keys or tokens in code, docs, scripts or commits. GitHub only holds `DOPPLER_TOKEN` (read-only). See [docs/RELEASE.md](docs/RELEASE.md)
+- **Health content is a logbook, not advice** — anything that interprets logged data (scores, statistics, calorie goals) shows the shared `HealthDisclaimer` from `core:ui`; do not write new medical-sounding claims. Privacy and account-deletion page URLs live only in `composeApp/.../settings/LegalLinks.kt`
+- **Permission prompts are one-time and dismissible** — explain once, remember "Not now", never block logging on a permission
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
 - **The brand has one source, `brand/tokens.json`** — never hand-edit generated icons, the splash theme or `brand/*.svg`; change the tokens and run `node scripts/brand.mjs --png` (see [docs/BRAND.md](docs/BRAND.md)). Features use `IronlogTheme.colors` (accent, PR gold) and `PrBadge` from `core:ui` instead of new colours
 

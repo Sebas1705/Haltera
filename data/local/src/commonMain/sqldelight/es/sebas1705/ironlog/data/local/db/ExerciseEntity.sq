@@ -60,6 +60,9 @@ SELECT COUNT(*) FROM ExerciseEntity WHERE deprecated = 0;
 
 -- Exercise list (spec §7). :query is already normalised (SearchText.normalize); '' matches everything.
 -- :muscle matches primary muscles only; :equipment matches any active variant with that equipment.
+-- Order: with a query, names starting with it, then names with a word starting with it, then the rest; without
+-- one, the exercises the user logged most, then strength and calisthenics before stretches and cardio. Ties
+-- by name.
 search:
 SELECT * FROM ExerciseEntity
 WHERE deprecated = 0
@@ -70,5 +73,22 @@ WHERE deprecated = 0
         SELECT 1 FROM ExerciseVariantEntity v
         WHERE v.exerciseId = ExerciseEntity.id AND v.deprecated = 0 AND v.equipment = :equipment
   ))
-ORDER BY CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END, id
+-- Matches on the name in the app language rank first: exact, then prefix, then a word start, then the rest.
+ORDER BY
+  CASE
+    WHEN :query = '' THEN 0
+    WHEN (CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END) = :query THEN 0
+    WHEN (CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END) LIKE :query || '%' THEN 1
+    WHEN (' ' || (CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END)) LIKE '% ' || :query || '%' THEN 2
+    ELSE 3
+  END,
+  CASE WHEN :query = '' THEN -(
+    SELECT COUNT(*) FROM SessionExerciseEntity se
+    JOIN ExerciseVariantEntity uv ON uv.id = se.variantId
+    WHERE uv.exerciseId = ExerciseEntity.id
+      AND EXISTS (SELECT 1 FROM SetLogEntity sl WHERE sl.sessionExerciseId = se.id AND sl.completed = 1)
+  ) ELSE 0 END,
+  CASE WHEN :query = '' AND category NOT IN ('STRENGTH', 'CALISTHENICS') THEN 1 ELSE 0 END,
+  CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END,
+  id
 LIMIT :limit;

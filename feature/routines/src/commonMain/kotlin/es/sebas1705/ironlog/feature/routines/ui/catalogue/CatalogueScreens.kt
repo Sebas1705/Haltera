@@ -1,5 +1,12 @@
 package es.sebas1705.ironlog.feature.routines.ui.catalogue
 
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import es.sebas1705.ironlog.feature.routines.ui.list.CARD_MIN_WIDTH
+import es.sebas1705.ironlog.feature.routines.ui.list.gridMaxWidth
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +18,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -31,6 +37,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.material3.TextButton
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_open
+import es.sebas1705.ironlog.feature.routines.ui.components.ScoreBadge
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,23 +88,37 @@ internal fun CatalogueScreen(
             )
         },
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(CARD_MIN_WIDTH),
+            modifier = Modifier.fillMaxSize().padding(padding).centeredContent(gridMaxWidth()),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(state.templates, key = { it.id }) { template ->
-                TemplateCard(template, state.language, onClick = { onOpenTemplate(template.id) })
+            gridItems(state.templates, key = { it.id }) { template ->
+                TemplateCard(
+                    template,
+                    state.language,
+                    state.scores[template.id],
+                    onClick = { onOpenTemplate(template.id) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TemplateCard(template: RoutineTemplate, language: String, onClick: () -> Unit) {
+private fun TemplateCard(template: RoutineTemplate, language: String, score: RoutineScore?, onClick: () -> Unit) {
     Card(Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onClick)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(template.name.get(language), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    template.name.get(language),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                ScoreBadge(score, Modifier.padding(top = 2.dp))
+            }
             Text(
                 cycleLabel(template.days.size, trainingDays(template.days.map { it.kind })) + " · " +
                     levelLabel(template.level),
@@ -123,6 +147,7 @@ internal fun TemplatePreviewScreen(
     templateId: String,
     onBack: () -> Unit,
     onAdded: (routineId: String) -> Unit,
+    onOpenAnalysis: (templateId: String) -> Unit,
     viewModel: TemplatePreviewViewModel = koinViewModel { parametersOf(templateId) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -146,7 +171,7 @@ internal fun TemplatePreviewScreen(
                 title = {
                     Text(
                         template?.name?.get(state.language).orEmpty(),
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
@@ -173,14 +198,19 @@ internal fun TemplatePreviewScreen(
             )
             return@Scaffold
         }
-        TemplateContent(template, state, Modifier.padding(padding))
+        TemplateContent(template, state, { onOpenAnalysis(template.id) }, Modifier.padding(padding))
     }
 }
 
 @Composable
-private fun TemplateContent(template: RoutineTemplate, state: TemplatePreviewState, modifier: Modifier = Modifier) {
+private fun TemplateContent(
+    template: RoutineTemplate,
+    state: TemplatePreviewState,
+    onOpenAnalysis: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().centeredContent(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -198,6 +228,15 @@ private fun TemplateContent(template: RoutineTemplate, state: TemplatePreviewSta
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (state.score != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ScoreBadge(state.score)
+                        TextButton(onClick = onOpenAnalysis) { Text(stringResource(Res.string.routines_analysis_open)) }
+                    }
+                }
             }
         }
         template.days.forEachIndexed { index, day ->
@@ -233,23 +272,38 @@ private fun TemplateDayItem(index: Int, day: TemplateDay, exercises: ExerciseInd
 
 @Composable
 private fun AddBar(makeActive: Boolean, copying: Boolean, onMakeActive: (Boolean) -> Unit, onAdd: () -> Unit) {
-    Surface(tonalElevation = 3.dp) {
-        Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Row(
-                Modifier.fillMaxWidth()
-                    .toggleable(value = makeActive, role = Role.Checkbox, onValueChange = onMakeActive)
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(checked = makeActive, onCheckedChange = null)
-                Text(stringResource(Res.string.routines_make_active), Modifier.padding(start = 8.dp))
+    val toggle = @Composable { modifier: Modifier ->
+        Row(
+            modifier
+                .toggleable(value = makeActive, role = Role.Checkbox, onValueChange = onMakeActive)
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(checked = makeActive, onCheckedChange = null)
+            Text(stringResource(Res.string.routines_make_active), Modifier.padding(start = 8.dp))
+        }
+    }
+    val button = @Composable { modifier: Modifier ->
+        Button(onClick = onAdd, enabled = !copying, modifier = modifier) {
+            if (copying) {
+                CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+            } else {
+                Text(stringResource(Res.string.routines_add_to_mine))
             }
-            Button(onClick = onAdd, enabled = !copying, modifier = Modifier.fillMaxWidth()) {
-                if (copying) {
-                    CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-                } else {
-                    Text(stringResource(Res.string.routines_add_to_mine))
-                }
+        }
+    }
+    Surface(tonalElevation = 3.dp) {
+        val inner = Modifier.navigationBarsPadding().centeredContent().padding(horizontal = 16.dp, vertical = 8.dp)
+        if (LocalWindowSize.current.useNavigationRail) {
+            // Wide or short windows: one row, so the panel does not eat the height (F9).
+            Row(inner, verticalAlignment = Alignment.CenterVertically) {
+                toggle(Modifier.weight(1f))
+                button(Modifier)
+            }
+        } else {
+            Column(inner) {
+                toggle(Modifier.fillMaxWidth())
+                button(Modifier.fillMaxWidth())
             }
         }
     }

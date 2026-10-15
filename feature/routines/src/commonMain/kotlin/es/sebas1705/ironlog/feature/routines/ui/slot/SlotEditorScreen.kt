@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.routines.ui.slot
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,7 @@ import es.sebas1705.ironlog.feature.routines.model.SlotLimits
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot_message
+import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot_action
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot_title
 import es.sebas1705.ironlog.feature.routines.resources.routines_error
 import es.sebas1705.ironlog.feature.routines.resources.routines_notes
@@ -97,7 +99,7 @@ internal fun SlotEditorScreen(
                         IconButton(onClick = { send(SlotEditorIntent.RequestDelete) }) {
                             Icon(
                                 Icons.Filled.Delete,
-                                contentDescription = stringResource(Res.string.routines_delete_slot_title)
+                                contentDescription = stringResource(Res.string.routines_delete_slot_action)
                             )
                         }
                     }
@@ -137,7 +139,7 @@ private fun SlotForm(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier.fillMaxSize().imePadding().verticalScroll(
+        modifier.fillMaxSize().centeredContent().imePadding().verticalScroll(
             rememberScrollState()
         ).padding(horizontal = 16.dp, vertical = 8.dp),
     ) {

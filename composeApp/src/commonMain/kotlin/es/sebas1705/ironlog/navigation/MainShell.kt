@@ -2,6 +2,10 @@
 
 package es.sebas1705.ironlog.navigation
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
@@ -14,6 +18,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -21,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
 import es.sebas1705.ironlog.share.IncomingRoutineChannel
 import org.koin.compose.koinInject
 import androidx.compose.ui.Modifier
@@ -67,8 +74,9 @@ private fun NavDestination?.currentTab(): Tab? =
     Tab.entries.firstOrNull { tab -> this?.hierarchy?.any { it.hasRoute(tab.routeClass) } == true }
 
 /**
- * App shell: top bar with Settings and bottom navigation on the four tab roots; nested feature
- * screens and the live session draw their own chrome.
+ * App shell: top bar with Settings and tab navigation on the four tab roots; nested feature
+ * screens and the live session draw their own chrome. The tabs are a bottom bar on compact windows
+ * and a navigation rail on medium/expanded widths and on landscape phones.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,6 +84,7 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
     val backStack by navController.currentBackStackEntryAsState()
     val tab = backStack?.destination?.currentTab()
     val onTabRoot = tab != null && backStack?.destination?.hasRoute(tab.routeClass) == true
+    val useRail = LocalWindowSize.current.useNavigationRail
     val incoming by koinInject<IncomingRoutineChannel>().value.collectAsState()
     // A routine opened from outside the app: the Routines tab root shows its import preview.
     LaunchedEffect(incoming) {
@@ -101,7 +110,7 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
             }
         },
         bottomBar = {
-            if (onTabRoot) {
+            if (onTabRoot && !useRail) {
                 NavigationBar {
                     Tab.entries.forEach { item ->
                         NavigationBarItem(
@@ -115,19 +124,36 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
             }
         },
     ) { padding ->
-        NavHost(
-            navController = navController,
-            startDestination = TodayRoute,
-            modifier = Modifier.padding(padding),
-        ) {
-            val openSession: (String) -> Unit = { id -> navController.navigate(SessionRoute(id)) }
-            todayGraph(navController, onOpenSession = openSession)
-            routinesGraph(navController)
-            exercisesGraph(navController)
-            progressGraph(navController, onOpenSession = openSession)
-            sessionGraph(navController, onFinished = { navController.popBackStack(TodayRoute, inclusive = false) })
-            settingsGraph(navController)
+        // The shell consumes its insets so nested screens' own Scaffolds and top bars do not add the
+        // status and navigation bar insets a second time.
+        Row(Modifier.fillMaxSize().padding(padding).consumeWindowInsets(padding)) {
+            if (onTabRoot && useRail && tab != null) {
+                NavigationRail(windowInsets = WindowInsets(0)) {
+                    Tab.entries.forEach { item ->
+                        NavigationRailItem(
+                            selected = item == tab,
+                            onClick = { navController.navigateToTab(item) },
+                            icon = { Icon(item.icon, contentDescription = null) },
+                            label = { Text(stringResource(item.label)) },
+                        )
+                    }
+                }
+            }
+            ShellNavHost(navController, Modifier.weight(1f))
         }
+    }
+}
+
+@Composable
+private fun ShellNavHost(navController: NavHostController, modifier: Modifier) {
+    NavHost(navController = navController, startDestination = TodayRoute, modifier = modifier) {
+        val openSession: (String) -> Unit = { id -> navController.navigate(SessionRoute(id)) }
+        todayGraph(navController, onOpenSession = openSession)
+        routinesGraph(navController)
+        exercisesGraph(navController)
+        progressGraph(navController, onOpenSession = openSession)
+        sessionGraph(navController, onFinished = { navController.popBackStack(TodayRoute, inclusive = false) })
+        settingsGraph(navController)
     }
 }
 

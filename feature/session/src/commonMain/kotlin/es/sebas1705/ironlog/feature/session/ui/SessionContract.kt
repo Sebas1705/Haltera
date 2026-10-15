@@ -12,6 +12,8 @@ import es.sebas1705.ironlog.data.models.RoutineSlot
 import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.data.models.SetLog
 import es.sebas1705.ironlog.data.models.TrackingType
+import es.sebas1705.ironlog.domain.usecases.naming.ExerciseNaming
+import es.sebas1705.ironlog.domain.usecases.naming.VariantLabel
 import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
 import es.sebas1705.ironlog.domain.usecases.stats.RecordKind
 import es.sebas1705.ironlog.feature.session.timer.TimerSnapshot
@@ -38,10 +40,17 @@ data class ExerciseCard(
     val started: Boolean get() = sets.any { it.completed }
 }
 
-/** Exercise name plus the variant name override or its equipment. */
+/**
+ * Exercise name plus the variant's own name and equipment, named by [ExerciseNaming]: the title is the
+ * exercise, the subtitle (and a variant chip) is the [label].
+ */
 data class ExerciseName(val exercise: LocalizedText?, val variant: LocalizedText?, val equipment: Equipment?) {
-    /** The variant name override, else the exercise name, in [language]. */
-    fun plain(language: String): String = (variant ?: exercise)?.get(language).orEmpty()
+    /** The title in [language]: the exercise name (the variant name only if the exercise is unknown). */
+    fun plain(language: String): String = ExerciseNaming.title(exercise, variant, language).orEmpty()
+
+    /** What tells the variant apart: its own name, else its equipment; null when neither is known. */
+    val label: VariantLabel?
+        get() = equipment?.let { ExerciseNaming.variantLabel(variant, it) } ?: variant?.let { VariantLabel.Named(it) }
 }
 
 data class VariantOption(
@@ -51,8 +60,17 @@ data class VariantOption(
     val lastLoadGrams: Long?,
 )
 
-/** A set being edited in the bottom sheet; [draft] is applied on save. */
-data class SetEditor(val cardId: String, val setId: String, val draft: SetInput)
+/**
+ * A set being edited in the bottom sheet; [draft] is applied on save. [weightStep] (grams) and [plateStep]
+ * (machine stack positions) are the load steps remembered for the card's variant; null uses the default.
+ */
+data class SetEditor(
+    val cardId: String,
+    val setId: String,
+    val draft: SetInput,
+    val weightStep: Long? = null,
+    val plateStep: Long? = null,
+)
 
 /** Add-exercise picker: query and matching exercises. */
 data class ExercisePicker(val query: String = "", val results: List<Exercise> = emptyList())
@@ -99,6 +117,11 @@ data class SessionState(
     /** The persisted timer, only when it belongs to this session (always idle in log mode). */
     val timer: TimerSnapshot = TimerSnapshot(),
     val editor: SetEditor? = null,
+    /**
+     * Sets the user changed in the editor while this screen lived. The defaults that follow a changed set
+     * above them never overwrite these (Prefill.followers).
+     */
+    val editedSetIds: Set<String> = emptySet(),
     val dialog: SessionDialog? = null,
     val picker: ExercisePicker = ExercisePicker(),
     val summary: FinishSummary? = null,
@@ -106,6 +129,8 @@ data class SessionState(
     val busy: Boolean = false,
     /** Finished live in this screen: "Done" leaves via `onFinished` (back to Today). */
     val finishedHere: Boolean = false,
+    /** An already saved session was edited and saved again: the screen leaves (no summary). */
+    val closed: Boolean = false,
     /** Discarded (or deleted, in log mode) in this screen: the screen leaves. */
     val discarded: Boolean = false,
 ) : MVIBaseState {
@@ -138,6 +163,9 @@ sealed interface SessionIntent : MVIBaseIntent {
     data class EditSet(val setId: String) : SessionIntent
     data class ChangeDraft(val draft: SetInput) : SessionIntent
     data object SaveDraft : SessionIntent
+
+    /** Load stepper increment of the edited card's variant (grams, or stack positions with [plates]); null resets. */
+    data class SetLoadStep(val step: Long?, val plates: Boolean) : SessionIntent
     data object DeleteEditedSet : SessionIntent
     data object CloseEditor : SessionIntent
 

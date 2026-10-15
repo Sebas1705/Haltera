@@ -1,6 +1,7 @@
 package es.sebas1705.ironlog.feature.session.ui
 
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.ironlog.core.datastore.LoadStepStore
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.Prescription
@@ -11,7 +12,9 @@ import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.data.models.WorkoutSession
 import es.sebas1705.ironlog.data.repository.SessionRepository
+import es.sebas1705.ironlog.feature.session.load.LoadSteps
 import es.sebas1705.ironlog.feature.session.load.Prefill
+import es.sebas1705.ironlog.feature.session.load.WarmupRounding
 import es.sebas1705.ironlog.feature.session.load.toInput
 import es.sebas1705.ironlog.feature.session.platform.LiveSessionIndicator
 import es.sebas1705.ironlog.feature.session.timer.RestTimerController
@@ -36,6 +39,7 @@ class SessionViewModel(
     private val settings: SettingsRepository,
     private val timer: RestTimerController,
     private val indicator: LiveSessionIndicator,
+    private val loadSteps: LoadStepStore,
     private val now: () -> Long = ::systemNow,
 ) : MVIBaseViewModel<SessionState, SessionIntent>(
     SessionState(sessionId = sessionId, settings = settings.settings.value)
@@ -51,6 +55,9 @@ class SessionViewModel(
 
     /** Log mode, decided on the first load (null until then). */
     private var logMode: Boolean? = null
+
+    /** Editing a session saved earlier: "Save" goes back instead of showing the summary again. */
+    private var editingSaved = false
 
     init {
         execute { settings.settings.collect { s -> updateState { it.copy(settings = s) } } }
@@ -73,13 +80,18 @@ class SessionViewModel(
             is SessionIntent.StartTimedSet -> startTimedSet(intent.setId)
             SessionIntent.StopTimedSet -> stopTimedSet()
             is SessionIntent.EditSet -> findSet(intent.setId)?.let { (card, set) ->
-                updateState { it.copy(editor = SetEditor(card.id, set.id, set.toInput())) }
+                val editor = SetEditor(
+                    cardId = card.id,
+                    setId = set.id,
+                    draft = set.toInput(),
+                    weightStep = loadSteps.step(card.variantId, plates = false),
+                    plateStep = loadSteps.step(card.variantId, plates = true),
+                )
+                updateState { it.copy(editor = editor) }
             }
             is SessionIntent.ChangeDraft -> updateState { it.copy(editor = it.editor?.copy(draft = intent.draft)) }
-            SessionIntent.SaveDraft -> currentState.editor?.let { editor ->
-                updateState { it.copy(editor = null) }
-                sessions.updateSet(editor.setId, editor.draft)
-            }
+            SessionIntent.SaveDraft -> currentState.editor?.let { saveDraft(it) }
+            is SessionIntent.SetLoadStep -> setLoadStep(intent.step, intent.plates)
             SessionIntent.DeleteEditedSet -> currentState.editor?.let { editor ->
                 updateState { it.copy(editor = null) }
                 sessions.deleteSet(editor.setId)
@@ -132,6 +144,7 @@ class SessionViewModel(
         }
         val log = logMode ?: (!session.inProgress || session.startedAt < now() - LOG_MODE_AFTER_MS).also {
             logMode = it
+            editingSaved = isEditOfSaved(session)
         }
         catalog.sessionStartedAt = session.startedAt
         val slots = catalog.slots(session.routineId)
@@ -200,14 +213,30 @@ class SessionViewModel(
     private suspend fun seedSlotRows(cardId: String, variantId: String, slot: RoutineSlot) {
         val variant = catalog.variant(variantId)
         val tracking = variant?.let { catalog.exercise(it.exerciseId) }?.trackingType ?: TrackingType.WEIGHT_REPS
+        val loadType = variant?.loadType ?: LoadType.NONE
         val rows = Prefill.slotRows(
             slot = slot,
             trackingType = tracking,
-            loadType = variant?.loadType ?: LoadType.NONE,
+            loadType = loadType,
             suggestion = catalog.suggestion(slot, variantId),
             last = catalog.lastPerformance(slot.id, variantId),
+            warmupRounding = warmupRounding(variantId, loadType),
         )
         rows.forEach { sessions.logSet(cardId, it) }
+    }
+
+    private fun warmupRounding(variantId: String, loadType: LoadType): WarmupRounding {
+        val user = settings.settings.value
+        return WarmupRounding(
+            stepGrams = LoadSteps.stepGrams(
+                loadType,
+                user.unit,
+                user.availablePlatesGrams,
+                override = loadSteps.step(variantId, plates = false),
+            ),
+            barGrams = user.barWeightGrams,
+            plates = user.availablePlatesGrams,
+        )
     }
 
     private fun syncLabel() {
@@ -268,6 +297,47 @@ class SessionViewModel(
             sessions.updateSet(setId, set.toInput().copy(completed = false))
         } else {
             sessions.updateSet(setId, set.toInput().copy(durationS = worked, completed = true))
+        }
+    }
+
+    /**
+     * Saves the edited set. A changed set counts as edited by the user, and the pending working rows below it
+     * that still follow it take its new load and reps ([Prefill.followers]).
+     */
+    private suspend fun saveDraft(editor: SetEditor) {
+        val (card, original) = findSet(editor.setId) ?: run {
+            updateState { it.copy(editor = null) }
+            return
+        }
+        val changed = original.toInput() != editor.draft
+        updateState {
+            it.copy(editor = null, editedSetIds = if (changed) it.editedSetIds + editor.setId else it.editedSetIds)
+        }
+        sessions.updateSet(editor.setId, editor.draft)
+        val edited = currentState.editedSetIds
+        val warmups = Prefill.warmupFollowers(
+            card.sets,
+            original,
+            editor.draft,
+            edited,
+            card.loadType,
+            warmupRounding(card.variantId, card.loadType),
+        )
+        (Prefill.followers(card.sets, original, editor.draft, edited) + warmups).forEach { (id, input) ->
+            sessions.updateSet(id, input)
+        }
+    }
+
+    /** Remembers the stepper increment of the edited card's variant (null: back to the default). */
+    private fun setLoadStep(step: Long?, plates: Boolean) {
+        val editor = currentState.editor ?: return
+        val card = currentState.cards.firstOrNull { it.id == editor.cardId } ?: return
+        val value = step?.takeIf { it > 0 }
+        loadSteps.setStep(card.variantId, plates, value)
+        updateState { state ->
+            state.copy(
+                editor = state.editor?.let { if (plates) it.copy(plateStep = value) else it.copy(weightStep = value) }
+            )
         }
     }
 
@@ -347,21 +417,22 @@ class SessionViewModel(
         updateState { it.copy(dialog = null, busy = true, finishedHere = true) }
         timer.clear()
         indicator.hide()
-        dropUncompletedSets()
+        sessions.dropIncomplete(sessionId)
         sessions.finish(sessionId)
         updateState { it.copy(busy = false) }
     }
 
     /**
-     * Log mode "Save": drops the rows never completed and shows the summary. A saved session keeps its end
-     * time (the times are edited from Progress); one never ended gets the default duration. Nothing live
-     * (timer, notification) is touched: another session may be running.
+     * Log mode "Save": drops the rows never completed (and the exercises left empty) and shows the summary,
+     * or goes back when an already saved session was edited. A saved session keeps its end time (the times
+     * are edited from Progress); one never ended gets the default duration. Nothing live (timer,
+     * notification) is touched: another session may be running.
      */
     private suspend fun save() {
         if (leaving) return
         leaving = true
         updateState { it.copy(dialog = null, busy = true) }
-        dropUncompletedSets()
+        sessions.dropIncomplete(sessionId)
         val session = sessions.getSession(sessionId)
         if (session == null) {
             updateState { it.copy(busy = false, missing = true) }
@@ -370,15 +441,12 @@ class SessionViewModel(
         if (session.inProgress) sessions.finish(sessionId, endedAt = session.startedAt + DEFAULT_LOG_DURATION_MS)
         val saved = sessions.getSession(sessionId) ?: session
         summaryRequested = true
+        if (editingSaved) {
+            updateState { it.copy(busy = false, endedAt = saved.endedAt, closed = true) }
+            return
+        }
         val summary = buildSummary(saved, catalog.slots(saved.routineId), currentState.cards)
         updateState { it.copy(busy = false, endedAt = saved.endedAt, summary = summary) }
-    }
-
-    private suspend fun dropUncompletedSets() {
-        sessions.getSession(sessionId)?.exercises.orEmpty()
-            .flatMap { it.sets }
-            .filterNot { it.completed }
-            .forEach { sessions.deleteSet(it.id) }
     }
 
     /** Discards a live session, or deletes a session in log mode (after the confirmation). */
@@ -394,6 +462,13 @@ class SessionViewModel(
     }
 
     private fun isLogMode(): Boolean = logMode == true
+
+    /**
+     * A saved session that already holds completed sets is being edited ("Edit sets"); a session logged after
+     * the fact is saved empty on creation and filled here.
+     */
+    private fun isEditOfSaved(session: WorkoutSession): Boolean =
+        !session.inProgress && session.exercises.any { e -> e.sets.any { it.completed } }
 
     private suspend fun buildSummary(session: WorkoutSession, slots: Map<String, RoutineSlot>, cards: List<ExerciseCard>): FinishSummary {
         val names = cards.associate { it.id to it.name }

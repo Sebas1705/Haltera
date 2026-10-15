@@ -53,12 +53,15 @@ internal data class NextDayUi(
 /** One slot of the next day. [name] is null if the exercise is not in the catalogue. */
 internal data class SlotUi(
     val slotId: String,
+    /** The exercise name (never the variant's own name). */
     val name: LocalizedText?,
     /** Equipment of a fixed variant; null for a flexible slot (variant chosen in the session). */
     val equipment: Equipment?,
     val flexible: Boolean,
     val sets: Int,
     val prescription: Prescription,
+    /** The fixed variant's own name ("Wide grip"), shown instead of the equipment. */
+    val variantName: LocalizedText? = null,
 )
 
 internal data class DayOptionUi(val index: Int, val name: String, val isRest: Boolean)
@@ -78,7 +81,16 @@ internal data class WeekDayUi(
     val trained: Boolean,
 )
 
-internal data class WeightDialogUi(val input: String = "", val invalid: Boolean = false)
+/**
+ * "Log body weight": the typed weight and the chosen date ([dateUtcMillis], UTC midnight as the date picker
+ * uses). [maxDateUtcMillis] is today (no future dates).
+ */
+internal data class WeightDialogUi(
+    val input: String = "",
+    val invalid: Boolean = false,
+    val dateUtcMillis: Long = 0,
+    val maxDateUtcMillis: Long = 0,
+)
 
 /**
  * "Log past session": the dialog's starting values and what can be chosen as trained: every training day
@@ -117,6 +129,9 @@ internal sealed interface TodayIntent : MVIBaseIntent {
     data object OpenWeightDialog : TodayIntent
 
     data class WeightInputChanged(val text: String) : TodayIntent
+
+    /** A date picked for the body-weight entry (UTC midnight); future dates are clamped to today. */
+    data class WeightDateChanged(val dateUtcMillis: Long) : TodayIntent
 
     data object SaveWeight : TodayIntent
 

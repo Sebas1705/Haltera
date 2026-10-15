@@ -26,6 +26,7 @@
     <string name="session_move_down">Bajar</string>
     <string name="session_remove_exercise">Quitar ejercicio</string>
     <string name="session_set_complete">Serie %1$d hecha</string>
+    <string name="session_warmup_complete">Calentamiento %1$d hecho</string>
     <string name="session_set_start_timer">Iniciar serie cronometrada</string>
     <string name="session_edit_set">Editar serie</string>
 
@@ -54,11 +55,11 @@
     <string name="session_load_machine_plate">Placa n.º</string>
     <string name="session_load_added">Lastre</string>
     <string name="session_load_assisted">Asistido</string>
-    <string name="session_load_band">Nivel de banda</string>
+    <string name="session_load_band">Nivel de goma</string>
     <string name="session_reps">Reps</string>
     <string name="session_duration">Tiempo</string>
     <string name="session_distance">Distancia</string>
-    <string name="session_per_side">Barra %1$s + por lado: %2$s</string>
+    <string name="session_per_side">Barra %1$s + %2$s por lado</string>
     <string name="session_bar_only">Barra sola (%1$s)</string>
     <string name="session_plates_missing">Con tus discos llegas a %1$s</string>
     <string name="session_decrease">Bajar</string>
@@ -66,6 +67,16 @@
     <string name="session_save">Guardar</string>
     <string name="session_cancel">Cancelar</string>
     <string name="session_delete_set">Borrar serie</string>
+    <string name="session_load_step">Paso: %1$s ✎</string>
+    <string name="session_load_step_title">Paso de carga</string>
+    <string name="session_load_step_text">Cuánto cambian − y + la carga de esta variante del ejercicio.</string>
+    <string name="session_load_step_default">Por defecto (%1$s)</string>
+    <string name="session_load_step_custom">Paso personalizado</string>
+    <string name="session_load_step_use">Usar</string>
+    <plurals name="session_load_step_plates">
+        <item quantity="one">%1$d placa</item>
+        <item quantity="other">%1$d placas</item>
+    </plurals>
 
     <string name="session_get_ready">Preparado</string>
     <string name="session_work">Trabajo</string>
@@ -87,7 +98,7 @@
     <string name="session_summary_duration">Duración</string>
     <string name="session_summary_volume">Volumen</string>
     <string name="session_summary_sets">Series</string>
-    <string name="session_summary_records">Nuevos récords</string>
+    <string name="session_summary_records">Récords nuevos</string>
     <string name="session_summary_no_records">Esta vez no hay récords nuevos.</string>
     <string name="session_summary_increases">Sube la carga la próxima vez</string>
     <string name="session_summary_increase_line">%1$s → %2$s</string>
@@ -105,7 +116,7 @@
     <string name="session_equipment_smith">Multipower</string>
     <string name="session_equipment_machine">Máquina</string>
     <string name="session_equipment_cable">Polea</string>
-    <string name="session_equipment_band">Banda</string>
+    <string name="session_equipment_band">Goma elástica</string>
     <string name="session_equipment_bodyweight">Peso corporal</string>
     <string name="session_equipment_medicine_ball">Balón medicinal</string>
     <string name="session_equipment_swiss_ball">Fitball</string>

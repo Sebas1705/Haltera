@@ -63,7 +63,8 @@ class SchemaQueriesTest {
         CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
 
         assertEquals(listOf("running"), search(category = "CARDIO"))
-        assertEquals(listOf("running", "squat"), search(muscle = "QUADRICEPS"))
+        // Strength before cardio when there is no query.
+        assertEquals(listOf("squat", "running"), search(muscle = "QUADRICEPS"))
         assertEquals(emptyList(), search(muscle = "GLUTES"))
         assertEquals(listOf("bench-press"), search(equipment = "DUMBBELL"))
         assertEquals(listOf("bench-press", "squat"), search(equipment = "BARBELL"))
@@ -71,11 +72,53 @@ class SchemaQueriesTest {
     }
 
     @Test
-    fun `results are sorted by name in the requested language`() {
+    fun `results are sorted by name in the requested language, strength first`() {
         CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
 
-        assertEquals(listOf("bench-press", "running", "squat", "tricep-extension"), search(language = "en"))
-        assertEquals(listOf("running", "tricep-extension", "bench-press", "squat"), search(language = "es"))
+        assertEquals(listOf("bench-press", "squat", "tricep-extension", "running"), search(language = "en"))
+        assertEquals(listOf("tricep-extension", "bench-press", "squat", "running"), search(language = "es"))
+    }
+
+    @Test
+    fun `names starting with the query come before names containing it`() {
+        CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
+
+        // "Squat" starts with "s"; the others only contain it.
+        assertEquals(listOf("squat", "bench-press", "tricep-extension"), search("s", language = "en"))
+        // "Triceps Extension" has a word starting with "e"; the others (Spanish names too) only contain it.
+        assertEquals(listOf("tricep-extension", "bench-press", "running", "squat"), search("e", language = "en"))
+    }
+
+    @Test
+    fun `an exact or prefix match on the localised name ranks first`() {
+        val pulls = """
+            {"catalogVersion":1,"contentHash":"p","deprecatedIds":[],"exercises":[
+              {"id":"rocky-pull-up","name":{"en":"Rocky Pull-Up / Pulldown","es":"Dominadas Rocky / jalón Rocky"},
+               "category":"STRENGTH","trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["LATS"],
+               "secondaryMuscles":[],"instructions":{"en":[],"es":[]},
+               "variants":[{"id":"rocky-pull-up.cable","equipment":"CABLE","loadType":"MACHINE","frames":[]}]},
+              {"id":"wide-grip-lat-pulldown","name":{"en":"Wide-Grip Lat Pulldown","es":"Jalón al pecho"},
+               "category":"STRENGTH","trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["LATS"],
+               "secondaryMuscles":[],"instructions":{"en":[],"es":[]},
+               "variants":[{"id":"wide-grip-lat-pulldown.cable","equipment":"CABLE","loadType":"MACHINE","frames":[]}]},
+              {"id":"pulldown-row","name":{"en":"Pulldown Row","es":"Remo jalón"},
+               "category":"STRENGTH","trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["LATS"],
+               "secondaryMuscles":[],"instructions":{"en":[],"es":[]},
+               "variants":[{"id":"pulldown-row.cable","equipment":"CABLE","loadType":"MACHINE","frames":[]}]}
+            ]}
+        """.trimIndent()
+        CatalogImporter(db, now = { 0L }).importIfNewer(pulls)
+
+        // "jalon": the prefix match first, then word starts by name ("Dominadas…" before "Remo…").
+        assertEquals(
+            listOf("wide-grip-lat-pulldown", "rocky-pull-up", "pulldown-row"),
+            search("jalon", language = "es"),
+        )
+        // English ranks by the English name: "Pulldown Row" starts with the query.
+        assertEquals(
+            listOf("pulldown-row", "rocky-pull-up", "wide-grip-lat-pulldown"),
+            search("pulldown", language = "en"),
+        )
     }
 
     @Test

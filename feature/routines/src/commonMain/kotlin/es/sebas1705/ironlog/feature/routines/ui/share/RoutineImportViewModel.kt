@@ -70,7 +70,9 @@ internal class RoutineImportViewModel(
             updateState { it.copy(loading = false, cancelled = true) }
             return
         }
-        val result = attempt { sharing.preview(text) }.getOrElse { ImportPreviewResult.Invalid("read failed") }
+        val result = attempt {
+            sharing.preview(text, currentState.language)
+        }.getOrElse { ImportPreviewResult.Invalid("read failed") }
         updateState {
             when (result) {
                 is ImportPreviewResult.Ready -> it.copy(loading = false, preview = result.preview)

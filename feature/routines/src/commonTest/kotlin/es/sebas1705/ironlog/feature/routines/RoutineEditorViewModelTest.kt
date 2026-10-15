@@ -4,6 +4,7 @@ import es.sebas1705.ironlog.core.testing.CoroutineTestRule
 import es.sebas1705.ironlog.data.models.DayKind
 import es.sebas1705.ironlog.data.models.SlotSpec
 import es.sebas1705.ironlog.data.models.SlotTarget
+import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
 import es.sebas1705.ironlog.feature.routines.ui.editor.PendingDelete
 import es.sebas1705.ironlog.feature.routines.ui.editor.RoutineEditorIntent
 import es.sebas1705.ironlog.feature.routines.ui.editor.RoutineEditorViewModel
@@ -14,6 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -182,5 +184,53 @@ class RoutineEditorViewModelTest {
         vm.onEvent(RoutineEditorIntent.AddDay("X", DayKind.TRAINING))
         assertTrue(vm.uiState.value.error)
         assertEquals(3, vm.uiState.value.days.size)
+    }
+
+    @Test
+    fun `duplicating a day inserts a full copy after it and highlights it once`() = runTest {
+        val vm = viewModel()
+        val push = vm.uiState.value.days.first()
+
+        vm.onEvent(RoutineEditorIntent.DuplicateDay(push.id))
+
+        val state = vm.uiState.value
+        assertEquals(listOf("Push", "Push (copy)", "Pull", "Legs"), state.days.map { it.name })
+        val copy = state.days[1]
+        assertEquals(copy.id, state.highlightDayId)
+        assertEquals(push.slots.map { it.toSpec() }, copy.slots.map { it.toSpec() })
+        assertTrue(copy.slots.none { slot -> push.slots.any { it.id == slot.id } })
+
+        vm.onEvent(RoutineEditorIntent.HighlightShown)
+        assertNull(vm.uiState.value.highlightDayId)
+    }
+
+    @Test
+    fun `a duplicated day is named in the app language`() = runTest {
+        val vm = RoutineEditorViewModel(routineId, routines, exercises, spanish)
+        vm.onEvent(RoutineEditorIntent.DuplicateDay(vm.uiState.value.days[2].id))
+        assertEquals(listOf("Push", "Pull", "Legs", "Legs (copia)"), vm.dayNames())
+    }
+
+    @Test
+    fun `a failed duplication shows an error and highlights nothing`() = runTest {
+        val vm = viewModel()
+        routines.failure = IllegalStateException("boom")
+        vm.onEvent(RoutineEditorIntent.DuplicateDay(vm.uiState.value.days.first().id))
+        assertTrue(vm.uiState.value.error)
+        assertNull(vm.uiState.value.highlightDayId)
+        assertEquals(3, vm.uiState.value.days.size)
+    }
+
+    @Test
+    fun `the routine is scored and the score follows edits`() = runTest {
+        val vm = viewModel()
+        val before = assertNotNull(vm.uiState.value.score)
+        assertTrue(before.scored)
+        val chest = before.weeklySets.getValue(MuscleGroup.CHEST)
+
+        vm.onEvent(RoutineEditorIntent.DuplicateDay(vm.uiState.value.days.first().id))
+
+        val after = assertNotNull(vm.uiState.value.score)
+        assertTrue(after.weeklySets.getValue(MuscleGroup.CHEST) > chest)
     }
 }

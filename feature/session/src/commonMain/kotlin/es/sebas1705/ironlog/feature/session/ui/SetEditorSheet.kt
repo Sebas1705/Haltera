@@ -15,11 +15,15 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,9 +31,9 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.sebas1705.ironlog.core.datastore.UserSettings
 import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.data.models.SetKind
@@ -76,26 +80,31 @@ internal fun SetEditorSheet(
     card: ExerciseCard,
     draft: SetInput,
     settings: UserSettings,
+    steps: VariantSteps,
     onChange: (SetInput) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        // Fully expanded: half-expanded hides Save on short (landscape) screens.
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(stringResource(Res.string.session_edit_set), style = MaterialTheme.typography.titleLarge)
-            Text(card.name.title(), style = MaterialTheme.typography.bodyMedium)
+            Text(card.name.fullTitle(), style = MaterialTheme.typography.bodyMedium)
             KindSelector(draft.kind) { onChange(draft.copy(kind = it)) }
             if (Prefill.tracksLoad(
                     card.trackingType,
                     card.loadType
                 )
             ) {
-                LoadEditor(card.loadType, draft, settings, onChange)
+                LoadEditor(card.loadType, draft, settings, steps, onChange)
             }
             if (card.trackingType.tracksReps) {
                 Stepper(
@@ -150,20 +159,76 @@ private fun KindSelector(kind: SetKind, onSelect: (SetKind) -> Unit) {
                 selected = kind == value,
                 onClick = { onSelect(value) },
                 shape = SegmentedButtonDefaults.itemShape(index, kinds.size),
-            ) { Text(stringResource(label), maxLines = 1, style = MaterialTheme.typography.labelSmall) }
+                // No check mark: four segments share a phone's width, and long labels
+                // ("Calentamiento") shrink to fit instead of being cut.
+                icon = {},
+            ) {
+                BasicText(
+                    stringResource(label),
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall.copy(color = LocalContentColor.current),
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 8.sp,
+                        maxFontSize = MaterialTheme.typography.labelSmall.fontSize
+                    ),
+                )
+            }
         }
     }
 }
 
+/** The load steps remembered for the edited variant (null: default) and how to change them. */
+internal class VariantSteps(val weight: Long?, val plates: Long?, val onChoose: (step: Long?, plates: Boolean) -> Unit)
+
 /** Load entry per load type (spec §5): barbell with plates per side, machine kg or plate #, ± bodyweight, band. */
 @Composable
-private fun LoadEditor(loadType: LoadType, draft: SetInput, settings: UserSettings, onChange: (SetInput) -> Unit) {
+private fun LoadEditor(
+    loadType: LoadType,
+    draft: SetInput,
+    settings: UserSettings,
+    steps: VariantSteps,
+    onChange: (SetInput) -> Unit,
+) {
     val unit = settings.unit
     val plates = settings.availablePlatesGrams
     val bar = settings.barWeightGrams
     val detail = LoadDetail.decode(draft.loadDetail)
-    fun step(steps: Int, machinePlate: Boolean = false) =
-        LoadSteps.step(draft.loadGrams, steps, loadType, unit, plates, bar, machinePlate)
+    val plateMode = loadType == LoadType.MACHINE && detail is LoadDetail.MachinePlate
+    fun step(taps: Int, machinePlate: Boolean = false) = LoadSteps.step(
+        draft.loadGrams,
+        taps,
+        loadType,
+        unit,
+        plates,
+        bar,
+        machinePlate,
+        override = if (machinePlate) steps.plates else steps.weight,
+    )
+    LoadInputs(loadType, draft, detail, settings, steps.weight, onChange, ::step)
+    if (LoadSteps.customizable(loadType)) {
+        LoadStepChooser(
+            plateMode = plateMode,
+            chosen = if (plateMode) steps.plates else steps.weight,
+            default = LoadSteps.defaultStep(loadType, unit, plates, plateMode),
+            unit = unit,
+        ) { steps.onChoose(it, plateMode) }
+    }
+}
+
+@Suppress("LongParameterList") // The load inputs share the editor's state and the stepper.
+@Composable
+private fun LoadInputs(
+    loadType: LoadType,
+    draft: SetInput,
+    detail: LoadDetail?,
+    settings: UserSettings,
+    weightStep: Long?,
+    onChange: (SetInput) -> Unit,
+    stepper: (taps: Int, machinePlate: Boolean) -> Long,
+) {
+    val unit = settings.unit
+    val bar = settings.barWeightGrams
+    fun step(taps: Int) = stepper(taps, false)
     when (loadType) {
         LoadType.BARBELL -> {
             val total = draft.loadGrams ?: bar
@@ -187,8 +252,8 @@ private fun LoadEditor(loadType: LoadType, draft: SetInput, settings: UserSettin
             detail is LoadDetail.MachinePlate,
             settings,
             onChange
-        ) { steps, plate -> step(steps, plate) }
-        LoadType.BODYWEIGHT -> BodyweightEditor(draft, settings, onChange)
+        ) { taps, plate -> stepper(taps, plate) }
+        LoadType.BODYWEIGHT -> BodyweightEditor(draft, settings, weightStep, onChange)
         LoadType.BAND -> {
             val level = draft.loadGrams ?: 1
             val bandDetail = LoadDetail.encode(LoadDetail.Band)
@@ -213,7 +278,7 @@ private fun PlateBreakdown(total: Long, settings: UserSettings) {
         stringResource(
             Res.string.session_per_side,
             weightText(settings.barWeightGrams, unit),
-            loadout.perSide.joinToString(" · ") { Weights.format(it, unit) },
+            loadout.perSide.map { weightText(it, unit) }.joinToString(" + "),
         )
     }
     Text(text, style = MaterialTheme.typography.bodyMedium)
@@ -277,7 +342,12 @@ private fun MachineEditor(
 
 /** Added (+) or assisting (−) load: a sign selector and a magnitude stepper. */
 @Composable
-private fun BodyweightEditor(draft: SetInput, settings: UserSettings, onChange: (SetInput) -> Unit) {
+private fun BodyweightEditor(
+    draft: SetInput,
+    settings: UserSettings,
+    stepOverride: Long?,
+    onChange: (SetInput) -> Unit
+) {
     val load = draft.loadGrams ?: 0
     val assisted = load < 0 || (load == 0L && (LoadDetail.decode(draft.loadDetail) as? LoadDetail.Bodyweight)?.assisted == true)
     fun signed(assist: Boolean, magnitude: Long) = draft.copy(
@@ -298,7 +368,12 @@ private fun BodyweightEditor(draft: SetInput, settings: UserSettings, onChange: 
     }
     // The stepper moves the magnitude; the selector above sets the sign.
     val magnitude = abs(load)
-    val stepGrams = LoadSteps.stepGrams(LoadType.BODYWEIGHT, settings.unit, settings.availablePlatesGrams)
+    val stepGrams = LoadSteps.stepGrams(
+        LoadType.BODYWEIGHT,
+        settings.unit,
+        settings.availablePlatesGrams,
+        override = stepOverride,
+    )
     Stepper(
         stringResource(if (assisted) Res.string.session_load_assisted else Res.string.session_load_added),
         weightText(magnitude, settings.unit),

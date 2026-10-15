@@ -3,13 +3,12 @@ package es.sebas1705.ironlog.feature.progress.model
 import es.sebas1705.ironlog.data.models.BodyWeightEntry
 import es.sebas1705.ironlog.data.models.SessionExercise
 import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.data.models.SetKind
+import es.sebas1705.ironlog.domain.usecases.stats.ExerciseProgression
 import es.sebas1705.ironlog.feature.progress.performed
 import es.sebas1705.ironlog.feature.progress.session
 import es.sebas1705.ironlog.feature.progress.set
 import es.sebas1705.ironlog.feature.progress.utc
-import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test
@@ -49,7 +48,7 @@ class ProgressMathTest {
             entry("s0", utc(2026, 9, 1), performed("bench.barbell", set(40.0, 10, SetKind.WARMUP))),
         )
 
-        val charts = ProgressMath.exerciseCharts(history)
+        val charts = ProgressMath.exerciseCharts(ExerciseProgression.table(history))
 
         assertEquals(listOf(ChartPoint(earlier, 60_000.0), ChartPoint(later, 100_000.0)), charts.topSet)
         // Epley: 60 × (1 + 5/30) = 70 kg; best of 100×5 (116.667), 90×8 (114) and 80×10 (106.667).
@@ -74,44 +73,6 @@ class ProgressMathTest {
     }
 
     @Test
-    fun `last week starts are the four Mondays up to this week`() {
-        val weeks = ProgressMath.lastWeekStarts(LocalDate(2026, 10, 14))
-        assertEquals(
-            listOf(LocalDate(2026, 9, 21), LocalDate(2026, 9, 28), LocalDate(2026, 10, 5), LocalDate(2026, 10, 12)),
-            weeks,
-        )
-        assertTrue(weeks.all { it.dayOfWeek == DayOfWeek.MONDAY })
-    }
-
-    @Test
-    fun `weekly muscle volume counts finished sessions per primary muscle and week`() {
-        val weeks = ProgressMath.lastWeekStarts(LocalDate(2026, 10, 14))
-        val muscles = mapOf(
-            "bench.barbell" to listOf(Muscle.CHEST, Muscle.TRICEPS),
-            "squat.barbell" to listOf(Muscle.QUADRICEPS, Muscle.GLUTES),
-        )
-        val sessions = listOf(
-            session("a", utc(2026, 10, 6), performed("squat.barbell", set(100.0, 5))),
-            session("b", utc(2026, 10, 7), performed("squat.barbell", set(100.0, 5))),
-            session("c", utc(2026, 10, 13), performed("bench.barbell", set(100.0, 5), set(50.0, 10, SetKind.WARMUP))),
-            session("live", utc(2026, 10, 14), performed("bench.barbell", set(100.0, 5)), durationMinutes = null),
-            session("old", utc(2026, 9, 1), performed("bench.barbell", set(100.0, 5))),
-        )
-
-        val volume = ProgressMath.weeklyMuscleVolume(sessions, muscles, weeks, TimeZone.UTC)
-
-        assertEquals(
-            listOf(
-                MuscleVolume(Muscle.GLUTES, listOf(0, 0, 1_000_000, 0)),
-                MuscleVolume(Muscle.QUADRICEPS, listOf(0, 0, 1_000_000, 0)),
-                MuscleVolume(Muscle.CHEST, listOf(0, 0, 0, 500_000)),
-                MuscleVolume(Muscle.TRICEPS, listOf(0, 0, 0, 500_000)),
-            ),
-            volume,
-        )
-    }
-
-    @Test
     fun `sessions are grouped by local start day with their summary`() {
         val sessions = listOf(
             session(
@@ -132,6 +93,20 @@ class ProgressMathTest {
         assertEquals(listOf("early", "late"), day.map { it.id })
         assertTrue(day[0].inProgress)
         assertEquals(SessionSummary("late", utc(2026, 10, 14, hour = 19), 3_600_000, "PPL", "Push", 1, 500_000), day[1])
+    }
+
+    @Test
+    fun `the exercise count leaves out exercises without completed sets`() {
+        val finished = session(
+            "s",
+            utc(2026, 10, 15),
+            performed("squat.barbell", set(100.0, 5)),
+            performed("bench.barbell", set(80.0, 5, completed = false)),
+            performed("row.barbell"),
+            performed("curl.dumbbell", set(12.0, 10, SetKind.WARMUP), set(14.0, 8, completed = false)),
+        )
+
+        assertEquals(2, ProgressMath.summarize(finished, emptyMap()).exerciseCount)
     }
 
     @Test

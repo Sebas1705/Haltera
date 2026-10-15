@@ -19,6 +19,7 @@
     <string name="unit_lb">lb</string>
     <string name="credits_title">Créditos</string>
     <string name="credits_catalog">Catálogo de ejercicios</string>
+    <string name="credits_catalog_text">Los datos y las imágenes de los ejercicios proceden de free-exercise-db, de yuhonas (github.com/yuhonas/free-exercise-db), publicado como dominio público con la licencia Unlicense. La agrupación en ejercicios y variantes, las traducciones al español y los ejercicios adicionales son de los autores de Ironlog.</string>
     <string name="credits_license">Licencia de Ironlog</string>
     <string name="credits_fonts">Tipografías (SIL Open Font License 1.1)</string>
     <string name="settings_account">Cuenta</string>

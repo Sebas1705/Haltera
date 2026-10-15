@@ -3,9 +3,10 @@ package es.sebas1705.ironlog.feature.exercises
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.feature.exercises.model.defaultLoadType
-import es.sebas1705.ironlog.feature.exercises.model.formatDate
 import es.sebas1705.ironlog.feature.exercises.model.formatDuration
 import es.sebas1705.ironlog.feature.exercises.model.frameUrl
+import es.sebas1705.ironlog.feature.exercises.model.localDate
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -49,6 +50,6 @@ class ExerciseFormattingTest {
         assertEquals("1:30", formatDuration(90))
         assertEquals("1:01:01", formatDuration(3_661))
         assertEquals("0:00", formatDuration(-3))
-        assertEquals("2026-10-14", formatDate(1_791_936_000_000, TimeZone.UTC))
+        assertEquals(LocalDate(2026, 10, 14), localDate(1_791_936_000_000, TimeZone.UTC))
     }
 }

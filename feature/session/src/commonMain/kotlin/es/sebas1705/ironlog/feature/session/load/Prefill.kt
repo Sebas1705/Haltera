@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.session.load
 
+import es.sebas1705.ironlog.core.units.PlateCalculator
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.Prescription
 import es.sebas1705.ironlog.data.models.RoutineSlot
@@ -11,8 +12,15 @@ import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
 
 /**
- * Prefilled set rows (spec §5 "Entry"): from the last performance of the slot/variant, or the
- * progression suggestion. Rows are created not completed; confirming one is a single tap.
+ * Prefilled set rows (spec §5 "Entry"). Rows are created not completed; confirming one is a single tap.
+ *
+ * - The first working set starts at the **heaviest** completed working set of the last performance (the
+ *   caller passes the slot's latest session with this variant, else the variant's latest in any slot), with
+ *   the prescribed reps; a suggested increase replaces that load.
+ * - Every later working set starts as a copy of the set before it, and [followers] keeps the pending rows
+ *   below a changed set in step with it.
+ * - Warm-ups come from the last warm-ups, never from working sets; without warm-up history they start at
+ *   percentages of the first working load ([Warmups]).
  */
 object Prefill {
 
@@ -23,33 +31,51 @@ object Prefill {
         loadType: LoadType,
         suggestion: Suggestion,
         last: SessionExercise?,
+        warmupRounding: WarmupRounding? = null,
     ): List<SetInput> {
         val lastWarmups = last?.sets.orEmpty().filter { it.kind == SetKind.WARMUP && it.completed }
-        val lastWorking = last?.sets.orEmpty().filter { it.kind == SetKind.WORKING && it.completed }
-        val warmups = List(slot.warmupSets.coerceAtLeast(0)) { i ->
+        val warmupCount = slot.warmupSets.coerceAtLeast(0)
+        val working = workingRowFor(slot, trackingType, loadType, suggestion, last)
+        val generated = if (lastWarmups.isEmpty() && warmupRounding != null) {
+            Warmups.generated(warmupCount, working, loadType, warmupRounding)
+        } else {
+            null
+        }
+        val warmups = List(warmupCount) { i ->
             val from = lastWarmups.getOrNull(i) ?: lastWarmups.lastOrNull()
-            fromSet(from, slot.prescription, trackingType, loadType).copy(kind = SetKind.WARMUP)
+            val row = fromSet(from, slot.prescription, trackingType, loadType).copy(kind = SetKind.WARMUP)
+            generated?.getOrNull(i)?.let { grams -> row.copy(loadGrams = grams, loadDetail = working.loadDetail) } ?: row
         }
-        val working = List(slot.sets.coerceAtLeast(1)) { i ->
-            val from = lastWorking.getOrNull(i) ?: lastWorking.lastOrNull()
-            val base = fromSet(from, slot.prescription, trackingType, loadType)
-            when (suggestion) {
-                is Suggestion.Increase -> base.copy(
-                    loadGrams = suggestion.toGrams.takeIf { tracksLoad(trackingType, loadType) },
-                    reps = if (trackingType.tracksReps) lowReps(slot.prescription) else null,
-                )
-                is Suggestion.Keep -> if (from?.loadGrams == null && tracksLoad(trackingType, loadType)) {
-                    base.copy(loadGrams = suggestion.loadGrams)
-                } else {
-                    base
-                }
-                Suggestion.FirstTime -> base
-            }
-        }
-        return warmups + working
+        return warmups + List(slot.sets.coerceAtLeast(1)) { working }
     }
 
-    /** A new row added by hand: a copy of the card's last row, else of the last performance, else the target. */
+    private fun workingRowFor(
+        slot: RoutineSlot,
+        trackingType: TrackingType,
+        loadType: LoadType,
+        suggestion: Suggestion,
+        last: SessionExercise?,
+    ): SetInput {
+        val base = firstWorkingRow(slot.prescription, trackingType, loadType, last)
+        val first = when (suggestion) {
+            is Suggestion.Increase -> base.copy(
+                loadGrams = if (tracksLoad(trackingType, loadType)) suggestion.toGrams else null,
+                reps = if (trackingType.tracksReps) lowReps(slot.prescription) ?: base.reps else null,
+            )
+            is Suggestion.Keep -> if (base.loadGrams == null && tracksLoad(trackingType, loadType)) {
+                base.copy(loadGrams = suggestion.loadGrams)
+            } else {
+                base
+            }
+            Suggestion.FirstTime -> base
+        }
+        return first
+    }
+
+    /**
+     * A new working row added by hand (or to an exercise added during the session): a copy of the card's
+     * last working row, else the first working row of a new session ([firstWorkingRow]).
+     */
     fun extraRow(
         existing: List<SetLog>,
         prescription: Prescription?,
@@ -57,10 +83,87 @@ object Prefill {
         loadType: LoadType,
         last: SessionExercise?,
     ): SetInput {
-        val from = existing.lastOrNull { it.kind == SetKind.WORKING }
-            ?: existing.lastOrNull()
-            ?: last?.sets?.lastOrNull { it.kind == SetKind.WORKING && it.completed }
-        return fromSet(from, prescription, trackingType, loadType).copy(kind = SetKind.WORKING)
+        val previous = existing.lastOrNull { it.kind == SetKind.WORKING }
+            ?: return firstWorkingRow(prescription, trackingType, loadType, last)
+        return fromSet(previous, prescription, trackingType, loadType).copy(kind = SetKind.WORKING)
+    }
+
+    /**
+     * The first working set of a session: the load (and how it was entered) of the heaviest completed working
+     * set of [last], the prescribed reps (that set's reps when nothing is prescribed).
+     */
+    fun firstWorkingRow(
+        prescription: Prescription?,
+        trackingType: TrackingType,
+        loadType: LoadType,
+        last: SessionExercise?,
+    ): SetInput {
+        val reference = referenceSet(last)
+        val row = fromSet(reference, prescription, trackingType, loadType).copy(kind = SetKind.WORKING)
+        return if (trackingType.tracksReps) row.copy(reps = lowReps(prescription) ?: reference?.reps) else row
+    }
+
+    /** The heaviest completed working set of [last]; without loads (time, reps only), its last one. */
+    fun referenceSet(last: SessionExercise?): SetLog? {
+        val done = last?.sets.orEmpty().filter { it.kind == SetKind.WORKING && it.completed }
+        return done.filter { it.loadGrams != null }.maxByOrNull { requireNotNull(it.loadGrams) } ?: done.lastOrNull()
+    }
+
+    /**
+     * The pending rows to update after the user changed [before] into [after]: the working rows below it that
+     * still follow it (same load and reps as the old values), stopping at the first row that is completed,
+     * was edited by the user ([edited]) or holds other values. Warm-ups and other kinds are skipped. Each
+     * follower takes the new load, its entry detail and reps.
+     */
+    fun followers(
+        sets: List<SetLog>,
+        before: SetLog,
+        after: SetInput,
+        edited: Set<String>
+    ): List<Pair<String, SetInput>> {
+        if (before.kind != SetKind.WORKING || after.kind != SetKind.WORKING) return emptyList()
+        if (before.loadGrams == after.loadGrams && before.reps == after.reps && before.loadDetail == after.loadDetail) {
+            return emptyList()
+        }
+        return sets.sortedBy { it.position }
+            .dropWhile { it.id != before.id }
+            .drop(1)
+            .filter { it.kind == SetKind.WORKING }
+            .takeWhile { row ->
+                !row.completed && row.id !in edited && row.loadGrams == before.loadGrams && row.reps == before.reps
+            }
+            .map { row ->
+                row.id to row.toInput().copy(loadGrams = after.loadGrams, loadDetail = after.loadDetail, reps = after.reps)
+            }
+    }
+
+    /**
+     * The warm-ups to regenerate after the user changed the first working set [before] into [after] (e.g. a
+     * first-time exercise, whose warm-ups start without a load): the pending warm-ups not edited by the user
+     * ([edited]) that have no load or still hold the loads generated from the old working load. Each takes
+     * the [Warmups] percentage of the new working load.
+     */
+    fun warmupFollowers(
+        sets: List<SetLog>,
+        before: SetLog,
+        after: SetInput,
+        edited: Set<String>,
+        loadType: LoadType,
+        rounding: WarmupRounding,
+    ): List<Pair<String, SetInput>> {
+        if (before.kind != SetKind.WORKING || after.kind != SetKind.WORKING) return emptyList()
+        if (before.loadGrams == after.loadGrams) return emptyList()
+        val sorted = sets.sortedBy { it.position }
+        if (sorted.firstOrNull { it.kind == SetKind.WORKING }?.id != before.id) return emptyList()
+        val warmups = sorted.takeWhile { it.id != before.id }.filter { it.kind == SetKind.WARMUP }
+        val loads = Warmups.generated(warmups.size, after, loadType, rounding) ?: return emptyList()
+        val old = Warmups.generated(warmups.size, before.toInput(), loadType, rounding)
+        return warmups.mapIndexedNotNull { i, row ->
+            val pending = !row.completed && row.id !in edited
+            val follows = row.loadGrams == null || row.loadGrams == old?.getOrNull(i)
+            if (!pending || !follows || row.loadGrams == loads[i]) return@mapIndexedNotNull null
+            row.id to row.toInput().copy(loadGrams = loads[i], loadDetail = after.loadDetail)
+        }
     }
 
     /** Values of [from] (or the [prescription] target) restricted to what [trackingType] records. */
@@ -84,6 +187,54 @@ object Prefill {
         else -> null
     }
 }
+
+/**
+ * Warm-up loads when the exercise has no warm-up history but the first working load is known: 60 % for one
+ * warm-up, 50 % and 70 % for two, evenly from 40 % to 80 % for more. Each is rounded down to the variant's step
+ * (and to what the plates can build on a barbell) and never exceeds the working load.
+ */
+object Warmups {
+    private const val PERCENT = 100L
+    private const val SINGLE = 60L
+    private const val FIRST_OF_TWO = 50L
+    private const val SECOND_OF_TWO = 70L
+    private const val LOWEST = 40L
+    private const val HIGHEST = 80L
+
+    /** The loads of [count] warm-ups before [working]; null unless it is a weight (not a stack position, band…). */
+    fun generated(count: Int, working: SetInput, loadType: LoadType, rounding: WarmupRounding): List<Long>? {
+        val workingGrams = working.loadGrams?.takeIf { it > 0 } ?: return null
+        val weighted = loadType == LoadType.BARBELL || loadType == LoadType.DUMBBELL ||
+            (loadType == LoadType.MACHINE && !isMachinePlate(working.loadDetail))
+        if (!weighted || count <= 0) return null
+        return percents(count).map { percent ->
+            load(workingGrams * percent / PERCENT, rounding, loadType).coerceAtMost(workingGrams)
+        }
+    }
+
+    /** 60 for one warm-up, 50/70 for two, evenly spaced from 40 to 80 for more. */
+    fun percents(count: Int): List<Long> = when (count) {
+        0 -> emptyList()
+        1 -> listOf(SINGLE)
+        2 -> listOf(FIRST_OF_TWO, SECOND_OF_TWO)
+        else -> List(count) { i -> LOWEST + (HIGHEST - LOWEST) * i / (count - 1) }
+    }
+
+    private fun load(target: Long, rounding: WarmupRounding, loadType: LoadType): Long {
+        val step = rounding.stepGrams.coerceAtLeast(1)
+        val stepped = (target / step * step).coerceAtLeast(step)
+        if (loadType != LoadType.BARBELL) return stepped
+        val onBar = stepped.coerceAtLeast(rounding.barGrams)
+        if (rounding.plates.isEmpty()) return onBar
+        return PlateCalculator.platesPerSide(onBar, rounding.barGrams, rounding.plates).achievedGrams
+    }
+}
+
+/**
+ * How generated warm-up loads are rounded: the variant's stepper step and, for barbells, the bar and the
+ * plates the user owns.
+ */
+data class WarmupRounding(val stepGrams: Long, val barGrams: Long = 0, val plates: List<Long> = emptyList())
 
 /** The values of a logged set, for [es.sebas1705.ironlog.data.repository.SessionRepository.updateSet]. */
 fun SetLog.toInput() = SetInput(

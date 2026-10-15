@@ -1,11 +1,19 @@
 package es.sebas1705.ironlog.feature.progress.ui.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.text.intl.Locale
+import es.sebas1705.ironlog.core.units.Numbers
+import es.sebas1705.ironlog.core.units.VOLUME_DECIMALS
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
+import es.sebas1705.ironlog.core.units.appLanguage
+import es.sebas1705.ironlog.core.units.formatVolume
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
+import es.sebas1705.ironlog.feature.progress.resources.*
+import es.sebas1705.ironlog.feature.progress.model.ChartScale
 import es.sebas1705.ironlog.feature.progress.model.VariantInfo
 import es.sebas1705.ironlog.feature.progress.model.toLocalDate
 import es.sebas1705.ironlog.feature.progress.resources.Res
@@ -59,6 +67,7 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
+import kotlin.math.roundToLong
 
 /** The UI language code ("en", "es"), used to pick catalogue names. */
 @Composable
@@ -79,7 +88,8 @@ internal fun formatWeight(grams: Long, unit: WeightUnit, decimals: Int = 2): Str
 
 /** Volume (gram-reps) shown like a weight with no decimals: "4250 kg". */
 @Composable
-internal fun formatVolume(gramReps: Long, unit: WeightUnit): String = formatWeight(gramReps, unit, decimals = 0)
+internal fun formatVolume(gramReps: Long, unit: WeightUnit): String =
+    stringResource(Res.string.progress_weight_value, Weights.formatVolume(gramReps, unit), unitLabel(unit))
 
 /** "Oct 14" / "14 oct", or with the year. */
 @Composable
@@ -109,13 +119,13 @@ internal fun formatDuration(millis: Long): String {
     }
 }
 
-/** The variant's display name: its override, else "<exercise> (<equipment>)". */
+/** "<exercise> (<variant label>)": the variant's own name, else its equipment (ExerciseNaming). */
 @Composable
 internal fun variantLabel(info: VariantInfo?): String {
     if (info == null) return stringResource(Res.string.progress_unknown_exercise)
     val language = currentLanguage()
-    return info.variantName?.get(language)
-        ?: stringResource(Res.string.progress_variant_name, info.exerciseName.get(language), equipmentLabel(info.equipment))
+    val label = info.variantName?.get(language) ?: equipmentLabel(info.equipment)
+    return stringResource(Res.string.progress_variant_name, info.exerciseName.get(language), label)
 }
 
 @Composable
@@ -163,3 +173,122 @@ private fun equipmentResource(equipment: Equipment): StringResource = when (equi
     Equipment.OTHER -> Res.string.progress_equipment_other
     Equipment.NONE -> Res.string.progress_equipment_none
 }
+
+/**
+ * [value] with exactly [decimals] decimals in the app [language] (core:units [Numbers]): "12 400" or
+ * "12,400", "0,94" or "0.94", with a typographic minus.
+ */
+internal fun formatNumber(value: Double, decimals: Int, language: String = appLanguage()): String =
+    Numbers.format(value, maxDecimals = decimals, minDecimals = decimals, language = language, typographicMinus = true)
+
+/** Replaces `%1$s`, `%2$d`… in a raw resource pattern (for formatting outside composition). */
+internal fun fillPattern(pattern: String, vararg args: String): String =
+    args.foldIndexed(pattern) { i, text, arg -> text.replace("%${i + 1}\$s", arg).replace("%${i + 1}\$d", arg) }
+
+/** Weight, volume and axis formatters for one unit, usable from Canvas code. */
+internal class UnitFormat(val unit: WeightUnit, val label: String, private val language: String = appLanguage()) {
+    /** Grams (or gram-reps) in [unit]. */
+    fun toUnit(grams: Double): Double = when (unit) {
+        WeightUnit.KG -> grams / Weights.GRAMS_PER_KG
+        WeightUnit.LB -> grams / Weights.GRAMS_PER_LB
+    }
+
+    fun weight(grams: Double, decimals: Int = 1): String = "${trimmed(toUnit(grams), decimals)} $label"
+
+    fun volume(gramReps: Double): String = "${formatNumber(toUnit(gramReps), VOLUME_DECIMALS, language)} $label"
+
+    /** Axis ticks of values already in [unit]. */
+    fun axis(value: Double): String = ChartScale.compact(value, language)
+
+    /** "62.5" / "62,5" / "62": up to [decimals] decimals without trailing zeros. */
+    private fun trimmed(value: Double, decimals: Int): String = ChartScale.trim(value, decimals, language)
+}
+
+@Composable
+internal fun rememberUnitFormat(unit: WeightUnit): UnitFormat {
+    val label = unitLabel(unit)
+    val language = currentLanguage()
+    return remember(unit, label, language) { UnitFormat(unit, label, language) }
+}
+
+/** Date and duration formatters usable outside composition (Canvas tooltips and labels). */
+internal class DateFormat(
+    private val months: List<String>,
+    private val shortPattern: String,
+    private val fullPattern: String,
+    private val hoursPattern: String,
+    private val minutesPattern: String,
+    private val timeZone: TimeZone,
+) {
+    fun short(date: LocalDate): String = fillPattern(shortPattern, date.day.toString(), months[date.month.number - 1])
+
+    fun full(date: LocalDate): String =
+        fillPattern(fullPattern, date.day.toString(), months[date.month.number - 1], date.year.toString())
+
+    fun short(millis: Long): String = short(millis.toLocalDate(timeZone))
+
+    fun full(millis: Long): String = full(millis.toLocalDate(timeZone))
+
+    fun epochDay(day: Int): String = short(LocalDate.fromEpochDays(day.toLong()))
+
+    fun epochDayFull(day: Int): String = full(LocalDate.fromEpochDays(day.toLong()))
+
+    /** "Oct 5 – Oct 11". */
+    fun range(first: Int, last: Int): String = if (first == last) {
+        epochDay(
+            first
+        )
+    } else {
+        "${epochDay(first)} – ${epochDay(last)}"
+    }
+
+    fun duration(millis: Double): String {
+        val totalMinutes = (millis / MINUTE_MS).roundToLong()
+        val hours = totalMinutes / MINUTES_PER_HOUR
+        val minutes = totalMinutes % MINUTES_PER_HOUR
+        return if (hours > 0) {
+            fillPattern(hoursPattern, hours.toString(), minutes.toString().padStart(2, '0'))
+        } else {
+            fillPattern(minutesPattern, minutes.toString())
+        }
+    }
+
+    private companion object {
+        const val MINUTE_MS = 60_000.0
+        const val MINUTES_PER_HOUR = 60
+    }
+}
+
+@Composable
+internal fun rememberDateFormat(): DateFormat {
+    val months = stringArrayResource(Res.array.progress_months_short)
+    val short = stringResource(Res.string.progress_date_short)
+    val full = stringResource(Res.string.progress_date_full)
+    val hours = stringResource(Res.string.progress_duration_hm)
+    val minutes = stringResource(Res.string.progress_duration_m)
+    return remember(months, short, full, hours, minutes) {
+        DateFormat(months, short, full, hours, minutes, TimeZone.currentSystemDefault())
+    }
+}
+
+/** Label of a muscle group: the same words as the routine analysis, so both screens name muscles alike. */
+@Composable
+internal fun muscleGroupLabel(group: MuscleGroup): String = stringResource(
+    when (group) {
+        MuscleGroup.CHEST -> Res.string.progress_group_chest
+        MuscleGroup.BACK -> Res.string.progress_group_back
+        MuscleGroup.SHOULDERS -> Res.string.progress_group_shoulders
+        MuscleGroup.QUADS -> Res.string.progress_group_quads
+        MuscleGroup.HAMSTRINGS -> Res.string.progress_group_hamstrings
+        MuscleGroup.GLUTES -> Res.string.progress_group_glutes
+        MuscleGroup.BICEPS -> Res.string.progress_group_biceps
+        MuscleGroup.TRICEPS -> Res.string.progress_group_triceps
+        MuscleGroup.CALVES -> Res.string.progress_group_calves
+        MuscleGroup.ABS -> Res.string.progress_group_abs
+        MuscleGroup.TRAPS -> Res.string.progress_group_traps
+        MuscleGroup.LOWER_BACK -> Res.string.progress_group_lower_back
+        MuscleGroup.FOREARMS -> Res.string.progress_group_forearms
+        MuscleGroup.HIPS -> Res.string.progress_group_hips
+        MuscleGroup.NECK -> Res.string.progress_group_neck
+    },
+)

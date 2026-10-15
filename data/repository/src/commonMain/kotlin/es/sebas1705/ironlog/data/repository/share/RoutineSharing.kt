@@ -8,6 +8,9 @@ import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.LocalizedText
 import es.sebas1705.ironlog.data.models.NewExercise
 import es.sebas1705.ironlog.data.models.NewVariant
+import es.sebas1705.ironlog.data.models.Routine
+import es.sebas1705.ironlog.data.models.RoutineOrigin
+import es.sebas1705.ironlog.data.models.RoutineTemplate
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
@@ -20,6 +23,10 @@ data class ImportPreview(
     val names: Map<String, LocalizedText>,
     /** Referenced catalogue ids (variant or exercise) not found on this device. */
     val missingIds: List<String>,
+    /** Set when the code named an unmodified catalogue template: import copies it from the catalogue. */
+    val template: RoutineOrigin? = null,
+    /** The language [file] was materialised in when it comes from [template]. */
+    val language: String = "en",
 )
 
 sealed interface ImportPreviewResult {
@@ -36,8 +43,17 @@ interface RoutineSharing {
     /** The routine as `ironlog-routine` JSON, or null when it does not exist. */
     suspend fun export(routineId: String): String?
 
-    /** Reads JSON or a QR payload (`ironlog:r1:…`) and checks which catalogue ids are missing. */
-    suspend fun preview(text: String): ImportPreviewResult
+    /**
+     * The QR payload of the routine (see [RoutineShareCode]): a template code for an unmodified catalogue
+     * copy, otherwise the v2 code of [export]. Null when the routine does not exist.
+     */
+    suspend fun shareCode(routineId: String): String? = export(routineId)?.let(RoutineShareCode::encode)
+
+    /**
+     * Reads JSON or a QR payload (any [RoutineShareCode] form) and checks which catalogue ids are missing. A
+     * template code is materialised in [language], as a catalogue copy would be.
+     */
+    suspend fun preview(text: String, language: String = "en"): ImportPreviewResult
 
     /**
      * Creates the routine as a copy and returns its id. Slots aimed at missing ids are dropped when
@@ -65,7 +81,25 @@ internal class DefaultRoutineSharing(
         return RoutineExport.encode(routine, custom, now())
     }
 
-    override suspend fun preview(text: String): ImportPreviewResult {
+    override suspend fun shareCode(routineId: String): String? {
+        val routine = routines.getRoutine(routineId) ?: return null
+        val template = routine.origin?.let { origin ->
+            routines.templates().firstOrNull { it.id == origin.templateId && it.version == origin.version }
+        }
+        if (template != null && isUnmodifiedCopy(routine, template)) {
+            return RoutineShareCode.encodeTemplate(template.id, template.version)
+        }
+        return export(routineId)?.let(RoutineShareCode::encode)
+    }
+
+    /** Whether [routine] has exactly the content [template] has in English or in Spanish. */
+    private fun isUnmodifiedCopy(routine: Routine, template: RoutineTemplate): Boolean {
+        val content = RoutineExport.toFile(routine, emptyList(), 0).routine
+        return LANGUAGES.any { content == materialise(template, it) }
+    }
+
+    override suspend fun preview(text: String, language: String): ImportPreviewResult {
+        if (RoutineShareCode.isTemplateCode(text)) return previewTemplate(text, language)
         val json = if (RoutineShareCode.isCode(text)) {
             RoutineShareCode.decode(text) ?: return ImportPreviewResult.Invalid("bad QR payload")
         } else {
@@ -76,6 +110,22 @@ internal class DefaultRoutineSharing(
             is RoutineDecodeResult.UnsupportedVersion -> return ImportPreviewResult.UnsupportedVersion(decoded.version)
             is RoutineDecodeResult.Invalid -> return ImportPreviewResult.Invalid(decoded.reason)
         }
+        return ImportPreviewResult.Ready(previewOf(file))
+    }
+
+    private suspend fun previewTemplate(text: String, language: String): ImportPreviewResult {
+        val origin = RoutineShareCode.decodeTemplate(text) ?: return ImportPreviewResult.Invalid("bad template code")
+        val template = routines.templates().firstOrNull { it.id == origin.templateId }
+            ?: return ImportPreviewResult.Invalid("unknown template ${origin.templateId}")
+        // A newer revision than the bundled one needs a newer app; an older one imports the bundled revision.
+        if (origin.version > template.version) return ImportPreviewResult.UnsupportedVersion(origin.version)
+        val file = RoutineFile(routine = materialise(template, language))
+        return ImportPreviewResult.Ready(
+            previewOf(file).copy(template = RoutineOrigin(template.id, template.version), language = language),
+        )
+    }
+
+    private suspend fun previewOf(file: RoutineFile): ImportPreview {
         val names = mutableMapOf<String, LocalizedText>()
         file.customExercises.forEach { e ->
             names[e.id] = e.name
@@ -88,10 +138,12 @@ internal class DefaultRoutineSharing(
             val exercise = if (variant != null) exercises.getExercise(variant.exerciseId) else exercises.getExercise(id)
             if (exercise == null) missing += id else names[id] = variant?.name ?: exercise.name
         }
-        return ImportPreviewResult.Ready(ImportPreview(file, names, missing.distinct()))
+        return ImportPreview(file, names, missing.distinct())
     }
 
     override suspend fun import(preview: ImportPreview, dropMissing: Boolean): String {
+        // A catalogue template is copied as the catalogue screen does; its exercises ship with the app.
+        preview.template?.let { return routines.copyTemplate(it.templateId, preview.language) }
         val file = preview.file
         val idMap = mutableMapOf<String, String>()
         file.customExercises.forEach { shared ->
@@ -172,6 +224,24 @@ internal class DefaultRoutineSharing(
         variants = variants.map { NewVariant(Equipment.fromDb(it.equipment), LoadType.fromDb(it.loadType), it.name) },
     )
 
+    /** [template] as a shared routine with its texts in [language], as [RoutineRepository.copyTemplate] stores it. */
+    private fun materialise(template: RoutineTemplate, language: String) = SharedRoutine(
+        name = template.name.get(language),
+        description = template.description.get(language),
+        days = template.days.map { day ->
+            SharedDay(
+                name = day.name.get(language),
+                kind = day.kind.name,
+                slots = day.slots.map { s ->
+                    SharedSlot(
+                        s.target, s.sets, s.warmupSets, s.prescription, s.restBetweenSetsS, s.restAfterS,
+                        s.supersetGroup, s.bilateral, s.notes, s.progression,
+                    )
+                },
+            )
+        },
+    )
+
     private fun equipmentOf(text: String): Equipment =
         Equipment.entries.firstOrNull { it.name == text.uppercase().replace('-', '_') } ?: Equipment.OTHER
 
@@ -182,5 +252,10 @@ internal class DefaultRoutineSharing(
         Equipment.BAND -> LoadType.BAND
         Equipment.BODYWEIGHT -> LoadType.BODYWEIGHT
         else -> LoadType.NONE
+    }
+
+    private companion object {
+        /** The languages a catalogue copy can be stored in. */
+        val LANGUAGES = listOf("en", "es")
     }
 }

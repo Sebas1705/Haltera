@@ -15,6 +15,7 @@ import es.sebas1705.ironlog.data.models.Level
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.LocalizedSteps
 import es.sebas1705.ironlog.data.models.LocalizedText
+import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.data.models.NewExercise
 import es.sebas1705.ironlog.data.models.Routine
 import es.sebas1705.ironlog.data.models.RoutineDay
@@ -289,14 +290,22 @@ object TestCatalog {
             loadType = loadType
         )
 
-    private fun exercise(id: String, en: String, es: String, tracking: TrackingType, vararg variants: ExerciseVariant) =
+    private fun exercise(
+        id: String,
+        en: String,
+        es: String,
+        tracking: TrackingType,
+        vararg variants: ExerciseVariant,
+        primary: List<Muscle> = emptyList(),
+        secondary: List<Muscle> = emptyList(),
+    ) =
         Exercise(
             id = id,
             name = LocalizedText(en = en, es = es),
             category = ExerciseCategory.STRENGTH,
             level = Level.BEGINNER,
-            primaryMuscles = emptyList(),
-            secondaryMuscles = emptyList(),
+            primaryMuscles = primary,
+            secondaryMuscles = secondary,
             instructions = LocalizedSteps.EMPTY,
             trackingType = tracking,
             source = ExerciseSource.CATALOG,
@@ -310,15 +319,26 @@ object TestCatalog {
         TrackingType.WEIGHT_REPS,
         variant("bench-press", Equipment.BARBELL, LoadType.BARBELL),
         variant("bench-press", Equipment.DUMBBELL, LoadType.DUMBBELL),
+        primary = listOf(Muscle.CHEST),
+        secondary = listOf(Muscle.SHOULDERS, Muscle.TRICEPS),
     )
     val plank =
-        exercise("plank", "Plank", "Plancha", TrackingType.TIME, variant("plank", Equipment.NONE, LoadType.NONE))
+        exercise(
+            "plank",
+            "Plank",
+            "Plancha",
+            TrackingType.TIME,
+            variant("plank", Equipment.NONE, LoadType.NONE),
+            primary = listOf(Muscle.ABDOMINALS),
+        )
     val pullUp = exercise(
         "pull-up",
         "Pull-up",
         "Dominada",
         TrackingType.BODYWEIGHT_REPS,
         variant("pull-up", Equipment.BODYWEIGHT, LoadType.BODYWEIGHT),
+        primary = listOf(Muscle.LATS),
+        secondary = listOf(Muscle.BICEPS, Muscle.MIDDLE_BACK),
     )
 
     val all = listOf(bench, plank, pullUp)

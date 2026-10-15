@@ -179,6 +179,29 @@ internal class SqlSessionRepository(
         }
     }
 
+    override suspend fun dropIncomplete(sessionId: String) = write {
+        db.transaction {
+            val exercises = db.sessionExerciseEntityQueries.selectBySession(sessionId).executeAsList()
+            val sets = exercises.map { it.id }.chunked(MAX_IN_ARGS).flatMap { ids ->
+                db.setLogEntityQueries.selectBySessionExercises(ids).executeAsList()
+            }.groupBy { it.sessionExerciseId }
+            exercises.forEach { exercise ->
+                val (done, pending) = sets[exercise.id].orEmpty().partition { it.completed != 0L }
+                if (done.isEmpty()) {
+                    db.sessionExerciseEntityQueries.delete(exercise.id)
+                } else {
+                    pending.forEach { db.setLogEntityQueries.delete(it.id) }
+                    done.sortedBy { it.position }.forEachIndexed { index, set ->
+                        if (set.position != index.toLong()) db.setLogEntityQueries.setPosition(index.toLong(), set.id)
+                    }
+                }
+            }
+            db.sessionExerciseEntityQueries.selectBySession(sessionId).executeAsList().forEachIndexed { index, e ->
+                if (e.position != index.toLong()) db.sessionExerciseEntityQueries.setPosition(index.toLong(), e.id)
+            }
+        }
+    }
+
     override suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?) = write {
         db.workoutSessionEntityQueries.updateTimes(
             startedAt = startedAt,
@@ -197,7 +220,7 @@ internal class SqlSessionRepository(
                 ) { id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw ->
                     WorkoutSessionEntity(id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw)
                 }.executeAsList(),
-            )
+            ).map { it.withoutEmptyExercises() }
         }
         .flowOn(dispatcher)
 
@@ -206,7 +229,7 @@ internal class SqlSessionRepository(
             .map {
                 history.sessions(
                     db.workoutSessionEntityQueries.selectStartedBetween(fromMillis, toMillis).executeAsList()
-                )
+                ).map { it.withoutEmptyExercises() }
             }
             .flowOn(dispatcher)
 
@@ -248,7 +271,12 @@ internal class SqlSessionRepository(
                 ) { _, _, _, _, _, _, at -> at }
                     .executeAsOneOrNull()?.let { at -> variant.id to at }
             }.maxByOrNull { it.second }
-            lastUsed?.first
+            // No history in this slot: the allowed variant used most recently anywhere (free sessions, other
+            // routines, a routine copied afresh), so the user's real history drives the default.
+            val usedAnywhere = lastUsed?.first ?: allowed.takeIf { it.isNotEmpty() }?.let { candidates ->
+                db.sessionExerciseEntityQueries.lastUsedVariant(candidates.map { it.id }, before).executeAsOneOrNull()
+            }
+            usedAnywhere
                 ?: allowed.firstOrNull { it.deprecated == 0L }?.id
                 ?: target.allowedVariantIds.firstOrNull()
                 ?: variants.firstOrNull()?.id
@@ -258,4 +286,18 @@ internal class SqlSessionRepository(
     private suspend fun <T> io(block: () -> T): T = withContext(dispatcher) { block() }
 
     private suspend fun write(block: () -> Unit) = withContext(dispatcher) { block() }
+
+    /**
+     * A finished session without the exercises that have no completed set. Sessions saved before saving
+     * pruned them ([dropIncomplete]) may still hold some; they must not count in stats or pickers.
+     */
+    private fun WorkoutSession.withoutEmptyExercises(): WorkoutSession = if (inProgress) {
+        this
+    } else {
+        copy(exercises = exercises.filter { e -> e.sets.any { it.completed } })
+    }
+
+    private companion object {
+        const val MAX_IN_ARGS = 500
+    }
 }

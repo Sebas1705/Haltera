@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -27,6 +28,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -72,6 +74,7 @@ import es.sebas1705.ironlog.feature.session.resources.session_set_start_timer
 import es.sebas1705.ironlog.feature.session.resources.session_variant_last
 import es.sebas1705.ironlog.feature.session.resources.session_variant_never
 import es.sebas1705.ironlog.feature.session.resources.session_variant_pick
+import es.sebas1705.ironlog.feature.session.resources.session_warmup_complete
 import es.sebas1705.ironlog.feature.session.timer.TimerMath
 import org.jetbrains.compose.resources.stringResource
 
@@ -127,6 +130,12 @@ internal fun ExerciseCardView(
 /** 1-based number among the working-type sets (warm-ups show "W" instead). */
 private fun workingNumber(sets: List<SetLog>, index: Int): Int =
     sets.take(index + 1).count { it.kind != SetKind.WARMUP }
+
+/** 1-based number of [set] among the warm-ups of [sets]. */
+private fun warmupNumber(sets: List<SetLog>, set: SetLog): Int {
+    val index = sets.indexOfFirst { it === set }.takeIf { it >= 0 } ?: sets.indexOf(set)
+    return sets.take(index + 1).count { it.kind == SetKind.WARMUP }.coerceAtLeast(1)
+}
 
 @Composable
 private fun CardHeader(card: ExerciseCard, editable: Boolean, actions: CardActions) {
@@ -236,10 +245,29 @@ private fun VariantPicker(card: ExerciseCard, settings: UserSettings, onChoose: 
                 val last = option.lastLoadGrams?.let {
                     stringResource(Res.string.session_variant_last, loadText(it, null, option.loadType, settings.unit))
                 } ?: stringResource(Res.string.session_variant_never)
+                val selected = option.variantId == card.variantId
                 FilterChip(
-                    selected = option.variantId == card.variantId,
+                    selected = selected,
                     onClick = { onChoose(option.variantId) },
+                    // Chips tell the variants apart: the variant label, never the (shared) exercise name.
                     label = { Text("${option.name.subtitle() ?: option.name.title()} · $last") },
+                    leadingIcon = if (selected) {
+                        {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    // The current card is secondaryContainer, the default selected fill: use primary instead.
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
                 )
             }
         }
@@ -256,7 +284,12 @@ private fun SetRow(
     actions: CardActions,
 ) {
     val increase = card.suggestion is Suggestion.Increase && set.kind == SetKind.WORKING && !set.completed
-    val doneLabel = stringResource(Res.string.session_set_complete, number)
+    // Warm-ups have no working-set number: they are announced as "Warm-up 1 done".
+    val doneLabel = if (set.kind == SetKind.WARMUP) {
+        stringResource(Res.string.session_warmup_complete, warmupNumber(card.sets, set))
+    } else {
+        stringResource(Res.string.session_set_complete, number)
+    }
     Row(
         modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(start = 8.dp, end = 4.dp),
         verticalAlignment = Alignment.CenterVertically,

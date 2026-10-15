@@ -1,6 +1,18 @@
 package es.sebas1705.ironlog.feature.routines.ui.editor
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import es.sebas1705.ironlog.feature.routines.resources.routines_day_actions
+import es.sebas1705.ironlog.feature.routines.resources.routines_duplicate_day
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,12 +66,19 @@ internal fun DayCard(
     onRename: () -> Unit,
     onOpenSlot: (String) -> Unit,
     onAddSlot: () -> Unit,
+    highlighted: Boolean = false,
 ) {
     val rest = day.kind == DayKind.REST
+    val accent = MaterialTheme.colorScheme.primary
+    val highlight by animateColorAsState(if (highlighted) accent else accent.copy(alpha = 0f), label = "day-highlight")
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = if (rest) CardDefaults.outlinedCardColors() else CardDefaults.cardColors(),
-        border = if (rest) CardDefaults.outlinedCardBorder() else null,
+        border = when {
+            highlighted -> BorderStroke(2.dp, highlight)
+            rest -> CardDefaults.outlinedCardBorder()
+            else -> BorderStroke(2.dp, highlight)
+        },
     ) {
         Column(Modifier.padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 8.dp)) {
             DayHeader(day, dayCount, send, onRename)
@@ -138,9 +157,7 @@ private fun DayHeader(day: RoutineDay, dayCount: Int, send: (RoutineEditorIntent
             canMoveDown = day.position < dayCount - 1,
             onMove = { send(RoutineEditorIntent.MoveDay(day.id, it)) },
         )
-        IconButton(onClick = { send(RoutineEditorIntent.RequestDeleteDay(day.id)) }) {
-            Icon(Icons.Filled.Delete, contentDescription = stringResource(Res.string.routines_delete_day, day.name))
-        }
+        DayMenu(day, send)
     }
 }
 
@@ -194,6 +211,35 @@ private fun SlotRow(
         )
         IconButton(onClick = { send(RoutineEditorIntent.RequestDeleteSlot(slot.id)) }) {
             Icon(Icons.Filled.Delete, contentDescription = stringResource(Res.string.routines_delete_slot, label))
+        }
+    }
+}
+
+/** The day's overflow menu: duplicate and delete. */
+@Composable
+private fun DayMenu(day: RoutineDay, send: (RoutineEditorIntent) -> Unit) {
+    var open by remember { mutableStateOf(false) }
+    Box {
+        IconButton(onClick = { open = true }) {
+            Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.routines_day_actions, day.name))
+        }
+        DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.routines_duplicate_day)) },
+                leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                onClick = {
+                    open = false
+                    send(RoutineEditorIntent.DuplicateDay(day.id))
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.routines_delete_day, day.name)) },
+                leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = null) },
+                onClick = {
+                    open = false
+                    send(RoutineEditorIntent.RequestDeleteDay(day.id))
+                },
+            )
         }
     }
 }

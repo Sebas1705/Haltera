@@ -6,6 +6,10 @@ import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.feature.session.load.LoadDetail
 import es.sebas1705.ironlog.feature.session.load.LoadSteps
+import es.sebas1705.ironlog.feature.session.load.Warmups
+import es.sebas1705.ironlog.feature.session.load.WarmupRounding
+import es.sebas1705.ironlog.feature.session.ui.LoadStepOptions
+import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.feature.session.load.isMachinePlate
 import es.sebas1705.ironlog.feature.session.timer.TimerMath
 import es.sebas1705.ironlog.feature.session.timer.TimerPhase
@@ -57,6 +61,17 @@ class TimerAndLoadTest {
         assertEquals(22_500, LoadSteps.step(null, 1, LoadType.BARBELL, WeightUnit.KG, kgPlates, 20_000))
         assertEquals(1, LoadSteps.step(1, -1, LoadType.BAND, WeightUnit.KG, kgPlates, 20_000))
         assertEquals(-2_500, LoadSteps.step(0, -1, LoadType.BODYWEIGHT, WeightUnit.KG, kgPlates, 20_000))
+        // A step chosen for the variant replaces the default, except for band levels.
+        assertEquals(
+            21_250,
+            LoadSteps.step(20_000, 1, LoadType.BARBELL, WeightUnit.KG, kgPlates, 20_000, override = 1_250)
+        )
+        assertEquals(
+            3,
+            LoadSteps.step(1, 1, LoadType.MACHINE, WeightUnit.KG, kgPlates, 20_000, machinePlate = true, override = 2)
+        )
+        assertEquals(2, LoadSteps.step(1, 1, LoadType.BAND, WeightUnit.KG, kgPlates, 20_000, override = 5))
+        assertEquals(2_500, LoadSteps.stepGrams(LoadType.BARBELL, WeightUnit.KG, kgPlates, override = 0))
     }
 
     @Test
@@ -69,5 +84,55 @@ class TimerAndLoadTest {
         )
         assertNull(LoadDetail.decode("{not json"))
         assertNull(LoadDetail.decode(null))
+    }
+
+    @Test
+    fun warmupsWithoutHistoryStartAtPercentagesOfTheWorkingLoad() {
+        val bar = WarmupRounding(stepGrams = 2_500, barGrams = 20_000, plates = PlateCalculator.KG_PLATES)
+        val working = SetInput(loadGrams = 80_000)
+        assertEquals(listOf(60L), Warmups.percents(1))
+        assertEquals(listOf(50L, 70L), Warmups.percents(2))
+        assertEquals(listOf(40L, 60L, 80L), Warmups.percents(3))
+        // 48 kg rounds down to the 2.5 kg step: 47.5 kg.
+        assertEquals(listOf(47_500L), Warmups.generated(1, working, LoadType.BARBELL, bar))
+        // 40 and 56 kg: 56 rounds down to 55.
+        assertEquals(listOf(40_000L, 55_000L), Warmups.generated(2, working, LoadType.BARBELL, bar))
+        // Never below the bar, never above the working load.
+        assertEquals(
+            listOf(20_000L, 20_000L),
+            Warmups.generated(2, SetInput(loadGrams = 20_000), LoadType.BARBELL, bar)
+        )
+        // Plates that cannot build the step: the closest load below.
+        val bigPlates = WarmupRounding(stepGrams = 2_500, barGrams = 20_000, plates = listOf(20_000, 10_000))
+        assertEquals(
+            listOf(40_000L),
+            Warmups.generated(1, SetInput(loadGrams = 90_000), LoadType.BARBELL, bigPlates)
+        )
+        // Dumbbells: the 2 kg step.
+        assertEquals(
+            listOf(12_000L, 16_000L),
+            Warmups.generated(2, SetInput(loadGrams = 24_000), LoadType.DUMBBELL, WarmupRounding(2_000)),
+        )
+    }
+
+    @Test
+    fun warmupsAreNotGeneratedWithoutAWeight() {
+        val rounding = WarmupRounding(2_500)
+        assertNull(Warmups.generated(2, SetInput(loadGrams = null), LoadType.BARBELL, rounding))
+        assertNull(Warmups.generated(2, SetInput(loadGrams = 5), LoadType.BAND, rounding))
+        assertNull(Warmups.generated(2, SetInput(loadGrams = 10_000), LoadType.BODYWEIGHT, rounding))
+        val stack = SetInput(loadGrams = 7, loadDetail = LoadDetail.encode(LoadDetail.MachinePlate))
+        assertNull(Warmups.generated(1, stack, LoadType.MACHINE, rounding))
+    }
+
+    @Test
+    fun theStepDialogDoesNotRepeatTheDefault() {
+        val presets = LoadStepOptions.presets(plateMode = false, unit = WeightUnit.KG, default = 2_500)
+        assertTrue(2_500L !in presets)
+        assertEquals(5, presets.size)
+        assertEquals(
+            listOf(2L, 3L, 4L, 5L),
+            LoadStepOptions.presets(plateMode = true, unit = WeightUnit.KG, default = 1)
+        )
     }
 }

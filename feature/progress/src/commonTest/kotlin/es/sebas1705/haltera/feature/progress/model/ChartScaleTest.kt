@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.feature.progress.ui.components.UnitFormat
-import es.sebas1705.ironlog.feature.progress.ui.components.fillPattern
-import es.sebas1705.ironlog.feature.progress.ui.components.formatNumber
-import es.sebas1705.ironlog.feature.progress.ui.components.signed
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.feature.progress.ui.components.UnitFormat
+import es.sebas1705.haltera.feature.progress.ui.components.fillPattern
+import es.sebas1705.haltera.feature.progress.ui.components.formatNumber
+import es.sebas1705.haltera.feature.progress.ui.components.signed
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

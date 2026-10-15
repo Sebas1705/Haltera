@@ -1,18 +1,18 @@
-package es.sebas1705.ironlog.feature.exercises.ui.create
+package es.sebas1705.haltera.feature.exercises.ui.create
 
 import androidx.compose.runtime.Immutable
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.data.models.NewExercise
-import es.sebas1705.ironlog.data.models.NewVariant
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
-import es.sebas1705.ironlog.feature.exercises.model.defaultLoadType
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.NewVariant
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.feature.exercises.model.defaultLoadType
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 

@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
-import es.sebas1705.ironlog.data.local.SearchText
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.local.SearchText
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.models.CatalogImportResult
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json

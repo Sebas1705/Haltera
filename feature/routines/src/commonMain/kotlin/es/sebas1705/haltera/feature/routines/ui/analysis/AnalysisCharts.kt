@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.ui.analysis
+package es.sebas1705.haltera.feature.routines.ui.analysis
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
@@ -24,15 +24,15 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.domain.usecases.routinescore.GroupSets
-import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
-import es.sebas1705.ironlog.feature.routines.resources.Res
-import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_legend
-import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_title
-import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_value
-import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_value_split
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.domain.usecases.routinescore.GroupSets
+import es.sebas1705.haltera.domain.usecases.routinescore.MuscleGroup
+import es.sebas1705.haltera.feature.routines.resources.Res
+import es.sebas1705.haltera.feature.routines.resources.routines_analysis_chart_legend
+import es.sebas1705.haltera.feature.routines.resources.routines_analysis_chart_title
+import es.sebas1705.haltera.feature.routines.resources.routines_analysis_chart_value
+import es.sebas1705.haltera.feature.routines.resources.routines_analysis_chart_value_split
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.ceil
 import kotlin.math.max
@@ -121,13 +121,13 @@ internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, split: Map<MuscleG
 /** One bar: the direct sets solid, the secondary credit stacked after them in a lighter shade. */
 @Composable
 private fun SetsBar(sets: Double, direct: Double, axisMax: Double, major: Boolean, modifier: Modifier) {
-    val band = IronlogTheme.colors.success.copy(alpha = 0.18f)
+    val band = HalteraTheme.colors.success.copy(alpha = 0.18f)
     val track = MaterialTheme.colorScheme.surfaceVariant
     val color = when {
         !major -> MaterialTheme.colorScheme.outline
-        sets in BAND_LOW..BAND_HIGH -> IronlogTheme.colors.success
-        sets < FLAG_LOW || sets > FLAG_HIGH -> IronlogTheme.colors.warning
-        else -> IronlogTheme.colors.success.copy(alpha = 0.55f)
+        sets in BAND_LOW..BAND_HIGH -> HalteraTheme.colors.success
+        sets < FLAG_LOW || sets > FLAG_HIGH -> HalteraTheme.colors.warning
+        else -> HalteraTheme.colors.success.copy(alpha = 0.55f)
     }
     Canvas(modifier) {
         fun x(value: Double) = (size.width * (value / axisMax)).toFloat().coerceIn(0f, size.width)

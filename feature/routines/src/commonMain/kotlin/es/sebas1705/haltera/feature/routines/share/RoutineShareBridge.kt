@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.share
+package es.sebas1705.haltera.feature.routines.share
 
 import kotlinx.coroutines.flow.StateFlow
 

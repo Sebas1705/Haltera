@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.model
+package es.sebas1705.haltera.feature.routines.model
 
 import kotlinx.coroutines.CancellationException
 

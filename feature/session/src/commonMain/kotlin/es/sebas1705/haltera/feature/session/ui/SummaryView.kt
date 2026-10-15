@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
-import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,27 +18,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.components.PrBadge
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.domain.usecases.stats.RecordKind
-import es.sebas1705.ironlog.feature.session.load.LoadDetail
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_record_heaviest
-import es.sebas1705.ironlog.feature.session.resources.session_record_one_rm
-import es.sebas1705.ironlog.feature.session.resources.session_record_reps
-import es.sebas1705.ironlog.feature.session.resources.session_record_volume
-import es.sebas1705.ironlog.feature.session.resources.session_summary_done
-import es.sebas1705.ironlog.feature.session.resources.session_summary_duration
-import es.sebas1705.ironlog.feature.session.resources.session_summary_increase_line
-import es.sebas1705.ironlog.feature.session.resources.session_summary_increases
-import es.sebas1705.ironlog.feature.session.resources.session_summary_no_records
-import es.sebas1705.ironlog.feature.session.resources.session_summary_records
-import es.sebas1705.ironlog.feature.session.resources.session_summary_sets
-import es.sebas1705.ironlog.feature.session.resources.session_summary_title
-import es.sebas1705.ironlog.feature.session.resources.session_summary_volume
-import es.sebas1705.ironlog.feature.session.timer.TimerMath
+import es.sebas1705.haltera.core.ui.components.PrBadge
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.domain.usecases.stats.RecordKind
+import es.sebas1705.haltera.feature.session.load.LoadDetail
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_record_heaviest
+import es.sebas1705.haltera.feature.session.resources.session_record_one_rm
+import es.sebas1705.haltera.feature.session.resources.session_record_reps
+import es.sebas1705.haltera.feature.session.resources.session_record_volume
+import es.sebas1705.haltera.feature.session.resources.session_summary_done
+import es.sebas1705.haltera.feature.session.resources.session_summary_duration
+import es.sebas1705.haltera.feature.session.resources.session_summary_increase_line
+import es.sebas1705.haltera.feature.session.resources.session_summary_increases
+import es.sebas1705.haltera.feature.session.resources.session_summary_no_records
+import es.sebas1705.haltera.feature.session.resources.session_summary_records
+import es.sebas1705.haltera.feature.session.resources.session_summary_sets
+import es.sebas1705.haltera.feature.session.resources.session_summary_title
+import es.sebas1705.haltera.feature.session.resources.session_summary_volume
+import es.sebas1705.haltera.feature.session.timer.TimerMath
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -75,7 +75,7 @@ internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () ->
                         loadText(line.toGrams, detail, line.loadType, unit),
                     ),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = IronlogTheme.colors.prGold,
+                    color = HalteraTheme.colors.prGold,
                 )
             }
         }
@@ -113,7 +113,7 @@ private fun RecordRow(line: RecordLine) {
         Text(
             line.kinds.sortedBy { it.ordinal }.map { stringResource(recordLabel(it)) }.joinToString(" · "),
             style = MaterialTheme.typography.bodyMedium,
-            color = IronlogTheme.colors.prGold,
+            color = HalteraTheme.colors.prGold,
         )
     }
 }

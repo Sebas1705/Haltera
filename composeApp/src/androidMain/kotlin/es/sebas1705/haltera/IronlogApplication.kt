@@ -1,28 +1,28 @@
-package es.sebas1705.ironlog
+package es.sebas1705.haltera
 
 import android.app.Application
 import android.os.Build
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.initialize
-import es.sebas1705.ironlog.account.AndroidGoogleSignInLauncher
-import es.sebas1705.ironlog.account.GoogleSignInLauncher
-import es.sebas1705.ironlog.account.NoGoogleSignIn
-import es.sebas1705.ironlog.account.ResumedActivity
-import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
-import es.sebas1705.ironlog.data.remote.FirebaseConfig
-import es.sebas1705.ironlog.data.remote.isFirebaseConfigured
-import es.sebas1705.ironlog.data.repository.di.AppVersionName
-import es.sebas1705.ironlog.di.appModules
-import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
-import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
-import es.sebas1705.ironlog.share.AndroidBarcodeScanner
-import es.sebas1705.ironlog.settings.AppInfo
-import es.sebas1705.ironlog.share.AndroidRoutineShareBridge
+import es.sebas1705.haltera.account.AndroidGoogleSignInLauncher
+import es.sebas1705.haltera.account.GoogleSignInLauncher
+import es.sebas1705.haltera.account.NoGoogleSignIn
+import es.sebas1705.haltera.account.ResumedActivity
+import es.sebas1705.haltera.data.local.DatabaseDriverFactory
+import es.sebas1705.haltera.data.remote.FirebaseConfig
+import es.sebas1705.haltera.data.remote.isFirebaseConfigured
+import es.sebas1705.haltera.data.repository.di.AppVersionName
+import es.sebas1705.haltera.di.appModules
+import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
+import es.sebas1705.haltera.share.AndroidBarcodeScanner
+import es.sebas1705.haltera.settings.AppInfo
+import es.sebas1705.haltera.share.AndroidRoutineShareBridge
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
-class IronlogApplication : Application() {
+class HalteraApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         // google-services.json (Doppler, git-ignored) gives the default Firebase app; without it this is
@@ -31,7 +31,7 @@ class IronlogApplication : Application() {
         val firebase = FirebaseConfig(configured = isFirebaseConfigured(this))
         val activities = ResumedActivity().also(::registerActivityLifecycleCallbacks)
         startKoin {
-            androidContext(this@IronlogApplication)
+            androidContext(this@HalteraApplication)
             modules(
                 appModules + module {
                     single { DatabaseDriverFactory(androidContext()) }

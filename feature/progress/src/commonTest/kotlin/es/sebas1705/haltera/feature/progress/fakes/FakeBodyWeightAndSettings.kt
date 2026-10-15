@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.feature.progress.fakes
+package es.sebas1705.haltera.feature.progress.fakes
 
-import es.sebas1705.ironlog.core.datastore.SettingsRepository
-import es.sebas1705.ironlog.core.datastore.UserSettings
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.repository.BodyWeightRepository
+import es.sebas1705.haltera.core.datastore.SettingsRepository
+import es.sebas1705.haltera.core.datastore.UserSettings
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.repository.BodyWeightRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

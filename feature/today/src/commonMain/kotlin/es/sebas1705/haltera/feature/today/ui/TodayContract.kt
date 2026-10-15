@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.feature.today.ui
+package es.sebas1705.haltera.feature.today.ui
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.ui.components.PastSessionForm
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.domain.usecases.session.PastSessionOption
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.ui.components.PastSessionForm
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.domain.usecases.session.PastSessionOption
 
 /** Everything the Today tab shows (spec §7). Loads are grams, times epoch millis. */
 internal data class TodayState(

@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.domain.usecases
+package es.sebas1705.haltera.domain.usecases
 
-import es.sebas1705.ironlog.core.common.utils.AppResult
+import es.sebas1705.haltera.core.common.utils.AppResult
 
 abstract class UseCase<in P, R> {
     suspend operator fun invoke(params: P): AppResult<R> = execute(params)

@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.account
+package es.sebas1705.haltera.account
 
-import es.sebas1705.ironlog.core.datastore.LoadStepStore
-import es.sebas1705.ironlog.core.datastore.SettingsRepository
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.local.eraseUserData
+import es.sebas1705.haltera.core.datastore.LoadStepStore
+import es.sebas1705.haltera.core.datastore.SettingsRepository
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.eraseUserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

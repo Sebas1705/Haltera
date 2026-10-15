@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.platform
+package es.sebas1705.haltera.feature.session.platform
 
 import android.app.AlarmManager
 import android.app.Notification
@@ -13,7 +13,7 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.Log
-import es.sebas1705.ironlog.feature.session.R
+import es.sebas1705.haltera.feature.session.R
 
 /**
  * Rest alerts with [AlarmManager] at the absolute instants (spec §5): exact while idle when the app may

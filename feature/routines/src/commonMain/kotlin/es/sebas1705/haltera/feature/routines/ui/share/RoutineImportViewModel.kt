@@ -1,15 +1,15 @@
-package es.sebas1705.ironlog.feature.routines.ui.share
+package es.sebas1705.haltera.feature.routines.ui.share
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.repository.RoutineRepository
-import es.sebas1705.ironlog.data.repository.share.ImportPreview
-import es.sebas1705.ironlog.data.repository.share.ImportPreviewResult
-import es.sebas1705.ironlog.data.repository.share.RoutineSharing
-import es.sebas1705.ironlog.feature.routines.model.AppLanguage
-import es.sebas1705.ironlog.feature.routines.model.attempt
-import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.repository.share.ImportPreview
+import es.sebas1705.haltera.data.repository.share.ImportPreviewResult
+import es.sebas1705.haltera.data.repository.share.RoutineSharing
+import es.sebas1705.haltera.feature.routines.model.AppLanguage
+import es.sebas1705.haltera.feature.routines.model.attempt
+import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import kotlinx.coroutines.Job
 
 /** Where the routine to import comes from. */

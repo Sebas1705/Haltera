@@ -1,4 +1,4 @@
-// Mapping from free-exercise-db values to Ironlog enums (spec §3.1).
+// Mapping from free-exercise-db values to Haltera enums (spec §3.1).
 
 export const CATEGORIES = ['STRENGTH', 'CARDIO', 'MOBILITY', 'PLYOMETRICS', 'CALISTHENICS', 'SPORT'];
 export const TRACKING_TYPES = ['WEIGHT_REPS', 'BODYWEIGHT_REPS', 'REPS', 'TIME', 'WEIGHT_TIME', 'DISTANCE_TIME'];
@@ -64,7 +64,7 @@ export function categoryOf(source) {
   return category;
 }
 
-/** `category` is the resolved (possibly patched) Ironlog category; it picks the default for null equipment. */
+/** `category` is the resolved (possibly patched) Haltera category; it picks the default for null equipment. */
 export function equipmentOf(source, category = categoryOf(source)) {
   if (/smith machine/i.test(source.name)) return 'SMITH';
   if (source.equipment === 'machine' && source.category === 'cardio') return 'CARDIO_MACHINE';

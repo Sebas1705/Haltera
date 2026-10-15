@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName") // The metric texts, the info button and its dialog live together.
 
-package es.sebas1705.ironlog.feature.progress.ui.components
+package es.sebas1705.haltera.feature.progress.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,9 +21,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.domain.usecases.stats.Metric
-import es.sebas1705.ironlog.feature.progress.resources.Res
-import es.sebas1705.ironlog.feature.progress.resources.*
+import es.sebas1705.haltera.domain.usecases.stats.Metric
+import es.sebas1705.haltera.feature.progress.resources.Res
+import es.sebas1705.haltera.feature.progress.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

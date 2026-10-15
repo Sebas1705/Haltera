@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 /**
  * Normalisation for the `name*Search` columns and search queries: lower case, Latin accents and

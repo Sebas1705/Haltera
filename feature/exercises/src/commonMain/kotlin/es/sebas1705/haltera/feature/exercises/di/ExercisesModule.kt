@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.feature.exercises.di
+package es.sebas1705.haltera.feature.exercises.di
 
-import es.sebas1705.ironlog.feature.exercises.ui.ExercisesViewModel
-import es.sebas1705.ironlog.feature.exercises.ui.create.NewExerciseViewModel
-import es.sebas1705.ironlog.feature.exercises.ui.detail.ExerciseDetailViewModel
+import es.sebas1705.haltera.feature.exercises.ui.ExercisesViewModel
+import es.sebas1705.haltera.feature.exercises.ui.create.NewExerciseViewModel
+import es.sebas1705.haltera.feature.exercises.ui.detail.ExerciseDetailViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module

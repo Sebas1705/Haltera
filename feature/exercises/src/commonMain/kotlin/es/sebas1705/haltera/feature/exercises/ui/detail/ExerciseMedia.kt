@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.exercises.ui.detail
+package es.sebas1705.haltera.feature.exercises.ui.detail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,12 +37,12 @@ import coil3.PlatformContext
 import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.network.ktor3.KtorNetworkFetcherFactory
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.feature.exercises.model.frameUrl
-import es.sebas1705.ironlog.feature.exercises.resources.Res
-import es.sebas1705.ironlog.feature.exercises.resources.exercises_media_description
-import es.sebas1705.ironlog.feature.exercises.resources.exercises_media_placeholder
-import es.sebas1705.ironlog.feature.exercises.ui.common.label
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.feature.exercises.model.frameUrl
+import es.sebas1705.haltera.feature.exercises.resources.Res
+import es.sebas1705.haltera.feature.exercises.resources.exercises_media_description
+import es.sebas1705.haltera.feature.exercises.resources.exercises_media_placeholder
+import es.sebas1705.haltera.feature.exercises.ui.common.label
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 

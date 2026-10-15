@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.core.ui.theme
+package es.sebas1705.haltera.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import es.sebas1705.ironlog.core.ui.components.LogoGeometry
-import es.sebas1705.ironlog.core.ui.components.LogoRect
+import es.sebas1705.haltera.core.ui.components.LogoGeometry
+import es.sebas1705.haltera.core.ui.components.LogoRect
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals

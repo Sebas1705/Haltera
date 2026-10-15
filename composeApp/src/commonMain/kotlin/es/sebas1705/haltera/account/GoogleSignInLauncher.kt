@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.account
+package es.sebas1705.haltera.account
 
-import es.sebas1705.ironlog.data.sync.GoogleIdToken
+import es.sebas1705.haltera.data.sync.GoogleIdToken
 
 /**
  * Google sign-in UI of the platform: Credential Manager on Android, the GoogleSignIn SDK (Swift
- * bridge) on iOS. Returns a Google ID token for [es.sebas1705.ironlog.data.sync.AccountService].
+ * bridge) on iOS. Returns a Google ID token for [es.sebas1705.haltera.data.sync.AccountService].
  */
 interface GoogleSignInLauncher {
     /** False when Google sign-in is not configured in this build: the button is hidden. */

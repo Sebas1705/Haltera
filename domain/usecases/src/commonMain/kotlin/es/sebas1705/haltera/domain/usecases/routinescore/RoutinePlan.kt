@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.domain.usecases.routinescore
+package es.sebas1705.haltera.domain.usecases.routinescore
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineDay
-import es.sebas1705.ironlog.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineDay
+import es.sebas1705.haltera.data.models.RoutineSlot
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt

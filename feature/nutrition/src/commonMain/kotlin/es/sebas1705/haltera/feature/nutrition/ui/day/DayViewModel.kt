@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.day
+package es.sebas1705.haltera.feature.nutrition.ui.day
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.FoodDay
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.data.models.NutritionGoals
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.feature.nutrition.model.Today
-import es.sebas1705.ironlog.feature.nutrition.model.attempt
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.FoodDay
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.data.models.NutritionGoals
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.feature.nutrition.model.Today
+import es.sebas1705.haltera.feature.nutrition.model.attempt
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

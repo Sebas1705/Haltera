@@ -1,13 +1,13 @@
-package es.sebas1705.ironlog.feature.routines.ui.share
+package es.sebas1705.haltera.feature.routines.ui.share
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.repository.RoutineRepository
-import es.sebas1705.ironlog.data.repository.share.RoutineShareCode
-import es.sebas1705.ironlog.data.repository.share.RoutineSharing
-import es.sebas1705.ironlog.feature.routines.model.attempt
-import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.repository.share.RoutineShareCode
+import es.sebas1705.haltera.data.repository.share.RoutineSharing
+import es.sebas1705.haltera.feature.routines.model.attempt
+import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import kotlinx.coroutines.Job
 
 /** The QR shown full screen; [code] is null when the routine is too large for a QR code. */
@@ -26,7 +26,7 @@ internal sealed interface RoutineExportIntent : MVIBaseIntent {
     data object ErrorShown : RoutineExportIntent
 }
 
-/** Exports a routine as a `.ironlog` file through the share sheet, or as a QR code. */
+/** Exports a routine as a `.haltera` file through the share sheet, or as a QR code. */
 internal class RoutineExportViewModel(
     private val routines: RoutineRepository,
     private val sharing: RoutineSharing,
@@ -60,7 +60,7 @@ internal class RoutineExportViewModel(
     }
 
     companion object {
-        const val EXTENSION = ".ironlog"
+        const val EXTENSION = ".haltera"
         private const val MAX_NAME = 60
 
         /** A safe file name for [routineName]: letters, digits, spaces, dashes and underscores. */

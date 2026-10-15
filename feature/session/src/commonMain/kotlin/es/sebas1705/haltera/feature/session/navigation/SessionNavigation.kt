@@ -1,12 +1,12 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.feature.session.navigation
+package es.sebas1705.haltera.feature.session.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import es.sebas1705.ironlog.feature.session.ui.SessionScreen
+import es.sebas1705.haltera.feature.session.ui.SessionScreen
 import kotlinx.serialization.Serializable
 
 /** Live session of [sessionId] (spec §5). Navigate with `navController.navigate(SessionRoute(id))`. */

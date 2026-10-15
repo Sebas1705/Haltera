@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
 import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertEquals

@@ -1,11 +1,11 @@
 @file:Suppress("MatchingDeclarationName") // The period selection and the small stats input helpers live together.
 
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.domain.usecases.stats.DatedSession
-import es.sebas1705.ironlog.domain.usecases.stats.StatsPeriod
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.domain.usecases.stats.DatedSession
+import es.sebas1705.haltera.domain.usecases.stats.StatsPeriod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

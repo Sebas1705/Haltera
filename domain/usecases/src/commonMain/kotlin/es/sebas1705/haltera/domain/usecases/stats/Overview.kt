@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Routine
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Routine
 
 /** Training totals of a range of days. Durations are milliseconds; volume gram-reps. */
 data class StatsBucket(

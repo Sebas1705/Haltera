@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.navigation
+package es.sebas1705.haltera.navigation
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -27,8 +27,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
-import es.sebas1705.ironlog.share.IncomingRoutineChannel
+import es.sebas1705.haltera.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.haltera.share.IncomingRoutineChannel
 import org.koin.compose.koinInject
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -40,27 +40,27 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import es.sebas1705.ironlog.feature.exercises.navigation.ExercisesRoute
-import es.sebas1705.ironlog.feature.exercises.navigation.exercisesGraph
-import es.sebas1705.ironlog.feature.nutrition.navigation.NutritionRoute
-import es.sebas1705.ironlog.feature.nutrition.navigation.nutritionGraph
-import es.sebas1705.ironlog.feature.progress.navigation.ProgressRoute
-import es.sebas1705.ironlog.feature.progress.navigation.progressGraph
-import es.sebas1705.ironlog.feature.routines.navigation.RoutinesRoute
-import es.sebas1705.ironlog.feature.routines.navigation.routinesGraph
-import es.sebas1705.ironlog.feature.session.navigation.SessionRoute
-import es.sebas1705.ironlog.feature.session.navigation.sessionGraph
-import es.sebas1705.ironlog.feature.today.navigation.TodayRoute
-import es.sebas1705.ironlog.feature.today.navigation.todayGraph
-import es.sebas1705.ironlog.resources.Res
-import es.sebas1705.ironlog.resources.settings_title
-import es.sebas1705.ironlog.resources.tab_exercises
-import es.sebas1705.ironlog.resources.tab_nutrition
-import es.sebas1705.ironlog.resources.tab_progress
-import es.sebas1705.ironlog.resources.tab_routines
-import es.sebas1705.ironlog.resources.tab_today
-import es.sebas1705.ironlog.settings.settingsGraph
-import es.sebas1705.ironlog.settings.SettingsRoute
+import es.sebas1705.haltera.feature.exercises.navigation.ExercisesRoute
+import es.sebas1705.haltera.feature.exercises.navigation.exercisesGraph
+import es.sebas1705.haltera.feature.nutrition.navigation.NutritionRoute
+import es.sebas1705.haltera.feature.nutrition.navigation.nutritionGraph
+import es.sebas1705.haltera.feature.progress.navigation.ProgressRoute
+import es.sebas1705.haltera.feature.progress.navigation.progressGraph
+import es.sebas1705.haltera.feature.routines.navigation.RoutinesRoute
+import es.sebas1705.haltera.feature.routines.navigation.routinesGraph
+import es.sebas1705.haltera.feature.session.navigation.SessionRoute
+import es.sebas1705.haltera.feature.session.navigation.sessionGraph
+import es.sebas1705.haltera.feature.today.navigation.TodayRoute
+import es.sebas1705.haltera.feature.today.navigation.todayGraph
+import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.settings_title
+import es.sebas1705.haltera.resources.tab_exercises
+import es.sebas1705.haltera.resources.tab_nutrition
+import es.sebas1705.haltera.resources.tab_progress
+import es.sebas1705.haltera.resources.tab_routines
+import es.sebas1705.haltera.resources.tab_today
+import es.sebas1705.haltera.settings.settingsGraph
+import es.sebas1705.haltera.settings.SettingsRoute
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.reflect.KClass

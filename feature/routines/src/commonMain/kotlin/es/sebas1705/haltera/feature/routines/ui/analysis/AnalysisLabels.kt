@@ -1,21 +1,21 @@
-package es.sebas1705.ironlog.feature.routines.ui.analysis
+package es.sebas1705.haltera.feature.routines.ui.analysis
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.domain.usecases.routinescore.Advice
-import es.sebas1705.ironlog.domain.usecases.routinescore.BalanceSide
-import es.sebas1705.ironlog.domain.usecases.routinescore.CriterionId
-import es.sebas1705.ironlog.domain.usecases.routinescore.Finding
-import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
-import es.sebas1705.ironlog.domain.usecases.routinescore.RepZone
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineFocus
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScorer
-import es.sebas1705.ironlog.domain.usecases.routinescore.SideRatio
-import es.sebas1705.ironlog.domain.usecases.routinescore.Verdict
-import es.sebas1705.ironlog.feature.routines.resources.Res
-import es.sebas1705.ironlog.feature.routines.resources.*
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.domain.usecases.routinescore.Advice
+import es.sebas1705.haltera.domain.usecases.routinescore.BalanceSide
+import es.sebas1705.haltera.domain.usecases.routinescore.CriterionId
+import es.sebas1705.haltera.domain.usecases.routinescore.Finding
+import es.sebas1705.haltera.domain.usecases.routinescore.MuscleGroup
+import es.sebas1705.haltera.domain.usecases.routinescore.RepZone
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineFocus
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineScorer
+import es.sebas1705.haltera.domain.usecases.routinescore.SideRatio
+import es.sebas1705.haltera.domain.usecases.routinescore.Verdict
+import es.sebas1705.haltera.feature.routines.resources.Res
+import es.sebas1705.haltera.feature.routines.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -26,9 +26,9 @@ import kotlin.math.roundToInt
 /** Colour for a 0–100 score: green from "good", amber for "fair", red below. */
 @Composable
 internal fun scoreColor(score: Int): Color = when {
-    score >= RoutineScorer.GOOD_FROM -> IronlogTheme.colors.success
-    score >= RoutineScorer.FAIR_FROM -> IronlogTheme.colors.warning
-    else -> IronlogTheme.colors.error
+    score >= RoutineScorer.GOOD_FROM -> HalteraTheme.colors.success
+    score >= RoutineScorer.FAIR_FROM -> HalteraTheme.colors.warning
+    else -> HalteraTheme.colors.error
 }
 
 /** A number with at most one decimal, with the decimal separator of [language]. */

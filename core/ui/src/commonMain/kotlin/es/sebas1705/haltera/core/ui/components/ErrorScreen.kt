@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.components
+package es.sebas1705.haltera.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,8 +17,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.resources.Res
-import es.sebas1705.ironlog.core.ui.resources.retry
+import es.sebas1705.haltera.core.ui.resources.Res
+import es.sebas1705.haltera.core.ui.resources.retry
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

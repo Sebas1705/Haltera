@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.account
+package es.sebas1705.haltera.account
 
 import co.touchlab.kermit.Logger
-import es.sebas1705.ironlog.data.sync.AccountService
-import es.sebas1705.ironlog.data.sync.AccountSession
-import es.sebas1705.ironlog.data.sync.SyncEngine
+import es.sebas1705.haltera.data.sync.AccountService
+import es.sebas1705.haltera.data.sync.AccountSession
+import es.sebas1705.haltera.data.sync.SyncEngine
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.data.remote
+package es.sebas1705.haltera.data.remote
 
-import es.sebas1705.ironlog.data.sync.AccountService
-import es.sebas1705.ironlog.data.sync.AccountSession
-import es.sebas1705.ironlog.data.sync.GoogleIdToken
-import es.sebas1705.ironlog.data.sync.LinkResult
-import es.sebas1705.ironlog.data.sync.RemoteStore
-import es.sebas1705.ironlog.data.sync.SyncDocument
+import es.sebas1705.haltera.data.sync.AccountService
+import es.sebas1705.haltera.data.sync.AccountSession
+import es.sebas1705.haltera.data.sync.GoogleIdToken
+import es.sebas1705.haltera.data.sync.LinkResult
+import es.sebas1705.haltera.data.sync.RemoteStore
+import es.sebas1705.haltera.data.sync.SyncDocument
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import java.util.Properties
 
 /** In-memory database with the schema created and foreign keys on, as on the device. */

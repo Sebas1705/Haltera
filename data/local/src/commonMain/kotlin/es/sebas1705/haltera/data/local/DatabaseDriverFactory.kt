@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 import app.cash.sqldelight.db.SqlDriver
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.AppDatabase
 
-internal const val DATABASE_NAME = "ironlog.db"
+internal const val DATABASE_NAME = "haltera.db"
 
 expect class DatabaseDriverFactory {
     fun create(): SqlDriver

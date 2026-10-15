@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.components
+package es.sebas1705.haltera.feature.nutrition.ui.components
 
-import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
-import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
-import es.sebas1705.ironlog.core.ui.adaptive.ContentMaxWidth
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
+import es.sebas1705.haltera.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.haltera.core.ui.adaptive.ContentMaxWidth
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -55,35 +55,35 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.models.FoodUnit
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.data.models.Nutrients
-import es.sebas1705.ironlog.feature.nutrition.model.Amounts
-import es.sebas1705.ironlog.feature.nutrition.resources.Res
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_back
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_carbs
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_close
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_date_full
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_energy
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_fat
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_fiber
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_grams_value
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_info
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_kcal_value
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_meal_breakfast
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_meal_dinner
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_meal_lunch
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_meal_snack
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_ml_value
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_months_short
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_protein
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_salt
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_sugar
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_unknown
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_weekdays_short
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.models.FoodUnit
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.data.models.Nutrients
+import es.sebas1705.haltera.feature.nutrition.model.Amounts
+import es.sebas1705.haltera.feature.nutrition.resources.Res
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_back
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_carbs
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_close
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_date_full
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_energy
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_fat
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_fiber
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_grams_value
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_info
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_kcal_value
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_meal_breakfast
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_meal_dinner
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_meal_lunch
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_meal_snack
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_ml_value
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_months_short
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_protein
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_salt
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_sugar
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_unknown
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_weekdays_short
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
 import org.jetbrains.compose.resources.StringResource
@@ -109,10 +109,10 @@ internal fun language(): String = Locale.current.language
 /** Macro colours from the brand palette: protein accent, carbohydrates gold, fat neutral. */
 internal object MacroColors {
     val protein: Color @Composable get() = MaterialTheme.colorScheme.primary
-    val carbs: Color @Composable get() = IronlogTheme.colors.prGold
+    val carbs: Color @Composable get() = HalteraTheme.colors.prGold
     val fat: Color @Composable get() = MaterialTheme.colorScheme.secondary
-    val kcal: Color @Composable get() = IronlogTheme.colors.accent
-    val withinGoal: Color @Composable get() = IronlogTheme.colors.success
+    val kcal: Color @Composable get() = HalteraTheme.colors.accent
+    val withinGoal: Color @Composable get() = HalteraTheme.colors.success
 }
 
 internal val Meal.label: StringResource
@@ -254,7 +254,7 @@ internal fun EnergyRing(
 ) {
     val track = MaterialTheme.colorScheme.surfaceVariant
     val over = goal != null && value > goal * 1.1
-    val color = if (over) IronlogTheme.colors.warning else MacroColors.kcal
+    val color = if (over) HalteraTheme.colors.warning else MacroColors.kcal
     val fraction = if (goal == null || goal <= 0) 0f else (value / goal).toFloat().coerceIn(0f, 1f)
     Box(modifier.size(size), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {

@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.feature.session
+package es.sebas1705.haltera.feature.session
 
-import es.sebas1705.ironlog.feature.session.platform.ExactAlarmAccess
-import es.sebas1705.ironlog.feature.session.platform.ExactAlarmPrompt
-import es.sebas1705.ironlog.feature.session.platform.ExactAlarmPromptStore
+import es.sebas1705.haltera.feature.session.platform.ExactAlarmAccess
+import es.sebas1705.haltera.feature.session.platform.ExactAlarmPrompt
+import es.sebas1705.haltera.feature.session.platform.ExactAlarmPromptStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

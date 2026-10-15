@@ -1,31 +1,31 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.ExerciseSource
-import es.sebas1705.ironlog.data.models.LoadIncrement
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.NewExercise
-import es.sebas1705.ironlog.data.models.NewVariant
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.RoutineOrigin
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.data.repository.share.DefaultRoutineSharing
-import es.sebas1705.ironlog.data.repository.share.ImportPreview
-import es.sebas1705.ironlog.data.repository.share.ImportPreviewResult
-import es.sebas1705.ironlog.data.repository.share.QrCapacity
-import es.sebas1705.ironlog.data.repository.share.RoutineDecodeResult
-import es.sebas1705.ironlog.data.repository.share.RoutineExport
-import es.sebas1705.ironlog.data.repository.share.RoutineShareCode
-import es.sebas1705.ironlog.data.repository.sql.HistoryLoader
-import es.sebas1705.ironlog.data.repository.sql.SqlExerciseRepository
-import es.sebas1705.ironlog.data.repository.sql.SqlRoutineRepository
-import es.sebas1705.ironlog.data.routines.FamousRoutines
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.LoadIncrement
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.NewVariant
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.RoutineOrigin
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.repository.share.DefaultRoutineSharing
+import es.sebas1705.haltera.data.repository.share.ImportPreview
+import es.sebas1705.haltera.data.repository.share.ImportPreviewResult
+import es.sebas1705.haltera.data.repository.share.QrCapacity
+import es.sebas1705.haltera.data.repository.share.RoutineDecodeResult
+import es.sebas1705.haltera.data.repository.share.RoutineExport
+import es.sebas1705.haltera.data.repository.share.RoutineShareCode
+import es.sebas1705.haltera.data.repository.sql.HistoryLoader
+import es.sebas1705.haltera.data.repository.sql.SqlExerciseRepository
+import es.sebas1705.haltera.data.repository.sql.SqlRoutineRepository
+import es.sebas1705.haltera.data.routines.FamousRoutines
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
@@ -149,14 +149,14 @@ class RoutineSharingTest {
         val env = env()
         assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("{not json"))
         assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("""{"format":"other","version":1}"""))
-        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("""{"format":"ironlog-routine","version":1}"""))
-        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("ironlog:r1:%%%"))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("""{"format":"haltera-routine","version":1}"""))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("haltera:r1:%%%"))
     }
 
     @Test
     fun `a newer version is reported as unsupported`() = runTest {
         val env = env()
-        val result = env.sharing.preview("""{"format":"ironlog-routine","version":2,"routine":{"name":"X"}}""")
+        val result = env.sharing.preview("""{"format":"haltera-routine","version":2,"routine":{"name":"X"}}""")
         assertEquals(2, assertIs<ImportPreviewResult.UnsupportedVersion>(result).version)
     }
 
@@ -180,8 +180,8 @@ class RoutineSharingTest {
         assertTrue(code.removePrefix(RoutineShareCode.PREFIX_V1).all { it.isLetterOrDigit() || it == '-' || it == '_' })
         assertEquals(json, RoutineShareCode.decode(code))
         // The prefix is read case-insensitively; the payload is not touched.
-        assertEquals(json, RoutineShareCode.decode("IRONLOG:R1:" + code.removePrefix(RoutineShareCode.PREFIX_V1)))
-        assertNull(RoutineShareCode.decode("ironlog:r1:AAAA"))
+        assertEquals(json, RoutineShareCode.decode("HALTERA:R1:" + code.removePrefix(RoutineShareCode.PREFIX_V1)))
+        assertNull(RoutineShareCode.decode("haltera:r1:AAAA"))
         assertNull(RoutineShareCode.decode("hello"))
         // The preview accepts the QR payload directly.
         assertTrue(ready(env.sharing.preview(code)).missingIds.isEmpty())
@@ -196,9 +196,9 @@ class RoutineSharingTest {
         assertTrue(code.startsWith(RoutineShareCode.PREFIX))
         assertTrue(QrCapacity.isAlphanumeric(code))
         assertEquals(json, RoutineShareCode.decode(code))
-        assertEquals(json, RoutineShareCode.decode("ironlog:r2:" + code.removePrefix(RoutineShareCode.PREFIX) + "\n"))
-        assertNull(RoutineShareCode.decode("IRONLOG:R2:AAAA"))
-        assertNull(RoutineShareCode.decode("IRONLOG:R2:abc"))
+        assertEquals(json, RoutineShareCode.decode("haltera:r2:" + code.removePrefix(RoutineShareCode.PREFIX) + "\n"))
+        assertNull(RoutineShareCode.decode("HALTERA:R2:AAAA"))
+        assertNull(RoutineShareCode.decode("HALTERA:R2:abc"))
         // A routine not copied from the catalogue is shared as v2.
         val shared = env.sharing.shareCode(id)!!
         assertTrue(shared.startsWith(RoutineShareCode.PREFIX))
@@ -211,7 +211,7 @@ class RoutineSharingTest {
         val env = env()
         val id = env.routines.copyTemplate("ppl-reddit", "es")
         val code = env.sharing.shareCode(id)!!
-        assertEquals("IRONLOG:T1:PPL-REDDIT:1", code)
+        assertEquals("HALTERA:T1:PPL-REDDIT:1", code)
         assertTrue(QrCapacity.isAlphanumeric(code))
         assertEquals(RoutineOrigin("ppl-reddit", 1), RoutineShareCode.decodeTemplate(code.lowercase()))
         assertNull(RoutineShareCode.decode(code))
@@ -247,10 +247,10 @@ class RoutineSharingTest {
     @Test
     fun `bad template codes are invalid or unsupported`() = runTest {
         val env = env()
-        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("IRONLOG:T1:NOT-A-TEMPLATE:1"))
-        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("IRONLOG:T1:PPL-REDDIT"))
-        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("IRONLOG:T1:PPL_REDDIT:1"))
-        val newer = env.sharing.preview("IRONLOG:T1:PPL-REDDIT:99")
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("HALTERA:T1:NOT-A-TEMPLATE:1"))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("HALTERA:T1:PPL-REDDIT"))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("HALTERA:T1:PPL_REDDIT:1"))
+        val newer = env.sharing.preview("HALTERA:T1:PPL-REDDIT:99")
         assertEquals(99, assertIs<ImportPreviewResult.UnsupportedVersion>(newer).version)
         // Every bundled template id fits the template code.
         FamousRoutines.all.forEach { t ->

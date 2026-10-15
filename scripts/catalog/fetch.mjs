@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 import { reduceWger } from './lib/wger.mjs';
 
 const root = fileURLToPath(new URL('../../catalog/sources/', import.meta.url));
-const userAgent = 'Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)';
+const userAgent = 'Haltera-catalog/1.0 (+https://github.com/Sebas1705/Haltera)';
 
 async function getJson(url) {
   const response = await fetch(url, {

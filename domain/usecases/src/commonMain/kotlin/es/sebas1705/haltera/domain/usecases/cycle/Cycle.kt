@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.domain.usecases.cycle
+package es.sebas1705.haltera.domain.usecases.cycle
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineDay
-import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineDay
+import es.sebas1705.haltera.data.models.WorkoutSession
 
 /**
  * The next day to train. [restDaysSkipped] are the REST days between the pointer and [dayIndex] (in

@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.feature.today.ui
+package es.sebas1705.haltera.feature.today.ui
 
-import es.sebas1705.ironlog.core.ui.components.PastSessionForm
+import es.sebas1705.haltera.core.ui.components.PastSessionForm
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime

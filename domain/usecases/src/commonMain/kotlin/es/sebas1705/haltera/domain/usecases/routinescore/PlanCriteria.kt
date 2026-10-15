@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.domain.usecases.routinescore
+package es.sebas1705.haltera.domain.usecases.routinescore
 
-import es.sebas1705.ironlog.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.ProgressionRule
 import kotlin.math.ceil
 import kotlin.math.ln
 import kotlin.math.max

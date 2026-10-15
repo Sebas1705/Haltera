@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.settings
+package es.sebas1705.haltera.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,35 +37,35 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import es.sebas1705.ironlog.account.AccountSection
-import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
-import es.sebas1705.ironlog.core.ui.components.IronlogLogo
-import es.sebas1705.ironlog.core.ui.theme.FontLicence
-import es.sebas1705.ironlog.core.ui.theme.readFontLicences
-import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.core.units.Weights
-import es.sebas1705.ironlog.resources.Res
-import es.sebas1705.ironlog.resources.back
-import es.sebas1705.ironlog.resources.credits_catalog
-import es.sebas1705.ironlog.resources.credits_catalog_text
-import es.sebas1705.ironlog.resources.credits_fonts
-import es.sebas1705.ironlog.resources.credits_foods
-import es.sebas1705.ironlog.resources.credits_foods_text
-import es.sebas1705.ironlog.resources.credits_license
-import es.sebas1705.ironlog.resources.credits_title
-import es.sebas1705.ironlog.resources.settings_about
-import es.sebas1705.ironlog.resources.settings_account
-import es.sebas1705.ironlog.resources.settings_bar_weight
-import es.sebas1705.ironlog.resources.settings_credits
-import es.sebas1705.ironlog.resources.settings_keep_screen_on
-import es.sebas1705.ironlog.resources.settings_plates
-import es.sebas1705.ironlog.resources.settings_rest_sound
-import es.sebas1705.ironlog.resources.settings_rest_vibration
-import es.sebas1705.ironlog.resources.settings_title
-import es.sebas1705.ironlog.resources.settings_units
-import es.sebas1705.ironlog.resources.unit_kg
-import es.sebas1705.ironlog.resources.unit_lb
+import es.sebas1705.haltera.account.AccountSection
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
+import es.sebas1705.haltera.core.ui.components.HalteraLogo
+import es.sebas1705.haltera.core.ui.theme.FontLicence
+import es.sebas1705.haltera.core.ui.theme.readFontLicences
+import es.sebas1705.haltera.core.units.PlateCalculator
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.core.units.Weights
+import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.back
+import es.sebas1705.haltera.resources.credits_catalog
+import es.sebas1705.haltera.resources.credits_catalog_text
+import es.sebas1705.haltera.resources.credits_fonts
+import es.sebas1705.haltera.resources.credits_foods
+import es.sebas1705.haltera.resources.credits_foods_text
+import es.sebas1705.haltera.resources.credits_license
+import es.sebas1705.haltera.resources.credits_title
+import es.sebas1705.haltera.resources.settings_about
+import es.sebas1705.haltera.resources.settings_account
+import es.sebas1705.haltera.resources.settings_bar_weight
+import es.sebas1705.haltera.resources.settings_credits
+import es.sebas1705.haltera.resources.settings_keep_screen_on
+import es.sebas1705.haltera.resources.settings_plates
+import es.sebas1705.haltera.resources.settings_rest_sound
+import es.sebas1705.haltera.resources.settings_rest_vibration
+import es.sebas1705.haltera.resources.settings_title
+import es.sebas1705.haltera.resources.settings_units
+import es.sebas1705.haltera.resources.unit_kg
+import es.sebas1705.haltera.resources.unit_lb
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -234,7 +234,7 @@ fun CreditsScreen(onBack: () -> Unit) {
             modifier.fillMaxSize().centeredContent().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            IronlogLogo(size = 72.dp, modifier = Modifier.align(Alignment.CenterHorizontally))
+            HalteraLogo(size = 72.dp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Text(stringResource(Res.string.credits_catalog), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(Res.string.credits_catalog_text), style = MaterialTheme.typography.bodyMedium)
             HorizontalDivider()

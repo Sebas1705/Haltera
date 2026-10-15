@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.feature.session.timer
+package es.sebas1705.haltera.feature.session.timer
 
-import es.sebas1705.ironlog.core.datastore.SettingsRepository
-import es.sebas1705.ironlog.feature.session.platform.RestAlert
+import es.sebas1705.haltera.core.datastore.SettingsRepository
+import es.sebas1705.haltera.feature.session.platform.RestAlert
 import kotlinx.coroutines.flow.StateFlow
 
 /**

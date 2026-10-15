@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 /** What the database holds of the bundled exercise catalogue. `version` is null before the first import. */
 data class CatalogSummary(

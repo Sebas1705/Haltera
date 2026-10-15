@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.repository.ExerciseRepository
 
 /** What the progress screens need to know about a variant: names, equipment and muscles. */
 internal data class VariantInfo(

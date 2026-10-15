@@ -1,13 +1,13 @@
-package es.sebas1705.ironlog.account
+package es.sebas1705.haltera.account
 
-import es.sebas1705.ironlog.data.sync.GoogleIdToken
+import es.sebas1705.haltera.data.sync.GoogleIdToken
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
 /**
  * Google sign-in implemented in Swift with the GoogleSignIn SDK (iosApp/iosApp/GoogleSignIn.swift):
  * its API is Swift-first, so the app hands an implementation of this interface to
- * [es.sebas1705.ironlog.startIronlogKoin].
+ * [es.sebas1705.haltera.startHalteraKoin].
  */
 interface GoogleSignInBridge {
     /** False until Google is enabled in Firebase and the app has its URL scheme. */

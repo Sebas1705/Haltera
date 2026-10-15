@@ -3,21 +3,21 @@ These are judgements, not measurements: they are written by hand and inserted in
 
 ### Android Auto Backup: include the database (decided, implemented)
 
-Ironlog is local-first and the account is optional, so most users have **no** cloud copy of their logbook. Without
+Haltera is local-first and the account is optional, so most users have **no** cloud copy of their logbook. Without
 Auto Backup, a new phone (or a reinstall) starts empty for them. Therefore the manifest keeps
 `allowBackup="true"` and now declares what is backed up (`data_extraction_rules.xml` for Android 12+ and
 `backup_rules.xml` for Android 6 to 11):
 
-- **Included**: `ironlog.db` (with `-wal` and `-journal`) and `es.sebas1705.ironlog_preferences.xml` (units,
+- **Included**: `haltera.db` (with `-wal` and `-journal`) and `es.sebas1705.haltera_preferences.xml` (units,
   theme, rest and nutrition settings, load steps). The sync state (dirty flags, cursors) lives inside the
   database, so a restored database is self-consistent with whatever the account has.
 - **Excluded** (everything not listed): Firebase Authentication state, Google Play services caches, LeakCanary
-  and the `ironlog_session.xml` live-session state. Restoring another device's auth tokens would be wrong, and
+  and the `haltera_session.xml` live-session state. Restoring another device's auth tokens would be wrong, and
   after a restore the user simply signs in again; sync then merges by last write.
 - Size is far below the 25 MB Auto Backup limit (the catalogue is read-only app data, not user data; only user
   rows are in the database). Data-safety form: the backup is Google's own device backup, not a transfer to us.
 - Before the first production release, restore-test once on an emulator pair:
-  `adb shell bmgr backupnow es.sebas1705.ironlog` then reinstall and `adb shell bmgr restore`.
+  `adb shell bmgr backupnow es.sebas1705.haltera` then reinstall and `adb shell bmgr restore`.
 
 ### Exact alarms (decided: keep declared for now)
 

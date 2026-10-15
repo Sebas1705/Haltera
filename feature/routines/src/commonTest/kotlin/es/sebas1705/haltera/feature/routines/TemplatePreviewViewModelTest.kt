@@ -1,19 +1,19 @@
-package es.sebas1705.ironlog.feature.routines
+package es.sebas1705.haltera.feature.routines
 
 import app.cash.turbine.test
-import es.sebas1705.ironlog.core.testing.CoroutineTestRule
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Level
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineOrigin
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TemplateDay
-import es.sebas1705.ironlog.feature.routines.ui.catalogue.CatalogueViewModel
-import es.sebas1705.ironlog.feature.routines.ui.catalogue.TemplatePreviewIntent
-import es.sebas1705.ironlog.feature.routines.ui.catalogue.TemplatePreviewViewModel
+import es.sebas1705.haltera.core.testing.CoroutineTestRule
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Level
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineOrigin
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TemplateDay
+import es.sebas1705.haltera.feature.routines.ui.catalogue.CatalogueViewModel
+import es.sebas1705.haltera.feature.routines.ui.catalogue.TemplatePreviewIntent
+import es.sebas1705.haltera.feature.routines.ui.catalogue.TemplatePreviewViewModel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -32,7 +32,7 @@ class TemplatePreviewViewModelTest {
         version = 2,
         name = LocalizedText(en = "Full body", es = "Cuerpo completo"),
         description = LocalizedText(en = "Three days a week", es = "Tres días a la semana"),
-        credit = "Ironlog",
+        credit = "Haltera",
         level = Level.BEGINNER,
         days = listOf(
             TemplateDay(

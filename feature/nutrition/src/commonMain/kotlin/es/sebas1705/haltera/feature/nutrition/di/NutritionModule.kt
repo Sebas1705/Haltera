@@ -1,20 +1,20 @@
-package es.sebas1705.ironlog.feature.nutrition.di
+package es.sebas1705.haltera.feature.nutrition.di
 
 import androidx.compose.ui.text.intl.Locale
-import es.sebas1705.ironlog.feature.nutrition.model.AppLanguage
-import es.sebas1705.ironlog.feature.nutrition.model.Today
-import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
-import es.sebas1705.ironlog.feature.nutrition.scan.NoBarcodeScanner
-import es.sebas1705.ironlog.feature.nutrition.ui.day.DayViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodEditorArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodEditorViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.goals.GoalsViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.recipe.RecipeArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.recipe.RecipeEditorViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.search.FoodSearchViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.stats.StatsViewModel
+import es.sebas1705.haltera.feature.nutrition.model.AppLanguage
+import es.sebas1705.haltera.feature.nutrition.model.Today
+import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.feature.nutrition.scan.NoBarcodeScanner
+import es.sebas1705.haltera.feature.nutrition.ui.day.DayViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailArgs
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodEditorArgs
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodEditorViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.goals.GoalsViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.recipe.RecipeArgs
+import es.sebas1705.haltera.feature.nutrition.ui.recipe.RecipeEditorViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.search.FoodSearchViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.stats.StatsViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 

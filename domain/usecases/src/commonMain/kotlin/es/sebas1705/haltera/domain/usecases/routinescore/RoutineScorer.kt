@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.domain.usecases.routinescore
+package es.sebas1705.haltera.domain.usecases.routinescore
 
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.WorkoutSession
 import kotlin.math.roundToInt
 
 /**
  * Scores a routine against training research and suggests changes (docs/designs/2026-10-15-routine-scoring.md).
- * Pure and deterministic. The score is advice only: Ironlog is a logbook and never enforces or blocks a routine.
+ * Pure and deterministic. The score is advice only: Haltera is a logbook and never enforces or blocks a routine.
  */
 object RoutineScorer {
     const val EXCELLENT_FROM = 90

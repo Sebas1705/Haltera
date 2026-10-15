@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.account
+package es.sebas1705.haltera.account
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -13,7 +13,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import es.sebas1705.ironlog.data.sync.GoogleIdToken
+import es.sebas1705.haltera.data.sync.GoogleIdToken
 import java.lang.ref.WeakReference
 
 /**

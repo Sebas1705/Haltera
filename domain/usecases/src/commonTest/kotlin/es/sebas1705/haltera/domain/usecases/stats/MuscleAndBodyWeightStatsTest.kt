@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.domain.usecases.routinescore.MuscleGroup
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

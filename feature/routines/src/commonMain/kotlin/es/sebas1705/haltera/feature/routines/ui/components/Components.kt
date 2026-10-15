@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.ui.components
+package es.sebas1705.haltera.feature.routines.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -35,14 +35,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.feature.routines.resources.Res
-import es.sebas1705.ironlog.feature.routines.resources.routines_back
-import es.sebas1705.ironlog.feature.routines.resources.routines_cancel
-import es.sebas1705.ironlog.feature.routines.resources.routines_decrease
-import es.sebas1705.ironlog.feature.routines.resources.routines_increase
-import es.sebas1705.ironlog.feature.routines.resources.routines_move_down
-import es.sebas1705.ironlog.feature.routines.resources.routines_move_up
-import es.sebas1705.ironlog.feature.routines.resources.routines_save
+import es.sebas1705.haltera.feature.routines.resources.Res
+import es.sebas1705.haltera.feature.routines.resources.routines_back
+import es.sebas1705.haltera.feature.routines.resources.routines_cancel
+import es.sebas1705.haltera.feature.routines.resources.routines_decrease
+import es.sebas1705.haltera.feature.routines.resources.routines_increase
+import es.sebas1705.haltera.feature.routines.resources.routines_move_down
+import es.sebas1705.haltera.feature.routines.resources.routines_move_up
+import es.sebas1705.haltera.feature.routines.resources.routines_save
 import org.jetbrains.compose.resources.stringResource
 
 @Composable

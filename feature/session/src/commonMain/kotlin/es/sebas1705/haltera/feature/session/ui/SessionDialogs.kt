@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -19,20 +19,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_cancel
-import es.sebas1705.ironlog.feature.session.resources.session_delete
-import es.sebas1705.ironlog.feature.session.resources.session_delete_text
-import es.sebas1705.ironlog.feature.session.resources.session_delete_title
-import es.sebas1705.ironlog.feature.session.resources.session_discard
-import es.sebas1705.ironlog.feature.session.resources.session_discard_text
-import es.sebas1705.ironlog.feature.session.resources.session_discard_title
-import es.sebas1705.ironlog.feature.session.resources.session_finish
-import es.sebas1705.ironlog.feature.session.resources.session_finish_text
-import es.sebas1705.ironlog.feature.session.resources.session_finish_title
-import es.sebas1705.ironlog.feature.session.resources.session_no_results
-import es.sebas1705.ironlog.feature.session.resources.session_search_hint
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_cancel
+import es.sebas1705.haltera.feature.session.resources.session_delete
+import es.sebas1705.haltera.feature.session.resources.session_delete_text
+import es.sebas1705.haltera.feature.session.resources.session_delete_title
+import es.sebas1705.haltera.feature.session.resources.session_discard
+import es.sebas1705.haltera.feature.session.resources.session_discard_text
+import es.sebas1705.haltera.feature.session.resources.session_discard_title
+import es.sebas1705.haltera.feature.session.resources.session_finish
+import es.sebas1705.haltera.feature.session.resources.session_finish_text
+import es.sebas1705.haltera.feature.session.resources.session_finish_title
+import es.sebas1705.haltera.feature.session.resources.session_no_results
+import es.sebas1705.haltera.feature.session.resources.session_search_hint
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
-import es.sebas1705.ironlog.data.models.RoutineOrigin
+import es.sebas1705.haltera.data.models.RoutineOrigin
 import kotlin.io.encoding.Base64
 
 /** Deflates bytes in the zlib format (RFC 1950). */
@@ -11,16 +11,16 @@ internal expect fun inflateBytes(data: ByteArray): ByteArray
 
 /**
  * The QR payload of a shared routine (spec §10.1). Three forms, all read case-insensitively by prefix:
- * - `IRONLOG:R2:` + base45(deflate(json)), written by default. Every character is in the QR alphanumeric
+ * - `HALTERA:R2:` + base45(deflate(json)), written by default. Every character is in the QR alphanumeric
  *   charset, so the QR uses alphanumeric mode (5.5 bits per character) and comes out less dense.
- * - `IRONLOG:T1:<TEMPLATE-ID>:<version>`, for an unmodified copy of a bundled catalogue template. Template
+ * - `HALTERA:T1:<TEMPLATE-ID>:<version>`, for an unmodified copy of a bundled catalogue template. Template
  *   ids are lowercase `[a-z0-9-]`, written uppercase to stay alphanumeric and lowercased when read.
- * - `ironlog:r1:` + base64url(deflate(json)), the first format; still read, written only by [encodeV1].
+ * - `haltera:r1:` + base64url(deflate(json)), the first format; still read, written only by [encodeV1].
  */
 object RoutineShareCode {
-    const val PREFIX = "IRONLOG:R2:"
-    const val PREFIX_V1 = "ironlog:r1:"
-    const val TEMPLATE_PREFIX = "IRONLOG:T1:"
+    const val PREFIX = "HALTERA:R2:"
+    const val PREFIX_V1 = "haltera:r1:"
+    const val TEMPLATE_PREFIX = "HALTERA:T1:"
 
     /** Longest payload we put in a QR code that still scans reliably. */
     const val MAX_QR_LENGTH = 2_000

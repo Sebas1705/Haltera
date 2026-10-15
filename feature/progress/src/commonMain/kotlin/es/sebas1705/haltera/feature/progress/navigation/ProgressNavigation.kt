@@ -1,14 +1,14 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.feature.progress.navigation
+package es.sebas1705.haltera.feature.progress.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import es.sebas1705.ironlog.feature.progress.ui.ProgressScreen
-import es.sebas1705.ironlog.feature.progress.ui.session.SessionDetailScreen
-import es.sebas1705.ironlog.feature.progress.ui.session.SessionDetailViewModel
+import es.sebas1705.haltera.feature.progress.ui.ProgressScreen
+import es.sebas1705.haltera.feature.progress.ui.session.SessionDetailScreen
+import es.sebas1705.haltera.feature.progress.ui.session.SessionDetailViewModel
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf

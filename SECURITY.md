@@ -13,6 +13,6 @@ Do not open a public issue for security vulnerabilities.
 
 ## Data
 
-Ironlog stores everything on the device, in the local SQLite database (`ironlog.db`).
+Haltera stores everything on the device, in the local SQLite database (`haltera.db`).
 There is no account, token storage or network layer yet; sync arrives in a later phase (F8),
 and this section will describe its storage and transport rules then.

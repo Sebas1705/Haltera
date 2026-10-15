@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.share
+package es.sebas1705.haltera.share
 
 import android.content.Context
 import android.content.Intent
@@ -10,7 +10,7 @@ import androidx.core.content.FileProvider
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -19,7 +19,7 @@ import java.io.File
 import java.lang.ref.WeakReference
 import kotlin.coroutines.resume
 
-/** The activity in front, for the pickers and the scanner. Set by [es.sebas1705.ironlog.MainActivity]. */
+/** The activity in front, for the pickers and the scanner. Set by [es.sebas1705.haltera.MainActivity]. */
 object CurrentActivity {
     private var ref: WeakReference<ComponentActivity>? = null
 
@@ -49,7 +49,7 @@ class AndroidRoutineShareBridge(
             putExtra(Intent.EXTRA_STREAM, uri)
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        val chooser = Intent.createChooser(send, fileName.removeSuffix(".ironlog"))
+        val chooser = Intent.createChooser(send, fileName.removeSuffix(".haltera"))
         val activity = CurrentActivity.activity
         if (activity != null) {
             activity.startActivity(chooser)
@@ -87,7 +87,7 @@ class AndroidRoutineShareBridge(
 
     companion object {
         private const val SHARED_DIR = "shared"
-        private const val PICK_KEY = "ironlog-import-routine"
+        private const val PICK_KEY = "haltera-import-routine"
         const val MIME_TYPE = "application/json"
 
         /** The text of [uri], or null when it cannot be read or is too large to be a routine. */

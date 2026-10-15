@@ -1,8 +1,8 @@
 @file:OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 
-package es.sebas1705.ironlog.share
+package es.sebas1705.haltera.share
 
-import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
+import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import kotlinx.cinterop.BetaInteropApi
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.StateFlow

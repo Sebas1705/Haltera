@@ -6,7 +6,7 @@ import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where, writ
 let env;
 beforeAll(async () => {
   env = await initializeTestEnvironment({
-    projectId: 'demo-ironlog',
+    projectId: 'demo-haltera',
     firestore: {
       rules: readFileSync(new URL('../../firestore.rules', import.meta.url), 'utf8'),
       host: '127.0.0.1',

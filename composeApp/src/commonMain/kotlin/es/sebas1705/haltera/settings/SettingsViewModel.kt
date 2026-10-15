@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.settings
+package es.sebas1705.haltera.settings
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.core.datastore.SettingsRepository
-import es.sebas1705.ironlog.core.datastore.UserSettings
-import es.sebas1705.ironlog.core.units.WeightUnit
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.core.datastore.SettingsRepository
+import es.sebas1705.haltera.core.datastore.UserSettings
+import es.sebas1705.haltera.core.units.WeightUnit
 import kotlinx.coroutines.Job
 
 data class SettingsState(val settings: UserSettings = UserSettings()) : MVIBaseState

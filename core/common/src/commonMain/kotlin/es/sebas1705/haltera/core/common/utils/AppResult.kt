@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.common.utils
+package es.sebas1705.haltera.core.common.utils
 
 sealed class AppResult<out T> {
     data class Success<T>(val data: T) : AppResult<T>()

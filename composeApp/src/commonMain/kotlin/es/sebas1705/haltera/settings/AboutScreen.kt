@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.settings
+package es.sebas1705.haltera.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,21 +16,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
-import es.sebas1705.ironlog.core.ui.components.HealthDisclaimer
-import es.sebas1705.ironlog.core.ui.components.HealthDisclaimerKind
-import es.sebas1705.ironlog.core.ui.components.IronlogLogo
-import es.sebas1705.ironlog.core.units.appLanguage
-import es.sebas1705.ironlog.resources.Res
-import es.sebas1705.ironlog.resources.about_delete_account
-import es.sebas1705.ironlog.resources.about_health
-import es.sebas1705.ironlog.resources.about_legal
-import es.sebas1705.ironlog.resources.about_license
-import es.sebas1705.ironlog.resources.about_privacy
-import es.sebas1705.ironlog.resources.about_title
-import es.sebas1705.ironlog.resources.about_version
-import es.sebas1705.ironlog.resources.app_name
-import es.sebas1705.ironlog.resources.settings_credits
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
+import es.sebas1705.haltera.core.ui.components.HealthDisclaimer
+import es.sebas1705.haltera.core.ui.components.HealthDisclaimerKind
+import es.sebas1705.haltera.core.ui.components.HalteraLogo
+import es.sebas1705.haltera.core.units.appLanguage
+import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.about_delete_account
+import es.sebas1705.haltera.resources.about_health
+import es.sebas1705.haltera.resources.about_legal
+import es.sebas1705.haltera.resources.about_license
+import es.sebas1705.haltera.resources.about_privacy
+import es.sebas1705.haltera.resources.about_title
+import es.sebas1705.haltera.resources.about_version
+import es.sebas1705.haltera.resources.app_name
+import es.sebas1705.haltera.resources.settings_credits
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 
@@ -51,7 +51,7 @@ fun AboutScreen(onBack: () -> Unit, onCredits: () -> Unit, info: AppInfo = koinI
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            IronlogLogo(size = 72.dp)
+            HalteraLogo(size = 72.dp)
             Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.headlineMedium)
             Text(
                 stringResource(Res.string.about_version, info.versionName, info.versionCode),

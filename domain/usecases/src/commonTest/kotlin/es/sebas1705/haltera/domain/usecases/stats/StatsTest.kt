@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.data.models.SetLog
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.data.models.SetLog
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

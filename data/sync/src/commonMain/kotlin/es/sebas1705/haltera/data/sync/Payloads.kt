@@ -1,17 +1,17 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
-import es.sebas1705.ironlog.data.local.db.BodyWeightEntity
-import es.sebas1705.ironlog.data.local.db.ExerciseEntity
-import es.sebas1705.ironlog.data.local.db.ExerciseVariantEntity
-import es.sebas1705.ironlog.data.local.db.FoodEntity
-import es.sebas1705.ironlog.data.local.db.MealEntryEntity
-import es.sebas1705.ironlog.data.local.db.RecipeItemEntity
-import es.sebas1705.ironlog.data.local.db.RoutineDayEntity
-import es.sebas1705.ironlog.data.local.db.RoutineEntity
-import es.sebas1705.ironlog.data.local.db.RoutineSlotEntity
-import es.sebas1705.ironlog.data.local.db.SessionExerciseEntity
-import es.sebas1705.ironlog.data.local.db.SetLogEntity
-import es.sebas1705.ironlog.data.local.db.WorkoutSessionEntity
+import es.sebas1705.haltera.data.local.db.BodyWeightEntity
+import es.sebas1705.haltera.data.local.db.ExerciseEntity
+import es.sebas1705.haltera.data.local.db.ExerciseVariantEntity
+import es.sebas1705.haltera.data.local.db.FoodEntity
+import es.sebas1705.haltera.data.local.db.MealEntryEntity
+import es.sebas1705.haltera.data.local.db.RecipeItemEntity
+import es.sebas1705.haltera.data.local.db.RoutineDayEntity
+import es.sebas1705.haltera.data.local.db.RoutineEntity
+import es.sebas1705.haltera.data.local.db.RoutineSlotEntity
+import es.sebas1705.haltera.data.local.db.SessionExerciseEntity
+import es.sebas1705.haltera.data.local.db.SetLogEntity
+import es.sebas1705.haltera.data.local.db.WorkoutSessionEntity
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 

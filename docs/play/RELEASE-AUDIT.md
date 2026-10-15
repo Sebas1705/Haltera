@@ -23,7 +23,7 @@ Locally the release build is signed with the debug key (no keystore variables); 
 
 | Check | Value | Expected |
 |---|---|---|
-| applicationId | es.sebas1705.ironlog | es.sebas1705.ironlog |
+| applicationId | es.sebas1705.haltera | es.sebas1705.haltera |
 | targetSdk | 36 | 36 |
 | minSdk | 24 | 24 |
 | debuggable | (unset, false) | false / unset |
@@ -84,7 +84,7 @@ Source: `composeApp/build/intermediates/merged_manifests/release/processReleaseM
 - `android.permission.USE_FINGERPRINT`
 - `android.permission.VIBRATE`
 - `com.google.android.providers.gsf.permission.READ_GSERVICES`
-- `es.sebas1705.ironlog.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`
+- `es.sebas1705.haltera.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`
 
 ### Features
 
@@ -104,7 +104,7 @@ Source: `composeApp/build/intermediates/merged_manifests/release/processReleaseM
 
 | Kind | Name | Exported | Permission | FGS type |
 |---|---|---|---|---|
-| activity | `es.sebas1705.ironlog.MainActivity` | true |  |  |
+| activity | `es.sebas1705.haltera.MainActivity` | true |  |  |
 | activity | `com.google.firebase.auth.internal.GenericIdpActivity` | true |  |  |
 | activity | `com.google.firebase.auth.internal.RecaptchaActivity` | true |  |  |
 | activity | `androidx.credentials.playservices.controllers.identityauth.HiddenActivity` | false |  |  |
@@ -113,14 +113,14 @@ Source: `composeApp/build/intermediates/merged_manifests/release/processReleaseM
 | activity | `com.google.mlkit.vision.codescanner.internal.GmsBarcodeScanningDelegateActivity` | false |  |  |
 | activity | `com.google.android.gms.common.api.GoogleApiActivity` | false |  |  |
 | activity | `com.google.android.play.core.common.PlayCoreDialogWrapperActivity` | false |  |  |
-| service | `es.sebas1705.ironlog.feature.session.platform.SessionService` | false |  | specialUse |
+| service | `es.sebas1705.haltera.feature.session.platform.SessionService` | false |  | specialUse |
 | service | `com.google.firebase.components.ComponentDiscoveryService` | false |  |  |
 | service | `androidx.credentials.playservices.CredentialProviderMetadataHolder` | false |  |  |
 | service | `com.google.android.gms.auth.api.signin.RevocationBoundService` | true | `com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION` |  |
 | service | `com.google.mlkit.common.internal.MlKitComponentDiscoveryService` | false |  |  |
 | service | `com.google.android.datatransport.runtime.backends.TransportBackendDiscovery` | false |  |  |
 | service | `com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService` | false | `android.permission.BIND_JOB_SERVICE` |  |
-| receiver | `es.sebas1705.ironlog.feature.session.platform.RestAlarmReceiver` | false |  |  |
+| receiver | `es.sebas1705.haltera.feature.session.platform.RestAlarmReceiver` | false |  |  |
 | receiver | `com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver` | false |  |  |
 | receiver | `androidx.profileinstaller.ProfileInstallReceiver` | true | `android.permission.DUMP` |  |
 | provider | `androidx.core.content.FileProvider` | false |  |  |
@@ -131,11 +131,11 @@ Source: `composeApp/build/intermediates/merged_manifests/release/processReleaseM
 
 ### Intent filters
 
-**es.sebas1705.ironlog.MainActivity**
+**es.sebas1705.haltera.MainActivity**
 
 - actions: `android.intent.action.MAIN`; categories: `LAUNCHER`
 - actions: `android.intent.action.VIEW`; categories: `DEFAULT`, `BROWSABLE`; data: `scheme=content`, `mimeType=application/json`, `mimeType=application/octet-stream`
-- actions: `android.intent.action.VIEW`; categories: `DEFAULT`, `BROWSABLE`; data: `scheme=file`, `scheme=content`, `host=*`, `mimeType=*/*`, `pathPattern=.*\\.ironlog`, `pathPattern=.*\\..*\\.ironlog`, `pathPattern=.*\\..*\\..*\\.ironlog`
+- actions: `android.intent.action.VIEW`; categories: `DEFAULT`, `BROWSABLE`; data: `scheme=file`, `scheme=content`, `host=*`, `mimeType=*/*`, `pathPattern=.*\\.haltera`, `pathPattern=.*\\..*\\.haltera`, `pathPattern=.*\\..*\\..*\\.haltera`
 - actions: `android.intent.action.SEND`; categories: `DEFAULT`; data: `mimeType=application/json`, `mimeType=application/octet-stream`
 
 **com.google.firebase.auth.internal.GenericIdpActivity**
@@ -159,7 +159,7 @@ Source: `composeApp/build/intermediates/merged_manifests/release/processReleaseM
 - [ok] `USE_EXACT_ALARM` (granted at install, Play allows it only for alarm clock or calendar apps; a rest timer is not one)
 - [FLAG] `POST_NOTIFICATIONS` (runtime permission on Android 13+; the app must work when it is denied)
 - [FLAG] `FOREGROUND_SERVICE` (every foreground service must declare a type, and Play asks for a declaration per type)
-- [FLAG] foreground service type `specialUse` on es.sebas1705.ironlog.feature.session.platform.SessionService: needs the `PROPERTY_SPECIAL_USE_FGS_SUBTYPE` property and the Play Console foreground service declaration with a description and a demo video
+- [FLAG] foreground service type `specialUse` on es.sebas1705.haltera.feature.session.platform.SessionService: needs the `PROPERTY_SPECIAL_USE_FGS_SUBTYPE` property and the Play Console foreground service declaration with a description and a demo video
 - [FLAG] `INTERNET` (needed for optional sync and sign-in; declare network use in the Data safety form)
 - [FLAG] exported components other than activities (check each is intended)
 

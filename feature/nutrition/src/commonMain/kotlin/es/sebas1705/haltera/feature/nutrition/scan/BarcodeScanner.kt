@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.nutrition.scan
+package es.sebas1705.haltera.feature.nutrition.scan
 
 /**
  * Platform barcode scanner, implemented by the app shell (Android: the Play services code scanner, no camera

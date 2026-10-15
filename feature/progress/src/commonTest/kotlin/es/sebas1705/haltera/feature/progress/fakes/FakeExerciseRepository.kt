@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.feature.progress.fakes
+package es.sebas1705.haltera.feature.progress.fakes
 
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseFilter
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.ExerciseVariant
-import es.sebas1705.ironlog.data.models.NewExercise
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseFilter
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.repository.ExerciseRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.components
+package es.sebas1705.haltera.core.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
@@ -36,11 +36,11 @@ object LogoGeometry {
 }
 
 /**
- * The Ironlog logo (concept A, "Barbell-I"): a vertical bar between two barbells on a graphite
+ * The Haltera logo (concept A, "Barbell-I"): a vertical bar between two barbells on a graphite
  * rounded square. For the startup screen and Credits only, not inside working screens.
  */
 @Composable
-fun IronlogLogo(
+fun HalteraLogo(
     modifier: Modifier = Modifier,
     size: Dp = 96.dp,
     contentDescription: String? = null,

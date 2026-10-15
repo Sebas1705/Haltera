@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.share
+package es.sebas1705.haltera.share
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * A routine opened from outside the app (a `.ironlog` file or the share sheet) waiting for the
+ * A routine opened from outside the app (a `.haltera` file or the share sheet) waiting for the
  * Routines tab to show its import preview. The platform entry points [offer] it; the routines
  * feature reads it through `RoutineShareBridge.incoming`.
  */

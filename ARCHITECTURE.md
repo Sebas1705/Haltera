@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ironlog is a **Kotlin Multiplatform** app targeting **Android** and **iOS**.
+Haltera is a **Kotlin Multiplatform** app targeting **Android** and **iOS**.
 It follows **Clean Architecture** with a layered module graph. Network-backed data arrives in F8.
 
 ```
@@ -47,7 +47,7 @@ Platform-specific implementations live under `androidMain` (Android SDK) and
 
 ### Dependency Injection
 [Koin 4.x](https://insert-koin.io/) — DSL-based, KMP-native, no annotation processing.
-Every shared module is listed in `appModules` (`composeApp/src/commonMain/.../di/AppModule.kt`): `appModule`, `datastoreModule`, `repositoryModule`, `useCaseModule` and one module per feature. The platform `DatabaseDriverFactory` is bound in `IronlogApplication` (Android) and `startIronlogKoin()` (iOS, called once from `iOSApp.init()`).
+Every shared module is listed in `appModules` (`composeApp/src/commonMain/.../di/AppModule.kt`): `appModule`, `datastoreModule`, `repositoryModule`, `useCaseModule` and one module per feature. The platform `DatabaseDriverFactory` is bound in `HalteraApplication` (Android) and `startHalteraKoin()` (iOS, called once from `iOSApp.init()`).
 
 ### Repositories
 `data:repository` exposes interfaces only; the SQL implementations are `internal` and bound in `repositoryModule`. Reads are `Flow`s that re-emit after any write to their tables; writes are `suspend` and run on `Dispatchers.IO` in one transaction. Ids of user rows are UUID strings (user exercises: `user-<uuid>`); loads are grams (`Long`); times are epoch milliseconds.
@@ -57,7 +57,7 @@ navigation-compose with type-safe `@Serializable` routes. Each feature exposes i
 
 ### Local database
 [SQLDelight 2.x](https://sqldelight.github.io/) generates type-safe Kotlin from `.sq` files in
-`data/local/src/commonMain/sqldelight/`. The database file is `ironlog.db`, with foreign keys
+`data/local/src/commonMain/sqldelight/`. The database file is `haltera.db`, with foreign keys
 enabled. See AGENTS.md "Changing the database schema".
 
 ## Convention plugins
@@ -66,10 +66,10 @@ All build config lives in `build-logic/` so module `build.gradle.kts` files stay
 
 | Plugin ID | Use for |
 |-----------|---------|
-| `ironlog.kmp.library` | Any library module |
-| `ironlog.kmp.feature` | Feature modules (+ Compose) |
-| `ironlog.kmp.data` | Data modules (SQLDelight applied per module) |
-| `ironlog.kmp.domain` | Domain/use-case modules |
-| `ironlog.kmp.core` | Core modules |
-| `ironlog.kmp.app` | composeApp |
-| `ironlog.detekt` | Detekt (applied by the conventions above) |
+| `haltera.kmp.library` | Any library module |
+| `haltera.kmp.feature` | Feature modules (+ Compose) |
+| `haltera.kmp.data` | Data modules (SQLDelight applied per module) |
+| `haltera.kmp.domain` | Domain/use-case modules |
+| `haltera.kmp.core` | Core modules |
+| `haltera.kmp.app` | composeApp |
+| `haltera.detekt` | Detekt (applied by the conventions above) |

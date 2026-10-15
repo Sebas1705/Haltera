@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName") // The card composable and its callbacks live together.
 
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,37 +45,37 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.datastore.UserSettings
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.data.models.SetLog
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.domain.usecases.progression.IncreaseReason
-import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
-import es.sebas1705.ironlog.feature.session.load.isMachinePlate
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_add_set
-import es.sebas1705.ironlog.feature.session.resources.session_increase
-import es.sebas1705.ironlog.feature.session.resources.session_increase_marker
-import es.sebas1705.ironlog.feature.session.resources.session_more
-import es.sebas1705.ironlog.feature.session.resources.session_move_down
-import es.sebas1705.ironlog.feature.session.resources.session_move_up
-import es.sebas1705.ironlog.feature.session.resources.session_prescription_distance
-import es.sebas1705.ironlog.feature.session.resources.session_prescription_duration
-import es.sebas1705.ironlog.feature.session.resources.session_prescription_range
-import es.sebas1705.ironlog.feature.session.resources.session_prescription_reps
-import es.sebas1705.ironlog.feature.session.resources.session_reason_target
-import es.sebas1705.ironlog.feature.session.resources.session_reason_top
-import es.sebas1705.ironlog.feature.session.resources.session_remove_exercise
-import es.sebas1705.ironlog.feature.session.resources.session_rest_info
-import es.sebas1705.ironlog.feature.session.resources.session_set_complete
-import es.sebas1705.ironlog.feature.session.resources.session_set_start_timer
-import es.sebas1705.ironlog.feature.session.resources.session_variant_last
-import es.sebas1705.ironlog.feature.session.resources.session_variant_never
-import es.sebas1705.ironlog.feature.session.resources.session_variant_pick
-import es.sebas1705.ironlog.feature.session.resources.session_warmup_complete
-import es.sebas1705.ironlog.feature.session.timer.TimerMath
+import es.sebas1705.haltera.core.datastore.UserSettings
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.data.models.SetLog
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.domain.usecases.progression.IncreaseReason
+import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.feature.session.load.isMachinePlate
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_add_set
+import es.sebas1705.haltera.feature.session.resources.session_increase
+import es.sebas1705.haltera.feature.session.resources.session_increase_marker
+import es.sebas1705.haltera.feature.session.resources.session_more
+import es.sebas1705.haltera.feature.session.resources.session_move_down
+import es.sebas1705.haltera.feature.session.resources.session_move_up
+import es.sebas1705.haltera.feature.session.resources.session_prescription_distance
+import es.sebas1705.haltera.feature.session.resources.session_prescription_duration
+import es.sebas1705.haltera.feature.session.resources.session_prescription_range
+import es.sebas1705.haltera.feature.session.resources.session_prescription_reps
+import es.sebas1705.haltera.feature.session.resources.session_reason_target
+import es.sebas1705.haltera.feature.session.resources.session_reason_top
+import es.sebas1705.haltera.feature.session.resources.session_remove_exercise
+import es.sebas1705.haltera.feature.session.resources.session_rest_info
+import es.sebas1705.haltera.feature.session.resources.session_set_complete
+import es.sebas1705.haltera.feature.session.resources.session_set_start_timer
+import es.sebas1705.haltera.feature.session.resources.session_variant_last
+import es.sebas1705.haltera.feature.session.resources.session_variant_never
+import es.sebas1705.haltera.feature.session.resources.session_variant_pick
+import es.sebas1705.haltera.feature.session.resources.session_warmup_complete
+import es.sebas1705.haltera.feature.session.timer.TimerMath
 import org.jetbrains.compose.resources.stringResource
 
 /** Callbacks of an exercise card. */
@@ -224,7 +224,7 @@ private fun SuggestionLine(card: ExerciseCard, settings: UserSettings) {
     Text(
         text = stringResource(Res.string.session_increase, load, reason),
         style = MaterialTheme.typography.labelLarge,
-        color = IronlogTheme.colors.prGold,
+        color = HalteraTheme.colors.prGold,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
     )
 }
@@ -316,7 +316,7 @@ private fun SetRow(
                 val marker = stringResource(Res.string.session_increase_marker)
                 Text(
                     "↑",
-                    color = IronlogTheme.colors.prGold,
+                    color = HalteraTheme.colors.prGold,
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(start = 6.dp).semantics { contentDescription = marker },
                 )

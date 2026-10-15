@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.components
+package es.sebas1705.haltera.feature.nutrition.ui.components
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor

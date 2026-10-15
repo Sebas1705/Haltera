@@ -2,7 +2,7 @@
 
 > **For agentic workers:** Use `mobiai-mobile-executing-plans-with-subagents` (recommended) or `mobiai-mobile-executing-plans` to implement this plan task-by-task. Steps use checkbox syntax for tracking.
 
-**Goal:** Generate Ironlog from the Templetry `kmp/modular-features` template, align its build with the pins already validated in Owlsplit, remove the template sample and end up with an app that starts on Android and a green CI (Android + iOS simulator).
+**Goal:** Generate Haltera from the Templetry `kmp/modular-features` template, align its build with the pins already validated in Owlsplit, remove the template sample and end up with an app that starts on Android and a green CI (Android + iOS simulator).
 
 **Architecture:** Template structure kept (convention plugins in `build-logic`, `core`/`data`/`domain`/`feature` layers, Koin, SQLDelight). The template still pins Kotlin 2.1 / CMP 1.7, so the Gradle wrapper, version catalogue, `build-logic` and root build files are taken from Owlsplit (same author, same template origin, validated pins) and renamed. Only the modules F1 needs survive: `composeApp`, `core:common`, `core:ui`, `core:logging`, `core:testing`, `data:local`, `domain:usecases`. No desktop target, no environments feature (no backend until F8).
 
@@ -14,7 +14,7 @@
 
 ## Context for the executor
 
-- Repo: `C:\Users\sebss\Documents\Repos\Ironlog` (Git Bash: `~/Documents/Repos/Ironlog`). It already contains `README.md`, `AGENTS.md`, `CLAUDE.md` and `docs/`. **Do not overwrite** them with the template's.
+- Repo: `C:\Users\sebss\Documents\Repos\Haltera` (Git Bash: `~/Documents/Repos/Haltera`). It already contains `README.md`, `AGENTS.md`, `CLAUDE.md` and `docs/`. **Do not overwrite** them with the template's.
 - Reference repo (read-only): `~/Documents/Repos/Owlsplit`. Never modify it.
 - **Everything committed is in English** (AGENTS.md).
 - Required environment in every terminal:
@@ -24,7 +24,7 @@
   ```
 - Template CLI: `templetry` (installed in `~/go/bin`).
 - Commits use the configured identity (`Sebas1705 <sebssgarcia502580@gmail.com>`), **without** `Co-Authored-By` lines or "Generated with" footers. Work on branch `f1a-scaffold`, open a PR to `main` at the end.
-- Root package: `es.sebas1705.ironlog` (path `es/sebas1705/ironlog`). Convention plugin ids: `ironlog.kmp.*`, `ironlog.detekt`.
+- Root package: `es.sebas1705.haltera` (path `es/sebas1705/haltera`). Convention plugin ids: `haltera.kmp.*`, `haltera.detekt`.
 
 ## File map
 
@@ -33,8 +33,8 @@
 | Create (render) | template tree except `README.md`, `AGENTS.md`, `.gitignore` (merged) |
 | Replace from Owlsplit | `gradlew`, `gradlew.bat`, `gradle/wrapper/*`, `gradle.properties`, `gradle/libs.versions.toml`, `build-logic/**`, `build.gradle.kts`, `config/detekt/detekt.yml` |
 | Rewrite | `settings.gradle.kts`, `composeApp/build.gradle.kts`, `core/common/build.gradle.kts`, `core/ui/build.gradle.kts`, `core/logging/build.gradle.kts`, `core/testing/build.gradle.kts`, `data/local/build.gradle.kts`, `domain/usecases/build.gradle.kts` |
-| Rewrite | `composeApp/src/commonMain/kotlin/es/sebas1705/ironlog/App.kt`, `.../di/AppModule.kt`, `composeApp/src/androidMain/kotlin/es/sebas1705/ironlog/IronlogApplication.kt` (replaces `KmpApplication.kt`), `AndroidManifest.xml`, `composeApp/src/iosMain/kotlin/es/sebas1705/ironlog/MainViewController.kt` |
-| Create | `data/local/src/commonMain/sqldelight/es/sebas1705/ironlog/data/local/db/Meta.sq`, `data/local/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/local/MetaQueriesTest.kt` |
+| Rewrite | `composeApp/src/commonMain/kotlin/es/sebas1705/haltera/App.kt`, `.../di/AppModule.kt`, `composeApp/src/androidMain/kotlin/es/sebas1705/haltera/HalteraApplication.kt` (replaces `KmpApplication.kt`), `AndroidManifest.xml`, `composeApp/src/iosMain/kotlin/es/sebas1705/haltera/MainViewController.kt` |
+| Create | `data/local/src/commonMain/sqldelight/es/sebas1705/haltera/data/local/db/Meta.sq`, `data/local/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/local/MetaQueriesTest.kt` |
 | Create | `iosApp/project.yml`, `.github/workflows/ci.yml` |
 | Delete | `feature/`, `data/network/`, `data/models/`, `data/repository/`, `core/security/`, `core/network/`, `core/datastore/`, `domain/usecases/.../user/`, `data/local/.../dao/`, `UserEntity.sq`, `AI_INDEX.md`, `CHANGELOG.md`, `docs/ai/`, template `.github/workflows/*` |
 | Modify | `AGENTS.md` (merge template rules), `MODULE_MAP.md`, `README.md` (Development section), `.gitignore` |
@@ -48,31 +48,31 @@
 - [ ] **Step 1: Branch and render into a scratch directory**
 
 ```bash
-cd ~/Documents/Repos/Ironlog
+cd ~/Documents/Repos/Haltera
 git switch -c f1a-scaffold
 SCR="$(mktemp -d)"
-templetry init kmp/modular-features --out "$SCR/ironlog" \
-  --set project_name=Ironlog \
-  --set base_package=es.sebas1705.ironlog \
+templetry init kmp/modular-features --out "$SCR/haltera" \
+  --set project_name=Haltera \
+  --set base_package=es.sebas1705.haltera \
   --feature desktop=false \
   --feature environments=false
-ls "$SCR/ironlog"
+ls "$SCR/haltera"
 ```
 Expected: `build-logic composeApp config core data domain feature gradle iosApp settings.gradle.kts ...`.
 
 - [ ] **Step 2: Check the identity rename**
 
 ```bash
-grep -rIl "dev.template.kmpbase\|kmpbase\|KMPNativeBase" "$SCR/ironlog" | grep -v "/.git/" | head
-ls "$SCR/ironlog/composeApp/src/commonMain/kotlin/es/sebas1705/ironlog"
+grep -rIl "dev.template.kmpbase\|kmpbase\|KMPNativeBase" "$SCR/haltera" | grep -v "/.git/" | head
+ls "$SCR/haltera/composeApp/src/commonMain/kotlin/es/sebas1705/haltera"
 ```
 Expected: the `grep` prints nothing; `ls` shows `App.kt di` (no `config`, environments are off).
 
 - [ ] **Step 3: Copy into the repo without overwriting existing files**
 
 ```bash
-cp "$SCR/ironlog/AGENTS.md" /tmp/template-AGENTS.md
-cp -rn "$SCR/ironlog/." .
+cp "$SCR/haltera/AGENTS.md" /tmp/template-AGENTS.md
+cp -rn "$SCR/haltera/." .
 git status --short | head -40
 ```
 Expected: `README.md`, `AGENTS.md`, `CLAUDE.md` do not appear as modified; the rest (including the template's `.gitignore`, the repo has none yet) shows as new (`??`).
@@ -117,14 +117,14 @@ Expected: `distributionUrl=https\://services.gradle.org/distributions/gradle-9.5
 
 ```bash
 grep -rl -i "owlsplit" build-logic gradle/libs.versions.toml build.gradle.kts config/detekt/detekt.yml \
-  | xargs sed -i 's/owlsplit/ironlog/g; s/Owlsplit/Ironlog/g'
+  | xargs sed -i 's/owlsplit/haltera/g; s/Owlsplit/Haltera/g'
 grep -rn -i "owlsplit" build-logic gradle build.gradle.kts config; echo "exit=$?"
 ```
 Expected: `exit=1` (no matches left).
 
 - [ ] **Step 3: Remove the Firebase/Owlsplit-only entries from the catalogue and root build**
 
-Ironlog has no Firebase, Google sign-in, QR or WorkManager until F8.
+Haltera has no Firebase, Google sign-in, QR or WorkManager until F8.
 ```bash
 grep -v -E '^(gitlive-firebase|google-services|crashlytics-plugin|work|credentials|googleid|qrose|code-scanner) +=|gitlive|androidx-work|androidx-credentials|google-identity|qrose|play-services-code-scanner|^firebase-crashlytics|com\.google\.gms' \
   gradle/libs.versions.toml > /tmp/libs.toml && mv /tmp/libs.toml gradle/libs.versions.toml
@@ -155,10 +155,10 @@ git commit -m "build: align wrapper, catalogue and conventions with the validate
 
 ```bash
 git rm -r -q feature data/network data/models data/repository core/security core/network core/datastore \
-  domain/usecases/src/commonMain/kotlin/es/sebas1705/ironlog/domain/usecases/user \
-  data/local/src/commonMain/kotlin/es/sebas1705/ironlog/data/local/dao \
-  data/local/src/commonMain/sqldelight/es/sebas1705/ironlog/data/local/db/UserEntity.sq \
-  composeApp/src/androidMain/kotlin/es/sebas1705/ironlog/KmpApplication.kt
+  domain/usecases/src/commonMain/kotlin/es/sebas1705/haltera/domain/usecases/user \
+  data/local/src/commonMain/kotlin/es/sebas1705/haltera/data/local/dao \
+  data/local/src/commonMain/sqldelight/es/sebas1705/haltera/data/local/db/UserEntity.sq \
+  composeApp/src/androidMain/kotlin/es/sebas1705/haltera/KmpApplication.kt
 git rm -r -q --ignore-unmatch AI_INDEX.md CHANGELOG.md docs/ai .github/workflows
 git status --short | grep -v "^D" | head
 ```
@@ -167,7 +167,7 @@ Expected: only deletions are staged.
 - [ ] **Step 2: Rewrite `settings.gradle.kts`**
 
 ```kotlin
-rootProject.name = "Ironlog"
+rootProject.name = "Haltera"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
@@ -249,7 +249,7 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "es.sebas1705.ironlog.core.ui.resources"
+    packageOfResClass = "es.sebas1705.haltera.core.ui.resources"
     publicResClass = false
 }
 ```
@@ -308,7 +308,7 @@ kotlin {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("es.sebas1705.ironlog.data.local.db")
+            packageName.set("es.sebas1705.haltera.data.local.db")
             srcDirs.setFrom("src/commonMain/sqldelight")
             // Snapshots of released schemas (generateCommonMainAppDatabaseSchema, run on its own).
             // Until the first release (F5) the schema is edited in place and has no snapshot.
@@ -340,7 +340,7 @@ kotlin {
 
 - [ ] **Step 5: Key-value `Meta` table** (keeps `AppDatabase` non-empty; F1c stores the catalogue version in it)
 
-`data/local/src/commonMain/sqldelight/es/sebas1705/ironlog/data/local/db/Meta.sq`:
+`data/local/src/commonMain/sqldelight/es/sebas1705/haltera/data/local/db/Meta.sq`:
 ```sql
 CREATE TABLE Meta (
     key   TEXT NOT NULL PRIMARY KEY,
@@ -397,7 +397,7 @@ dependencies {
 }
 
 compose.resources {
-    packageOfResClass = "es.sebas1705.ironlog.resources"
+    packageOfResClass = "es.sebas1705.haltera.resources"
     publicResClass = false
 }
 
@@ -413,17 +413,17 @@ kotlin {
 
 `build-logic/.../KmpAppConventionPlugin.kt` references `proguard-rules.pro` for release builds; create it if the template did not:
 ```bash
-test -f composeApp/proguard-rules.pro || printf '# R8 rules for Ironlog. kotlinx.serialization ships its own rules.\n' > composeApp/proguard-rules.pro
+test -f composeApp/proguard-rules.pro || printf '# R8 rules for Haltera. kotlinx.serialization ships its own rules.\n' > composeApp/proguard-rules.pro
 ```
 
 - [ ] **Step 7: Rewrite the app entry points**
 
-`composeApp/src/commonMain/kotlin/es/sebas1705/ironlog/di/AppModule.kt`:
+`composeApp/src/commonMain/kotlin/es/sebas1705/haltera/di/AppModule.kt`:
 ```kotlin
-package es.sebas1705.ironlog.di
+package es.sebas1705.haltera.di
 
-import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
-import es.sebas1705.ironlog.data.local.createDatabase
+import es.sebas1705.haltera.data.local.DatabaseDriverFactory
+import es.sebas1705.haltera.data.local.createDatabase
 import org.koin.dsl.module
 
 val appModule = module {
@@ -431,9 +431,9 @@ val appModule = module {
 }
 ```
 
-`composeApp/src/commonMain/kotlin/es/sebas1705/ironlog/App.kt`:
+`composeApp/src/commonMain/kotlin/es/sebas1705/haltera/App.kt`:
 ```kotlin
-package es.sebas1705.ironlog
+package es.sebas1705.haltera
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -443,7 +443,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import es.sebas1705.ironlog.core.ui.theme.AppTheme
+import es.sebas1705.haltera.core.ui.theme.AppTheme
 
 /** Root composable. F1c replaces the placeholder with the catalogue status; F2 adds the tabs. */
 @Composable
@@ -451,7 +451,7 @@ fun App(modifier: Modifier = Modifier) {
     AppTheme(modifier) {
         Surface(Modifier.fillMaxSize()) {
             Box(contentAlignment = Alignment.Center) {
-                Text("Ironlog", style = MaterialTheme.typography.headlineMedium)
+                Text("Haltera", style = MaterialTheme.typography.headlineMedium)
             }
         }
     }
@@ -459,46 +459,46 @@ fun App(modifier: Modifier = Modifier) {
 ```
 If `AppTheme` in `core/ui/.../theme/Theme.kt` has a different signature, open it and adapt the call (keep the template theme; the brand theme arrives in F2).
 
-`composeApp/src/androidMain/kotlin/es/sebas1705/ironlog/IronlogApplication.kt`:
+`composeApp/src/androidMain/kotlin/es/sebas1705/haltera/HalteraApplication.kt`:
 ```kotlin
-package es.sebas1705.ironlog
+package es.sebas1705.haltera
 
 import android.app.Application
-import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
-import es.sebas1705.ironlog.di.appModule
+import es.sebas1705.haltera.data.local.DatabaseDriverFactory
+import es.sebas1705.haltera.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
-class IronlogApplication : Application() {
+class HalteraApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            androidContext(this@IronlogApplication)
+            androidContext(this@HalteraApplication)
             modules(
                 appModule,
-                module { single { DatabaseDriverFactory(this@IronlogApplication) } },
+                module { single { DatabaseDriverFactory(this@HalteraApplication) } },
             )
         }
     }
 }
 ```
 
-In `composeApp/src/androidMain/AndroidManifest.xml`, set `android:name=".IronlogApplication"` on `<application>` (replacing `.KmpApplication`) and remove any permission the template declares (`INTERNET` is not needed until F2):
+In `composeApp/src/androidMain/AndroidManifest.xml`, set `android:name=".HalteraApplication"` on `<application>` (replacing `.KmpApplication`) and remove any permission the template declares (`INTERNET` is not needed until F2):
 ```bash
-sed -i 's/\.KmpApplication/.IronlogApplication/' composeApp/src/androidMain/AndroidManifest.xml
+sed -i 's/\.KmpApplication/.HalteraApplication/' composeApp/src/androidMain/AndroidManifest.xml
 sed -i '/<uses-permission/d' composeApp/src/androidMain/AndroidManifest.xml
-grep -n "IronlogApplication\|uses-permission" composeApp/src/androidMain/AndroidManifest.xml
+grep -n "HalteraApplication\|uses-permission" composeApp/src/androidMain/AndroidManifest.xml
 ```
-Expected: one line with `IronlogApplication`, none with `uses-permission`.
+Expected: one line with `HalteraApplication`, none with `uses-permission`.
 
-`composeApp/src/iosMain/kotlin/es/sebas1705/ironlog/MainViewController.kt`:
+`composeApp/src/iosMain/kotlin/es/sebas1705/haltera/MainViewController.kt`:
 ```kotlin
-package es.sebas1705.ironlog
+package es.sebas1705.haltera
 
 import androidx.compose.ui.window.ComposeUIViewController
-import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
-import es.sebas1705.ironlog.di.appModule
+import es.sebas1705.haltera.data.local.DatabaseDriverFactory
+import es.sebas1705.haltera.di.appModule
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
 
@@ -538,7 +538,7 @@ Known failures (from Owlsplit P1) and their fixes:
 | `Unresolved reference: compose` (`compose.runtime` accessors) | Use `implementation(libs.bundles.compose.core)` |
 | Reference to `core.security`, `core.datastore`, `core.network` or `feature.*` in a kept file | Delete the import and its usage (those modules are gone) |
 | `desktopMain` / `jvm("desktop")` | Delete the lines |
-| `Plugin [id: 'ironlog.kmp.…'] was not found` | Check `build-logic/convention/build.gradle.kts` registers `ironlog.*` ids |
+| `Plugin [id: 'haltera.kmp.…'] was not found` | Check `build-logic/convention/build.gradle.kts` registers `haltera.*` ids |
 | `@Composable` naming flagged by Detekt | `config/detekt/detekt.yml` from Owlsplit already ignores `Composable` in `FunctionNaming`; check the copy |
 
 Repeat until `BUILD SUCCESSFUL`. Note every unplanned fix in the commit message.
@@ -557,15 +557,15 @@ Start the emulator detached from PowerShell (a Bash background emulator dies):
 & "$env:USERPROFILE\Android\sdk\emulator\emulator.exe" -list-avds
 Start-Process -FilePath "$env:USERPROFILE\Android\sdk\emulator\emulator.exe" -ArgumentList "-avd","<first name printed above>"
 ```
-If no AVD exists, create one with `sdkmanager "system-images;android-36;google_apis;x86_64"` and `avdmanager create avd -n ironlog_api36 -k "system-images;android-36;google_apis;x86_64"`.
+If no AVD exists, create one with `sdkmanager "system-images;android-36;google_apis;x86_64"` and `avdmanager create avd -n haltera_api36 -k "system-images;android-36;google_apis;x86_64"`.
 Then:
 ```bash
 "$ANDROID_HOME/platform-tools/adb" wait-for-device
 ./gradlew :composeApp:installDebug
-MSYS_NO_PATHCONV=1 "$ANDROID_HOME/platform-tools/adb" shell am start -n es.sebas1705.ironlog.debug/es.sebas1705.ironlog.MainActivity
-"$ANDROID_HOME/platform-tools/adb" exec-out screencap -p > "$TMP/ironlog-f1a.png"
+MSYS_NO_PATHCONV=1 "$ANDROID_HOME/platform-tools/adb" shell am start -n es.sebas1705.haltera.debug/es.sebas1705.haltera.MainActivity
+"$ANDROID_HOME/platform-tools/adb" exec-out screencap -p > "$TMP/haltera-f1a.png"
 ```
-Expected: the screenshot shows "Ironlog" centered.
+Expected: the screenshot shows "Haltera" centered.
 
 - [ ] **Step 4: Commit**
 
@@ -577,15 +577,15 @@ git commit -m "build: make the scaffold compile and run on Android"
 ### Task 5: Local schema test
 
 **Files:**
-- Test: `data/local/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/local/MetaQueriesTest.kt`
+- Test: `data/local/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/local/MetaQueriesTest.kt`
 
 - [ ] **Step 1: Write the test**
 
 ```kotlin
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -637,7 +637,7 @@ git commit -m "test: cover the meta key-value table"
 # Xcode project of the iOS app, generated with XcodeGen (`cd iosApp && xcodegen generate`):
 # the .xcodeproj is not committed. CI builds it for the simulator without signing
 # (.github/workflows/ci.yml). Signing needs the Apple Developer Team ID (later phase).
-name: Ironlog
+name: Haltera
 options:
   bundleIdPrefix: es.sebas1705
   deploymentTarget:
@@ -650,7 +650,7 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
 
 targets:
-  Ironlog:
+  Haltera:
     type: application
     platform: iOS
     sources:
@@ -658,7 +658,7 @@ targets:
     info:
       path: iosApp/Info.plist
       properties:
-        CFBundleDisplayName: Ironlog
+        CFBundleDisplayName: Haltera
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleDevelopmentRegion: en
@@ -668,8 +668,8 @@ targets:
         CADisableMinimumFrameDurationOnPhone: true
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: es.sebas1705.ironlog
-        PRODUCT_NAME: Ironlog
+        PRODUCT_BUNDLE_IDENTIFIER: es.sebas1705.haltera
+        PRODUCT_NAME: Haltera
         TARGETED_DEVICE_FAMILY: "1,2"
         ENABLE_USER_SCRIPT_SANDBOXING: NO
         # The shared code (Kotlin/Native static framework built by the phase below).
@@ -752,7 +752,7 @@ jobs:
         run: xcodegen generate
       - working-directory: iosApp
         run: |
-          xcodebuild build -project Ironlog.xcodeproj -scheme Ironlog -configuration Debug \
+          xcodebuild build -project Haltera.xcodeproj -scheme Haltera -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO -quiet
 ```
@@ -778,7 +778,7 @@ git commit -m "ci: Android checks on every push, iOS simulator build on PRs"
 
 - [ ] **Step 1: Merge the template's agent rules into `AGENTS.md`**
 
-Keep the existing `# Agent Operating Contract`, `## Language` and `## Design documents` sections first. Append the template's sections from `/tmp/template-AGENTS.md` (everything after its title line), then edit the result so it is true for Ironlog:
+Keep the existing `# Agent Operating Contract`, `## Language` and `## Design documents` sections first. Append the template's sections from `/tmp/template-AGENTS.md` (everything after its title line), then edit the result so it is true for Haltera:
 - remove rules about modules that no longer exist (`core:security`, network, auth sample);
 - replace the environment section with the pins table in `docs/plans/README.md` (link it, do not duplicate);
 - keep the `templetry:checks` block, with `./gradlew detekt testDebugUnitTest :composeApp:assembleDebug`;
@@ -839,7 +839,7 @@ Expected: CI green on both jobs (Android and iOS simulator). Merge with a merge 
 ## Final verification of F1a
 
 - `./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug` → `BUILD SUCCESSFUL` locally.
-- The debug app starts on the emulator and shows "Ironlog".
+- The debug app starts on the emulator and shows "Haltera".
 - CI green on the PR, including the iOS simulator build.
 - `grep -rn -i "owlsplit\|kmpbase" --include=*.kt --include=*.kts --include=*.toml --include=*.yml .` prints nothing.
 
@@ -856,15 +856,15 @@ Expected: CI green on both jobs (Android and iOS simulator). Merge with a merge 
   - Emulator check done on an already running AVD (`youknow_api36`) instead of starting a new one.
 - **Review fixes (after Task 5).**
   - `verifySqlDelightMigration` needs a database file: `data/local/src/commonMain/sqldelight/databases/1.db` is committed. Until F5 it is regenerated whenever a `.sq` file changes (replaces "no snapshot until F5").
-  - iOS starts Koin once via `startIronlogKoin()` (`composeApp/src/iosMain/.../KoinIos.kt`) called from `iOSApp.init()`; `MainViewController()` is just `ComposeUIViewController { App() }`. Android binds `DatabaseDriverFactory(androidContext())`.
+  - iOS starts Koin once via `startHalteraKoin()` (`composeApp/src/iosMain/.../KoinIos.kt`) called from `iOSApp.init()`; `MainViewController()` is just `ComposeUIViewController { App() }`. Android binds `DatabaseDriverFactory(androidContext())`.
   - `MVIBaseViewModel` takes `initialState` as a constructor parameter (`initState()` removed) and `updateState` uses `MutableStateFlow.update`.
   - Detekt `autoCorrect` only when `CI` is unset (convention plugin and root build); `detekt-formatting` read from the version catalogue.
   - `domain:usecases` exposes `core:common` with `api`; `mapToResult` keeps the throwable and rethrows `CancellationException`.
-  - Database file renamed `app.db` → `ironlog.db`; foreign keys enabled on both drivers (Android `Callback.onOpen`, iOS `extendedConfig.foreignKeyConstraints`).
+  - Database file renamed `app.db` → `haltera.db`; foreign keys enabled on both drivers (Android `Callback.onOpen`, iOS `extendedConfig.foreignKeyConstraints`).
   - Build cleanup: "Desktop" dropped from the library KDoc, unused imports removed from the feature/app conventions, `release { }` split over several lines, `roborazzi apply false` dropped from the root build, `kotlin.native.ignoreDisabledTargets=true` in `gradle.properties`.
 - **Task 8.** Scope extended: `ARCHITECTURE.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `SECURITY.md` and `CONTRIBUTING.md` rewritten to match the current modules. `MODULE_MAP.md` says `AppResult` (the actual class) instead of `Result`. The README "what CI runs" command includes `verifySqlDelightMigration`, as CI does. AGENTS.md drops the "Adding a feature" recipe (features arrive in F2) and lists the real iOS targets (`iosArm64`, `iosSimulatorArm64`).
 - **Final review fixes.**
-  - The iOS Koin entry point is `startIronlogKoin()`, not `initKoin()`: Kotlin/Native exports `init…` functions to Swift as `doInit…` (Obj-C `init` method family), so `KoinIosKt.initKoin()` would not compile. Swift calls `KoinIosKt.startIronlogKoin()`.
+  - The iOS Koin entry point is `startHalteraKoin()`, not `initKoin()`: Kotlin/Native exports `init…` functions to Swift as `doInit…` (Obj-C `init` method family), so `KoinIosKt.initKoin()` would not compile. Swift calls `KoinIosKt.startHalteraKoin()`.
   - Android enables foreign keys in `Callback.onConfigure` instead of `onOpen`.
   - The AGENTS.md `templetry:checks` command includes `verifySqlDelightMigration`, matching CI and the README.
   - AGENTS.md and ARCHITECTURE.md describe `updateState` reducers as pure (no suspend calls, no side effects; they may run more than once).

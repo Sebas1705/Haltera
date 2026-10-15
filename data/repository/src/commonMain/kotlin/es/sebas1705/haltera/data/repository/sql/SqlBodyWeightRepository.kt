@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.data.repository.sql
+package es.sebas1705.haltera.data.repository.sql
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.local.db.BodyWeightEntity
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.repository.BodyWeightRepository
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.BodyWeightEntity
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.repository.BodyWeightRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

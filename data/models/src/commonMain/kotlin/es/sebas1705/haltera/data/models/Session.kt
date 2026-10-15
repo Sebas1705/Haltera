@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 /**
  * A workout (spec §3.3). Times are epoch milliseconds. [endedAt] is null while in progress.

@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
-import es.sebas1705.ironlog.core.datastore.NutritionSettings
-import es.sebas1705.ironlog.core.datastore.SettingsRepository
-import es.sebas1705.ironlog.core.datastore.UserSettings
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.core.datastore.NutritionSettings
+import es.sebas1705.haltera.core.datastore.SettingsRepository
+import es.sebas1705.haltera.core.datastore.UserSettings
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

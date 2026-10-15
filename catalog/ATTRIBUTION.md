@@ -8,8 +8,8 @@ Exercise data and images from [yuhonas/free-exercise-db](https://github.com/yuho
 
 ## wger
 
-No wger data is currently used: every Spanish name comes from `catalog/i18n/es.yaml` or the Ironlog curation.
+No wger data is currently used: every Spanish name comes from `catalog/i18n/es.yaml` or the Haltera curation.
 
-## Ironlog
+## Haltera
 
-Grouping into exercises and variants, Spanish translations not listed above and the additional exercises are by the Ironlog authors.
+Grouping into exercises and variants, Spanish translations not listed above and the additional exercises are by the Haltera authors.

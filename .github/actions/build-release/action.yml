@@ -1,6 +1,6 @@
 name: Build signed release
 description: >
-  Builds the release APK and AAB of composeApp (es.sebas1705.ironlog) signed with the release
+  Builds the release APK and AAB of composeApp (es.sebas1705.haltera) signed with the release
   (upload) keystore. Every secret comes from Doppler ironlog/prd (the job exports DOPPLER_TOKEN and
   checks out the repo with full history first). The Firebase config (google-services.json, both
   Android apps) is written from GOOGLE_SERVICES_JSON so release builds sign in and sync.

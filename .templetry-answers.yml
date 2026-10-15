@@ -4,8 +4,8 @@ template:
   source: "github.com/Templetry/kmp@main/modular-features"
   commit: d675d00a4a3ba6da71c6f95d28e5a5df28855298
 variables:
-  base_package: es.sebas1705.ironlog
-  project_name: Ironlog
+  base_package: es.sebas1705.haltera
+  project_name: Haltera
 features:
   desktop: false
   environments: false

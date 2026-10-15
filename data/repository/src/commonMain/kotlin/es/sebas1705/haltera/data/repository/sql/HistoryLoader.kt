@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.data.repository.sql
+package es.sebas1705.haltera.data.repository.sql
 
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.local.db.WorkoutSessionEntity
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.WorkoutSessionEntity
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.WorkoutSession
 import kotlinx.coroutines.flow.Flow
 
 /** Loads sessions and performed exercises with their sets. Blocking: call on the IO dispatcher. */

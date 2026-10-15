@@ -1,15 +1,15 @@
-package es.sebas1705.ironlog.feature.routines
+package es.sebas1705.haltera.feature.routines
 
-import es.sebas1705.ironlog.core.testing.CoroutineTestRule
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.ExerciseFilter
-import es.sebas1705.ironlog.data.models.LoadIncrement
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.feature.routines.ui.picker.ExercisePickerIntent
-import es.sebas1705.ironlog.feature.routines.ui.picker.ExercisePickerViewModel
+import es.sebas1705.haltera.core.testing.CoroutineTestRule
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseFilter
+import es.sebas1705.haltera.data.models.LoadIncrement
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.feature.routines.ui.picker.ExercisePickerIntent
+import es.sebas1705.haltera.feature.routines.ui.picker.ExercisePickerViewModel
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest

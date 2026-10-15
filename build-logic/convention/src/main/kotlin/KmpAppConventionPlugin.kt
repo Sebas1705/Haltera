@@ -20,15 +20,15 @@ class KmpAppConventionPlugin : Plugin<Project> {
         apply(plugin = "org.jetbrains.compose")
         apply(plugin = "org.jetbrains.kotlin.plugin.compose")
         apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
-        apply(plugin = "ironlog.detekt")
+        apply(plugin = "haltera.detekt")
 
         configureKmp()
 
         extensions.configure<ApplicationExtension> {
-            namespace  = "es.sebas1705.ironlog"
+            namespace  = "es.sebas1705.haltera"
             compileSdk = COMPILE_SDK
             defaultConfig {
-                applicationId = "es.sebas1705.ironlog"
+                applicationId = "es.sebas1705.haltera"
                 minSdk        = MIN_SDK
                 targetSdk     = TARGET_SDK
                 versionCode   = 1

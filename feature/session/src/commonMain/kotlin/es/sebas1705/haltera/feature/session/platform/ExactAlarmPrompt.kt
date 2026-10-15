@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.platform
+package es.sebas1705.haltera.feature.session.platform
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
@@ -8,11 +8,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_exact_alarm_not_now
-import es.sebas1705.ironlog.feature.session.resources.session_exact_alarm_open
-import es.sebas1705.ironlog.feature.session.resources.session_exact_alarm_text
-import es.sebas1705.ironlog.feature.session.resources.session_exact_alarm_title
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_exact_alarm_not_now
+import es.sebas1705.haltera.feature.session.resources.session_exact_alarm_open
+import es.sebas1705.haltera.feature.session.resources.session_exact_alarm_text
+import es.sebas1705.haltera.feature.session.resources.session_exact_alarm_title
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 

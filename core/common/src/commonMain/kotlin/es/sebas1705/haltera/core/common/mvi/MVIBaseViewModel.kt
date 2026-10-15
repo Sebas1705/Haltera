@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.common.mvi
+package es.sebas1705.haltera.core.common.mvi
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

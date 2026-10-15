@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.components
+package es.sebas1705.haltera.core.ui.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,9 +8,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.resources.Res
-import es.sebas1705.ironlog.core.ui.resources.pr_badge
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
+import es.sebas1705.haltera.core.ui.resources.Res
+import es.sebas1705.haltera.core.ui.resources.pr_badge
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
 import org.jetbrains.compose.resources.stringResource
 
 /** Gold "PR" pill marking a personal record. [label] replaces the default text when needed. */
@@ -19,8 +19,8 @@ fun PrBadge(modifier: Modifier = Modifier, label: String = stringResource(Res.st
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(50),
-        color = IronlogTheme.colors.prGoldContainer,
-        contentColor = IronlogTheme.colors.onPrGoldContainer,
+        color = HalteraTheme.colors.prGoldContainer,
+        contentColor = HalteraTheme.colors.onPrGoldContainer,
     ) {
         Text(
             label,

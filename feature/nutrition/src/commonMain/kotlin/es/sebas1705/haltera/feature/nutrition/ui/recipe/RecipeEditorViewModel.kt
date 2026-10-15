@@ -1,16 +1,16 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.recipe
+package es.sebas1705.haltera.feature.nutrition.ui.recipe
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.models.FoodInput
-import es.sebas1705.ironlog.data.models.Nutrients
-import es.sebas1705.ironlog.data.models.RecipeItemInput
-import es.sebas1705.ironlog.data.models.RecipeMath
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.feature.nutrition.model.Amounts
-import es.sebas1705.ironlog.feature.nutrition.model.attempt
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.models.FoodInput
+import es.sebas1705.haltera.data.models.Nutrients
+import es.sebas1705.haltera.data.models.RecipeItemInput
+import es.sebas1705.haltera.data.models.RecipeMath
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.feature.nutrition.model.Amounts
+import es.sebas1705.haltera.feature.nutrition.model.attempt
 import kotlinx.coroutines.Job
 
 /** A recipe to edit, or null for a new one. */

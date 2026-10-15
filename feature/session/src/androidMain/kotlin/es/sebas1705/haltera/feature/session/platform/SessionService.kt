@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.platform
+package es.sebas1705.haltera.feature.session.platform
 
 import android.app.Notification
 import android.app.NotificationManager
@@ -11,12 +11,12 @@ import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import es.sebas1705.ironlog.data.repository.SessionRepository
-import es.sebas1705.ironlog.feature.session.R
-import es.sebas1705.ironlog.feature.session.timer.RestTimerController
-import es.sebas1705.ironlog.feature.session.timer.TimerMath
-import es.sebas1705.ironlog.feature.session.timer.TimerPhase
-import es.sebas1705.ironlog.feature.session.timer.TimerSnapshot
+import es.sebas1705.haltera.data.repository.SessionRepository
+import es.sebas1705.haltera.feature.session.R
+import es.sebas1705.haltera.feature.session.timer.RestTimerController
+import es.sebas1705.haltera.feature.session.timer.TimerMath
+import es.sebas1705.haltera.feature.session.timer.TimerPhase
+import es.sebas1705.haltera.feature.session.timer.TimerSnapshot
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -145,8 +145,8 @@ class SessionService : Service(), KoinComponent {
     }
 
     internal companion object {
-        const val ACTION_SKIP = "es.sebas1705.ironlog.session.SKIP"
-        const val ACTION_PLUS = "es.sebas1705.ironlog.session.PLUS_15"
+        const val ACTION_SKIP = "es.sebas1705.haltera.session.SKIP"
+        const val ACTION_PLUS = "es.sebas1705.haltera.session.PLUS_15"
         private const val PLUS_SECONDS = 15
         private const val PHASE_SLACK_MS = 50L
     }

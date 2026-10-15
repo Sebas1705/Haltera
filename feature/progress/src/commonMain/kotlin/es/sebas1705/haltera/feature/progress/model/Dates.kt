@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate

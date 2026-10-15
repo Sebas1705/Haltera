@@ -1,15 +1,15 @@
-package es.sebas1705.ironlog.domain.usecases.session
+package es.sebas1705.haltera.domain.usecases.session
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.repository.RoutineRepository
-import es.sebas1705.ironlog.data.repository.SessionRepository
-import es.sebas1705.ironlog.domain.usecases.cycle.Cycle
-import es.sebas1705.ironlog.domain.usecases.cycle.NextDay
-import es.sebas1705.ironlog.domain.usecases.progression.ProgressionEngine
-import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.repository.SessionRepository
+import es.sebas1705.haltera.domain.usecases.cycle.Cycle
+import es.sebas1705.haltera.domain.usecases.cycle.NextDay
+import es.sebas1705.haltera.domain.usecases.progression.ProgressionEngine
+import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest

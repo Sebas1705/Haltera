@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
-import es.sebas1705.ironlog.data.local.inMemoryDatabase
-import es.sebas1705.ironlog.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.local.inMemoryDatabase
+import es.sebas1705.haltera.data.models.CatalogImportResult
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals

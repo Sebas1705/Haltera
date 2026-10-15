@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.data.remote
+package es.sebas1705.haltera.data.remote
 
 import dev.gitlive.firebase.firestore.ChangeType
 import dev.gitlive.firebase.firestore.CollectionReference
 import dev.gitlive.firebase.firestore.Direction
 import dev.gitlive.firebase.firestore.FirebaseFirestore
-import es.sebas1705.ironlog.data.sync.RemoteStore
-import es.sebas1705.ironlog.data.sync.SyncDocument
+import es.sebas1705.haltera.data.sync.RemoteStore
+import es.sebas1705.haltera.data.sync.SyncDocument
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer

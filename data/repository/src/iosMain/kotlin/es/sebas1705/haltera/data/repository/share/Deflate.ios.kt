@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalForeignApi::class)
 
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf

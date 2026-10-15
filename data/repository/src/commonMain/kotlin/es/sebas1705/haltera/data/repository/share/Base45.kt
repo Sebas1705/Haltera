@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
 /**
  * Base45 (RFC 9285). Its alphabet is exactly the QR alphanumeric charset, so a QR code holding base45 text

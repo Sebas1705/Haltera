@@ -1,8 +1,8 @@
-# Ironlog — routine scoring and advice
+# Haltera — routine scoring and advice
 
 - **Date:** 2026-10-15
 - **Status:** requested by the owner ("an algorithm that scores routines according to informed statistics and advises changes").
-- **Principle:** Ironlog is a logbook (AGENTS.md). The score is **advice only**: it never changes, blocks or
+- **Principle:** Haltera is a logbook (AGENTS.md). The score is **advice only**: it never changes, blocks or
   gates a routine, a session or a log. Every suggestion is phrased as something the user *may* do.
 - **Code:** `domain:usecases`, package `routinescore` (`RoutineScorer`, pure and deterministic). UI in
   `feature:routines` (score badges, "Routine analysis" screen).

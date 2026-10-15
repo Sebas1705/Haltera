@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.settings
+package es.sebas1705.haltera.settings
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -25,6 +25,6 @@ class LegalLinksTest {
             LegalLinks.PRIVACY_ES,
             LegalLinks.DELETE_ACCOUNT_EN,
             LegalLinks.DELETE_ACCOUNT_ES,
-        ).forEach { assertTrue(it.startsWith("https://ironlog-sebas1705.web.app/"), it) }
+        ).forEach { assertTrue(it.startsWith("https://haltera.web.app/"), it) }
     }
 }

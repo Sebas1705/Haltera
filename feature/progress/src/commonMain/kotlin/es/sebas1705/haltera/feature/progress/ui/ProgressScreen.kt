@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui
+package es.sebas1705.haltera.feature.progress.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,18 +12,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.feature.progress.model.SessionSummary
-import es.sebas1705.ironlog.feature.progress.resources.Res
-import es.sebas1705.ironlog.feature.progress.resources.progress_tab_body_weight
-import es.sebas1705.ironlog.feature.progress.resources.progress_tab_calendar
-import es.sebas1705.ironlog.feature.progress.resources.progress_tab_exercises
-import es.sebas1705.ironlog.feature.progress.resources.progress_tab_muscles
-import es.sebas1705.ironlog.feature.progress.resources.progress_tab_overview
-import es.sebas1705.ironlog.feature.progress.ui.bodyweight.BodyWeightTab
-import es.sebas1705.ironlog.feature.progress.ui.calendar.CalendarTab
-import es.sebas1705.ironlog.feature.progress.ui.exercise.ExerciseProgressTab
-import es.sebas1705.ironlog.feature.progress.ui.muscles.MusclesTab
-import es.sebas1705.ironlog.feature.progress.ui.overview.OverviewTab
+import es.sebas1705.haltera.feature.progress.model.SessionSummary
+import es.sebas1705.haltera.feature.progress.resources.Res
+import es.sebas1705.haltera.feature.progress.resources.progress_tab_body_weight
+import es.sebas1705.haltera.feature.progress.resources.progress_tab_calendar
+import es.sebas1705.haltera.feature.progress.resources.progress_tab_exercises
+import es.sebas1705.haltera.feature.progress.resources.progress_tab_muscles
+import es.sebas1705.haltera.feature.progress.resources.progress_tab_overview
+import es.sebas1705.haltera.feature.progress.ui.bodyweight.BodyWeightTab
+import es.sebas1705.haltera.feature.progress.ui.calendar.CalendarTab
+import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseProgressTab
+import es.sebas1705.haltera.feature.progress.ui.muscles.MusclesTab
+import es.sebas1705.haltera.feature.progress.ui.overview.OverviewTab
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 

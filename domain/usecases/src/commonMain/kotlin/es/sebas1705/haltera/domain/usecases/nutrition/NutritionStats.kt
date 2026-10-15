@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.domain.usecases.nutrition
+package es.sebas1705.haltera.domain.usecases.nutrition
 
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.FoodDay
-import es.sebas1705.ironlog.data.models.Nutrients
-import es.sebas1705.ironlog.domain.usecases.nutrition.GoalCalculator.KCAL_PER_G_CARBS
-import es.sebas1705.ironlog.domain.usecases.nutrition.GoalCalculator.KCAL_PER_G_FAT
-import es.sebas1705.ironlog.domain.usecases.nutrition.GoalCalculator.KCAL_PER_G_PROTEIN
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.FoodDay
+import es.sebas1705.haltera.data.models.Nutrients
+import es.sebas1705.haltera.domain.usecases.nutrition.GoalCalculator.KCAL_PER_G_CARBS
+import es.sebas1705.haltera.domain.usecases.nutrition.GoalCalculator.KCAL_PER_G_FAT
+import es.sebas1705.haltera.domain.usecases.nutrition.GoalCalculator.KCAL_PER_G_PROTEIN
 import kotlinx.datetime.DatePeriod
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.LocalDate

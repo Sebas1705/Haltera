@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.search
+package es.sebas1705.haltera.feature.nutrition.ui.search
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.BarcodeLookup
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.feature.nutrition.model.AppLanguage
-import es.sebas1705.ironlog.feature.nutrition.model.attempt
-import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.BarcodeLookup
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.feature.nutrition.model.AppLanguage
+import es.sebas1705.haltera.feature.nutrition.model.attempt
+import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.combine

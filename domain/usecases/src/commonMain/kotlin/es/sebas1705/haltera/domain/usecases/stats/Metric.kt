@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
 /**
  * Catalogue of every statistic the app shows. Each id is explained in the UI by one info dialog

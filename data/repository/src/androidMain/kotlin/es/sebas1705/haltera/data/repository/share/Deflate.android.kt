@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
 import java.io.ByteArrayOutputStream
 import java.util.zip.DataFormatException

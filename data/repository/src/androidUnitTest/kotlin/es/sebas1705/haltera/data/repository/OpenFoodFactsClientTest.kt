@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
-import es.sebas1705.ironlog.data.models.FoodUnit
-import es.sebas1705.ironlog.data.repository.off.OffResult
-import es.sebas1705.ironlog.data.repository.off.OpenFoodFactsClient
+import es.sebas1705.haltera.data.models.FoodUnit
+import es.sebas1705.haltera.data.repository.off.OffResult
+import es.sebas1705.haltera.data.repository.off.OpenFoodFactsClient
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
@@ -39,11 +39,11 @@ class OpenFoodFactsClientTest {
     """.trimIndent()
 
     @Test
-    fun `asks the v3 product endpoint with the Ironlog User-Agent`() = runTest {
+    fun `asks the v3 product endpoint with the Haltera User-Agent`() = runTest {
         client { drink }.product("5449000000996")
         val (url, agent) = requests.single()
         assertEquals(true, url.startsWith("https://world.openfoodfacts.org/api/v3/product/5449000000996?fields="))
-        assertEquals("Ironlog/1.2.3 (+https://github.com/Sebas1705/Ironlog)", agent)
+        assertEquals("Haltera/1.2.3 (+https://github.com/Sebas1705/Haltera)", agent)
     }
 
     @Test

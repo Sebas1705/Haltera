@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.domain.usecases.naming
+package es.sebas1705.haltera.domain.usecases.naming
 
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.ExerciseVariant
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.domain.usecases.routinescore.MuscleGroup
 
 /**
  * Weekly effective sets and volume of one muscle group (the same 15 groups as the routine analysis), this

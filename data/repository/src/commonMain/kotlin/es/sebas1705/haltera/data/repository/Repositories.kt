@@ -1,19 +1,19 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.CatalogImportResult
-import es.sebas1705.ironlog.data.models.CatalogSummary
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseFilter
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.ExerciseVariant
-import es.sebas1705.ironlog.data.models.NewExercise
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SetInput
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.models.CatalogSummary
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseFilter
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SetInput
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.WorkoutSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 

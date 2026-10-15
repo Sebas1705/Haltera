@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.platform
+package es.sebas1705.haltera.feature.session.platform
 
 import android.Manifest
 import android.app.Activity
@@ -91,7 +91,7 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
     else -> null
 }
 
-private const val PREFS = "ironlog_session"
+private const val PREFS = "haltera_session"
 private const val KEY_ASKED = "notificationsAsked"
 private const val KEY_EXACT_HANDLED = "exactAlarmPromptHandled"
 private const val REQUEST_CODE = 1705

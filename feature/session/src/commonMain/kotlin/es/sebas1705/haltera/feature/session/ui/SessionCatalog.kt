@@ -1,19 +1,19 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseFilter
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.ExerciseVariant
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
-import es.sebas1705.ironlog.data.repository.RoutineRepository
-import es.sebas1705.ironlog.data.repository.SessionRepository
-import es.sebas1705.ironlog.domain.usecases.progression.ProgressionEngine
-import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
-import es.sebas1705.ironlog.domain.usecases.session.SuggestNextLoad
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseFilter
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.repository.SessionRepository
+import es.sebas1705.haltera.domain.usecases.progression.ProgressionEngine
+import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
 import kotlinx.coroutines.flow.Flow
 
 /**

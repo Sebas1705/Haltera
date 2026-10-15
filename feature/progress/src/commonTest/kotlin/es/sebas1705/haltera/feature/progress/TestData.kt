@@ -1,23 +1,23 @@
 @file:Suppress("MatchingDeclarationName") // Shared test helpers and builders.
 
-package es.sebas1705.ironlog.feature.progress
+package es.sebas1705.haltera.feature.progress
 
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.ExerciseSource
-import es.sebas1705.ironlog.data.models.ExerciseVariant
-import es.sebas1705.ironlog.data.models.Level
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedSteps
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.data.models.SetLog
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.feature.progress.model.ProgressClock
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.models.Level
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedSteps
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.data.models.SetLog
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.feature.progress.model.ProgressClock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher

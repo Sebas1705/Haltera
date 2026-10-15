@@ -11,7 +11,7 @@ struct iOSApp: App {
         if Bundle.main.path(forResource: "GoogleService-Info", ofType: "plist") != nil {
             FirebaseApp.configure()
         }
-        KoinIosKt.startIronlogKoin(googleSignIn: GoogleSignInSwift())
+        KoinIosKt.startHalteraKoin(googleSignIn: GoogleSignInSwift())
     }
 
     var body: some Scene {

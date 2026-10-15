@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.share
+package es.sebas1705.haltera.share
 
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
 import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
-import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 

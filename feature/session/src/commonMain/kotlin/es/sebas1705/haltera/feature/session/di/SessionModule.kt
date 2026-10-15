@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.feature.session.di
+package es.sebas1705.haltera.feature.session.di
 
 import com.russhwolf.settings.Settings
-import es.sebas1705.ironlog.feature.session.platform.sessionPlatformModule
-import es.sebas1705.ironlog.feature.session.timer.RestTimerController
-import es.sebas1705.ironlog.feature.session.timer.SettingsTimerStore
-import es.sebas1705.ironlog.feature.session.timer.TimerStore
-import es.sebas1705.ironlog.feature.session.ui.SessionCatalog
-import es.sebas1705.ironlog.feature.session.ui.SessionViewModel
+import es.sebas1705.haltera.feature.session.platform.sessionPlatformModule
+import es.sebas1705.haltera.feature.session.timer.RestTimerController
+import es.sebas1705.haltera.feature.session.timer.SettingsTimerStore
+import es.sebas1705.haltera.feature.session.timer.TimerStore
+import es.sebas1705.haltera.feature.session.ui.SessionCatalog
+import es.sebas1705.haltera.feature.session.ui.SessionViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import kotlin.time.Clock

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.today.ui
+package es.sebas1705.haltera.feature.today.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,12 +31,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
-import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
-import es.sebas1705.ironlog.feature.today.resources.Res
-import es.sebas1705.ironlog.feature.today.resources.today_error_save
-import es.sebas1705.ironlog.feature.today.resources.today_error_start
-import es.sebas1705.ironlog.feature.today.resources.today_log_past
+import es.sebas1705.haltera.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
+import es.sebas1705.haltera.feature.today.resources.Res
+import es.sebas1705.haltera.feature.today.resources.today_error_save
+import es.sebas1705.haltera.feature.today.resources.today_error_start
+import es.sebas1705.haltera.feature.today.resources.today_log_past
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel

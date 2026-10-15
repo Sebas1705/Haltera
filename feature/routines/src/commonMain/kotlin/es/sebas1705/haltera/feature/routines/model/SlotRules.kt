@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.feature.routines.model
+package es.sebas1705.haltera.feature.routines.model
 
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.LoadIncrement
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TrackingType
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.LoadIncrement
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TrackingType
 
 /** The shape of a [Prescription], as picked in the slot editor. */
 internal enum class PrescriptionKind { REP_RANGE, REPS, DURATION, DISTANCE }

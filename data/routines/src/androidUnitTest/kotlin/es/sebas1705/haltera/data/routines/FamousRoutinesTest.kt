@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.data.routines
+package es.sebas1705.haltera.data.routines
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TrackingType
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TrackingType
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray

@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.domain.usecases.stats.ProgressionRow
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.domain.usecases.stats.Stats
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.domain.usecases.stats.ProgressionRow
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.domain.usecases.stats.Stats
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 

@@ -1,16 +1,16 @@
-package es.sebas1705.ironlog.feature.exercises.ui
+package es.sebas1705.haltera.feature.exercises.ui
 
 import androidx.compose.runtime.Immutable
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.ExerciseFilter
-import es.sebas1705.ironlog.data.models.ExerciseSource
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseFilter
+import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.data.repository.ExerciseRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers

@@ -1,15 +1,15 @@
-package es.sebas1705.ironlog.feature.session.load
+package es.sebas1705.haltera.feature.session.load
 
-import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.SetInput
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.data.models.SetLog
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.core.units.PlateCalculator
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetInput
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.data.models.SetLog
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 
 /**
  * Prefilled set rows (spec §5 "Entry"). Rows are created not completed; confirming one is a single tap.
@@ -236,7 +236,7 @@ object Warmups {
  */
 data class WarmupRounding(val stepGrams: Long, val barGrams: Long = 0, val plates: List<Long> = emptyList())
 
-/** The values of a logged set, for [es.sebas1705.ironlog.data.repository.SessionRepository.updateSet]. */
+/** The values of a logged set, for [es.sebas1705.haltera.data.repository.SessionRepository.updateSet]. */
 fun SetLog.toInput() = SetInput(
     kind = kind,
     reps = reps,

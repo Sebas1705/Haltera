@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOne
 import co.touchlab.kermit.Logger
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope

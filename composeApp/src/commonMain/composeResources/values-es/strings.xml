@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Ironlog</string>
+    <string name="app_name">Haltera</string>
     <string name="back">Atrás</string>
     <string name="startup_loading">Preparando el catálogo de ejercicios…</string>
     <string name="startup_catalog_error">No se ha podido cargar el catálogo de ejercicios.</string>
@@ -20,10 +20,10 @@
     <string name="unit_lb">lb</string>
     <string name="credits_title">Créditos</string>
     <string name="credits_catalog">Catálogo de ejercicios</string>
-    <string name="credits_catalog_text">Los datos y las imágenes de los ejercicios proceden de free-exercise-db, de yuhonas (github.com/yuhonas/free-exercise-db), publicado como dominio público con la licencia Unlicense. La agrupación en ejercicios y variantes, las traducciones al español y los ejercicios adicionales son de los autores de Ironlog.</string>
+    <string name="credits_catalog_text">Los datos y las imágenes de los ejercicios proceden de free-exercise-db, de yuhonas (github.com/yuhonas/free-exercise-db), publicado como dominio público con la licencia Unlicense. La agrupación en ejercicios y variantes, las traducciones al español y los ejercicios adicionales son de los autores de Haltera.</string>
     <string name="credits_foods">Base de datos de alimentos</string>
-    <string name="credits_foods_text">Los valores nutricionales de los alimentos genéricos incluidos proceden de USDA FoodData Central (fdc.nal.usda.gov: Foundation Foods y SR Legacy), publicados como dominio público con la licencia CC0 1.0. La búsqueda por código de barras usa Open Food Facts (world.openfoodfacts.org), disponible con la Open Database License (ODbL 1.0) y con sus contenidos bajo la Database Contents License (DbCL 1.0); los productos encontrados se guardan en el dispositivo. La selección de alimentos, sus nombres en inglés y en español y los tamaños de las raciones son de los autores de Ironlog.</string>
-    <string name="credits_license">Licencia de Ironlog</string>
+    <string name="credits_foods_text">Los valores nutricionales de los alimentos genéricos incluidos proceden de USDA FoodData Central (fdc.nal.usda.gov: Foundation Foods y SR Legacy), publicados como dominio público con la licencia CC0 1.0. La búsqueda por código de barras usa Open Food Facts (world.openfoodfacts.org), disponible con la Open Database License (ODbL 1.0) y con sus contenidos bajo la Database Contents License (DbCL 1.0); los productos encontrados se guardan en el dispositivo. La selección de alimentos, sus nombres en inglés y en español y los tamaños de las raciones son de los autores de Haltera.</string>
+    <string name="credits_license">Licencia de Haltera</string>
     <string name="credits_fonts">Tipografías (SIL Open Font License 1.1)</string>
     <string name="settings_account">Cuenta</string>
     <string name="account_not_configured">La copia en la nube no está disponible en esta versión.</string>

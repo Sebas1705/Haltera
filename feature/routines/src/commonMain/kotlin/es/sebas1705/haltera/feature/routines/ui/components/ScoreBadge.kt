@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.ui.components
+package es.sebas1705.haltera.feature.routines.ui.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.padding
@@ -11,15 +11,15 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineFocus
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
-import es.sebas1705.ironlog.feature.routines.resources.Res
-import es.sebas1705.ironlog.feature.routines.resources.routines_score_cardio
-import es.sebas1705.ironlog.feature.routines.resources.routines_score_description
-import es.sebas1705.ironlog.feature.routines.resources.routines_score_short
-import es.sebas1705.ironlog.feature.routines.ui.analysis.scoreColor
-import es.sebas1705.ironlog.feature.routines.ui.analysis.verdictLabel
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineFocus
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.haltera.feature.routines.resources.Res
+import es.sebas1705.haltera.feature.routines.resources.routines_score_cardio
+import es.sebas1705.haltera.feature.routines.resources.routines_score_description
+import es.sebas1705.haltera.feature.routines.resources.routines_score_short
+import es.sebas1705.haltera.feature.routines.ui.analysis.scoreColor
+import es.sebas1705.haltera.feature.routines.ui.analysis.verdictLabel
 import org.jetbrains.compose.resources.stringResource
 
 /**

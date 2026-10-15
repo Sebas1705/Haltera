@@ -1,14 +1,14 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.feature.exercises.navigation
+package es.sebas1705.haltera.feature.exercises.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import es.sebas1705.ironlog.feature.exercises.ui.ExercisesScreen
-import es.sebas1705.ironlog.feature.exercises.ui.create.NewExerciseScreen
-import es.sebas1705.ironlog.feature.exercises.ui.detail.ExerciseDetailScreen
+import es.sebas1705.haltera.feature.exercises.ui.ExercisesScreen
+import es.sebas1705.haltera.feature.exercises.ui.create.NewExerciseScreen
+import es.sebas1705.haltera.feature.exercises.ui.detail.ExerciseDetailScreen
 import kotlinx.serialization.Serializable
 
 /** Top-level destination of the Exercises tab. */

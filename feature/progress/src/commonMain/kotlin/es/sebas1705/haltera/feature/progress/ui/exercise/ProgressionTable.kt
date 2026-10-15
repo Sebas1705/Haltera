@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui.exercise
+package es.sebas1705.haltera.feature.progress.ui.exercise
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,22 +23,22 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.components.PrBadge
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.domain.usecases.stats.BestSet
-import es.sebas1705.ironlog.domain.usecases.stats.ExerciseRecords
-import es.sebas1705.ironlog.domain.usecases.stats.Metric
-import es.sebas1705.ironlog.domain.usecases.stats.ProgressionRow
-import es.sebas1705.ironlog.domain.usecases.stats.Record
-import es.sebas1705.ironlog.feature.progress.model.ChartScale
-import es.sebas1705.ironlog.feature.progress.resources.*
-import es.sebas1705.ironlog.feature.progress.ui.components.ChartEmpty
-import es.sebas1705.ironlog.feature.progress.ui.components.DateFormat
-import es.sebas1705.ironlog.feature.progress.ui.components.StatCard
-import es.sebas1705.ironlog.feature.progress.ui.components.UnitFormat
-import es.sebas1705.ironlog.feature.progress.ui.components.formatNumber
-import es.sebas1705.ironlog.feature.progress.ui.components.signed
+import es.sebas1705.haltera.core.ui.components.PrBadge
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.domain.usecases.stats.BestSet
+import es.sebas1705.haltera.domain.usecases.stats.ExerciseRecords
+import es.sebas1705.haltera.domain.usecases.stats.Metric
+import es.sebas1705.haltera.domain.usecases.stats.ProgressionRow
+import es.sebas1705.haltera.domain.usecases.stats.Record
+import es.sebas1705.haltera.feature.progress.model.ChartScale
+import es.sebas1705.haltera.feature.progress.resources.*
+import es.sebas1705.haltera.feature.progress.ui.components.ChartEmpty
+import es.sebas1705.haltera.feature.progress.ui.components.DateFormat
+import es.sebas1705.haltera.feature.progress.ui.components.StatCard
+import es.sebas1705.haltera.feature.progress.ui.components.UnitFormat
+import es.sebas1705.haltera.feature.progress.ui.components.formatNumber
+import es.sebas1705.haltera.feature.progress.ui.components.signed
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -208,6 +208,6 @@ private fun RecordRow(label: String, record: Record, value: String, dates: DateF
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Text(value, style = MaterialTheme.typography.titleMedium.tabularFigures(), color = IronlogTheme.colors.prGold)
+        Text(value, style = MaterialTheme.typography.titleMedium.tabularFigures(), color = HalteraTheme.colors.prGold)
     }
 }

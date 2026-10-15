@@ -1,15 +1,15 @@
-package es.sebas1705.ironlog.feature.exercises
+package es.sebas1705.haltera.feature.exercises
 
 import app.cash.turbine.test
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.ExerciseFilter
-import es.sebas1705.ironlog.data.models.ExerciseSource
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.feature.exercises.ui.ExerciseRow
-import es.sebas1705.ironlog.feature.exercises.ui.ExercisesIntent
-import es.sebas1705.ironlog.feature.exercises.ui.ExercisesViewModel
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseFilter
+import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.feature.exercises.ui.ExerciseRow
+import es.sebas1705.haltera.feature.exercises.ui.ExercisesIntent
+import es.sebas1705.haltera.feature.exercises.ui.ExercisesViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestDispatcher

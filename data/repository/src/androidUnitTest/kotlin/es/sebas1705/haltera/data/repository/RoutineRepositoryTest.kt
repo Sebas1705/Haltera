@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
 import app.cash.turbine.test
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.LoadIncrement
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.repository.sql.SqlRoutineRepository
-import es.sebas1705.ironlog.data.routines.FamousRoutines
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.LoadIncrement
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.repository.sql.SqlRoutineRepository
+import es.sebas1705.haltera.data.routines.FamousRoutines
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.data.remote
+package es.sebas1705.haltera.data.remote
 
-import es.sebas1705.ironlog.data.sync.SyncDocument
+import es.sebas1705.haltera.data.sync.SyncDocument
 import kotlinx.serialization.Serializable
 
 /**

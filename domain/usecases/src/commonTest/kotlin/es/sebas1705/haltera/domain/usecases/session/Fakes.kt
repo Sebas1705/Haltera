@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.domain.usecases.session
+package es.sebas1705.haltera.domain.usecases.session
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SetInput
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.data.repository.RoutineRepository
-import es.sebas1705.ironlog.data.repository.SessionRepository
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SetInput
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.repository.SessionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

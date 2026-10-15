@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.feature.routines
+package es.sebas1705.haltera.feature.routines
 
 import app.cash.turbine.test
-import es.sebas1705.ironlog.core.testing.CoroutineTestRule
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineFocus
-import es.sebas1705.ironlog.feature.routines.ui.list.RoutinesIntent
-import es.sebas1705.ironlog.feature.routines.ui.list.RoutinesViewModel
+import es.sebas1705.haltera.core.testing.CoroutineTestRule
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineFocus
+import es.sebas1705.haltera.feature.routines.ui.list.RoutinesIntent
+import es.sebas1705.haltera.feature.routines.ui.list.RoutinesViewModel
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest

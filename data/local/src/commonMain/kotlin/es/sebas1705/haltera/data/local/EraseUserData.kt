@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.AppDatabase
 
 private const val META_SYNC_APPLYING = "syncApplying"
 private const val META_SYNC_UID = "syncUid"

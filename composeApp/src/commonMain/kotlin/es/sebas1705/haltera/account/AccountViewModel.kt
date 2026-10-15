@@ -1,17 +1,17 @@
-package es.sebas1705.ironlog.account
+package es.sebas1705.haltera.account
 
 import co.touchlab.kermit.Logger
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.sync.AccountService
-import es.sebas1705.ironlog.data.sync.AccountSession
-import es.sebas1705.ironlog.data.sync.GoogleIdToken
-import es.sebas1705.ironlog.data.sync.LinkResult
-import es.sebas1705.ironlog.data.sync.RecentLoginRequiredException
-import es.sebas1705.ironlog.data.sync.RemoteStore
-import es.sebas1705.ironlog.data.sync.SyncEngine
-import es.sebas1705.ironlog.data.sync.SyncStatus
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.sync.AccountService
+import es.sebas1705.haltera.data.sync.AccountSession
+import es.sebas1705.haltera.data.sync.GoogleIdToken
+import es.sebas1705.haltera.data.sync.LinkResult
+import es.sebas1705.haltera.data.sync.RecentLoginRequiredException
+import es.sebas1705.haltera.data.sync.RemoteStore
+import es.sebas1705.haltera.data.sync.SyncEngine
+import es.sebas1705.haltera.data.sync.SyncStatus
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 

@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.domain.usecases.routinescore
+package es.sebas1705.haltera.domain.usecases.routinescore
 
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.domain.usecases.stats.Stats
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.domain.usecases.stats.Stats
 import kotlin.math.max
 import kotlin.math.roundToInt
 

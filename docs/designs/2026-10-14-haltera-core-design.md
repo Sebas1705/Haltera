@@ -1,4 +1,4 @@
-# Ironlog — core design
+# Haltera — core design
 
 - **Date:** 2026-10-14
 - **Status:** approved in brainstorming, pending written review
@@ -6,7 +6,7 @@
 
 ## 1. Product
 
-Ironlog is a free gym app (Android + iOS, Play Store / App Store, no monetisation) for logging and following training routines with as little friction as possible:
+Haltera is a free gym app (Android + iOS, Play Store / App Store, no monetisation) for logging and following training routines with as little friction as possible:
 
 - Create, edit, share and import routines whose cycle can be any number of days (a classic week or an arbitrary N-day cycle).
 - Log what was trained each day on a calendar: which routine day, duration, sets, reps and load, with load entry adapted to the equipment (barbell + plates, dumbbells, machines/cables, bodyweight ± load, bands).
@@ -31,7 +31,7 @@ Same proven stack as Owlsplit, started fresh from the Templetry `kmp/modular-fea
 | Remote (F8) | Firebase via GitLive (anonymous auth + Google, Firestore), own outbox sync ported from Owlsplit; Spark plan (no Cloud Functions needed) |
 | Images | Coil 3 |
 | Secrets / CI | Doppler, GitHub Actions, Play internal/alpha track via CI as in Owlsplit |
-| Package | `es.sebas1705.ironlog`, repo `Sebas1705/Ironlog` |
+| Package | `es.sebas1705.haltera`, repo `Sebas1705/Haltera` |
 
 ## 3. Domain model
 
@@ -152,7 +152,7 @@ Suggestions are never applied silently: the next session prefills the suggested 
 |---|---|
 | `composeApp` | Android/iOS entry, root DI, navigation with 4 tabs (Today · Routines · Exercises · Progress), live-session service bridge |
 | `core:common` | MVI base, `AppResult`, utilities |
-| `core:ui` | Ironlog theme from `brand/tokens.json`, load keypad, set row, components, Roborazzi screenshots |
+| `core:ui` | Haltera theme from `brand/tokens.json`, load keypad, set row, components, Roborazzi screenshots |
 | `core:units` | `Load` (grams `Long`), kg↔lb, rounding to available plates, plate calculator |
 | `core:datastore` | Preferences (units, bar weights, available plates, keep-screen-on, sounds) |
 | `core:logging`, `core:testing` | As in Owlsplit (fakes, in-memory repositories, `assertAccessible()`) |
@@ -274,11 +274,11 @@ Percentage-based programmes (5/3/1, nSuns, PHAT) arrive in F9.
 
 ### 10.1 Sharing format (built in F8, fixed now)
 
-`ironlog-routine v1`: JSON referencing catalogue exercises by stable id, embedding any user exercises. Without an account: `.ironlog` file, QR code (deflate + base64url) or link with data in the fragment (`ironlog.web.app/r#<data>`). With an account: short link `ironlog.web.app/r/{code}` backed by Firestore. Import always shows a preview and creates a copy.
+`haltera-routine v1`: JSON referencing catalogue exercises by stable id, embedding any user exercises. Without an account: `.haltera` file, QR code (deflate + base64url) or link with data in the fragment (`haltera.web.app/r#<data>`). With an account: short link `haltera.web.app/r/{code}` backed by Firestore. Import always shows a preview and creates a copy.
 
 ### 10.2 Nutrition sources (F7, decided now)
 
-Open Food Facts (ODbL/DbCL, CC BY-SA images): barcode lookup `/api/v3/product/{barcode}`, 15 reads/min per IP, custom `User-Agent: Ironlog/<ver> (contact)`, results cached locally. USDA FoodData Central (CC0): a generic-foods subset bundled offline, so no API key ships in the app. Attribution in Credits.
+Open Food Facts (ODbL/DbCL, CC BY-SA images): barcode lookup `/api/v3/product/{barcode}`, 15 reads/min per IP, custom `User-Agent: Haltera/<ver> (contact)`, results cached locally. USDA FoodData Central (CC0): a generic-foods subset bundled offline, so no API key ships in the app. Attribution in Credits.
 
 ## 11. Out of scope
 

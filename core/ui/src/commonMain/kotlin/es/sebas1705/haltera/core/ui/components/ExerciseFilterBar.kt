@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName") // The filter bar and its chip spec belong together.
 
-package es.sebas1705.ironlog.core.ui.components
+package es.sebas1705.haltera.core.ui.components
 
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement

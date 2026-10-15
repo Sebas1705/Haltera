@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.domain.usecases.nutrition
+package es.sebas1705.haltera.domain.usecases.nutrition
 
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.models.FoodDay
-import es.sebas1705.ironlog.data.models.FoodSource
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.data.models.MealEntry
-import es.sebas1705.ironlog.data.models.Nutrients
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.models.FoodDay
+import es.sebas1705.haltera.data.models.FoodSource
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.data.models.MealEntry
+import es.sebas1705.haltera.data.models.Nutrients
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test

@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.feature.session.platform
+package es.sebas1705.haltera.feature.session.platform
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_alert_rest_over
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_alert_rest_over
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
@@ -58,7 +58,7 @@ internal class IosRestAlert : RestAlert {
         center.removePendingNotificationRequestsWithIdentifiers(List(MAX_ALERTS) { id(it) })
     }
 
-    private fun id(index: Int) = "ironlog.session.rest.$index"
+    private fun id(index: Int) = "haltera.session.rest.$index"
 
     private companion object {
         const val MILLIS = 1_000.0

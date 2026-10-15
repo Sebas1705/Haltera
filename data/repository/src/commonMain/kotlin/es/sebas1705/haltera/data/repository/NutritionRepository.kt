@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
-import es.sebas1705.ironlog.data.models.BarcodeLookup
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.models.FoodDay
-import es.sebas1705.ironlog.data.models.FoodImportResult
-import es.sebas1705.ironlog.data.models.FoodInput
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.data.models.NutritionGoals
-import es.sebas1705.ironlog.data.models.Recipe
-import es.sebas1705.ironlog.data.models.RecipeItemInput
+import es.sebas1705.haltera.data.models.BarcodeLookup
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.models.FoodDay
+import es.sebas1705.haltera.data.models.FoodImportResult
+import es.sebas1705.haltera.data.models.FoodInput
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.data.models.NutritionGoals
+import es.sebas1705.haltera.data.models.Recipe
+import es.sebas1705.haltera.data.models.RecipeItemInput
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 

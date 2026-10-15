@@ -1,20 +1,20 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.feature.routines.navigation
+package es.sebas1705.haltera.feature.routines.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import es.sebas1705.ironlog.feature.routines.ui.analysis.RoutineAnalysisScreen
-import es.sebas1705.ironlog.feature.routines.ui.catalogue.CatalogueScreen
-import es.sebas1705.ironlog.feature.routines.ui.catalogue.TemplatePreviewScreen
-import es.sebas1705.ironlog.feature.routines.ui.editor.RoutineEditorScreen
-import es.sebas1705.ironlog.feature.routines.ui.list.RoutinesScreen
-import es.sebas1705.ironlog.feature.routines.ui.picker.ExercisePickerScreen
-import es.sebas1705.ironlog.feature.routines.ui.share.ImportSource
-import es.sebas1705.ironlog.feature.routines.ui.share.RoutineImportScreen
-import es.sebas1705.ironlog.feature.routines.ui.slot.SlotEditorScreen
+import es.sebas1705.haltera.feature.routines.ui.analysis.RoutineAnalysisScreen
+import es.sebas1705.haltera.feature.routines.ui.catalogue.CatalogueScreen
+import es.sebas1705.haltera.feature.routines.ui.catalogue.TemplatePreviewScreen
+import es.sebas1705.haltera.feature.routines.ui.editor.RoutineEditorScreen
+import es.sebas1705.haltera.feature.routines.ui.list.RoutinesScreen
+import es.sebas1705.haltera.feature.routines.ui.picker.ExercisePickerScreen
+import es.sebas1705.haltera.feature.routines.ui.share.ImportSource
+import es.sebas1705.haltera.feature.routines.ui.share.RoutineImportScreen
+import es.sebas1705.haltera.feature.routines.ui.slot.SlotEditorScreen
 import kotlinx.serialization.Serializable
 
 /** Top-level destination of the Routines tab. */

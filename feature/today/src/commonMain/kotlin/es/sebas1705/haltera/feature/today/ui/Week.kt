@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.feature.today.ui
+package es.sebas1705.haltera.feature.today.ui
 
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.domain.usecases.stats.Stats
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.domain.usecases.stats.Stats
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

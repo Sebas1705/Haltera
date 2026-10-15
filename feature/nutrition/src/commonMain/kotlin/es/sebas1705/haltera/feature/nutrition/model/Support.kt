@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.feature.nutrition.model
+package es.sebas1705.haltera.feature.nutrition.model
 
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.core.units.appLanguage
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.core.units.appLanguage
 import kotlinx.coroutines.CancellationException
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone

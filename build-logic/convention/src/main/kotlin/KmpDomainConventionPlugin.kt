@@ -5,6 +5,6 @@ import org.gradle.kotlin.dsl.apply
 /** Domain/use-case modules: pure Kotlin, no platform SDKs. */
 class KmpDomainConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        apply(plugin = "ironlog.kmp.library")
+        apply(plugin = "haltera.kmp.library")
     }
 }

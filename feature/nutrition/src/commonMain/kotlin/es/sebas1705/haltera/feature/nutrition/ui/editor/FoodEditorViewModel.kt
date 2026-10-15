@@ -1,16 +1,16 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.editor
+package es.sebas1705.haltera.feature.nutrition.ui.editor
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.models.FoodInput
-import es.sebas1705.ironlog.data.models.FoodUnit
-import es.sebas1705.ironlog.data.models.Nutrients
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.feature.nutrition.model.Amounts
-import es.sebas1705.ironlog.feature.nutrition.model.ParsedValue
-import es.sebas1705.ironlog.feature.nutrition.model.attempt
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.models.FoodInput
+import es.sebas1705.haltera.data.models.FoodUnit
+import es.sebas1705.haltera.data.models.Nutrients
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.feature.nutrition.model.Amounts
+import es.sebas1705.haltera.feature.nutrition.model.ParsedValue
+import es.sebas1705.haltera.feature.nutrition.model.attempt
 import kotlinx.coroutines.Job
 
 /** A food to edit, or a new one (optionally with a scanned barcode). */

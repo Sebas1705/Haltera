@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.theme
+package es.sebas1705.haltera.core.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Shapes

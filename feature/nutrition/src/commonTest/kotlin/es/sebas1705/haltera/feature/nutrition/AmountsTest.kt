@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.feature.nutrition
+package es.sebas1705.haltera.feature.nutrition
 
-import es.sebas1705.ironlog.feature.nutrition.model.AmountMode
-import es.sebas1705.ironlog.feature.nutrition.model.Amounts
-import es.sebas1705.ironlog.feature.nutrition.model.ParsedValue
+import es.sebas1705.haltera.feature.nutrition.model.AmountMode
+import es.sebas1705.haltera.feature.nutrition.model.Amounts
+import es.sebas1705.haltera.feature.nutrition.model.ParsedValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull

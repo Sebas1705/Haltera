@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class EraseUserDataTest {
     private val driver = inMemoryDriver()
-    private val db = es.sebas1705.ironlog.data.local.db.AppDatabase(driver)
+    private val db = es.sebas1705.haltera.data.local.db.AppDatabase(driver)
 
     private fun exec(sql: String) = driver.execute(null, sql, 0)
 

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
 /**
  * The size of the QR code a text needs at error correction level L (ISO/IEC 18004), as the QR library picks

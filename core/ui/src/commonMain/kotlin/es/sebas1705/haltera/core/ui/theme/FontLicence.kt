@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.core.ui.theme
+package es.sebas1705.haltera.core.ui.theme
 
-import es.sebas1705.ironlog.core.ui.resources.Res
+import es.sebas1705.haltera.core.ui.resources.Res
 
 /** A bundled font and the text of its licence (SIL Open Font License 1.1). */
 data class FontLicence(val family: String, val text: String)

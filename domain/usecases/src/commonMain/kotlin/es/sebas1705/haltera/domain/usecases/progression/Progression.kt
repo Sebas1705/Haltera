@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.domain.usecases.progression
+package es.sebas1705.haltera.domain.usecases.progression
 
-import es.sebas1705.ironlog.data.models.LoadIncrement
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.data.models.SetLog
+import es.sebas1705.haltera.data.models.LoadIncrement
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.data.models.SetLog
 
 /** What the next session of a slot should load (spec §3.5). Loads are grams (or steps for bands/stacks). */
 sealed interface Suggestion {

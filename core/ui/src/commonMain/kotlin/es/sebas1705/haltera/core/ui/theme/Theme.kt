@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.theme
+package es.sebas1705.haltera.core.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -83,7 +83,7 @@ private val DarkColors: ColorScheme = with(DarkBrandColors) {
 private val LocalBrandColors = staticCompositionLocalOf { LightBrandColors }
 
 /** Brand values beyond Material 3 for features: iron-orange accent, PR gold, semantic colours. */
-object IronlogTheme {
+object HalteraTheme {
     /** The brand colours of the current (light or dark) theme. */
     val colors: BrandColors
         @Composable
@@ -91,7 +91,7 @@ object IronlogTheme {
         get() = LocalBrandColors.current
 }
 
-/** The Ironlog Material 3 theme: iron orange on graphite, Barlow Semi Condensed and Inter, light and dark. */
+/** The Haltera Material 3 theme: iron orange on graphite, Barlow Semi Condensed and Inter, light and dark. */
 @Composable
 fun AppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

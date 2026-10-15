@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.core.ui.components.PastSessionForm
+import es.sebas1705.haltera.core.ui.components.PastSessionForm
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.LocalTime

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 /** Per-100 g values of a recipe (nutrition design §2). */
 object RecipeMath {

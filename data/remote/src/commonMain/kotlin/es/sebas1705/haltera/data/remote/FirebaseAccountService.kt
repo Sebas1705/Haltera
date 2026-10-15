@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.remote
+package es.sebas1705.haltera.data.remote
 
 import dev.gitlive.firebase.auth.AuthCredential
 import dev.gitlive.firebase.auth.FirebaseAuth
@@ -6,11 +6,11 @@ import dev.gitlive.firebase.auth.FirebaseAuthRecentLoginRequiredException
 import dev.gitlive.firebase.auth.FirebaseAuthUserCollisionException
 import dev.gitlive.firebase.auth.FirebaseUser
 import dev.gitlive.firebase.auth.GoogleAuthProvider
-import es.sebas1705.ironlog.data.sync.AccountService
-import es.sebas1705.ironlog.data.sync.AccountSession
-import es.sebas1705.ironlog.data.sync.GoogleIdToken
-import es.sebas1705.ironlog.data.sync.LinkResult
-import es.sebas1705.ironlog.data.sync.RecentLoginRequiredException
+import es.sebas1705.haltera.data.sync.AccountService
+import es.sebas1705.haltera.data.sync.AccountSession
+import es.sebas1705.haltera.data.sync.GoogleIdToken
+import es.sebas1705.haltera.data.sync.LinkResult
+import es.sebas1705.haltera.data.sync.RecentLoginRequiredException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow

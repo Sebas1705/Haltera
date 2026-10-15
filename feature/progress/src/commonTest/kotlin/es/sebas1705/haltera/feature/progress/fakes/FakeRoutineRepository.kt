@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.feature.progress.fakes
+package es.sebas1705.haltera.feature.progress.fakes
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.repository.RoutineRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map

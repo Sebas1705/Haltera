@@ -8,7 +8,7 @@ import { unzip } from './lib/unzip.mjs';
 import { reduceDataset } from './lib/usda.mjs';
 
 const root = fileURLToPath(new URL('../../nutrition/sources/', import.meta.url));
-const userAgent = 'Ironlog-nutrition/1.0 (+https://github.com/Sebas1705/Ironlog)';
+const userAgent = 'Haltera-nutrition/1.0 (+https://github.com/Sebas1705/Haltera)';
 const sources = JSON.parse(await readFile(root + 'sources.json', 'utf8'));
 
 const foods = [];

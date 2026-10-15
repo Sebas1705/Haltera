@@ -1,15 +1,15 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.detail
+package es.sebas1705.haltera.feature.nutrition.ui.detail
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.Food
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.data.models.Nutrients
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.feature.nutrition.model.AmountMode
-import es.sebas1705.ironlog.feature.nutrition.model.Amounts
-import es.sebas1705.ironlog.feature.nutrition.model.attempt
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.Food
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.data.models.Nutrients
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.feature.nutrition.model.AmountMode
+import es.sebas1705.haltera.feature.nutrition.model.Amounts
+import es.sebas1705.haltera.feature.nutrition.model.attempt
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.datetime.LocalDate

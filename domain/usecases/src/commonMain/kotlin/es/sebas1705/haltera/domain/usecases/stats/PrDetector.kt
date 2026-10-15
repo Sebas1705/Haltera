@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.WorkoutSession
 
 /** The kinds of personal record of Metric.PERSONAL_RECORDS. */
 enum class PrKind { HEAVIEST_LOAD, ESTIMATED_ONE_RM, REPS_AT_LOAD, SESSION_VOLUME }

@@ -10,7 +10,7 @@
 //
 // Uses the account of `npx firebase-tools login` (no gcloud needed), plus doppler and gh, all
 // logged in. Running it again keeps the account and roles and adds a new key (rotation).
-// Ironlog has no Firebase SDK in the app: Firebase is only used for App Distribution.
+// Haltera has no Firebase SDK in the app: Firebase is only used for App Distribution.
 import { execFileSync, spawnSync } from "node:child_process";
 import { existsSync, readdirSync } from "node:fs";
 import { homedir } from "node:os";
@@ -29,7 +29,7 @@ const APIS = [
 const DOPPLER_PROJECT = "ironlog";
 const DOPPLER_CONFIG = "prd";
 const GITHUB_SECRET = "DOPPLER_TOKEN";
-const REPO = "Sebas1705/Ironlog";
+const REPO = "Sebas1705/Haltera";
 const FIREBASE_TOOLS = "firebase-tools@15.32.1";
 
 /** firebase-tools as a library: the copy npx keeps in its cache (or FIREBASE_TOOLS_DIR). */
@@ -78,7 +78,7 @@ const crm = new Client({ urlPrefix: "https://cloudresourcemanager.googleapis.com
 try {
   await iam.post(`projects/${PROJECT}/serviceAccounts`, {
     accountId: ACCOUNT_ID,
-    serviceAccount: { displayName: "Ironlog CI (App Distribution)" },
+    serviceAccount: { displayName: "Haltera CI (App Distribution)" },
   });
   console.log(`Created ${EMAIL}`);
 } catch (e) {

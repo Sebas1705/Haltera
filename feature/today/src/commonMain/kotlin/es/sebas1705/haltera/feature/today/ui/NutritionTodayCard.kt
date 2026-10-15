@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.today.ui
+package es.sebas1705.haltera.feature.today.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,23 +19,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.data.models.Nutrients
-import es.sebas1705.ironlog.data.models.NutritionGoals
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.feature.today.resources.Res
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_carbs
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_fat
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_grams
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_kcal
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_kcal_of
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_protein
-import es.sebas1705.ironlog.feature.today.resources.today_nutrition_title
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.data.models.Nutrients
+import es.sebas1705.haltera.data.models.NutritionGoals
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.feature.today.resources.Res
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_carbs
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_fat
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_grams
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_kcal
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_kcal_of
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_protein
+import es.sebas1705.haltera.feature.today.resources.today_nutrition_title
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.datetime.TimeZone
@@ -94,7 +94,7 @@ internal fun TodayNutritionCard(onOpen: () -> Unit, viewModel: TodayNutritionVie
                 g.proteinG,
                 MaterialTheme.colorScheme.primary
             )
-            MacroLine(stringResource(Res.string.today_nutrition_carbs), t.carbs, g.carbsG, IronlogTheme.colors.prGold)
+            MacroLine(stringResource(Res.string.today_nutrition_carbs), t.carbs, g.carbsG, HalteraTheme.colors.prGold)
             MacroLine(
                 stringResource(Res.string.today_nutrition_fat),
                 t.fat,

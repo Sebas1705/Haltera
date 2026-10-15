@@ -1,31 +1,31 @@
-package es.sebas1705.ironlog.feature.nutrition
+package es.sebas1705.haltera.feature.nutrition
 
-import es.sebas1705.ironlog.data.models.ActivityLevel
-import es.sebas1705.ironlog.data.models.BarcodeLookup
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.MacroMode
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.data.models.Objective
-import es.sebas1705.ironlog.data.models.Sex
-import es.sebas1705.ironlog.feature.nutrition.model.AmountMode
-import es.sebas1705.ironlog.feature.nutrition.model.AppLanguage
-import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
-import es.sebas1705.ironlog.feature.nutrition.ui.day.CopyTarget
-import es.sebas1705.ironlog.feature.nutrition.ui.day.DayIntent
-import es.sebas1705.ironlog.feature.nutrition.ui.day.DayViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailIntent
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodEditorIntent
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodEditorViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodField
-import es.sebas1705.ironlog.feature.nutrition.ui.goals.GoalsIntent
-import es.sebas1705.ironlog.feature.nutrition.ui.goals.GoalsViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.goals.Macro
-import es.sebas1705.ironlog.feature.nutrition.ui.search.FoodSearchIntent
-import es.sebas1705.ironlog.feature.nutrition.ui.search.FoodSearchViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.search.ScanProblem
-import es.sebas1705.ironlog.feature.nutrition.ui.stats.StatsViewModel
+import es.sebas1705.haltera.data.models.ActivityLevel
+import es.sebas1705.haltera.data.models.BarcodeLookup
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.MacroMode
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.data.models.Objective
+import es.sebas1705.haltera.data.models.Sex
+import es.sebas1705.haltera.feature.nutrition.model.AmountMode
+import es.sebas1705.haltera.feature.nutrition.model.AppLanguage
+import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.feature.nutrition.ui.day.CopyTarget
+import es.sebas1705.haltera.feature.nutrition.ui.day.DayIntent
+import es.sebas1705.haltera.feature.nutrition.ui.day.DayViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailArgs
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailIntent
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodEditorIntent
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodEditorViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodField
+import es.sebas1705.haltera.feature.nutrition.ui.goals.GoalsIntent
+import es.sebas1705.haltera.feature.nutrition.ui.goals.GoalsViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.goals.Macro
+import es.sebas1705.haltera.feature.nutrition.ui.search.FoodSearchIntent
+import es.sebas1705.haltera.feature.nutrition.ui.search.FoodSearchViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.search.ScanProblem
+import es.sebas1705.haltera.feature.nutrition.ui.stats.StatsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
@@ -188,7 +188,7 @@ class NutritionViewModelsTest {
         val vm = FoodSearchViewModel(
             repo,
             AppLanguage { "es" },
-            es.sebas1705.ironlog.feature.nutrition.scan.NoBarcodeScanner
+            es.sebas1705.haltera.feature.nutrition.scan.NoBarcodeScanner
         )
         vm.onEvent(FoodSearchIntent.QueryChanged("lec"))
         vm.onEvent(FoodSearchIntent.QueryChanged("leche"))

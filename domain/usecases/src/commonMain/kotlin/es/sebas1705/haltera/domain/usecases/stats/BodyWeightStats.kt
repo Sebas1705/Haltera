@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
 /** A body-weight entry on its local day ([at] keeps the exact time for the trend). */
 data class DatedWeight(val day: Int, val at: Long, val grams: Long)

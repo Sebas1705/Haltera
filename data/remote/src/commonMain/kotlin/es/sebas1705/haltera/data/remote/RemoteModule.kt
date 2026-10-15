@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.data.remote
+package es.sebas1705.haltera.data.remote
 
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.auth
 import dev.gitlive.firebase.firestore.firestore
 import dev.gitlive.firebase.firestore.firestoreSettings
 import dev.gitlive.firebase.firestore.memoryCacheSettings
-import es.sebas1705.ironlog.data.sync.AccountService
-import es.sebas1705.ironlog.data.sync.RemoteStore
+import es.sebas1705.haltera.data.sync.AccountService
+import es.sebas1705.haltera.data.sync.RemoteStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

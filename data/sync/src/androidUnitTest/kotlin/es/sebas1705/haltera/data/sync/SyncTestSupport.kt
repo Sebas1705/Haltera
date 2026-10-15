@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.russhwolf.settings.MapSettings
-import es.sebas1705.ironlog.core.datastore.KeyValueSettingsRepository
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.local.db.SyncState
+import es.sebas1705.haltera.core.datastore.KeyValueSettingsRepository
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.SyncState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

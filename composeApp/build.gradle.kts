@@ -98,7 +98,7 @@ dependencies {
 }
 
 compose.resources {
-    packageOfResClass = "es.sebas1705.ironlog.resources"
+    packageOfResClass = "es.sebas1705.haltera.resources"
     publicResClass = false
 }
 

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.today.ui
+package es.sebas1705.haltera.feature.today.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -36,22 +36,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.feature.today.resources.Res
-import es.sebas1705.ironlog.feature.today.resources.today_cancel
-import es.sebas1705.ironlog.feature.today.resources.today_log_past_date_value
-import es.sebas1705.ironlog.feature.today.resources.today_months_short
-import es.sebas1705.ironlog.feature.today.resources.today_ok
-import es.sebas1705.ironlog.feature.today.resources.today_pick_day_hint
-import es.sebas1705.ironlog.feature.today.resources.today_pick_day_next
-import es.sebas1705.ironlog.feature.today.resources.today_pick_day_rest
-import es.sebas1705.ironlog.feature.today.resources.today_pick_day_start
-import es.sebas1705.ironlog.feature.today.resources.today_pick_day_title
-import es.sebas1705.ironlog.feature.today.resources.today_save
-import es.sebas1705.ironlog.feature.today.resources.today_weight_date
-import es.sebas1705.ironlog.feature.today.resources.today_weight_dialog_title
-import es.sebas1705.ironlog.feature.today.resources.today_weight_invalid
-import es.sebas1705.ironlog.feature.today.resources.today_weight_label
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.feature.today.resources.Res
+import es.sebas1705.haltera.feature.today.resources.today_cancel
+import es.sebas1705.haltera.feature.today.resources.today_log_past_date_value
+import es.sebas1705.haltera.feature.today.resources.today_months_short
+import es.sebas1705.haltera.feature.today.resources.today_ok
+import es.sebas1705.haltera.feature.today.resources.today_pick_day_hint
+import es.sebas1705.haltera.feature.today.resources.today_pick_day_next
+import es.sebas1705.haltera.feature.today.resources.today_pick_day_rest
+import es.sebas1705.haltera.feature.today.resources.today_pick_day_start
+import es.sebas1705.haltera.feature.today.resources.today_pick_day_title
+import es.sebas1705.haltera.feature.today.resources.today_save
+import es.sebas1705.haltera.feature.today.resources.today_weight_date
+import es.sebas1705.haltera.feature.today.resources.today_weight_dialog_title
+import es.sebas1705.haltera.feature.today.resources.today_weight_invalid
+import es.sebas1705.haltera.feature.today.resources.today_weight_label
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 

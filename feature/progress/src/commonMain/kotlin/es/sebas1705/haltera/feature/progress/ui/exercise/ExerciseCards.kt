@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui.exercise
+package es.sebas1705.haltera.feature.progress.ui.exercise
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,23 +20,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.domain.usecases.stats.Metric
-import es.sebas1705.ironlog.domain.usecases.stats.RepRange
-import es.sebas1705.ironlog.feature.progress.model.ChartPoint
-import es.sebas1705.ironlog.feature.progress.resources.*
-import es.sebas1705.ironlog.feature.progress.ui.components.BarChart
-import es.sebas1705.ironlog.feature.progress.ui.components.ChartEmpty
-import es.sebas1705.ironlog.feature.progress.ui.components.ChartLegend
-import es.sebas1705.ironlog.feature.progress.ui.components.DateFormat
-import es.sebas1705.ironlog.feature.progress.ui.components.LineChart
-import es.sebas1705.ironlog.feature.progress.ui.components.LineSeries
-import es.sebas1705.ironlog.feature.progress.ui.components.StatCard
-import es.sebas1705.ironlog.feature.progress.ui.components.UnitFormat
-import es.sebas1705.ironlog.feature.progress.ui.components.barsDescription
-import es.sebas1705.ironlog.feature.progress.ui.components.formatNumber
-import es.sebas1705.ironlog.feature.progress.ui.components.lineDescription
-import es.sebas1705.ironlog.feature.progress.ui.components.variantLabel
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.domain.usecases.stats.Metric
+import es.sebas1705.haltera.domain.usecases.stats.RepRange
+import es.sebas1705.haltera.feature.progress.model.ChartPoint
+import es.sebas1705.haltera.feature.progress.resources.*
+import es.sebas1705.haltera.feature.progress.ui.components.BarChart
+import es.sebas1705.haltera.feature.progress.ui.components.ChartEmpty
+import es.sebas1705.haltera.feature.progress.ui.components.ChartLegend
+import es.sebas1705.haltera.feature.progress.ui.components.DateFormat
+import es.sebas1705.haltera.feature.progress.ui.components.LineChart
+import es.sebas1705.haltera.feature.progress.ui.components.LineSeries
+import es.sebas1705.haltera.feature.progress.ui.components.StatCard
+import es.sebas1705.haltera.feature.progress.ui.components.UnitFormat
+import es.sebas1705.haltera.feature.progress.ui.components.barsDescription
+import es.sebas1705.haltera.feature.progress.ui.components.formatNumber
+import es.sebas1705.haltera.feature.progress.ui.components.lineDescription
+import es.sebas1705.haltera.feature.progress.ui.components.variantLabel
 import org.jetbrains.compose.resources.stringResource
 
 /** Grams series in the user's unit. */

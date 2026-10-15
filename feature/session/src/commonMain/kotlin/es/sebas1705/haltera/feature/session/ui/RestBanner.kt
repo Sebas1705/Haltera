@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,19 +20,19 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_get_ready
-import es.sebas1705.ironlog.feature.session.resources.session_rest
-import es.sebas1705.ironlog.feature.session.resources.session_rest_minus
-import es.sebas1705.ironlog.feature.session.resources.session_rest_plus
-import es.sebas1705.ironlog.feature.session.resources.session_skip
-import es.sebas1705.ironlog.feature.session.resources.session_stop
-import es.sebas1705.ironlog.feature.session.resources.session_work
-import es.sebas1705.ironlog.feature.session.timer.TimerMath
-import es.sebas1705.ironlog.feature.session.timer.TimerPhase
-import es.sebas1705.ironlog.feature.session.timer.TimerSnapshot
+import es.sebas1705.haltera.core.ui.theme.HalteraTheme
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_get_ready
+import es.sebas1705.haltera.feature.session.resources.session_rest
+import es.sebas1705.haltera.feature.session.resources.session_rest_minus
+import es.sebas1705.haltera.feature.session.resources.session_rest_plus
+import es.sebas1705.haltera.feature.session.resources.session_skip
+import es.sebas1705.haltera.feature.session.resources.session_stop
+import es.sebas1705.haltera.feature.session.resources.session_work
+import es.sebas1705.haltera.feature.session.timer.TimerMath
+import es.sebas1705.haltera.feature.session.timer.TimerPhase
+import es.sebas1705.haltera.feature.session.timer.TimerSnapshot
 import org.jetbrains.compose.resources.stringResource
 
 private const val REST_STEP_S = 15
@@ -51,8 +51,8 @@ internal fun RestBanner(
     if (phase == TimerPhase.IDLE) return
     val remaining = TimerMath.formatSeconds(TimerMath.remainingSeconds(timer, now))
     // Brand accent: iron orange with graphite content, in light and dark.
-    val accent = IronlogTheme.colors.accent
-    val onAccent = IronlogTheme.colors.onAccent
+    val accent = HalteraTheme.colors.accent
+    val onAccent = HalteraTheme.colors.onAccent
     val tonal = ButtonDefaults.filledTonalButtonColors(
         containerColor = onAccent.copy(alpha = 0.14f),
         contentColor = onAccent

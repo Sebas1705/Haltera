@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.units
+package es.sebas1705.haltera.core.units
 
 /** A plate size and how many pairs are available (one plate per side each); null means unlimited. */
 data class PlateStock(val grams: Long, val pairs: Int? = null)

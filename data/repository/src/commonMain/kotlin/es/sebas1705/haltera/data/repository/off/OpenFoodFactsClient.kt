@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.data.repository.off
+package es.sebas1705.haltera.data.repository.off
 
-import es.sebas1705.ironlog.data.models.FoodUnit
-import es.sebas1705.ironlog.data.models.Nutrients
+import es.sebas1705.haltera.data.models.FoodUnit
+import es.sebas1705.haltera.data.models.Nutrients
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.request.get
@@ -49,7 +49,7 @@ class OpenFoodFactsClient(
     private val now: () -> Long,
     private val baseUrl: String = "https://world.openfoodfacts.org",
 ) {
-    private val userAgent = "Ironlog/$appVersion (+https://github.com/Sebas1705/Ironlog)"
+    private val userAgent = "Haltera/$appVersion (+https://github.com/Sebas1705/Haltera)"
     private val recent = ArrayDeque<Long>()
 
     suspend fun product(barcode: String): OffResult {

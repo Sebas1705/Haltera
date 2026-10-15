@@ -1,21 +1,21 @@
-package es.sebas1705.ironlog.feature.routines
+package es.sebas1705.haltera.feature.routines
 
-import es.sebas1705.ironlog.core.testing.CoroutineTestRule
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.repository.share.ImportPreview
-import es.sebas1705.ironlog.data.repository.share.ImportPreviewResult
-import es.sebas1705.ironlog.data.repository.share.QrCapacity
-import es.sebas1705.ironlog.data.repository.share.RoutineFile
-import es.sebas1705.ironlog.data.repository.share.RoutineShareCode
-import es.sebas1705.ironlog.data.repository.share.RoutineSharing
-import es.sebas1705.ironlog.data.repository.share.SharedRoutine
-import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
-import es.sebas1705.ironlog.feature.routines.ui.share.ImportProblem
-import es.sebas1705.ironlog.feature.routines.ui.share.ImportSource
-import es.sebas1705.ironlog.feature.routines.ui.share.RoutineExportIntent
-import es.sebas1705.ironlog.feature.routines.ui.share.RoutineExportViewModel
-import es.sebas1705.ironlog.feature.routines.ui.share.RoutineImportIntent
-import es.sebas1705.ironlog.feature.routines.ui.share.RoutineImportViewModel
+import es.sebas1705.haltera.core.testing.CoroutineTestRule
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.repository.share.ImportPreview
+import es.sebas1705.haltera.data.repository.share.ImportPreviewResult
+import es.sebas1705.haltera.data.repository.share.QrCapacity
+import es.sebas1705.haltera.data.repository.share.RoutineFile
+import es.sebas1705.haltera.data.repository.share.RoutineShareCode
+import es.sebas1705.haltera.data.repository.share.RoutineSharing
+import es.sebas1705.haltera.data.repository.share.SharedRoutine
+import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
+import es.sebas1705.haltera.feature.routines.ui.share.ImportProblem
+import es.sebas1705.haltera.feature.routines.ui.share.ImportSource
+import es.sebas1705.haltera.feature.routines.ui.share.RoutineExportIntent
+import es.sebas1705.haltera.feature.routines.ui.share.RoutineExportViewModel
+import es.sebas1705.haltera.feature.routines.ui.share.RoutineImportIntent
+import es.sebas1705.haltera.feature.routines.ui.share.RoutineImportViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
@@ -50,7 +50,7 @@ private class FakeBridge(
 }
 
 private class FakeSharing(private val routines: FakeRoutineRepository) : RoutineSharing {
-    var exportJson: String? = """{"format":"ironlog-routine"}"""
+    var exportJson: String? = """{"format":"haltera-routine"}"""
     var result: ImportPreviewResult = ImportPreviewResult.Ready(PREVIEW)
     val previewed = mutableListOf<String>()
     val languages = mutableListOf<String>()
@@ -95,7 +95,7 @@ class RoutineShareViewModelsTest {
         val id = routines.createRoutine("Push/Pull: A")
         val vm = RoutineExportViewModel(routines, sharing, bridge)
         vm.onEvent(RoutineExportIntent.ShareFile(id))
-        assertEquals(listOf("PushPull A.ironlog" to sharing.exportJson!!), bridge.shared)
+        assertEquals(listOf("PushPull A.haltera" to sharing.exportJson!!), bridge.shared)
         assertFalse(vm.uiState.value.error)
     }
 
@@ -153,9 +153,9 @@ class RoutineShareViewModelsTest {
     @Test
     fun `incoming routines are consumed and a cancelled picker closes the screen`() = runTest {
         val bridge = FakeBridge()
-        bridge.incoming.value = "ironlog:r1:abc"
+        bridge.incoming.value = "haltera:r1:abc"
         RoutineImportViewModel(ImportSource.INCOMING, sharing, routines, bridge, english)
-        assertEquals(listOf("ironlog:r1:abc"), sharing.previewed)
+        assertEquals(listOf("haltera:r1:abc"), sharing.previewed)
         assertNull(bridge.incoming.value)
 
         val cancelled = RoutineImportViewModel(ImportSource.FILE, sharing, routines, bridge, english)

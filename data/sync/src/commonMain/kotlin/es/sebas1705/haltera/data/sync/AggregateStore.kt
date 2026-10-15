@@ -1,13 +1,13 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.sync.SyncCollections.BODY_WEIGHT
-import es.sebas1705.ironlog.data.sync.SyncCollections.EXERCISES
-import es.sebas1705.ironlog.data.sync.SyncCollections.FOODS
-import es.sebas1705.ironlog.data.sync.SyncCollections.MEAL_DAYS
-import es.sebas1705.ironlog.data.sync.SyncCollections.ROUTINES
-import es.sebas1705.ironlog.data.sync.SyncCollections.SESSIONS
-import es.sebas1705.ironlog.data.sync.SyncCollections.SETTINGS
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.sync.SyncCollections.BODY_WEIGHT
+import es.sebas1705.haltera.data.sync.SyncCollections.EXERCISES
+import es.sebas1705.haltera.data.sync.SyncCollections.FOODS
+import es.sebas1705.haltera.data.sync.SyncCollections.MEAL_DAYS
+import es.sebas1705.haltera.data.sync.SyncCollections.ROUTINES
+import es.sebas1705.haltera.data.sync.SyncCollections.SESSIONS
+import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS
 
 internal const val META_SYNC_APPLYING = "syncApplying"
 

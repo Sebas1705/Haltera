@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
-import es.sebas1705.ironlog.core.datastore.NutritionSettings
-import es.sebas1705.ironlog.data.local.foods.FoodImporter
-import es.sebas1705.ironlog.data.sync.SyncCollections.FOODS
-import es.sebas1705.ironlog.data.sync.SyncCollections.MEAL_DAYS
-import es.sebas1705.ironlog.data.sync.SyncCollections.SETTINGS
-import es.sebas1705.ironlog.data.sync.SyncCollections.SETTINGS_ID
+import es.sebas1705.haltera.core.datastore.NutritionSettings
+import es.sebas1705.haltera.data.local.foods.FoodImporter
+import es.sebas1705.haltera.data.sync.SyncCollections.FOODS
+import es.sebas1705.haltera.data.sync.SyncCollections.MEAL_DAYS
+import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS
+import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS_ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

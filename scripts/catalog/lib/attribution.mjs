@@ -16,7 +16,7 @@ export function renderAttribution({ sources, usedWger }) {
     '## wger',
     '',
     ...(usedWger.length === 0
-      ? ['No wger data is currently used: every Spanish name comes from `catalog/i18n/es.yaml` or the Ironlog curation.']
+      ? ['No wger data is currently used: every Spanish name comes from `catalog/i18n/es.yaml` or the Haltera curation.']
       : [
           'Spanish exercise names from the [wger](https://wger.de) exercise database, used under their Creative Commons licences:',
           '',
@@ -25,9 +25,9 @@ export function renderAttribution({ sources, usedWger }) {
           ...usedWger.map((w) => `| [${w.wgerId}](https://wger.de/exercise/${w.wgerId}/view/) | ${cell(w.en)} | ${cell(w.es)} | ${cell(w.license)} | ${cell(w.author)} |`),
         ]),
     '',
-    '## Ironlog',
+    '## Haltera',
     '',
-    'Grouping into exercises and variants, Spanish translations not listed above and the additional exercises are by the Ironlog authors.',
+    'Grouping into exercises and variants, Spanish translations not listed above and the additional exercises are by the Haltera authors.',
     '',
   ];
   return lines.join('\n');

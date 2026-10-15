@@ -1,20 +1,20 @@
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.Level
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TrackingType
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.Level
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Muscle
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TrackingType
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -23,7 +23,7 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 
 /**
- * The `ironlog-routine` v1 sharing format (spec §10.1): a routine that references catalogue exercises by
+ * The `haltera-routine` v1 sharing format (spec §10.1): a routine that references catalogue exercises by
  * stable id and embeds the user exercises it uses. History is never included.
  */
 @Serializable
@@ -96,7 +96,7 @@ sealed interface RoutineDecodeResult {
 
 /** JSON codec of [RoutineFile]. */
 object RoutineExport {
-    const val FORMAT = "ironlog-routine"
+    const val FORMAT = "haltera-routine"
     const val VERSION = 1
 
     private val json = Json {

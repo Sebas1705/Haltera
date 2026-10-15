@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.data.local.foods
+package es.sebas1705.haltera.data.local.foods
 
-import es.sebas1705.ironlog.data.local.inMemoryDatabase
-import es.sebas1705.ironlog.data.models.FoodImportResult
+import es.sebas1705.haltera.data.local.inMemoryDatabase
+import es.sebas1705.haltera.data.models.FoodImportResult
 import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertEquals

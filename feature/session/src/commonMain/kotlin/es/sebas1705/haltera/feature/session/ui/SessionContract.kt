@@ -1,22 +1,22 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.datastore.UserSettings
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SetInput
-import es.sebas1705.ironlog.data.models.SetLog
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.domain.usecases.naming.ExerciseNaming
-import es.sebas1705.ironlog.domain.usecases.naming.VariantLabel
-import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
-import es.sebas1705.ironlog.domain.usecases.stats.RecordKind
-import es.sebas1705.ironlog.feature.session.timer.TimerSnapshot
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.datastore.UserSettings
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SetInput
+import es.sebas1705.haltera.data.models.SetLog
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.domain.usecases.naming.ExerciseNaming
+import es.sebas1705.haltera.domain.usecases.naming.VariantLabel
+import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.stats.RecordKind
+import es.sebas1705.haltera.feature.session.timer.TimerSnapshot
 
 /** An exercise of the session with everything its card shows. Names are resolved by the UI's language. */
 data class ExerciseCard(

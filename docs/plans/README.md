@@ -1,6 +1,6 @@
 # Implementation plans
 
-The core spec ([2026-10-14-ironlog-core-design.md](../designs/2026-10-14-ironlog-core-design.md)) is implemented in **chained plans**. Each plan leaves software that compiles, passes its tests and can be tried out. Plans after F1 are written in detail right before they are executed, because each depends on how the previous one turned out.
+The core spec ([2026-10-14-haltera-core-design.md](../designs/2026-10-14-haltera-core-design.md)) is implemented in **chained plans**. Each plan leaves software that compiles, passes its tests and can be tried out. Plans after F1 are written in detail right before they are executed, because each depends on how the previous one turned out.
 
 ## Plans
 

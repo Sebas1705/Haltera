@@ -1,10 +1,10 @@
-package es.sebas1705.ironlog.feature.routines.model
+package es.sebas1705.haltera.feature.routines.model
 
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.ExerciseVariant
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.repository.ExerciseRepository
 
 /** The exercises (with their variants) referenced by a routine or template, to label and edit its slots. */
 internal data class ExerciseIndex(val exercises: Map<String, Exercise> = emptyMap()) {

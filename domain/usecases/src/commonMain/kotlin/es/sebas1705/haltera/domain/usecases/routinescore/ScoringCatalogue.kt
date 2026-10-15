@@ -1,11 +1,11 @@
-package es.sebas1705.ironlog.domain.usecases.routinescore
+package es.sebas1705.haltera.domain.usecases.routinescore
 
-import es.sebas1705.ironlog.data.models.Exercise
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineDay
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineDay
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SlotTarget
 
 /**
  * The catalogue information the scorer needs (category, primary and secondary muscles) for the exercises a

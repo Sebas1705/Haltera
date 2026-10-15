@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui.components
+package es.sebas1705.haltera.feature.progress.ui.components
 
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -12,7 +12,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.feature.progress.model.AxisScale
+import es.sebas1705.haltera.feature.progress.model.AxisScale
 
 /** Colours and text styles a chart draws with, resolved from the theme in composition. */
 internal data class ChartStyle(

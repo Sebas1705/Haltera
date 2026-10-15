@@ -23,7 +23,7 @@ kotlin {
 sqldelight {
     databases {
         create("AppDatabase") {
-            packageName.set("es.sebas1705.ironlog.data.local.db")
+            packageName.set("es.sebas1705.haltera.data.local.db")
             srcDirs.setFrom("src/commonMain/sqldelight")
             // Schema snapshot used by verifySqlDelightMigration (generateCommonMainAppDatabaseSchema, run on its own).
             // The schema has shipped: every change adds migrations/n.sqm and a new n+1.db; shipped snapshots never change.

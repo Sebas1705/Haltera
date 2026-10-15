@@ -1,18 +1,18 @@
-package es.sebas1705.ironlog.feature.routines.ui.catalogue
+package es.sebas1705.haltera.feature.routines.ui.catalogue
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
-import es.sebas1705.ironlog.data.repository.RoutineRepository
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
-import es.sebas1705.ironlog.domain.usecases.routinescore.toScoringRoutine
-import es.sebas1705.ironlog.feature.routines.model.AppLanguage
-import es.sebas1705.ironlog.feature.routines.model.ExerciseIndex
-import es.sebas1705.ironlog.feature.routines.model.attempt
-import es.sebas1705.ironlog.feature.routines.model.indexFor
-import es.sebas1705.ironlog.feature.routines.model.scoreRoutine
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.repository.RoutineRepository
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.haltera.domain.usecases.routinescore.toScoringRoutine
+import es.sebas1705.haltera.feature.routines.model.AppLanguage
+import es.sebas1705.haltera.feature.routines.model.ExerciseIndex
+import es.sebas1705.haltera.feature.routines.model.attempt
+import es.sebas1705.haltera.feature.routines.model.indexFor
+import es.sebas1705.haltera.feature.routines.model.scoreRoutine
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 

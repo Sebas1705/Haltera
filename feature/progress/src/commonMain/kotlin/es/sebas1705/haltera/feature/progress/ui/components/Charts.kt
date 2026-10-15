@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui.components
+package es.sebas1705.haltera.feature.progress.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -43,9 +43,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.feature.progress.model.AxisScale
-import es.sebas1705.ironlog.feature.progress.model.ChartPoint
-import es.sebas1705.ironlog.feature.progress.model.ChartScale
+import es.sebas1705.haltera.feature.progress.model.AxisScale
+import es.sebas1705.haltera.feature.progress.model.ChartPoint
+import es.sebas1705.haltera.feature.progress.model.ChartScale
 import kotlin.math.abs
 
 private const val BAR_GAP_FRACTION = 0.25f

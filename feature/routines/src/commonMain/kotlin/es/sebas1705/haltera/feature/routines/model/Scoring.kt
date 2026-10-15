@@ -1,13 +1,13 @@
-package es.sebas1705.ironlog.feature.routines.model
+package es.sebas1705.haltera.feature.routines.model
 
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
-import es.sebas1705.ironlog.domain.usecases.routinescore.Advice
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
-import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScorer
-import es.sebas1705.ironlog.domain.usecases.routinescore.ScoringCatalogue
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.domain.usecases.routinescore.Advice
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.haltera.domain.usecases.routinescore.RoutineScorer
+import es.sebas1705.haltera.domain.usecases.routinescore.ScoringCatalogue
 
 /** Scores [routine] with the exercises of [index] (they must include the routine's exercises). */
 internal fun scoreRoutine(

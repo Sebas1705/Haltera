@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.domain.usecases.di
+package es.sebas1705.haltera.domain.usecases.di
 
-import es.sebas1705.ironlog.domain.usecases.session.LogPastSession
-import es.sebas1705.ironlog.domain.usecases.session.ObserveTodayPlan
-import es.sebas1705.ironlog.domain.usecases.session.SuggestNextLoad
+import es.sebas1705.haltera.domain.usecases.session.LogPastSession
+import es.sebas1705.haltera.domain.usecases.session.ObserveTodayPlan
+import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 

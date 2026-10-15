@@ -1,18 +1,18 @@
 @file:Suppress("MagicNumber")
 
-package es.sebas1705.ironlog.data.routines
+package es.sebas1705.haltera.data.routines
 
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.Level
-import es.sebas1705.ironlog.data.models.LoadIncrement
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.ProgressionRule
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SlotSpec
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TemplateDay
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.Level
+import es.sebas1705.haltera.data.models.LoadIncrement
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SlotSpec
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TemplateDay
 
 /**
  * The bundled famous-routine templates (spec §6.3). Names describe the programme and credit the
@@ -143,7 +143,7 @@ private val beginnerFullBody3 = template(
         "Tres sesiones de cuerpo completo a la semana en días alternos. Cada sesión trabaja pierna, un empuje, un " +
             "tirón y algo de accesorios; sube el peso cuando todas las series lleguen al tope del rango.",
     ),
-    credit = "Ironlog",
+    credit = "Haltera",
     level = Level.BEGINNER,
     days = listOf(
         day("Full body A", "Cuerpo completo A") {
@@ -373,7 +373,7 @@ private val upperLower4 = template(
         "Cuatro sesiones a la semana alternando días de torso y de pierna, cada músculo dos veces por semana. " +
             "Primero básicos pesados y después accesorios de hipertrofia; todo con doble progresión.",
     ),
-    credit = "Ironlog",
+    credit = "Haltera",
     level = Level.INTERMEDIATE,
     days = listOf(
         day("Upper A", "Torso A") {

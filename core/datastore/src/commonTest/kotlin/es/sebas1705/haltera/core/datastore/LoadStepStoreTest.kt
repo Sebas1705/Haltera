@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.datastore
+package es.sebas1705.haltera.core.datastore
 
 import com.russhwolf.settings.MapSettings
 import kotlin.test.Test

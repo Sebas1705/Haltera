@@ -1,24 +1,24 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.core.datastore.LoadStepStore
-import es.sebas1705.ironlog.core.datastore.SettingsRepository
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.Prescription
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.SetLog
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.data.repository.SessionRepository
-import es.sebas1705.ironlog.feature.session.load.LoadSteps
-import es.sebas1705.ironlog.feature.session.load.Prefill
-import es.sebas1705.ironlog.feature.session.load.WarmupRounding
-import es.sebas1705.ironlog.feature.session.load.toInput
-import es.sebas1705.ironlog.feature.session.platform.LiveSessionIndicator
-import es.sebas1705.ironlog.feature.session.timer.RestTimerController
-import es.sebas1705.ironlog.feature.session.timer.TimerSnapshot
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.core.datastore.LoadStepStore
+import es.sebas1705.haltera.core.datastore.SettingsRepository
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetLog
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.data.repository.SessionRepository
+import es.sebas1705.haltera.feature.session.load.LoadSteps
+import es.sebas1705.haltera.feature.session.load.Prefill
+import es.sebas1705.haltera.feature.session.load.WarmupRounding
+import es.sebas1705.haltera.feature.session.load.toInput
+import es.sebas1705.haltera.feature.session.platform.LiveSessionIndicator
+import es.sebas1705.haltera.feature.session.timer.RestTimerController
+import es.sebas1705.haltera.feature.session.timer.TimerSnapshot
 import kotlinx.coroutines.Job
 
 /**

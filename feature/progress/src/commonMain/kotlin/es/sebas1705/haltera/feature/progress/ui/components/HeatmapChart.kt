@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui.components
+package es.sebas1705.haltera.feature.progress.ui.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -41,10 +41,10 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.domain.usecases.stats.HeatCell
-import es.sebas1705.ironlog.domain.usecases.stats.Heatmap
-import es.sebas1705.ironlog.domain.usecases.stats.Heatmaps
-import es.sebas1705.ironlog.feature.progress.resources.*
+import es.sebas1705.haltera.domain.usecases.stats.HeatCell
+import es.sebas1705.haltera.domain.usecases.stats.Heatmap
+import es.sebas1705.haltera.domain.usecases.stats.Heatmaps
+import es.sebas1705.haltera.feature.progress.resources.*
 import kotlinx.datetime.LocalDate
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource

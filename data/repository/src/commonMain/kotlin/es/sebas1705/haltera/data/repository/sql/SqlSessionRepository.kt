@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.data.repository.sql
+package es.sebas1705.haltera.data.repository.sql
 
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.local.db.WorkoutSessionEntity
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.SetInput
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.data.repository.SessionRepository
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.WorkoutSessionEntity
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.SetInput
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.data.repository.SessionRepository
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate

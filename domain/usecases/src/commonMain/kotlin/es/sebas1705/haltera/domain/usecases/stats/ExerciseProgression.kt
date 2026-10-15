@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.SetLog
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.SetLog
 
 /** The best set of a session: its load (null for an unloaded set) and reps. */
 data class BestSet(val loadGrams: Long?, val reps: Int)

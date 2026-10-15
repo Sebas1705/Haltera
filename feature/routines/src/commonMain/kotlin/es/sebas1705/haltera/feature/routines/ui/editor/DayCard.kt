@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.ui.editor
+package es.sebas1705.haltera.feature.routines.ui.editor
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.BorderStroke
@@ -11,8 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import es.sebas1705.ironlog.feature.routines.resources.routines_day_actions
-import es.sebas1705.ironlog.feature.routines.resources.routines_duplicate_day
+import es.sebas1705.haltera.feature.routines.resources.routines_day_actions
+import es.sebas1705.haltera.feature.routines.resources.routines_duplicate_day
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,23 +36,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.data.models.DayKind
-import es.sebas1705.ironlog.data.models.RoutineDay
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.feature.routines.model.ExerciseIndex
-import es.sebas1705.ironlog.feature.routines.resources.Res
-import es.sebas1705.ironlog.feature.routines.resources.routines_add_exercise
-import es.sebas1705.ironlog.feature.routines.resources.routines_day_number
-import es.sebas1705.ironlog.feature.routines.resources.routines_delete_day
-import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot
-import es.sebas1705.ironlog.feature.routines.resources.routines_kind_rest
-import es.sebas1705.ironlog.feature.routines.resources.routines_kind_training
-import es.sebas1705.ironlog.feature.routines.resources.routines_no_slots
-import es.sebas1705.ironlog.feature.routines.resources.routines_rename_day
-import es.sebas1705.ironlog.feature.routines.resources.routines_rest_day
-import es.sebas1705.ironlog.feature.routines.ui.components.MoveButtons
-import es.sebas1705.ironlog.feature.routines.ui.components.slotSummary
-import es.sebas1705.ironlog.feature.routines.ui.components.targetLabel
+import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.RoutineDay
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.feature.routines.model.ExerciseIndex
+import es.sebas1705.haltera.feature.routines.resources.Res
+import es.sebas1705.haltera.feature.routines.resources.routines_add_exercise
+import es.sebas1705.haltera.feature.routines.resources.routines_day_number
+import es.sebas1705.haltera.feature.routines.resources.routines_delete_day
+import es.sebas1705.haltera.feature.routines.resources.routines_delete_slot
+import es.sebas1705.haltera.feature.routines.resources.routines_kind_rest
+import es.sebas1705.haltera.feature.routines.resources.routines_kind_training
+import es.sebas1705.haltera.feature.routines.resources.routines_no_slots
+import es.sebas1705.haltera.feature.routines.resources.routines_rename_day
+import es.sebas1705.haltera.feature.routines.resources.routines_rest_day
+import es.sebas1705.haltera.feature.routines.ui.components.MoveButtons
+import es.sebas1705.haltera.feature.routines.ui.components.slotSummary
+import es.sebas1705.haltera.feature.routines.ui.components.targetLabel
 import org.jetbrains.compose.resources.stringResource
 
 /** One day of the cycle: name, training/rest, order, and its slots. */

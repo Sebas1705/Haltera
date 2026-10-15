@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.timer
+package es.sebas1705.haltera.feature.session.timer
 
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow

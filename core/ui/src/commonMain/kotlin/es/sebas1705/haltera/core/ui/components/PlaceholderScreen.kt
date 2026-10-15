@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.components
+package es.sebas1705.haltera.core.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

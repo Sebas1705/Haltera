@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.data.sync.SyncCollections.BODY_WEIGHT
-import es.sebas1705.ironlog.data.sync.SyncCollections.EXERCISES
-import es.sebas1705.ironlog.data.sync.SyncCollections.ROUTINES
-import es.sebas1705.ironlog.data.sync.SyncCollections.SESSIONS
-import es.sebas1705.ironlog.data.sync.SyncCollections.SETTINGS
-import es.sebas1705.ironlog.data.sync.SyncCollections.SETTINGS_ID
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.data.sync.SyncCollections.BODY_WEIGHT
+import es.sebas1705.haltera.data.sync.SyncCollections.EXERCISES
+import es.sebas1705.haltera.data.sync.SyncCollections.ROUTINES
+import es.sebas1705.haltera.data.sync.SyncCollections.SESSIONS
+import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS
+import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS_ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

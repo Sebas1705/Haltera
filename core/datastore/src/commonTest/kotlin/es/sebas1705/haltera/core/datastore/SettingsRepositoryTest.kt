@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.core.datastore
+package es.sebas1705.haltera.core.datastore
 
 import com.russhwolf.settings.MapSettings
-import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.core.units.WeightUnit
+import es.sebas1705.haltera.core.units.PlateCalculator
+import es.sebas1705.haltera.core.units.WeightUnit
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

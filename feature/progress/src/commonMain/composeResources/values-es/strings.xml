@@ -357,7 +357,7 @@
     <string name="progress_metric_sets_summary">El número de series que hicieron trabajo real.</string>
     <string name="progress_metric_sets_formula">Número de series completadas que no son de calentamiento y tienen al menos una repetición, una duración o una distancia.</string>
     <string name="progress_metric_sets_counts">Series efectivas, descendentes y al fallo de cualquier ejercicio, incluidas las de peso corporal, por tiempo y de cardio.</string>
-    <string name="progress_metric_sets_limits">Ironlog no puede saber lo dura que fue una serie: una serie fácil cuenta igual que una al fallo. El RPE, cuando lo registras, no se usa para filtrar series.</string>
+    <string name="progress_metric_sets_limits">Haltera no puede saber lo dura que fue una serie: una serie fácil cuenta igual que una al fallo. El RPE, cuando lo registras, no se usa para filtrar series.</string>
 
     <string name="progress_metric_prs_title">Récords personales</string>
     <string name="progress_metric_prs_summary">Tus mejores marcas en una variante de ejercicio y cuándo las lograste.</string>

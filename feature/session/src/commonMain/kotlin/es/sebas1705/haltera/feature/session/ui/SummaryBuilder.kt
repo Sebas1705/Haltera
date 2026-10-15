@@ -1,12 +1,12 @@
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.RoutineSlot
-import es.sebas1705.ironlog.data.models.WorkoutSession
-import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
-import es.sebas1705.ironlog.domain.usecases.stats.Stats
-import es.sebas1705.ironlog.feature.session.load.isMachinePlate
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.WorkoutSession
+import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.stats.Stats
+import es.sebas1705.haltera.feature.session.load.isMachinePlate
 
 /** Builds the finish summary of a finished session (spec §5). */
 object SummaryBuilder {

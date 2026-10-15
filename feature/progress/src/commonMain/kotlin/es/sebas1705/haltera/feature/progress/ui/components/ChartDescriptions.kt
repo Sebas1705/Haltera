@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.feature.progress.ui.components
+package es.sebas1705.haltera.feature.progress.ui.components
 
 import androidx.compose.runtime.Composable
-import es.sebas1705.ironlog.feature.progress.resources.Res
-import es.sebas1705.ironlog.feature.progress.resources.progress_chart_bars_description
-import es.sebas1705.ironlog.feature.progress.resources.progress_chart_line_description
+import es.sebas1705.haltera.feature.progress.resources.Res
+import es.sebas1705.haltera.feature.progress.resources.progress_chart_bars_description
+import es.sebas1705.haltera.feature.progress.resources.progress_chart_line_description
 import org.jetbrains.compose.resources.stringResource
 
 /** Screen-reader summary of a bar chart: count, range, highest and latest bar. */

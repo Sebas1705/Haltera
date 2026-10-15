@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.navigation
+package es.sebas1705.haltera.navigation
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor

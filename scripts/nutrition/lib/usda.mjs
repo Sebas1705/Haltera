@@ -1,5 +1,5 @@
 // Reduces USDA FoodData Central foods (Foundation, SR Legacy JSON) to what the pipeline needs:
-// id, description, category and the nutrients per 100 g Ironlog keeps (nutrition design §2).
+// id, description, category and the nutrients per 100 g Haltera keeps (nutrition design §2).
 
 // Nutrient numbers (USDA `nutrient.number`), in order of preference for each value.
 const NUTRIENTS = {

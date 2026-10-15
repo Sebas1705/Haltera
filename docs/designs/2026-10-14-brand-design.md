@@ -1,4 +1,4 @@
-# Ironlog — brand and theme design
+# Haltera — brand and theme design
 
 - **Date:** 2026-10-14
 - **Status:** approved by the owner in brainstorming (concept A, "Barbell-I")
@@ -7,7 +7,7 @@
 
 | Topic | Decision |
 |---|---|
-| Icon | Concept A, "Barbell-I": a vertical bar (the "I" of Ironlog) with a plate collar at each end, drawn as two horizontal bars with orange plates at both ends, on a graphite squircle |
+| Icon | Concept A, "Barbell-I": a vertical bar (the "I" of Haltera) with a plate collar at each end, drawn as two horizontal bars with orange plates at both ends, on a graphite squircle |
 | Accent | Iron orange `#FF5A1F` (icon, fills, timer, primary buttons). Text-on-light accent darkened to `#C2410C` for WCAG AA |
 | Neutrals | Graphite `#1E2126` (icon background, dark surfaces), light `#F4F4F5` |
 | Semantic | Success green, warning amber, error red; **PR gold** for personal-record badges |

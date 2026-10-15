@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
 import kotlin.math.abs
 

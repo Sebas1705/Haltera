@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.core.units.appLanguage
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.core.units.appLanguage
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor

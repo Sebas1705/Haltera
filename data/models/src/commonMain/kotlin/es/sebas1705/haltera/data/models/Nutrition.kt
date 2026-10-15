@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 import kotlinx.datetime.LocalDate
 

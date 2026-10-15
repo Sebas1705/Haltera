@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
 import kotlinx.serialization.Serializable
 

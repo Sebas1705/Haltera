@@ -28,7 +28,7 @@ const files = {
   aab: join(out, "bundle/release/composeApp-release.aab"),
   mapping: join(out, "mapping/release/mapping.txt"),
 };
-const EXPECT = { targetSdk: 36, minSdk: 24, applicationId: "es.sebas1705.ironlog" };
+const EXPECT = { targetSdk: 36, minSdk: 24, applicationId: "es.sebas1705.haltera" };
 const failures = [];
 const fail = (msg) => failures.push(msg);
 

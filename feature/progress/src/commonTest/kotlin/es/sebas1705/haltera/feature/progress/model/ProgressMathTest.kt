@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.feature.progress.model
+package es.sebas1705.haltera.feature.progress.model
 
-import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.SessionExercise
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.SetKind
-import es.sebas1705.ironlog.domain.usecases.stats.ExerciseProgression
-import es.sebas1705.ironlog.feature.progress.performed
-import es.sebas1705.ironlog.feature.progress.session
-import es.sebas1705.ironlog.feature.progress.set
-import es.sebas1705.ironlog.feature.progress.utc
+import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.SetKind
+import es.sebas1705.haltera.domain.usecases.stats.ExerciseProgression
+import es.sebas1705.haltera.feature.progress.performed
+import es.sebas1705.haltera.feature.progress.session
+import es.sebas1705.haltera.feature.progress.set
+import es.sebas1705.haltera.feature.progress.utc
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlin.test.Test

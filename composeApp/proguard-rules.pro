@@ -1,1 +1,1 @@
-# R8 rules for Ironlog. kotlinx.serialization ships its own rules.
+# R8 rules for Haltera. kotlinx.serialization ships its own rules.

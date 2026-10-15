@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.platform
+package es.sebas1705.haltera.feature.session.platform
 
 import androidx.compose.runtime.Composable
 import org.koin.core.module.Module

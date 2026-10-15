@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.core.common.extensions
+package es.sebas1705.haltera.core.common.extensions
 
-import es.sebas1705.ironlog.core.common.utils.AppResult
+import es.sebas1705.haltera.core.common.utils.AppResult
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch

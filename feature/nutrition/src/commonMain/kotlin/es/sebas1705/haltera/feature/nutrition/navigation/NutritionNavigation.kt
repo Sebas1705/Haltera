@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.feature.nutrition.navigation
+package es.sebas1705.haltera.feature.nutrition.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,24 +11,24 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import es.sebas1705.ironlog.data.models.FoodSource
-import es.sebas1705.ironlog.data.models.Meal
-import es.sebas1705.ironlog.feature.nutrition.resources.Res
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_add_ingredient
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_add_to
-import es.sebas1705.ironlog.feature.nutrition.ui.components.label
-import es.sebas1705.ironlog.feature.nutrition.ui.day.DayScreen
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.detail.FoodDetailScreen
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodEditorArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.editor.FoodEditorScreen
-import es.sebas1705.ironlog.feature.nutrition.ui.goals.GoalsScreen
-import es.sebas1705.ironlog.feature.nutrition.ui.recipe.RecipeArgs
-import es.sebas1705.ironlog.feature.nutrition.ui.recipe.RecipeEditorIntent
-import es.sebas1705.ironlog.feature.nutrition.ui.recipe.RecipeEditorScreen
-import es.sebas1705.ironlog.feature.nutrition.ui.recipe.RecipeEditorViewModel
-import es.sebas1705.ironlog.feature.nutrition.ui.search.FoodSearchScreen
-import es.sebas1705.ironlog.feature.nutrition.ui.stats.StatsScreen
+import es.sebas1705.haltera.data.models.FoodSource
+import es.sebas1705.haltera.data.models.Meal
+import es.sebas1705.haltera.feature.nutrition.resources.Res
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_add_ingredient
+import es.sebas1705.haltera.feature.nutrition.resources.nutrition_add_to
+import es.sebas1705.haltera.feature.nutrition.ui.components.label
+import es.sebas1705.haltera.feature.nutrition.ui.day.DayScreen
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailArgs
+import es.sebas1705.haltera.feature.nutrition.ui.detail.FoodDetailScreen
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodEditorArgs
+import es.sebas1705.haltera.feature.nutrition.ui.editor.FoodEditorScreen
+import es.sebas1705.haltera.feature.nutrition.ui.goals.GoalsScreen
+import es.sebas1705.haltera.feature.nutrition.ui.recipe.RecipeArgs
+import es.sebas1705.haltera.feature.nutrition.ui.recipe.RecipeEditorIntent
+import es.sebas1705.haltera.feature.nutrition.ui.recipe.RecipeEditorScreen
+import es.sebas1705.haltera.feature.nutrition.ui.recipe.RecipeEditorViewModel
+import es.sebas1705.haltera.feature.nutrition.ui.search.FoodSearchScreen
+import es.sebas1705.haltera.feature.nutrition.ui.stats.StatsScreen
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.Serializable
 import org.jetbrains.compose.resources.stringResource

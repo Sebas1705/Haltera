@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.feature.exercises.model
+package es.sebas1705.haltera.feature.exercises.model
 
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.LoadType
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.LoadType
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime

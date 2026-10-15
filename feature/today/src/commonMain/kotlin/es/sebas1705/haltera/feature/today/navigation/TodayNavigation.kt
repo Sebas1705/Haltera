@@ -1,11 +1,11 @@
 @file:Suppress("MatchingDeclarationName") // Route objects and their graph builder live together.
 
-package es.sebas1705.ironlog.feature.today.navigation
+package es.sebas1705.haltera.feature.today.navigation
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import es.sebas1705.ironlog.feature.today.ui.TodayTab
+import es.sebas1705.haltera.feature.today.ui.TodayTab
 import kotlinx.serialization.Serializable
 
 /** Top-level destination of the Today tab. */

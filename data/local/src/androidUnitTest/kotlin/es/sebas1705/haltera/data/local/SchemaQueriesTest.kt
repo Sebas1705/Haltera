@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 /**
  * A famous routine from the bundled catalogue (spec §6.3). Copying it creates an editable [Routine]

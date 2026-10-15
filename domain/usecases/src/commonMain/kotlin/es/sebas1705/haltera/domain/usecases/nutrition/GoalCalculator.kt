@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.domain.usecases.nutrition
+package es.sebas1705.haltera.domain.usecases.nutrition
 
-import es.sebas1705.ironlog.data.models.ActivityLevel
-import es.sebas1705.ironlog.data.models.NutritionProfile
-import es.sebas1705.ironlog.data.models.Objective
-import es.sebas1705.ironlog.data.models.Sex
+import es.sebas1705.haltera.data.models.ActivityLevel
+import es.sebas1705.haltera.data.models.NutritionProfile
+import es.sebas1705.haltera.data.models.Objective
+import es.sebas1705.haltera.data.models.Sex
 import kotlin.math.roundToInt
 
 /** A goal suggestion with the steps of the calculation, so the UI can explain it. */

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.theme
+package es.sebas1705.haltera.core.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -7,9 +7,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
-import es.sebas1705.ironlog.core.ui.resources.Res
-import es.sebas1705.ironlog.core.ui.resources.barlow_semicondensed_semibold
-import es.sebas1705.ironlog.core.ui.resources.inter_variable
+import es.sebas1705.haltera.core.ui.resources.Res
+import es.sebas1705.haltera.core.ui.resources.barlow_semicondensed_semibold
+import es.sebas1705.haltera.core.ui.resources.inter_variable
 import org.jetbrains.compose.resources.Font
 
 /** OpenType feature for tabular (equal-width) figures. */

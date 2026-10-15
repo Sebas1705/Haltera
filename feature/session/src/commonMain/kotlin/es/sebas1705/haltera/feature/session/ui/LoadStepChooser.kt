@@ -1,6 +1,6 @@
 @file:Suppress("MatchingDeclarationName") // The chooser composable and its step options live together.
 
-package es.sebas1705.ironlog.feature.session.ui
+package es.sebas1705.haltera.feature.session.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,18 +20,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.core.units.Weights
-import es.sebas1705.ironlog.feature.session.resources.Res
-import es.sebas1705.ironlog.feature.session.resources.session_cancel
-import es.sebas1705.ironlog.feature.session.resources.session_load_step
-import es.sebas1705.ironlog.feature.session.resources.session_load_step_custom
-import es.sebas1705.ironlog.feature.session.resources.session_load_step_default
-import es.sebas1705.ironlog.feature.session.resources.session_load_step_plates
-import es.sebas1705.ironlog.feature.session.resources.session_load_step_text
-import es.sebas1705.ironlog.feature.session.resources.session_load_step_title
-import es.sebas1705.ironlog.feature.session.resources.session_load_step_use
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.core.units.Weights
+import es.sebas1705.haltera.feature.session.resources.Res
+import es.sebas1705.haltera.feature.session.resources.session_cancel
+import es.sebas1705.haltera.feature.session.resources.session_load_step
+import es.sebas1705.haltera.feature.session.resources.session_load_step_custom
+import es.sebas1705.haltera.feature.session.resources.session_load_step_default
+import es.sebas1705.haltera.feature.session.resources.session_load_step_plates
+import es.sebas1705.haltera.feature.session.resources.session_load_step_text
+import es.sebas1705.haltera.feature.session.resources.session_load_step_title
+import es.sebas1705.haltera.feature.session.resources.session_load_step_use
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 

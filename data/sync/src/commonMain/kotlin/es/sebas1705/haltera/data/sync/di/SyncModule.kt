@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.data.sync.di
+package es.sebas1705.haltera.data.sync.di
 
-import es.sebas1705.ironlog.data.sync.SettingsSyncBridge
-import es.sebas1705.ironlog.data.sync.SyncEngine
-import es.sebas1705.ironlog.data.sync.SyncEngineImpl
+import es.sebas1705.haltera.data.sync.SettingsSyncBridge
+import es.sebas1705.haltera.data.sync.SyncEngine
+import es.sebas1705.haltera.data.sync.SyncEngineImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import org.koin.dsl.module

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.stats
+package es.sebas1705.haltera.feature.nutrition.ui.stats
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -41,11 +41,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.domain.usecases.nutrition.DatedValue
-import es.sebas1705.ironlog.domain.usecases.nutrition.MacroSplit
-import es.sebas1705.ironlog.feature.nutrition.model.Amounts
-import es.sebas1705.ironlog.feature.nutrition.ui.components.MacroColors
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.domain.usecases.nutrition.DatedValue
+import es.sebas1705.haltera.domain.usecases.nutrition.MacroSplit
+import es.sebas1705.haltera.feature.nutrition.model.Amounts
+import es.sebas1705.haltera.feature.nutrition.ui.components.MacroColors
 import kotlinx.datetime.LocalDate
 import kotlin.math.abs
 

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.logging
+package es.sebas1705.haltera.core.logging
 
 import co.touchlab.kermit.Logger
 

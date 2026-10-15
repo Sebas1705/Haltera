@@ -1,8 +1,8 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.sqldelight.driver.native.NativeSqliteDriver
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.AppDatabase
 
 actual class DatabaseDriverFactory {
     actual fun create(): SqlDriver = NativeSqliteDriver(

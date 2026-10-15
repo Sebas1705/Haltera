@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 /**
  * Enum values are stored by name in the database and in the bundled data. Every enum here has a

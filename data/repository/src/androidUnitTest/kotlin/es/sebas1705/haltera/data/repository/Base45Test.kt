@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
-import es.sebas1705.ironlog.data.repository.share.Base45
-import es.sebas1705.ironlog.data.repository.share.QrCapacity
+import es.sebas1705.haltera.data.repository.share.Base45
+import es.sebas1705.haltera.data.repository.share.QrCapacity
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

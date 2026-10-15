@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.progress.ui.components
+package es.sebas1705.haltera.feature.progress.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,12 +36,12 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.LocalContentColor
-import es.sebas1705.ironlog.core.ui.theme.tabularFigures
-import es.sebas1705.ironlog.core.units.Numbers
-import es.sebas1705.ironlog.domain.usecases.stats.Comparison
-import es.sebas1705.ironlog.domain.usecases.stats.Metric
-import es.sebas1705.ironlog.domain.usecases.stats.StatsPeriod
-import es.sebas1705.ironlog.feature.progress.resources.*
+import es.sebas1705.haltera.core.ui.theme.tabularFigures
+import es.sebas1705.haltera.core.units.Numbers
+import es.sebas1705.haltera.domain.usecases.stats.Comparison
+import es.sebas1705.haltera.domain.usecases.stats.Metric
+import es.sebas1705.haltera.domain.usecases.stats.StatsPeriod
+import es.sebas1705.haltera.feature.progress.resources.*
 import org.jetbrains.compose.resources.stringResource
 
 /** Cards narrower than this share a row: one column on phones, two or more on tablets. */

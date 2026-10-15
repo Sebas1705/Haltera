@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.domain.usecases.stats
+package es.sebas1705.haltera.domain.usecases.stats
 
 /** One day of the training heatmap. [level] is 0 (no session) to 4; [future] days are after today. */
 data class HeatCell(val day: Int, val sessions: Int, val effectiveSets: Int, val level: Int, val future: Boolean)

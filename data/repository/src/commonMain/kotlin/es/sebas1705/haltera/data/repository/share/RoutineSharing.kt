@@ -1,20 +1,20 @@
-package es.sebas1705.ironlog.data.repository.share
+package es.sebas1705.haltera.data.repository.share
 
-import es.sebas1705.ironlog.data.models.Equipment
-import es.sebas1705.ironlog.data.models.ExerciseCategory
-import es.sebas1705.ironlog.data.models.ExerciseSource
-import es.sebas1705.ironlog.data.models.Level
-import es.sebas1705.ironlog.data.models.LoadType
-import es.sebas1705.ironlog.data.models.LocalizedText
-import es.sebas1705.ironlog.data.models.NewExercise
-import es.sebas1705.ironlog.data.models.NewVariant
-import es.sebas1705.ironlog.data.models.Routine
-import es.sebas1705.ironlog.data.models.RoutineOrigin
-import es.sebas1705.ironlog.data.models.RoutineTemplate
-import es.sebas1705.ironlog.data.models.SlotTarget
-import es.sebas1705.ironlog.data.models.TrackingType
-import es.sebas1705.ironlog.data.repository.ExerciseRepository
-import es.sebas1705.ironlog.data.repository.RoutineRepository
+import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.Level
+import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.NewVariant
+import es.sebas1705.haltera.data.models.Routine
+import es.sebas1705.haltera.data.models.RoutineOrigin
+import es.sebas1705.haltera.data.models.RoutineTemplate
+import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.repository.RoutineRepository
 
 /** A shared routine ready to import. */
 data class ImportPreview(
@@ -36,11 +36,11 @@ sealed interface ImportPreviewResult {
 }
 
 /**
- * Export and import of routines (`ironlog-routine` v1). Import always creates a NEW routine and new
+ * Export and import of routines (`haltera-routine` v1). Import always creates a NEW routine and new
  * custom exercises; nothing existing is ever overwritten.
  */
 interface RoutineSharing {
-    /** The routine as `ironlog-routine` JSON, or null when it does not exist. */
+    /** The routine as `haltera-routine` JSON, or null when it does not exist. */
     suspend fun export(routineId: String): String?
 
     /**

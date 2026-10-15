@@ -1,7 +1,7 @@
-package es.sebas1705.ironlog.data.local
+package es.sebas1705.haltera.data.local
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import java.io.File
 import java.util.Properties
 import kotlin.test.AfterTest
@@ -11,7 +11,7 @@ import kotlin.test.assertNull
 
 /** Upgrading a database created with the shipped schema (1.db) keeps its data. */
 class MigrationTest {
-    private val file = File.createTempFile("ironlog-v1", ".db")
+    private val file = File.createTempFile("haltera-v1", ".db")
 
     @AfterTest
     fun cleanUp() {

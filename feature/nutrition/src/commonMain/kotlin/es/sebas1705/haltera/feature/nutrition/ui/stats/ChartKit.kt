@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.nutrition.ui.stats
+package es.sebas1705.haltera.feature.nutrition.ui.stats
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -13,7 +13,7 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.units.Numbers
+import es.sebas1705.haltera.core.units.Numbers
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor

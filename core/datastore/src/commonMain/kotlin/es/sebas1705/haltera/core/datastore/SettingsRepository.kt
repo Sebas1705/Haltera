@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.core.datastore
+package es.sebas1705.haltera.core.datastore
 
 import com.russhwolf.settings.Settings
-import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.core.units.Weights
+import es.sebas1705.haltera.core.units.PlateCalculator
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.core.units.Weights
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

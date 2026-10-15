@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.routines.ui.share
+package es.sebas1705.haltera.feature.routines.ui.share
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,15 +33,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import es.sebas1705.ironlog.feature.routines.resources.Res
-import es.sebas1705.ironlog.feature.routines.resources.routines_close
-import es.sebas1705.ironlog.feature.routines.resources.routines_qr_hint
-import es.sebas1705.ironlog.feature.routines.resources.routines_qr_image
-import es.sebas1705.ironlog.feature.routines.resources.routines_qr_too_large
-import es.sebas1705.ironlog.feature.routines.resources.routines_share_error
-import es.sebas1705.ironlog.feature.routines.resources.routines_share_file
-import es.sebas1705.ironlog.feature.routines.resources.routines_show_qr
-import es.sebas1705.ironlog.feature.routines.resources.routines_untitled
+import es.sebas1705.haltera.feature.routines.resources.Res
+import es.sebas1705.haltera.feature.routines.resources.routines_close
+import es.sebas1705.haltera.feature.routines.resources.routines_qr_hint
+import es.sebas1705.haltera.feature.routines.resources.routines_qr_image
+import es.sebas1705.haltera.feature.routines.resources.routines_qr_too_large
+import es.sebas1705.haltera.feature.routines.resources.routines_share_error
+import es.sebas1705.haltera.feature.routines.resources.routines_share_file
+import es.sebas1705.haltera.feature.routines.resources.routines_show_qr
+import es.sebas1705.haltera.feature.routines.resources.routines_untitled
 import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.stringResource

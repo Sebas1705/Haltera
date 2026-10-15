@@ -1,16 +1,16 @@
-package es.sebas1705.ironlog.feature.session.load
+package es.sebas1705.haltera.feature.session.load
 
-import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.core.units.WeightUnit
-import es.sebas1705.ironlog.core.units.Weights
-import es.sebas1705.ironlog.data.models.LoadType
+import es.sebas1705.haltera.core.units.PlateCalculator
+import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.core.units.Weights
+import es.sebas1705.haltera.data.models.LoadType
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 /**
  * What was entered for a load (spec §3.3 `loadDetail`), so it is shown back exactly as typed. Stored as
- * JSON in [es.sebas1705.ironlog.data.models.SetLog.loadDetail]; the normalised value stays in `loadGrams`.
+ * JSON in [es.sebas1705.haltera.data.models.SetLog.loadDetail]; the normalised value stays in `loadGrams`.
  */
 @Serializable
 sealed interface LoadDetail {

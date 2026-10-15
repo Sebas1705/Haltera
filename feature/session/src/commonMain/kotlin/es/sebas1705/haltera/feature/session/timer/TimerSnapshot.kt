@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.feature.session.timer
+package es.sebas1705.haltera.feature.session.timer
 
 /**
  * The live-session timer as absolute epoch-millisecond instants (spec §5). Nothing here ticks: the UI and

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.testing
+package es.sebas1705.haltera.core.testing
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

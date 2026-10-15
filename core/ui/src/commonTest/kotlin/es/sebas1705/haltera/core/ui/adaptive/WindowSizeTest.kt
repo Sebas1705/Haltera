@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.core.ui.adaptive
+package es.sebas1705.haltera.core.ui.adaptive
 
 import androidx.compose.ui.unit.dp
 import kotlin.test.Test

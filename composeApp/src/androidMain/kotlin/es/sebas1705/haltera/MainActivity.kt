@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog
+package es.sebas1705.haltera
 
 import android.content.Intent
 import android.net.Uri
@@ -10,9 +10,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import es.sebas1705.ironlog.share.AndroidRoutineShareBridge
-import es.sebas1705.ironlog.share.CurrentActivity
-import es.sebas1705.ironlog.share.IncomingRoutineChannel
+import es.sebas1705.haltera.share.AndroidRoutineShareBridge
+import es.sebas1705.haltera.share.CurrentActivity
+import es.sebas1705.haltera.share.IncomingRoutineChannel
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
         super.onDestroy()
     }
 
-    /** A `.ironlog` file opened (ACTION_VIEW) or shared (ACTION_SEND) with the app goes to the import preview. */
+    /** A `.haltera` file opened (ACTION_VIEW) or shared (ACTION_SEND) with the app goes to the import preview. */
     private fun handleRoutineIntent(intent: Intent?) {
         val uri: Uri = when (intent?.action) {
             Intent.ACTION_VIEW -> intent.data

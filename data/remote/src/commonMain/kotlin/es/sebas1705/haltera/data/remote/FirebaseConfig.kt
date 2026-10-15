@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.remote
+package es.sebas1705.haltera.data.remote
 
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.apps

@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.startup
+package es.sebas1705.haltera.startup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,17 +12,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import co.touchlab.kermit.Logger
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.core.ui.components.ErrorScreen
-import es.sebas1705.ironlog.core.ui.components.IronlogLogo
-import es.sebas1705.ironlog.data.repository.CatalogRepository
-import es.sebas1705.ironlog.data.repository.NutritionRepository
-import es.sebas1705.ironlog.resources.Res
-import es.sebas1705.ironlog.resources.app_name
-import es.sebas1705.ironlog.resources.startup_catalog_error
-import es.sebas1705.ironlog.resources.startup_loading
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.core.ui.components.ErrorScreen
+import es.sebas1705.haltera.core.ui.components.HalteraLogo
+import es.sebas1705.haltera.data.repository.CatalogRepository
+import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.app_name
+import es.sebas1705.haltera.resources.startup_catalog_error
+import es.sebas1705.haltera.resources.startup_loading
 import kotlinx.coroutines.Job
 import org.jetbrains.compose.resources.stringResource
 import kotlin.coroutines.cancellation.CancellationException
@@ -87,7 +87,7 @@ fun StartupScreen(state: StartupState, onRetry: () -> Unit, modifier: Modifier =
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        IronlogLogo(size = 112.dp)
+        HalteraLogo(size = 112.dp)
         Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.displayMedium)
         CircularProgressIndicator()
         Text(stringResource(Res.string.startup_loading), color = MaterialTheme.colorScheme.onSurfaceVariant)

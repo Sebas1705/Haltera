@@ -1,9 +1,9 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.russhwolf.settings.MapSettings
-import es.sebas1705.ironlog.core.datastore.KeyValueSettingsRepository
-import es.sebas1705.ironlog.data.local.db.AppDatabase
+import es.sebas1705.haltera.core.datastore.KeyValueSettingsRepository
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.test.runTest
 import java.io.File
@@ -19,7 +19,7 @@ import kotlin.test.assertTrue
  */
 class SyncMigrationTest {
     private fun shippedV1(): JdbcSqliteDriver {
-        val copy = File.createTempFile("ironlog-v1", ".db").apply { deleteOnExit() }
+        val copy = File.createTempFile("haltera-v1", ".db").apply { deleteOnExit() }
         File("../local/src/commonMain/sqldelight/databases/1.db").copyTo(copy, overwrite = true)
         return JdbcSqliteDriver("jdbc:sqlite:${copy.path}", Properties().apply { put("foreign_keys", "true") })
     }

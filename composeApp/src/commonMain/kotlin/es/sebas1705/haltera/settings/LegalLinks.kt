@@ -1,14 +1,14 @@
-package es.sebas1705.ironlog.settings
+package es.sebas1705.haltera.settings
 
 /**
  * The public web pages the About screen links to (Google Play requires a privacy policy and a way to
  * request account deletion outside the app). The only place these URLs are written.
  */
 object LegalLinks {
-    const val PRIVACY_EN = "https://ironlog-sebas1705.web.app/privacy"
-    const val PRIVACY_ES = "https://ironlog-sebas1705.web.app/privacidad"
-    const val DELETE_ACCOUNT_EN = "https://ironlog-sebas1705.web.app/delete-account"
-    const val DELETE_ACCOUNT_ES = "https://ironlog-sebas1705.web.app/borrar-cuenta"
+    const val PRIVACY_EN = "https://haltera.web.app/privacy"
+    const val PRIVACY_ES = "https://haltera.web.app/privacidad"
+    const val DELETE_ACCOUNT_EN = "https://haltera.web.app/delete-account"
+    const val DELETE_ACCOUNT_ES = "https://haltera.web.app/borrar-cuenta"
 
     /** The privacy policy in the app language (`es` or anything else: English). */
     fun privacyPolicy(language: String): String = if (isSpanish(language)) PRIVACY_ES else PRIVACY_EN

@@ -1,6 +1,6 @@
-package es.sebas1705.ironlog.domain.usecases.routinescore
+package es.sebas1705.haltera.domain.usecases.routinescore
 
-import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.haltera.data.models.Muscle
 
 // Result types of RoutineScorer (docs/designs/2026-10-15-routine-scoring.md). Everything here is data: the UI
 // turns findings, advice and references into localised text. Scores are advice only and never block anything.

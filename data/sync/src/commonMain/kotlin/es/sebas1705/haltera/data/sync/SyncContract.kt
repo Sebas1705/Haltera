@@ -1,4 +1,4 @@
-package es.sebas1705.ironlog.data.sync
+package es.sebas1705.haltera.data.sync
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow

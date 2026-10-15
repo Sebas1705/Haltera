@@ -19,9 +19,9 @@ export function renderAttribution({ sources, count }) {
     '',
     'Barcode lookups use the [Open Food Facts](https://world.openfoodfacts.org) database, available under the Open Database License (ODbL 1.0); its contents are under the Database Contents License (DbCL 1.0). Products found by barcode are cached on the device.',
     '',
-    '## Ironlog',
+    '## Haltera',
     '',
-    'The selection of foods, their English and Spanish names and the serving sizes are by the Ironlog authors.',
+    'The selection of foods, their English and Spanish names and the serving sizes are by the Haltera authors.',
     '',
   ].join('\n');
 }

@@ -35,7 +35,7 @@ fi
 "$KEYTOOL" -genkeypair -keystore "$KEYSTORE" -storetype PKCS12 -alias "$ALIAS" \
   -keyalg RSA -keysize 4096 -validity 10950 \
   -storepass "$PASSWORD" -keypass "$PASSWORD" \
-  -dname "CN=Ironlog, O=Sebas1705, C=ES" >/dev/null 2>&1
+  -dname "CN=Haltera, O=Sebas1705, C=ES" >/dev/null 2>&1
 
 doppler secrets set --project "$DOPPLER_PROJECT" --config "$DOPPLER_CONFIG" --silent \
   SIGNING_KEY_ALIAS="$ALIAS" SIGNING_STORE_PASSWORD="$PASSWORD" SIGNING_KEY_PASSWORD="$PASSWORD" >/dev/null

@@ -5,7 +5,9 @@ import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.feature.progress.MainDispatcherTest
 import es.sebas1705.ironlog.feature.progress.exercise
+import es.sebas1705.ironlog.domain.usecases.stats.RepRange
 import es.sebas1705.ironlog.feature.progress.fakes.FakeExerciseRepository
+import es.sebas1705.ironlog.feature.progress.fakes.FakeRoutineRepository
 import es.sebas1705.ironlog.feature.progress.fakes.FakeSessionRepository
 import es.sebas1705.ironlog.feature.progress.fakes.FakeSettingsRepository
 import es.sebas1705.ironlog.feature.progress.model.ChartPoint
@@ -48,7 +50,12 @@ class ExerciseProgressViewModelTest : MainDispatcherTest() {
         sessions,
     )
 
-    private fun viewModel() = ExerciseProgressViewModel(sessions, exercises, FakeSettingsRepository())
+    private fun viewModel() = ExerciseProgressViewModel(
+        sessions,
+        exercises,
+        FakeSettingsRepository(),
+        FakeRoutineRepository()
+    )
 
     @Test
     fun `lists exercises with finished history, most recent first, and selects the latest variant`() = runTest(
@@ -79,8 +86,16 @@ class ExerciseProgressViewModelTest : MainDispatcherTest() {
             val records = state.records!!
             assertEquals(105_000L, records.heaviestLoad?.value)
             assertEquals("s2", records.heaviestLoad?.sessionId)
-            assertEquals(8L, records.mostReps?.value)
-            assertEquals(1_285_000L, records.bestSessionVolume?.value)
+            // 100 × 5 is dominated by 105 × 5.
+            assertEquals(listOf(105_000L to 5, 95_000L to 8), records.repsAtLoad.map { it.loadGrams to it.reps })
+            assertEquals(1_285_000L, records.bestVolume?.value)
+            // Progression table, newest first, with the change of e1RM and the records of s2.
+            assertEquals(listOf("s2", "s1"), state.rows.map { it.sessionId })
+            assertEquals(122_500L - 116_667L, state.rows.first().oneRmDelta)
+            assertTrue(state.rows.first().prs.isNotEmpty())
+            assertEquals(2, state.repRanges[RepRange.R1_5])
+            assertEquals(1, state.repRanges[RepRange.R6_8])
+            assertNull(state.trend) // two sessions are not enough
         }
     }
 
@@ -95,6 +110,22 @@ class ExerciseProgressViewModelTest : MainDispatcherTest() {
             assertEquals("squat", state.selectedExerciseId)
             assertEquals("squat.barbell", state.selectedVariantId)
             assertEquals(listOf(ChartPoint(second, 140_000.0)), state.charts.topSet)
+        }
+    }
+
+    @Test
+    fun `another variant can be compared on the e1RM chart`() = runTest(dispatcher) {
+        val vm = viewModel()
+        vm.uiState.test {
+            val initial = awaitItem()
+            assertEquals(listOf("bench.barbell", "squat.barbell"), initial.compareOptions.map { it.variantId })
+            vm.onEvent(ExerciseProgressIntent.Compare("squat.barbell"))
+            val state = expectMostRecentItem()
+            assertEquals("squat.barbell", state.compareVariantId)
+            // 140 × 3 → 140 × 1.1 = 154 kg.
+            assertEquals(listOf(ChartPoint(second, 154_000.0)), state.compareOneRm)
+            vm.onEvent(ExerciseProgressIntent.Compare(null))
+            assertTrue(expectMostRecentItem().compareOneRm.isEmpty())
         }
     }
 

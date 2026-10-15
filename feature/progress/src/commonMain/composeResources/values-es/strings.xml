@@ -2,10 +2,11 @@
     <string name="progress_title">Progreso</string>
 
     <!-- Tabs -->
+    <string name="progress_tab_overview">Resumen</string>
     <string name="progress_tab_calendar">Calendario</string>
     <string name="progress_tab_exercises">Ejercicios</string>
+    <string name="progress_tab_muscles">Músculos</string>
     <string name="progress_tab_body_weight">Peso corporal</string>
-    <string name="progress_tab_volume">Volumen</string>
 
     <!-- Shared -->
     <string name="progress_back">Atrás</string>
@@ -22,8 +23,6 @@
     <string name="progress_duration_m">%1$s min</string>
     <string name="progress_variant_name">%1$s (%2$s)</string>
     <string name="progress_unknown_exercise">Ejercicio desconocido</string>
-    <string name="progress_chart_description">%1$s: de %2$s a %3$s</string>
-    <string name="progress_chart_not_enough">Aún no hay datos suficientes.</string>
     <plurals name="progress_exercise_count">
         <item quantity="one">%1$d ejercicio</item>
         <item quantity="other">%1$d ejercicios</item>
@@ -109,14 +108,12 @@
     <string name="progress_records_title">Récords personales</string>
     <string name="progress_record_heaviest">Mayor carga</string>
     <string name="progress_record_one_rm">Mejor 1RM estimado</string>
-    <string name="progress_record_reps">Más repeticiones</string>
     <string name="progress_record_volume">Mayor volumen en una sesión</string>
     <string name="progress_no_records">Aún no hay récords.</string>
 
     <!-- Body weight -->
     <string name="progress_bw_log">Registrar peso</string>
     <string name="progress_bw_empty">Registra tu peso corporal para ver tu tendencia.</string>
-    <string name="progress_bw_latest">Último: %1$s</string>
     <string name="progress_bw_change">%1$s en los últimos 30 días</string>
     <string name="progress_bw_change_none">Registra más entradas para ver tu tendencia de 30 días.</string>
     <string name="progress_bw_chart">Peso corporal</string>
@@ -126,11 +123,6 @@
     <string name="progress_bw_edit_title">Editar entrada</string>
     <string name="progress_bw_field">Peso (%1$s)</string>
     <string name="progress_bw_invalid">Introduce un peso válido.</string>
-
-    <!-- Weekly volume -->
-    <string name="progress_volume_intro">Volumen (carga × repeticiones) de las series efectivas por semana, según el músculo principal.</string>
-    <string name="progress_volume_empty">No hay volumen registrado en las últimas 4 semanas.</string>
-    <string name="progress_volume_week">Semana del %1$s</string>
 
     <!-- Muscles -->
     <string name="progress_muscle_abdominals">Abdominales</string>
@@ -188,4 +180,276 @@
     <string name="progress_delete_session_text">Sus ejercicios y series se borrarán definitivamente.</string>
     <string name="progress_more">Más opciones</string>
     <string name="progress_change_failed">No se pudo guardar el cambio</string>
+    <!-- Statistics: shared -->
+    <string name="progress_period_4w">4 semanas</string>
+    <string name="progress_period_3m">3 meses</string>
+    <string name="progress_period_12m">12 meses</string>
+    <string name="progress_period_all">Todo</string>
+    <string name="progress_overview_caption">%1$s, comparado con %2$s</string>
+    <string name="progress_overview_caption_all">%1$s · todo el historial no tiene un periodo anterior con el que comparar</string>
+    <string name="progress_change_value">%1$s %2$s (%3$s)</string>
+    <string name="progress_change_from_zero">%1$s %2$s (desde 0)</string>
+    <string name="progress_change_same">= igual que el periodo anterior</string>
+    <string name="progress_change_none">Sin periodo anterior</string>
+    <string name="progress_legend_this_period">Este periodo</string>
+    <string name="progress_legend_previous_period">Periodo anterior</string>
+    <string name="progress_chart_previous">Anterior: %1$s</string>
+    <string name="progress_chart_per_week">Por bloque de 7 días, contados hacia atrás desde hoy</string>
+    <string name="progress_chart_per_week_of_4">Media semanal de cada bloque de 4 semanas, contados hacia atrás desde hoy</string>
+    <string name="progress_chart_bars_description">%1$s. %2$d barras de %3$s a %4$s. Máxima: %5$s (%6$s). Última: %7$s.</string>
+    <string name="progress_chart_line_description">%1$s. %2$d puntos de %3$s a %4$s. Primero: %5$s, último: %6$s, mínimo: %7$s, máximo: %8$s.</string>
+    <string name="progress_axis_sessions">sesiones</string>
+    <string name="progress_axis_sets">series</string>
+    <string name="progress_axis_minutes">min</string>
+    <string name="progress_unit_sets_week">series/sem</string>
+    <string name="progress_info_about">Cómo se calcula %1$s</string>
+    <string name="progress_info_formula">Cómo se calcula</string>
+    <string name="progress_info_counts">Qué cuenta</string>
+    <string name="progress_info_limits">Limitaciones</string>
+    <string name="progress_trend_value">%1$s/semana</string>
+
+    <!-- Overview -->
+    <string name="progress_overview_empty">Termina o registra una sesión para llenar esta página: aquí aparecerán tus sesiones, volumen, series efectivas, tiempo de entrenamiento y récords, comparados con el periodo anterior.</string>
+    <string name="progress_tile_sessions">Sesiones</string>
+    <string name="progress_tile_volume">Volumen total</string>
+    <string name="progress_tile_sets">Series efectivas</string>
+    <string name="progress_tile_time">Tiempo entrenando</string>
+    <string name="progress_tile_prs">Récords nuevos</string>
+    <string name="progress_tile_duration">Sesión media</string>
+    <string name="progress_chart_weekly_volume">Volumen semanal</string>
+    <string name="progress_chart_volume_empty">Aún no hay volumen en este periodo. Las barras mostrarán la carga × repeticiones de cada semana, con el periodo anterior como contorno detrás.</string>
+    <string name="progress_chart_sessions_week">Sesiones por semana</string>
+    <string name="progress_chart_sessions_empty">Aún no hay sesiones en este periodo. Cada barra contará las sesiones de una semana.</string>
+    <string name="progress_chart_sets_week">Series efectivas por semana</string>
+    <string name="progress_chart_sets_empty">Aún no hay series efectivas en este periodo. Cada barra contará las series de trabajo de una semana.</string>
+    <string name="progress_chart_heatmap">Días de entrenamiento</string>
+    <plurals name="progress_heatmap_days">
+        <item quantity="one">%1$d día de entrenamiento en las últimas %2$d semanas</item>
+        <item quantity="other">%1$d días de entrenamiento en las últimas %2$d semanas</item>
+    </plurals>
+    <string name="progress_heatmap_less">Menos</string>
+    <string name="progress_heatmap_more">Más</string>
+    <string name="progress_heatmap_tooltip">%1$s sesión(es) · %2$s series efectivas</string>
+    <string name="progress_heatmap_tooltip_rest">Sin sesión</string>
+    <string name="progress_chart_duration">Duración media de la sesión</string>
+    <string name="progress_chart_duration_subtitle">Media de las sesiones de cada semana, de inicio a fin</string>
+    <string name="progress_chart_duration_empty">Las duraciones aparecen cuando dos semanas del periodo tienen sesiones terminadas.</string>
+    <string name="progress_chart_adherence">Cumplimiento del plan</string>
+    <string name="progress_adherence_detail">%1$s sesiones por semana registradas, %2$s planificadas por tu rutina activa</string>
+    <string name="progress_adherence_no_routine">Activa una rutina con días de descanso para comparar las sesiones que registras con su plan.</string>
+    <string name="progress_adherence_no_plan">Tu rutina activa no tiene días de descanso, así que no describe una semana: sus días se siguen en orden cuando entrenas. El cumplimiento necesita un ciclo con días de descanso.</string>
+
+    <!-- Exercise progress -->
+    <string name="progress_tile_best_e1rm">Mejor 1RM est.</string>
+    <string name="progress_tile_trend">Tendencia del 1RM</string>
+    <string name="progress_tile_exercise_sessions">Sesiones</string>
+    <string name="progress_tile_exercise_sets">%1$d series efectivas en total</string>
+    <string name="progress_trend_detail">R² %1$s · %2$d sesiones</string>
+    <string name="progress_trend_none">Necesita 3 sesiones con peso</string>
+    <string name="progress_chart_one_rm_subtitle">Mejor serie de cada sesión, con su tendencia por mínimos cuadrados</string>
+    <string name="progress_chart_one_rm_empty">La línea del 1RM estimado aparece tras dos sesiones con una serie con peso.</string>
+    <string name="progress_chart_trend_line">Tendencia</string>
+    <string name="progress_compare_with">Comparar con otra variante u otro ejercicio</string>
+    <string name="progress_compare_selected">Comparando con %1$s</string>
+    <string name="progress_compare_none">Sin comparación</string>
+    <string name="progress_chart_top_set_subtitle">Carga más pesada levantada al menos una repetición, por sesión</string>
+    <string name="progress_chart_not_enough_sessions">Este gráfico aparece tras dos sesiones con una serie con peso.</string>
+    <string name="progress_chart_volume_subtitle">Carga × repeticiones por sesión, últimas %1$d sesiones</string>
+    <string name="progress_chart_volume_session_empty">Aún no hay volumen: las series de peso corporal sin lastre, por tiempo y con banda no suman carga × repeticiones.</string>
+    <string name="progress_chart_rep_ranges">Rangos de repeticiones</string>
+    <string name="progress_chart_rep_ranges_subtitle">Series efectivas de esta variante por repeticiones</string>
+    <string name="progress_chart_rep_ranges_empty">Aquí se agruparán por rango las series con repeticiones.</string>
+    <string name="progress_rep_range">%1$d–%2$d</string>
+    <string name="progress_rep_range_open">%1$d+</string>
+    <string name="progress_rep_range_axis">Repeticiones por serie</string>
+    <string name="progress_table_title">Tabla de progresión</string>
+    <string name="progress_table_subtitle">Más reciente primero · cargas y volumen en %1$s</string>
+    <string name="progress_table_empty">Cada sesión de este ejercicio añadirá una fila aquí.</string>
+    <string name="progress_table_date">Fecha</string>
+    <string name="progress_table_best">Mejor serie</string>
+    <string name="progress_table_e1rm">1RM est.</string>
+    <string name="progress_table_volume">Volumen</string>
+    <string name="progress_table_delta">Δ</string>
+    <string name="progress_table_pr">récord personal</string>
+    <string name="progress_table_show_all">Ver las %1$d sesiones</string>
+    <string name="progress_table_show_less">Ver menos</string>
+    <string name="progress_table_row_description">%1$s: mejor serie %2$s, 1RM estimado %3$s, volumen %4$s, cambio %5$s</string>
+    <string name="progress_set_value">%1$s × %2$d</string>
+    <string name="progress_record_reps_at_load">Más repeticiones con una carga</string>
+
+    <!-- Muscles -->
+    <string name="progress_chart_muscle_sets">Series semanales por músculo</string>
+    <string name="progress_chart_muscle_volume">Volumen semanal por músculo</string>
+    <string name="progress_chart_muscle_subtitle">Músculos principales · barra gruesa este periodo, barra fina el anterior</string>
+    <string name="progress_muscles_empty">Aún no hay series en este periodo. Cada músculo que entrenes tendrá una barra, comparada con el periodo anterior.</string>
+    <string name="progress_chart_balance">Equilibrio muscular</string>
+    <string name="progress_balance_empty">Las proporciones aparecen cuando el periodo tiene series efectivas.</string>
+    <string name="progress_balance_push">Empuje</string>
+    <string name="progress_balance_pull">Tirón</string>
+    <string name="progress_balance_upper">Tren superior</string>
+    <string name="progress_balance_lower">Tren inferior</string>
+    <string name="progress_balance_detail">%1$s %2$s frente a %3$s %4$s series/sem</string>
+    <string name="progress_balance_previous">Periodo anterior: %1$s</string>
+    <string name="progress_balance_only_first">solo el primer lado</string>
+
+    <!-- Body weight -->
+    <string name="progress_bw_latest_title">Último</string>
+    <string name="progress_bw_rate_title">Ritmo de cambio</string>
+    <string name="progress_bw_rate_detail">Ajustado con %1$d registros de los últimos %2$d días</string>
+    <string name="progress_bw_rate_none">Necesita 3 registros en 7 días o más</string>
+    <string name="progress_bw_chart_subtitle">Cada registro y la media de los últimos 7 registros</string>
+    <string name="progress_bw_chart_empty">Registra dos pesos para dibujar tu línea de peso corporal.</string>
+    <string name="progress_bw_entries_series">Registros</string>
+    <string name="progress_bw_weekly_title">Media semanal</string>
+    <string name="progress_bw_weekly_subtitle">De lunes a domingo, la más reciente primero · en %1$s</string>
+    <string name="progress_bw_weekly_empty">Cada semana con registros tendrá una fila con su media.</string>
+    <string name="progress_bw_week">Semana del</string>
+    <string name="progress_bw_avg">Media</string>
+    <string name="progress_bw_range">Mín–máx</string>
+    <string name="progress_bw_week_description">Semana del %1$s: media %2$s con %3$d registros, rango %4$s, cambio %5$s</string>
+
+    <!-- Metric explanations (one block per Metric) -->
+    <string name="progress_metric_e1rm_title">1RM estimado</string>
+    <string name="progress_metric_e1rm_summary">La carga más pesada que probablemente podrías levantar una vez, estimada a partir de una serie de varias repeticiones.</string>
+    <string name="progress_metric_e1rm_formula">Fórmula de Epley: carga × (1 + repeticiones ÷ 30), para cada serie. Cada sesión muestra su mejor serie. Una sola repetición cuenta como la propia carga. Ejemplo: 100 kg × 5 → 116,7 kg.</string>
+    <string name="progress_metric_e1rm_counts">Series completadas de trabajo, descendentes y al fallo con peso y al menos una repetición. No cuentan los calentamientos, las series sin completar, las de peso corporal sin lastre o asistidas, las bandas ni las máquinas registradas por número de placa.</string>
+    <string name="progress_metric_e1rm_limits">Es una estimación, más precisa entre 1 y 10 repeticiones; se desvía con muchas repeticiones y con series lejos del fallo. Úsala para compararte en el tiempo, no como un máximo real.</string>
+
+    <string name="progress_metric_top_set_title">Serie más pesada</string>
+    <string name="progress_metric_top_set_summary">La carga más pesada que levantaste al menos una repetición en una sesión.</string>
+    <string name="progress_metric_top_set_formula">Carga máxima entre las series contadas de la sesión.</string>
+    <string name="progress_metric_top_set_counts">Series completadas de trabajo, descendentes y al fallo con peso y al menos una repetición. Los calentamientos no cuentan.</string>
+    <string name="progress_metric_top_set_limits">Ignora las repeticiones: 100 kg × 1 y 100 kg × 8 se ven igual. Mira el 1RM estimado para tenerlas en cuenta.</string>
+
+    <string name="progress_metric_volume_title">Volumen</string>
+    <string name="progress_metric_volume_summary">Cuánto peso has movido: carga por repeticiones, sumado.</string>
+    <string name="progress_metric_volume_formula">Σ carga × repeticiones de las series completadas de trabajo, descendentes y al fallo. Los ejercicios con mancuernas de un ejercicio de rutina marcado como de ambas manos cuentan doble (una mancuerna por mano). Se muestra en tu unidad (kg o lb).</string>
+    <string name="progress_metric_volume_counts">Los ejercicios de peso corporal solo cuentan el lastre añadido: las series sin lastre y las asistidas suman 0 de volumen (aunque sí cuentan como series efectivas). Los calentamientos, las series sin completar, las bandas y las máquinas registradas por número de placa no suman nada.</string>
+    <string name="progress_metric_volume_limits">El volumen favorece los ejercicios compuestos pesados y las repeticiones altas; no mide el esfuerzo. Un ejercicio con mancuernas añadido fuera de una rutina cuenta la carga tal como la introdujiste.</string>
+
+    <string name="progress_metric_sets_title">Series efectivas</string>
+    <string name="progress_metric_sets_summary">El número de series que hicieron trabajo real.</string>
+    <string name="progress_metric_sets_formula">Número de series completadas que no son de calentamiento y tienen al menos una repetición, una duración o una distancia.</string>
+    <string name="progress_metric_sets_counts">Series de trabajo, descendentes y al fallo de cualquier ejercicio, incluidas las de peso corporal, por tiempo y de cardio.</string>
+    <string name="progress_metric_sets_limits">Ironlog no puede saber lo dura que fue una serie: una serie fácil cuenta igual que una al fallo. El RPE, cuando lo registras, no se usa para filtrar series.</string>
+
+    <string name="progress_metric_prs_title">Récords personales</string>
+    <string name="progress_metric_prs_summary">Tus mejores marcas en una variante de ejercicio y cuándo las lograste.</string>
+    <string name="progress_metric_prs_formula">Carga más pesada (al menos una repetición) · mejor 1RM estimado · más repeticiones con una carga (más repeticiones que nunca con esa carga o una más pesada) · mejor volumen de sesión. Un récord debe superar estrictamente todas las sesiones anteriores; en caso de empate se queda la primera fecha.</string>
+    <string name="progress_metric_prs_counts">Series de trabajo completadas de la variante elegida: la barra, las mancuernas y las demás variantes tienen récords separados. La primera sesión de una variante es el punto de partida, no un récord.</string>
+    <string name="progress_metric_prs_limits">Los récords se recalculan a partir de tu registro, así que editar o borrar sesiones antiguas puede cambiarlos. Se excluyen las bandas y las máquinas registradas por número de placa.</string>
+
+    <string name="progress_metric_new_prs_title">Récords nuevos</string>
+    <string name="progress_metric_new_prs_summary">Cuántos récords personales lograste en el periodo.</string>
+    <string name="progress_metric_new_prs_formula">Número de récords (carga más pesada, 1RM estimado, repeticiones con una carga, volumen de sesión) logrados por sesiones del periodo, comparando cada una con todo tu historial anterior a ella.</string>
+    <string name="progress_metric_new_prs_counts">Cada variante y cada tipo de récord cuentan por separado, así que una sesión puede lograr varios.</string>
+    <string name="progress_metric_new_prs_limits">Los récords llegan fácilmente con un ejercicio nuevo o tras un parón, así que más récords no siempre significa más progreso.</string>
+
+    <string name="progress_metric_sessions_title">Sesiones</string>
+    <string name="progress_metric_sessions_summary">Sesiones terminadas que empezaron en el periodo.</string>
+    <string name="progress_metric_sessions_formula">Número de sesiones con fecha de inicio en el periodo y hora de fin.</string>
+    <string name="progress_metric_sessions_counts">Sesiones de rutina y libres, en directo o registradas después. Una sesión en curso aún no cuenta.</string>
+    <string name="progress_metric_sessions_limits">Una sesión de diez minutos cuenta igual que una de dos horas.</string>
+
+    <string name="progress_metric_duration_title">Duración de la sesión</string>
+    <string name="progress_metric_duration_summary">Cuánto suele durar una sesión, de inicio a fin.</string>
+    <string name="progress_metric_duration_formula">Σ (hora de fin − hora de inicio) ÷ número de sesiones terminadas. El gráfico muestra esa media para cada semana.</string>
+    <string name="progress_metric_duration_counts">Sesiones terminadas del periodo, según el día en que empezaron.</string>
+    <string name="progress_metric_duration_limits">Solo es tan precisa como las horas registradas: una sesión terminada tarde, o registrada con una duración aproximada, la mueve. Edita la fecha y la hora de la sesión para corregirla.</string>
+
+    <string name="progress_metric_time_title">Tiempo entrenando</string>
+    <string name="progress_metric_time_summary">Tiempo total pasado en sesiones.</string>
+    <string name="progress_metric_time_formula">Σ (hora de fin − hora de inicio) de las sesiones terminadas del periodo.</string>
+    <string name="progress_metric_time_counts">Todas las sesiones terminadas del periodo, de rutina o libres.</string>
+    <string name="progress_metric_time_limits">Incluye el descanso entre series y todo lo demás entre el inicio y el fin.</string>
+
+    <string name="progress_metric_frequency_title">Sesiones por semana</string>
+    <string name="progress_metric_frequency_summary">Con qué frecuencia entrenas.</string>
+    <string name="progress_metric_frequency_formula">Sesiones en cada bloque de 7 días. Cuando el gráfico usa bloques de 4 semanas (historiales largos), cada barra es las sesiones del bloque ÷ 4.</string>
+    <string name="progress_metric_frequency_counts">Sesiones terminadas, según el día en que empezaron; si hay varias en un día, cuentan todas.</string>
+    <string name="progress_metric_frequency_limits">Los bloques se cuentan hacia atrás desde hoy, así que no siempre empiezan en lunes.</string>
+
+    <string name="progress_metric_moving_title">Media móvil</string>
+    <string name="progress_metric_moving_summary">Una línea suavizada que oculta el ruido del día a día.</string>
+    <string name="progress_metric_moving_formula">Cada punto es la media de ese registro y hasta 6 registros anteriores (7 registros en total).</string>
+    <string name="progress_metric_moving_counts">Todos los registros de peso corporal, sea cual sea el día.</string>
+    <string name="progress_metric_moving_limits">Cuenta registros, no días: si te pesas de forma irregular abarca periodos distintos, y reacciona a los cambios reales con unos registros de retraso.</string>
+
+    <string name="progress_metric_change_title">Cambio frente al periodo anterior</string>
+    <string name="progress_metric_change_summary">Cómo se compara este periodo con el inmediatamente anterior.</string>
+    <string name="progress_metric_change_formula">Cambio = este periodo − periodo anterior. % = cambio ÷ anterior × 100. El periodo son los últimos 28, 91 o 364 días hasta hoy (incluido); el anterior son los mismos días justo antes, así que ambos tienen la misma duración y los mismos días de la semana.</string>
+    <string name="progress_metric_change_counts">▲ significa mayor y ▼ menor: las flechas solo describen la dirección, no si es bueno. Todo el historial no tiene periodo anterior.</string>
+    <string name="progress_metric_change_limits">Si el periodo anterior no tiene nada, no hay porcentaje. El día de hoy no ha terminado, así que el periodo actual aún puede crecer.</string>
+
+    <string name="progress_metric_adherence_title">Cumplimiento del plan</string>
+    <string name="progress_metric_adherence_summary">Las sesiones que registraste comparadas con lo que planifica tu rutina activa.</string>
+    <string name="progress_metric_adherence_formula">Planificadas por semana = días de entrenamiento del ciclo × 7 ÷ duración del ciclo (un día de rutina por día del calendario). Registradas por semana = sesiones del periodo ÷ semanas del periodo. Cumplimiento = registradas ÷ planificadas × 100.</string>
+    <string name="progress_metric_adherence_counts">Cuentan todas las sesiones terminadas, de rutina o libres. Puede superar el 100 %.</string>
+    <string name="progress_metric_adherence_limits">Usa la rutina activa hoy para todo el periodo. Una rutina sin días de descanso no tiene plan semanal (se sigue en orden cuando entrenas), así que no se muestra su cumplimiento.</string>
+
+    <string name="progress_metric_heatmap_title">Días de entrenamiento</string>
+    <string name="progress_metric_heatmap_summary">Cada cuadrado es un día; los coloreados son días en que entrenaste.</string>
+    <string name="progress_metric_heatmap_formula">Más oscuro significa más series efectivas ese día. Los días de entrenamiento mostrados se dividen en cuatro grupos iguales (cuartiles) según sus series efectivas, así que los colores se adaptan a lo que sueles hacer.</string>
+    <string name="progress_metric_heatmap_counts">Sesiones terminadas según el día en que empezaron; varias sesiones en un día se suman. Las columnas son semanas de lunes (arriba) a domingo.</string>
+    <string name="progress_metric_heatmap_limits">Los colores son relativos a los días mostrados, no cantidades absolutas. Toca un día para ver sus cifras.</string>
+
+    <string name="progress_metric_trend_title">Tendencia del 1RM</string>
+    <string name="progress_metric_trend_summary">El cambio semanal medio de tu 1RM estimado en el historial de esta variante.</string>
+    <string name="progress_metric_trend_formula">Recta de mínimos cuadrados que pasa por el 1RM estimado de cada sesión según su fecha; su pendiente × 7 da kg (o lb) por semana. R² (0–1) indica lo bien que encaja una recta: cerca de 1 es una tendencia constante.</string>
+    <string name="progress_metric_trend_counts">Sesiones con 1RM estimado; necesita al menos 3.</string>
+    <string name="progress_metric_trend_limits">Pocas sesiones, un día muy bueno o muy malo, o un parón largo pueden moverla mucho. El progreso rara vez es una línea recta, así que léela junto al gráfico.</string>
+
+    <string name="progress_metric_reps_title">Rangos de repeticiones</string>
+    <string name="progress_metric_reps_summary">Cómo se reparten tus series de esta variante según las repeticiones.</string>
+    <string name="progress_metric_reps_formula">Series efectivas contadas en cinco rangos: 1–5, 6–8, 9–12, 13–20 y 21 o más repeticiones. Toca una barra para ver su porcentaje.</string>
+    <string name="progress_metric_reps_counts">Series efectivas con repeticiones de la variante elegida. Se excluyen las series por tiempo y por distancia.</string>
+    <string name="progress_metric_reps_limits">Los rangos solo describen lo que hiciste; ninguno es mejor que otro.</string>
+
+    <string name="progress_metric_table_title">Tabla de progresión</string>
+    <string name="progress_metric_table_summary">Una fila por sesión de esta variante, la más reciente primero.</string>
+    <string name="progress_metric_table_formula">Mejor serie = la serie con el mayor 1RM estimado (en caso de empate, la más pesada). 1RM est. = estimación de Epley de esa serie. Volumen = Σ carga × repeticiones. Δ = cambio del 1RM estimado frente a la sesión anterior que lo tenía.</string>
+    <string name="progress_metric_table_counts">Series completadas de trabajo, descendentes y al fallo de la variante elegida. PR marca una sesión que logró al menos un récord personal.</string>
+    <string name="progress_metric_table_limits">Lee hasta tus últimas 200 sesiones del ejercicio.</string>
+
+    <string name="progress_metric_muscle_sets_title">Series semanales por músculo</string>
+    <string name="progress_metric_muscle_sets_summary">Series efectivas por semana de cada grupo muscular, este periodo frente al anterior.</string>
+    <string name="progress_metric_muscle_sets_formula">Series efectivas de los ejercicios cuyos músculos principales incluyen el grupo ÷ semanas del periodo.</string>
+    <string name="progress_metric_muscle_sets_counts">Solo músculos principales, cada uno completo: una serie de un ejercicio con dos músculos principales cuenta una vez para cada uno. Los músculos secundarios no cuentan.</string>
+    <string name="progress_metric_muscle_sets_limits">Los músculos vienen del catálogo de ejercicios, una simplificación de cómo los trabajan realmente.</string>
+
+    <string name="progress_metric_muscle_volume_title">Volumen semanal por músculo</string>
+    <string name="progress_metric_muscle_volume_summary">Volumen (carga × repeticiones) por semana de cada grupo muscular.</string>
+    <string name="progress_metric_muscle_volume_formula">Σ carga × repeticiones de los ejercicios cuyos músculos principales incluyen el grupo ÷ semanas del periodo.</string>
+    <string name="progress_metric_muscle_volume_counts">Las reglas habituales del volumen (el peso corporal solo suma el lastre) con los músculos principales contados completos.</string>
+    <string name="progress_metric_muscle_volume_limits">Los volúmenes de músculos distintos no son comparables: las piernas mueven mucho más peso que los brazos.</string>
+
+    <string name="progress_metric_balance_title">Equilibrio muscular</string>
+    <string name="progress_metric_balance_summary">Cómo se reparten tus series efectivas entre grupos opuestos.</string>
+    <string name="progress_metric_balance_formula">Proporción = series semanales del primer lado ÷ series semanales del segundo. Empuje: pecho, hombros, tríceps. Tirón: dorsales, espalda media, bíceps, trapecios. Tren superior: pecho, hombros, brazos, espalda, trapecios, cuello. Tren inferior: cuádriceps, isquiotibiales, glúteos, gemelos, aductores, abductores.</string>
+    <string name="progress_metric_balance_counts">Series efectivas por músculo principal. Una serie cuenta una vez por lado aunque varios de sus músculos estén en ese lado. Se excluyen los abdominales, la zona lumbar y los ejercicios de cuerpo completo.</string>
+    <string name="progress_metric_balance_limits">Una proporción solo describe tu reparto; no hay un valor correcto universal. Los hombros cuentan como empuje, aunque el trabajo de deltoides posterior es un tirón.</string>
+
+    <string name="progress_metric_bw_weekly_title">Media semanal</string>
+    <string name="progress_metric_bw_weekly_summary">Tu peso corporal medio en cada semana del calendario.</string>
+    <string name="progress_metric_bw_weekly_formula">Media = Σ registros de la semana ÷ número de registros. Δ = media de esta semana − la semana anterior con registros.</string>
+    <string name="progress_metric_bw_weekly_counts">Las semanas van de lunes a domingo; se omiten las semanas sin registros.</string>
+    <string name="progress_metric_bw_weekly_limits">Una semana con un solo registro tiene tanto ruido como ese único pesaje.</string>
+
+    <string name="progress_metric_bw_change_title">Cambio en 30 días</string>
+    <string name="progress_metric_bw_change_summary">Cuánto difiere tu último registro del de hace un mes.</string>
+    <string name="progress_metric_bw_change_formula">Último registro − el registro más antiguo de los 30 días anteriores a él.</string>
+    <string name="progress_metric_bw_change_counts">Necesita al menos un registro anterior dentro de esos 30 días.</string>
+    <string name="progress_metric_bw_change_limits">Compara dos pesajes sueltos, así que se notan las oscilaciones diarias de agua y comida. El ritmo de cambio usa en cambio todos los registros recientes.</string>
+
+    <string name="progress_metric_bw_rate_title">Ritmo de cambio</string>
+    <string name="progress_metric_bw_rate_summary">Lo rápido que ha cambiado tu peso corporal por semana últimamente.</string>
+    <string name="progress_metric_bw_rate_formula">Recta de mínimos cuadrados que pasa por los registros de los últimos 28 días; su pendiente × 7 da kg (o lb) por semana.</string>
+    <string name="progress_metric_bw_rate_counts">Necesita al menos 3 registros repartidos en 7 días o más.</string>
+    <string name="progress_metric_bw_rate_limits">El agua, la comida y la hora del día mueven el peso 1–2 kg; pesarte en condiciones parecidas da una tendencia más limpia.</string>
+
+    <string name="progress_metric_compare_title">Comparar</string>
+    <string name="progress_metric_compare_summary">Muestra el 1RM estimado de otra variante u otro ejercicio en el mismo gráfico.</string>
+    <string name="progress_metric_compare_formula">Cada línea es el mejor 1RM estimado de cada sesión de esa variante, en la misma escala.</string>
+    <string name="progress_metric_compare_counts">Las mismas reglas que el 1RM estimado.</string>
+    <string name="progress_metric_compare_limits">Cada ejercicio tiene su propio nivel de fuerza: compara más su forma y su tendencia que su altura.</string>
 </resources>

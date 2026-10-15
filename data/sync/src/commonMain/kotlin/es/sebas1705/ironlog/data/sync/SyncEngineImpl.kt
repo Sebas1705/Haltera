@@ -149,6 +149,8 @@ class SyncEngineImpl(
         q.backfillSessions()
         q.backfillBodyWeight()
         q.backfillExercises()
+        q.backfillFoods()
+        q.backfillMealDays()
         // settings/user also carries the active routine.
         val active = db.routineEntityQueries.selectActive().executeAsOneOrNull() != null
         if (active || !settings.isDefault()) q.backfillSettings()

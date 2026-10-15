@@ -3,6 +3,8 @@ package es.sebas1705.ironlog.data.sync
 import es.sebas1705.ironlog.data.local.db.AppDatabase
 import es.sebas1705.ironlog.data.sync.SyncCollections.BODY_WEIGHT
 import es.sebas1705.ironlog.data.sync.SyncCollections.EXERCISES
+import es.sebas1705.ironlog.data.sync.SyncCollections.FOODS
+import es.sebas1705.ironlog.data.sync.SyncCollections.MEAL_DAYS
 import es.sebas1705.ironlog.data.sync.SyncCollections.ROUTINES
 import es.sebas1705.ironlog.data.sync.SyncCollections.SESSIONS
 import es.sebas1705.ironlog.data.sync.SyncCollections.SETTINGS
@@ -29,6 +31,8 @@ internal class AggregateStore(
         BODY_WEIGHT -> q.selectBodyWeight(id).executeAsOneOrNull()
             ?.let { SyncJson.encodeToString(BodyWeightPayload.serializer(), it.toPayload()) }
         EXERCISES -> readExercise(id)?.let { SyncJson.encodeToString(ExercisePayload.serializer(), it) }
+        FOODS -> readFood(id)?.let { SyncJson.encodeToString(FoodPayload.serializer(), it) }
+        MEAL_DAYS -> readMealDay(id)?.let { SyncJson.encodeToString(MealDayPayload.serializer(), it) }
         SETTINGS -> SyncJson.encodeToString(
             SettingsPayload.serializer(),
             SettingsPayload(settings.prefs(), db.routineEntityQueries.selectActive().executeAsOneOrNull()?.id),
@@ -61,6 +65,8 @@ internal class AggregateStore(
                 q.deleteUserVariantsNotIn(id, emptyList())
                 q.deleteUserExercise(id)
             }
+            FOODS -> q.deleteSyncedFood(id) // recipe items cascade
+            MEAL_DAYS -> q.deleteMealEntriesNotIn(id, emptyList())
             else -> Unit // settings/user is never deleted
         }
     }
@@ -74,6 +80,8 @@ internal class AggregateStore(
                 db.bodyWeightEntityQueries.upsert(it.id, it.measuredAt, it.weightGrams, it.notes)
             }
             EXERCISES -> writeExercise(SyncJson.decodeFromString(ExercisePayload.serializer(), doc.payload))
+            FOODS -> writeFood(SyncJson.decodeFromString(FoodPayload.serializer(), doc.payload))
+            MEAL_DAYS -> writeMealDay(doc.id, SyncJson.decodeFromString(MealDayPayload.serializer(), doc.payload))
             SETTINGS -> {
                 val payload = SyncJson.decodeFromString(SettingsPayload.serializer(), doc.payload)
                 db.routineEntityQueries.clearActive()
@@ -212,7 +220,45 @@ internal class AggregateStore(
         }
     }
 
+    // Foods and logged days (schema 4)
+
+    private fun readFood(id: String): FoodPayload? {
+        val food = db.foodEntityQueries.selectById(id).executeAsOneOrNull()?.takeIf { it.source != GENERIC } ?: return null
+        return food.toPayload(db.recipeItemEntityQueries.selectByRecipe(id).executeAsList().map { it.toPayload() })
+    }
+
+    private fun writeFood(f: FoodPayload) {
+        q.insertFoodIfMissing(
+            f.id, f.source, f.nameEn, f.nameEs, f.nameSearch, f.brand, f.barcode, f.kcal, f.protein, f.carbs, f.fat,
+            f.fiber, f.sugar, f.salt, f.unit, f.servingNameEn, f.servingNameEs, f.servingGrams, f.yieldGrams,
+            f.favourite, f.deprecated, f.updatedAt,
+        )
+        q.updateSyncedFood(
+            f.source, f.nameEn, f.nameEs, f.nameSearch, f.brand, f.barcode, f.kcal, f.protein, f.carbs, f.fat, f.fiber,
+            f.sugar, f.salt, f.unit, f.servingNameEn, f.servingNameEs, f.servingGrams, f.yieldGrams, f.favourite,
+            f.deprecated, f.updatedAt, f.id,
+        )
+        // A bundled food with the same id is never replaced; its items would make no sense there.
+        if (db.foodEntityQueries.selectById(f.id).executeAsOneOrNull()?.source == GENERIC) return
+        q.deleteRecipeItemsNotIn(f.id, f.items.map { it.id })
+        f.items.forEach { q.replaceRecipeItem(it.id, f.id, it.foodId, it.grams, it.position) }
+    }
+
+    private fun readMealDay(date: String): MealDayPayload? {
+        val entries = db.mealEntryEntityQueries.selectByDate(date).executeAsList()
+        if (entries.isEmpty()) return null // an empty day is deleted
+        return MealDayPayload(date, entries.map { it.toPayload() })
+    }
+
+    private fun writeMealDay(date: String, day: MealDayPayload) {
+        q.deleteMealEntriesNotIn(date, day.entries.map { it.id })
+        day.entries.forEach { e ->
+            q.replaceMealEntry(e.id, date, e.meal, e.foodId, e.grams, e.servings, e.position, e.createdAt)
+        }
+    }
+
     private companion object {
         const val USER = "USER"
+        const val GENERIC = "GENERIC"
     }
 }

@@ -81,7 +81,16 @@ internal data class WeekDayUi(
     val trained: Boolean,
 )
 
-internal data class WeightDialogUi(val input: String = "", val invalid: Boolean = false)
+/**
+ * "Log body weight": the typed weight and the chosen date ([dateUtcMillis], UTC midnight as the date picker
+ * uses). [maxDateUtcMillis] is today (no future dates).
+ */
+internal data class WeightDialogUi(
+    val input: String = "",
+    val invalid: Boolean = false,
+    val dateUtcMillis: Long = 0,
+    val maxDateUtcMillis: Long = 0,
+)
 
 /**
  * "Log past session": the dialog's starting values and what can be chosen as trained: every training day
@@ -120,6 +129,9 @@ internal sealed interface TodayIntent : MVIBaseIntent {
     data object OpenWeightDialog : TodayIntent
 
     data class WeightInputChanged(val text: String) : TodayIntent
+
+    /** A date picked for the body-weight entry (UTC midnight); future dates are clamped to today. */
+    data class WeightDateChanged(val dateUtcMillis: Long) : TodayIntent
 
     data object SaveWeight : TodayIntent
 

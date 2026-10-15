@@ -123,6 +123,7 @@
     <string name="progress_bw_edit_title">Editar entrada</string>
     <string name="progress_bw_field">Peso (%1$s)</string>
     <string name="progress_bw_invalid">Introduce un peso válido.</string>
+    <string name="progress_bw_date">Fecha</string>
 
     <!-- Muscles -->
     <string name="progress_muscle_abdominals">Abdominales</string>

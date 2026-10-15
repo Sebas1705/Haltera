@@ -10,6 +10,7 @@ import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.BodyWeightEntry
 import es.sebas1705.ironlog.data.repository.BodyWeightRepository
 import es.sebas1705.ironlog.feature.progress.model.BodyWeightChart
+import es.sebas1705.ironlog.feature.progress.model.PastSessionTime
 import es.sebas1705.ironlog.feature.progress.model.ProgressClock
 import es.sebas1705.ironlog.feature.progress.model.ProgressMath
 import es.sebas1705.ironlog.feature.progress.model.toEpochDay
@@ -43,6 +44,9 @@ internal data class BodyWeightState(
     /** Text of the dialog's weight field, in [unit]. */
     val input: String = "",
     val inputError: Boolean = false,
+    /** The dialog's date as UTC midnight (what the date picker uses); [maxDateUtcMillis] is today. */
+    val dateUtcMillis: Long = 0,
+    val maxDateUtcMillis: Long = 0,
 ) : MVIBaseState
 
 internal sealed interface BodyWeightIntent : MVIBaseIntent {
@@ -51,6 +55,9 @@ internal sealed interface BodyWeightIntent : MVIBaseIntent {
     data class OpenEdit(val entry: BodyWeightEntry) : BodyWeightIntent
 
     data class InputChanged(val text: String) : BodyWeightIntent
+
+    /** A date picked in the dialog (UTC midnight); future dates are clamped to today. */
+    data class DateChanged(val dateUtcMillis: Long) : BodyWeightIntent
 
     data object Dismiss : BodyWeightIntent
 
@@ -78,6 +85,9 @@ internal class BodyWeightViewModel(
                 input = Weights.format(intent.entry.weightGrams, currentState.unit, grouping = false),
             )
             is BodyWeightIntent.InputChanged -> updateState { it.copy(input = intent.text, inputError = false) }
+            is BodyWeightIntent.DateChanged -> updateState {
+                it.copy(dateUtcMillis = intent.dateUtcMillis.coerceAtMost(it.maxDateUtcMillis))
+            }
             BodyWeightIntent.Dismiss -> showDialog(null, input = "")
             BodyWeightIntent.Save -> save()
             is BodyWeightIntent.Delete -> {
@@ -87,8 +97,22 @@ internal class BodyWeightViewModel(
         }
     }
 
-    private fun showDialog(dialog: WeightDialog?, input: String) =
-        updateState { it.copy(dialog = dialog, input = input, inputError = false) }
+    /** Opens (or closes, with null) the dialog; it is dated today for a new entry, the entry's day when editing. */
+    private fun showDialog(dialog: WeightDialog?, input: String) {
+        val today = PastSessionTime.todayUtcMillis(clock.now(), clock.timeZone)
+        val date = (dialog as? WeightDialog.Edit)?.let {
+            PastSessionTime.utcMillis(PastSessionTime.localDate(it.entry.measuredAt, clock.timeZone))
+        } ?: today
+        updateState {
+            it.copy(
+                dialog = dialog,
+                input = input,
+                inputError = false,
+                dateUtcMillis = date.coerceAtMost(today),
+                maxDateUtcMillis = today,
+            )
+        }
+    }
 
     private suspend fun save() {
         val state = currentState
@@ -98,12 +122,22 @@ internal class BodyWeightViewModel(
             return
         }
         when (val dialog = state.dialog) {
-            WeightDialog.Add -> bodyWeight.add(grams)
-            is WeightDialog.Edit -> bodyWeight.update(dialog.entry.copy(weightGrams = grams))
+            WeightDialog.Add -> bodyWeight.add(grams, measuredAt(state.dateUtcMillis))
+            is WeightDialog.Edit -> {
+                val entry = dialog.entry
+                val sameDay = PastSessionTime.localDate(entry.measuredAt, clock.timeZone) ==
+                    PastSessionTime.dateOf(state.dateUtcMillis)
+                val measuredAt = if (sameDay) entry.measuredAt else measuredAt(state.dateUtcMillis)
+                bodyWeight.update(entry.copy(weightGrams = grams, measuredAt = measuredAt))
+            }
             null -> return
         }
         showDialog(null, input = "")
     }
+
+    /** Now for today, noon for an earlier day (an edit on the same day keeps its time). */
+    private fun measuredAt(dateUtcMillis: Long): Long =
+        PastSessionTime.measuredAt(dateUtcMillis, clock.now(), clock.timeZone)
 
     private suspend fun observe() {
         combine(bodyWeight.observeAll(), settings.settings) { entries, userSettings -> entries to userSettings.unit }

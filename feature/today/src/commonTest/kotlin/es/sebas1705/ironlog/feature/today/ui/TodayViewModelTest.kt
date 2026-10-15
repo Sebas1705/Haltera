@@ -238,6 +238,43 @@ class TodayViewModelTest {
     }
 
     @Test
+    fun `body weight is dated today and saved now by default`() {
+        val vm = viewModel()
+
+        vm.onEvent(TodayIntent.OpenWeightDialog)
+        val dialog = assertNotNull(vm.uiState.value.weightDialog)
+        assertEquals(at(2026, 10, 14, 0), dialog.dateUtcMillis)
+        assertEquals(at(2026, 10, 14, 0), dialog.maxDateUtcMillis)
+        vm.onEvent(TodayIntent.WeightInputChanged("80"))
+        vm.onEvent(TodayIntent.SaveWeight)
+
+        assertEquals(NOW, bodyWeight.entries.value.single().measuredAt)
+    }
+
+    @Test
+    fun `body weight logged on a past date is stored at noon of that day`() {
+        val vm = viewModel()
+
+        vm.onEvent(TodayIntent.OpenWeightDialog)
+        vm.onEvent(TodayIntent.WeightInputChanged("80"))
+        vm.onEvent(TodayIntent.WeightDateChanged(at(2026, 10, 3, 0)))
+        vm.onEvent(TodayIntent.SaveWeight)
+
+        assertNull(vm.uiState.value.weightDialog)
+        assertEquals(at(2026, 10, 3, 12), bodyWeight.entries.value.single().measuredAt)
+    }
+
+    @Test
+    fun `a future body-weight date is clamped to today`() {
+        val vm = viewModel()
+
+        vm.onEvent(TodayIntent.OpenWeightDialog)
+        vm.onEvent(TodayIntent.WeightDateChanged(at(2026, 10, 21, 0)))
+
+        assertEquals(at(2026, 10, 14, 0), vm.uiState.value.weightDialog?.dateUtcMillis)
+    }
+
+    @Test
     fun `invalid body weight keeps the dialog open with an error`() {
         val vm = viewModel()
 
@@ -245,7 +282,8 @@ class TodayViewModelTest {
         vm.onEvent(TodayIntent.WeightInputChanged("abc"))
         vm.onEvent(TodayIntent.SaveWeight)
 
-        assertEquals(WeightDialogUi("abc", invalid = true), vm.uiState.value.weightDialog)
+        val today = at(2026, 10, 14, 0)
+        assertEquals(WeightDialogUi("abc", invalid = true, today, today), vm.uiState.value.weightDialog)
         assertTrue(bodyWeight.entries.value.isEmpty())
         vm.onEvent(TodayIntent.WeightInputChanged("80"))
         assertFalse(assertNotNull(vm.uiState.value.weightDialog).invalid)

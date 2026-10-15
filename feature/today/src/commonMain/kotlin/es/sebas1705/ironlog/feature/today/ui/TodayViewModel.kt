@@ -91,9 +91,16 @@ internal class TodayViewModel(
             TodayIntent.OpenDayPicker -> updateState { it.copy(dayPickerOpen = it.plan != null) }
             TodayIntent.DismissDayPicker -> updateState { it.copy(dayPickerOpen = false) }
             is TodayIntent.ChooseDay -> chooseDay(intent.dayIndex)
-            TodayIntent.OpenWeightDialog -> updateState { it.copy(weightDialog = WeightDialogUi()) }
+            TodayIntent.OpenWeightDialog -> openWeightDialog()
             is TodayIntent.WeightInputChanged -> updateState { state ->
                 state.copy(weightDialog = state.weightDialog?.copy(input = intent.text, invalid = false))
+            }
+            is TodayIntent.WeightDateChanged -> updateState { state ->
+                state.copy(
+                    weightDialog = state.weightDialog?.let {
+                        it.copy(dateUtcMillis = intent.dateUtcMillis.coerceAtMost(it.maxDateUtcMillis))
+                    },
+                )
             }
             TodayIntent.SaveWeight -> saveWeight()
             TodayIntent.DismissWeightDialog -> updateState { it.copy(weightDialog = null) }
@@ -154,6 +161,12 @@ internal class TodayViewModel(
         }
     }
 
+    /** Opens "Log body weight" dated today; any earlier date can be picked. */
+    private fun openWeightDialog() {
+        val today = PastSessionTime.todayUtcMillis(clock.now(), clock.timeZone)
+        updateState { it.copy(weightDialog = WeightDialogUi(dateUtcMillis = today, maxDateUtcMillis = today)) }
+    }
+
     private suspend fun saveWeight() {
         val dialog = currentState.weightDialog ?: return
         val grams = parseWeight(dialog.input)?.let { Weights.toGrams(it, currentState.unit) }
@@ -161,7 +174,8 @@ internal class TodayViewModel(
             updateState { it.copy(weightDialog = dialog.copy(invalid = true)) }
             return
         }
-        val saved = attempt { bodyWeight.add(grams) }
+        val measuredAt = PastSessionTime.measuredAt(dialog.dateUtcMillis, clock.now(), clock.timeZone)
+        val saved = attempt { bodyWeight.add(grams, measuredAt) }
         updateState {
             if (saved == null) it.copy(error = TodayError.SAVE_FAILED) else it.copy(weightDialog = null)
         }

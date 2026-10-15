@@ -20,6 +20,7 @@ internal object PastSessionTime {
     private const val MINUTE_MS = 60_000L
     private const val QUARTER_MINUTES = 15
     private const val EVENING_HOUR = 18
+    private const val NOON_HOUR = 12
 
     /** Start of the session described by [form], in [timeZone]. */
     fun startMillis(form: PastSessionForm, timeZone: TimeZone): Long =
@@ -35,6 +36,19 @@ internal object PastSessionTime {
 
     fun localDate(millis: Long, timeZone: TimeZone): LocalDate =
         Instant.fromEpochMilliseconds(millis).toLocalDateTime(timeZone).date
+
+    /** Today as the date picker wants it: its UTC midnight (also the latest selectable date). */
+    fun todayUtcMillis(now: Long, timeZone: TimeZone): Long = utcMillis(localDate(now, timeZone))
+
+    /**
+     * When a body-weight entry dated [dateUtcMillis] was measured: [now] if that date is today, noon of
+     * that day otherwise.
+     */
+    fun measuredAt(dateUtcMillis: Long, now: Long, timeZone: TimeZone): Long {
+        val date = dateOf(dateUtcMillis)
+        if (date == localDate(now, timeZone)) return now
+        return LocalDateTime(date, LocalTime(NOON_HOUR, 0)).toInstant(timeZone).toEpochMilliseconds()
+    }
 
     /**
      * A new past session on [date]: today it starts an hour ago (on the quarter), any other day at 18:00;

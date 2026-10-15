@@ -173,7 +173,7 @@
     <string name="nutrition_macros_percent_sum">Total: %1$s</string>
     <string name="nutrition_clear_goals">Clear goals</string>
     <string name="nutrition_calculator">Goal calculator</string>
-    <string name="nutrition_calc_info">1. Resting energy (Mifflin–St Jeor): 10 × weight (kg) + 6.25 × height (cm) − 5 × age, plus 5 for men or minus 161 for women.\n2. Maintenance = resting energy × activity factor: sedentary 1.2, light 1.375, moderate 1.55, active 1.725, very active 1.9.\n3. Goal = maintenance − 20 % to lose, the same to maintain, + 10 % to gain, rounded to 10 kcal.\n4. Protein by body weight (2.0 g/kg losing, 1.6 maintaining, 1.8 gaining), fat 25 % of the kcal, carbohydrates the rest.\nIt is an estimate: adjust it by watching your weight trend over a few weeks.</string>
+    <string name="nutrition_calc_info">1. Resting energy (Mifflin–St Jeor): 10 × weight (kg) + 6.25 × height (cm) − 5 × age, plus 5 for men or minus 161 for women.\n2. Maintenance = resting energy × activity factor: sedentary 1.2, light 1.375, moderate 1.55, active 1.725, very active 1.9.\n3. Goal = maintenance − 20% to lose, the same to maintain, + 10% to gain, rounded to 10 kcal.\n4. Protein by body weight (2.0 g/kg losing, 1.6 maintaining, 1.8 gaining), fat 25% of the kcal, carbohydrates the rest.\nIt is an estimate: adjust it by watching your weight trend over a few weeks.</string>
     <string name="nutrition_sex">Sex</string>
     <string name="nutrition_sex_male">Male</string>
     <string name="nutrition_sex_female">Female</string>
@@ -207,15 +207,15 @@
     <string name="nutrition_stats_average">Daily average</string>
     <string name="nutrition_stats_average_info">Mean over the days with food logged. Days without entries are left out instead of counting as 0 kcal, because a missing day is unknown, not a fast.</string>
     <string name="nutrition_stats_kcal">Energy per day</string>
-    <string name="nutrition_stats_kcal_info">One bar per logged day; empty slots are days without entries. The dashed line is your kcal goal and green bars are within ±10 % of it.</string>
-    <string name="nutrition_stats_within">Within ±10 % of the goal</string>
+    <string name="nutrition_stats_kcal_info">One bar per logged day; empty slots are days without entries. The dashed line is your kcal goal and green bars are within ±10% of it.</string>
+    <string name="nutrition_stats_within">Within ±10% of the goal</string>
     <string name="nutrition_stats_goal_line">Goal: %1$s</string>
     <string name="nutrition_stats_macros">Macros per day</string>
     <string name="nutrition_stats_macros_info">Energy from each macro per day, stacked: protein and carbohydrates × 4 kcal/g, fat × 9 kcal/g. The total can differ slightly from the kcal of the foods (fibre, alcohol and rounding).</string>
     <string name="nutrition_stats_donut">Average macro split</string>
     <string name="nutrition_stats_donut_info">Share of the energy from protein, carbohydrates and fat over the period (4, 4 and 9 kcal per gram).</string>
     <string name="nutrition_stats_adherence">Goal adherence</string>
-    <string name="nutrition_stats_adherence_info">Share of the logged days whose energy was within ±10 % of the kcal goal (for 2000 kcal: from 1800 to 2200).</string>
+    <string name="nutrition_stats_adherence_info">Share of the logged days whose energy was within ±10% of the kcal goal (for 2000 kcal: from 1800 to 2200).</string>
     <string name="nutrition_stats_adherence_no_goal">Set a kcal goal to see how many days stay close to it.</string>
     <string name="nutrition_stats_protein_kg">Protein per kg</string>
     <string name="nutrition_stats_protein_kg_info">Average daily protein divided by your latest body weight. Common references for people who train are about 1.6 to 2.2 g/kg.</string>
@@ -239,8 +239,8 @@
         <item quantity="other">%1$d of %2$d days logged</item>
     </plurals>
     <plurals name="nutrition_stats_adherence_value">
-        <item quantity="one">%1$d of %2$d logged day within ±10 %</item>
-        <item quantity="other">%1$d of %2$d logged days within ±10 %</item>
+        <item quantity="one">%1$d of %2$d logged day within ±10%</item>
+        <item quantity="other">%1$d of %2$d logged days within ±10%</item>
     </plurals>
     <plurals name="nutrition_copied">
         <item quantity="one">%1$d entry copied</item>

@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.day
 
+import androidx.compose.foundation.layout.PaddingValues
 import org.jetbrains.compose.resources.pluralStringResource
 import es.sebas1705.ironlog.feature.nutrition.ui.components.nutritionContent
 import es.sebas1705.ironlog.feature.nutrition.ui.components.isTwoColumn
@@ -241,15 +242,18 @@ private fun ActionsRow(onOpenGoals: () -> Unit, onOpenStats: () -> Unit, onCopyD
     Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         OutlinedButton(
             onClick = onOpenGoals,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 8.dp),
         ) { Text(stringResource(Res.string.nutrition_goals), maxLines = 1) }
         OutlinedButton(
             onClick = onOpenStats,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 8.dp),
         ) { Text(stringResource(Res.string.nutrition_stats), maxLines = 1) }
         OutlinedButton(
             onClick = onCopyDay,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 8.dp),
         ) { Text(stringResource(Res.string.nutrition_copy_day), maxLines = 1) }
     }
 }

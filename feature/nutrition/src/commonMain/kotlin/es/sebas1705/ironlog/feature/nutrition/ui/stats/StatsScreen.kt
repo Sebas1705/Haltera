@@ -1,5 +1,7 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.stats
 
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_kcal
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_weight
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_no_weight
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_chart_trend_description
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_chart_donut_description
@@ -429,6 +431,8 @@ private fun TrendCard(state: StatsState) {
             weight = trend.weightKg,
             kcalUnit = stringResource(Res.string.nutrition_unit_kcal),
             weightUnit = kg,
+            kcalLegend = stringResource(Res.string.nutrition_stats_trend_kcal),
+            weightLegend = stringResource(Res.string.nutrition_stats_trend_weight),
             dateLabel = { shortLabels.getValue(it) },
             tooltip = { tooltips.getValue(it) },
             description = stringResource(

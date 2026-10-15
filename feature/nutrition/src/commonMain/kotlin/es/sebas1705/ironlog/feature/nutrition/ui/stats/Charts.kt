@@ -191,6 +191,8 @@ internal fun DualAxisChart(
     weight: List<DatedValue>,
     kcalUnit: String,
     weightUnit: String,
+    kcalLegend: String,
+    weightLegend: String,
     dateLabel: (LocalDate) -> String,
     tooltip: (LocalDate) -> String,
     description: String,
@@ -223,7 +225,7 @@ internal fun DualAxisChart(
     ) {
         val kScale = ChartScale.nice(kcal.minOfOrNull { it.value } ?: 0.0, kcal.maxOfOrNull { it.value } ?: 1.0)
         val wScale = weight.takeIf { it.isNotEmpty() }?.let { w ->
-            ChartScale.nice(
+            weightScale(
                 w.minOf { it.value },
                 w.maxOf { it.value }
             )
@@ -251,8 +253,16 @@ internal fun DualAxisChart(
             drawTooltip(tooltip(date), Offset(sx, area.top), measurer, style)
         }
     }
-    LegendRow(listOf(kcalColor to kcalUnit, weightColor to weightUnit))
+    LegendRow(listOf(kcalColor to kcalLegend, weightColor to weightLegend))
 }
+
+/** A weight axis spanning at least [MIN_WEIGHT_SPAN_KG], so one entry or a flat week does not stretch to ±10 %. */
+private fun weightScale(low: Double, high: Double): AxisScale {
+    val pad = ((MIN_WEIGHT_SPAN_KG - (high - low)) / 2).coerceAtLeast(0.0)
+    return ChartScale.nice(low - pad, high + pad)
+}
+
+private const val MIN_WEIGHT_SPAN_KG = 2.0
 
 @Composable
 internal fun LegendDot(color: Color, label: String) {

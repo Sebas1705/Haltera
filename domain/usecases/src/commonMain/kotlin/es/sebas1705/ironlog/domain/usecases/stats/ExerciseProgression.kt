@@ -109,3 +109,46 @@ object ExerciseProgression {
         return OneRmTrend(trend, points.first().at, points.last().at)
     }
 }
+
+/** The most reps done at [loadGrams] (first time), part of the reps-at-a-load records. */
+data class RepRecord(val loadGrams: Long, val reps: Int, val sessionId: String, val at: Long)
+
+/** Records of one variant as Metric.PERSONAL_RECORDS defines them. */
+data class ExerciseRecords(
+    val heaviestLoad: Record?,
+    val bestOneRm: Record?,
+    val bestVolume: Record?,
+    /** Heaviest first; each entry has more reps than every heavier load (so none is dominated). */
+    val repsAtLoad: List<RepRecord>,
+)
+
+/** All-time records of one variant's [history]; ties keep the earliest. */
+fun ExerciseProgression.records(
+    history: List<ExerciseHistoryEntry>,
+    bilateralSlots: Set<String> = emptySet()
+): ExerciseRecords {
+    val rows = table(history, bilateralSlots).sortedBy { it.at }
+    fun best(value: (ProgressionRow) -> Long?): Record? = rows
+        .mapNotNull { row -> value(row)?.takeIf { it > 0 }?.let { Record(it, row.sessionId, row.at) } }
+        .fold(null as Record?) { acc, r -> if (acc == null || r.value > acc.value) r else acc }
+    val bestRepsPerLoad = history.sortedBy { it.sessionStartedAt }
+        .flatMap { e ->
+            e.exercise.sets.filter { TrainingMath.isCounted(it) && (it.reps ?: 0) > 0 }
+                .mapNotNull { set ->
+                    TrainingMath.weightGrams(
+                        set
+                    )?.let { RepRecord(it, set.reps ?: 0, e.sessionId, e.sessionStartedAt) }
+                }
+        }
+        .groupBy { it.loadGrams }
+        .map { (_, records) -> records.reduce { acc, r -> if (r.reps > acc.reps) r else acc } }
+        .sortedByDescending { it.loadGrams }
+    val frontier = mutableListOf<RepRecord>()
+    bestRepsPerLoad.forEach { record -> if (frontier.isEmpty() || record.reps > frontier.last().reps) frontier += record }
+    return ExerciseRecords(
+        heaviestLoad = best { it.topLoad },
+        bestOneRm = best { it.oneRm },
+        bestVolume = best { it.volume },
+        repsAtLoad = frontier,
+    )
+}

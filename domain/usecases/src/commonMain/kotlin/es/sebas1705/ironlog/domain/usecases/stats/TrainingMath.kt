@@ -12,6 +12,7 @@ data class DatedSession(val day: Int, val session: WorkoutSession)
  * Per-set and per-session building blocks shared by every statistic. Loads are grams; volume is
  * gram-reps (kg × reps once divided by 1000).
  */
+@Suppress("TooManyFunctions") // Small per-set and per-session building blocks, kept together on purpose.
 object TrainingMath {
     /** `loadDetail` of bands and machines logged by stack position: the load is a level, not a weight. */
     private val INDEX_LOAD = Regex(""""type"\s*:\s*"(band|machinePlate)"""")
@@ -57,5 +58,7 @@ object TrainingMath {
         if (isCounted(set)) Stats.epleyOneRm(weightGrams(set) ?: 0, set.reps ?: 0) else 0
 
     /** The finished session's length (Metric.SESSION_DURATION); null while in progress. */
-    fun durationMillis(session: WorkoutSession): Long? = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) }
+    fun durationMillis(
+        session: WorkoutSession
+    ): Long? = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) }
 }

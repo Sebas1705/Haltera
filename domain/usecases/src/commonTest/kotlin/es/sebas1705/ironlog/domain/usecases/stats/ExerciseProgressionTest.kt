@@ -84,3 +84,28 @@ class ExerciseProgressionTest {
         assertNull(ExerciseProgression.oneRmTrend(ExerciseProgression.table(history.take(2))))
     }
 }
+
+class ExerciseRecordsTest {
+    @Test
+    fun `records and the reps-at-a-load frontier`() {
+        val history = listOf(
+            historyEntry("a", 1, lift(100.0, 5), lift(80.0, 10), lift(70.0, 9)),
+            historyEntry("b", 2, lift(110.0, 2), lift(80.0, 10), lift(90.0, 8)),
+            historyEntry("c", 3, lift(100.0, 6), lift(60.0, 15, completed = false)),
+        )
+        val records = ExerciseProgression.records(history)
+        assertEquals(Record(110_000, "b", 2 * DAY_MS), records.heaviestLoad)
+        assertEquals(Record(120_000, "c", 3 * DAY_MS), records.bestOneRm) // 100 × 6
+        assertEquals(Record(1_930_000, "a", DAY_MS), records.bestVolume) // 500 + 800 + 630 kg
+        // 70 × 9 is dominated by 80 × 10; the 80 × 10 tie keeps the first session.
+        assertEquals(
+            listOf(
+                RepRecord(110_000, 2, "b", 2 * DAY_MS),
+                RepRecord(100_000, 6, "c", 3 * DAY_MS),
+                RepRecord(90_000, 8, "b", 2 * DAY_MS),
+                RepRecord(80_000, 10, "a", DAY_MS),
+            ),
+            records.repsAtLoad,
+        )
+    }
+}

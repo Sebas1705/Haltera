@@ -22,7 +22,10 @@ class TrainingMathTest {
     fun `bodyweight sets add only the added load`() {
         assertEquals(0L, TrainingMath.setVolume(lift(0.0, 12)))
         assertEquals(0L, TrainingMath.setVolume(lift(-20.0, 8, detail = """{"type":"bodyweight","assisted":true}""")))
-        assertEquals(100_000L, TrainingMath.setVolume(lift(10.0, 10, detail = """{"type":"bodyweight","assisted":false}""")))
+        assertEquals(
+            100_000L,
+            TrainingMath.setVolume(lift(10.0, 10, detail = """{"type":"bodyweight","assisted":false}"""))
+        )
     }
 
     @Test

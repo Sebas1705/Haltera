@@ -17,7 +17,12 @@ enum class BalanceKind(val first: Set<Muscle>, val second: Set<Muscle>) {
             Muscle.LATS, Muscle.MIDDLE_BACK, Muscle.TRAPS, Muscle.NECK,
         ),
         second = setOf(
-            Muscle.QUADRICEPS, Muscle.HAMSTRINGS, Muscle.GLUTES, Muscle.CALVES, Muscle.ADDUCTORS, Muscle.ABDUCTORS,
+            Muscle.QUADRICEPS,
+            Muscle.HAMSTRINGS,
+            Muscle.GLUTES,
+            Muscle.CALVES,
+            Muscle.ADDUCTORS,
+            Muscle.ABDUCTORS,
         ),
     ),
     QUADS_HAMSTRINGS(first = setOf(Muscle.QUADRICEPS), second = setOf(Muscle.HAMSTRINGS)),
@@ -48,14 +53,13 @@ object MuscleStats {
         bilateralSlots: Set<String>,
     ): Totals {
         val totals = Totals()
-        sessions.filter { !it.session.inProgress && it.day in window }.forEach { dated ->
-            dated.session.exercises.forEach { exercise ->
-                val sets = TrainingMath.effectiveSets(exercise)
-                val volume = TrainingMath.volume(exercise, bilateralSlots)
-                musclesByVariant[exercise.variantId].orEmpty().distinct().forEach { muscle ->
-                    if (sets > 0) totals.sets[muscle] = (totals.sets[muscle] ?: 0) + sets
-                    if (volume > 0) totals.volume[muscle] = (totals.volume[muscle] ?: 0) + volume
-                }
+        val exercises = sessions.filter { !it.session.inProgress && it.day in window }.flatMap { it.session.exercises }
+        exercises.forEach { exercise ->
+            val sets = TrainingMath.effectiveSets(exercise)
+            val volume = TrainingMath.volume(exercise, bilateralSlots)
+            musclesByVariant[exercise.variantId].orEmpty().distinct().forEach { muscle ->
+                if (sets > 0) totals.sets[muscle] = (totals.sets[muscle] ?: 0) + sets
+                if (volume > 0) totals.volume[muscle] = (totals.volume[muscle] ?: 0) + volume
             }
         }
         return totals
@@ -100,7 +104,11 @@ object MuscleStats {
      * side even when several of its primary muscles are on that side (a bench press set is one push
      * set, not one for chest and one for triceps).
      */
-    fun balance(sessions: List<DatedSession>, musclesByVariant: Map<String, List<Muscle>>, window: DayWindow): List<Balance> {
+    fun balance(
+        sessions: List<DatedSession>,
+        musclesByVariant: Map<String, List<Muscle>>,
+        window: DayWindow
+    ): List<Balance> {
         val performed = sessions.filter { !it.session.inProgress && it.day in window }
             .flatMap { it.session.exercises }
             .map { musclesByVariant[it.variantId].orEmpty().toSet() to TrainingMath.effectiveSets(it) }

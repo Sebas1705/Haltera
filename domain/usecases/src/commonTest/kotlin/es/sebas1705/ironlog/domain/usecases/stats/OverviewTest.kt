@@ -83,12 +83,20 @@ class OverviewTest {
     fun `planned sessions per week come from the cycle's training and rest days`() {
         // Full body A, rest, B, rest, C, rest, rest: 3 per week.
         val fullBody = routine(
-            DayKind.TRAINING, DayKind.REST, DayKind.TRAINING, DayKind.REST,
-            DayKind.TRAINING, DayKind.REST, DayKind.REST,
+            DayKind.TRAINING,
+            DayKind.REST,
+            DayKind.TRAINING,
+            DayKind.REST,
+            DayKind.TRAINING,
+            DayKind.REST,
+            DayKind.REST,
         )
         assertEquals(3.0, Overview.plannedPerWeek(fullBody))
         // Push, pull, legs, rest: 3 in 4 days = 5.25 per week.
-        assertEquals(5.25, Overview.plannedPerWeek(routine(DayKind.TRAINING, DayKind.TRAINING, DayKind.TRAINING, DayKind.REST)))
+        assertEquals(
+            5.25,
+            Overview.plannedPerWeek(routine(DayKind.TRAINING, DayKind.TRAINING, DayKind.TRAINING, DayKind.REST))
+        )
         // No rest day: the cycle is not a week.
         assertNull(Overview.plannedPerWeek(routine(DayKind.TRAINING, DayKind.TRAINING)))
         assertNull(Overview.plannedPerWeek(routine(DayKind.REST)))
@@ -98,10 +106,16 @@ class OverviewTest {
     @Test
     fun `adherence compares logged and planned sessions per week`() {
         val plan = routine(
-            DayKind.TRAINING, DayKind.REST, DayKind.TRAINING, DayKind.REST,
-            DayKind.TRAINING, DayKind.REST, DayKind.REST,
+            DayKind.TRAINING,
+            DayKind.REST,
+            DayKind.TRAINING,
+            DayKind.REST,
+            DayKind.TRAINING,
+            DayKind.REST,
+            DayKind.REST,
         )
-        val adherence = assertNotNull(Overview.build(StatsPeriod.FOUR_WEEKS, TODAY, sessions, activeRoutine = plan).adherence)
+        val adherence =
+            assertNotNull(Overview.build(StatsPeriod.FOUR_WEEKS, TODAY, sessions, activeRoutine = plan).adherence)
         assertEquals(3.0, adherence.plannedPerWeek)
         assertEquals(0.5, adherence.loggedPerWeek)
         assertEquals(16.666, adherence.percent, 0.001)

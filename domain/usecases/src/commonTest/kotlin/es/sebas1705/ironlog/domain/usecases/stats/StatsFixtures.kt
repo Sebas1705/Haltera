@@ -32,17 +32,35 @@ internal fun lift(
 )
 
 internal fun move(variantId: String, vararg sets: SetLog, slotId: String? = null) =
-    SessionExercise(id = "se-$variantId", sessionId = "", position = 0, variantId = variantId, slotId = slotId, sets = sets.toList())
+    SessionExercise(
+        id = "se-$variantId",
+        sessionId = "",
+        position = 0,
+        variantId = variantId,
+        slotId = slotId,
+        sets = sets.toList()
+    )
 
 /** A session on epoch [day] at 10:00 UTC lasting [minutes] (null: in progress). */
 internal fun dated(id: String, day: Int, vararg exercises: SessionExercise, minutes: Long? = 60): DatedSession {
     val start = day * DAY_MS + 10 * 3_600_000L
     return DatedSession(
         day,
-        WorkoutSession(id = id, startedAt = start, endedAt = minutes?.let { start + it * 60_000 }, exercises = exercises.toList()),
+        WorkoutSession(
+            id = id,
+            startedAt = start,
+            endedAt = minutes?.let {
+                start + it * 60_000
+            },
+            exercises = exercises.toList()
+        ),
     )
 }
 
 /** One variant's history entry on epoch [day]. */
 internal fun historyEntry(session: String, day: Int, vararg sets: SetLog, variantId: String = "squat.barbell") =
-    ExerciseHistoryEntry(session, day * DAY_MS, SessionExercise("e$session", session, 0, variantId, sets = sets.toList()))
+    ExerciseHistoryEntry(
+        session,
+        day * DAY_MS,
+        SessionExercise("e$session", session, 0, variantId, sets = sets.toList())
+    )

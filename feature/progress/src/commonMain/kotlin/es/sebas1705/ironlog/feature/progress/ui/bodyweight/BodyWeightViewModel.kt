@@ -9,7 +9,13 @@ import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.BodyWeightEntry
 import es.sebas1705.ironlog.data.repository.BodyWeightRepository
 import es.sebas1705.ironlog.feature.progress.model.BodyWeightChart
+import es.sebas1705.ironlog.feature.progress.model.ProgressClock
 import es.sebas1705.ironlog.feature.progress.model.ProgressMath
+import es.sebas1705.ironlog.feature.progress.model.toEpochDay
+import es.sebas1705.ironlog.domain.usecases.stats.BodyWeightStats
+import es.sebas1705.ironlog.domain.usecases.stats.DatedWeight
+import es.sebas1705.ironlog.domain.usecases.stats.WeeklyWeight
+import es.sebas1705.ironlog.domain.usecases.stats.WeightRate
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 
@@ -28,6 +34,10 @@ internal data class BodyWeightState(
     val chart: BodyWeightChart = BodyWeightChart(),
     /** Change over the last 30 days in grams, or null without enough entries. */
     val change30Days: Long? = null,
+    /** Weekly averages, latest week first. */
+    val weekly: List<WeeklyWeight> = emptyList(),
+    /** Change per week over the last 28 days, or null without enough entries. */
+    val rate: WeightRate? = null,
     val dialog: WeightDialog? = null,
     /** Text of the dialog's weight field, in [unit]. */
     val input: String = "",
@@ -52,6 +62,7 @@ internal sealed interface BodyWeightIntent : MVIBaseIntent {
 internal class BodyWeightViewModel(
     private val bodyWeight: BodyWeightRepository,
     private val settings: SettingsRepository,
+    private val clock: ProgressClock = ProgressClock(),
 ) : MVIBaseViewModel<BodyWeightState, BodyWeightIntent>(BodyWeightState()) {
 
     init {
@@ -99,8 +110,25 @@ internal class BodyWeightViewModel(
                 val latestFirst = entries.sortedByDescending { it.measuredAt }
                 val chart = ProgressMath.bodyWeightChart(entries)
                 val change = ProgressMath.change(entries)
+                val dated = entries.map {
+                    DatedWeight(
+                        it.measuredAt.toEpochDay(clock.timeZone),
+                        it.measuredAt,
+                        it.weightGrams
+                    )
+                }
+                val weekly = BodyWeightStats.weeklyAverages(dated)
+                val rate = BodyWeightStats.ratePerWeek(dated, clock.today().toEpochDay())
                 updateState {
-                    it.copy(loading = false, unit = unit, entries = latestFirst, chart = chart, change30Days = change)
+                    it.copy(
+                        loading = false,
+                        unit = unit,
+                        entries = latestFirst,
+                        chart = chart,
+                        change30Days = change,
+                        weekly = weekly,
+                        rate = rate,
+                    )
                 }
             }
     }

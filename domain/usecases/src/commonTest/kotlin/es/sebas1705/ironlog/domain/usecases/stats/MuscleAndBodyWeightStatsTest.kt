@@ -41,7 +41,10 @@ class MuscleAndBodyWeightStatsTest {
         assertEquals(Comparison(0.5, 0.0), result.first { it.muscle == Muscle.ABDOMINALS }.setsPerWeek)
         assertEquals(Comparison(0.0, 0.0), result.first { it.muscle == Muscle.ABDOMINALS }.volumePerWeek)
         // Sorted by this period's sets: chest and triceps (2) before glutes and quads (1.5; ties by muscle order).
-        assertEquals(listOf(Muscle.CHEST, Muscle.TRICEPS, Muscle.GLUTES, Muscle.QUADRICEPS), result.take(4).map { it.muscle })
+        assertEquals(
+            listOf(Muscle.CHEST, Muscle.TRICEPS, Muscle.GLUTES, Muscle.QUADRICEPS),
+            result.take(4).map { it.muscle }
+        )
         // Without a previous window there is no comparison.
         assertNull(MuscleStats.compare(sessions, muscles, current, null).first().setsPerWeek.previous)
     }
@@ -98,6 +101,11 @@ class MuscleAndBodyWeightStatsTest {
         assertEquals(28, rate.days)
         // Too few entries or too short a span.
         assertNull(BodyWeightStats.ratePerWeek(entries.take(2), TODAY))
-        assertNull(BodyWeightStats.ratePerWeek(listOf(weight(TODAY, 80.0), weight(TODAY - 1, 80.5), weight(TODAY - 2, 81.0)), TODAY))
+        assertNull(
+            BodyWeightStats.ratePerWeek(
+                listOf(weight(TODAY, 80.0), weight(TODAY - 1, 80.5), weight(TODAY - 2, 81.0)),
+                TODAY
+            )
+        )
     }
 }

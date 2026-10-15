@@ -69,6 +69,9 @@ enum class Metric {
     /** Average body weight per calendar week: [BodyWeightStats.weeklyAverages]. */
     BODY_WEIGHT_WEEKLY,
 
+    /** Latest body weight minus the oldest entry of the 30 days before it (feature ProgressMath.change). */
+    BODY_WEIGHT_CHANGE,
+
     /** Body weight change per week over the last 28 days: [BodyWeightStats.ratePerWeek]. */
     BODY_WEIGHT_RATE,
 

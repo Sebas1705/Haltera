@@ -7,7 +7,9 @@ import kotlin.test.assertTrue
 
 class PrDetectorTest {
 
-    private fun kinds(events: List<PrEvent>, session: String) = events.filter { it.sessionId == session }.map { it.kind }.toSet()
+    private fun kinds(events: List<PrEvent>, session: String) = events.filter {
+        it.sessionId == session
+    }.map { it.kind }.toSet()
 
     @Test
     fun `the first session is only the baseline`() {
@@ -75,6 +77,9 @@ class PrDetectorTest {
         ).map { it.session }
         val events = PrDetector.eventsForSessions(sessions)
         assertTrue(events.all { it.variantId == "squat" && it.sessionId == "b" })
-        assertEquals(setOf(PrKind.HEAVIEST_LOAD, PrKind.ESTIMATED_ONE_RM, PrKind.SESSION_VOLUME), events.map { it.kind }.toSet())
+        assertEquals(
+            setOf(PrKind.HEAVIEST_LOAD, PrKind.ESTIMATED_ONE_RM, PrKind.SESSION_VOLUME),
+            events.map { it.kind }.toSet()
+        )
     }
 }

@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.session.load
 
+import es.sebas1705.ironlog.core.units.PlateCalculator
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.Prescription
 import es.sebas1705.ironlog.data.models.RoutineSlot
@@ -18,7 +19,8 @@ import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
  *   the prescribed reps; a suggested increase replaces that load.
  * - Every later working set starts as a copy of the set before it, and [followers] keeps the pending rows
  *   below a changed set in step with it.
- * - Warm-ups come from the last warm-ups only, never from working sets.
+ * - Warm-ups come from the last warm-ups, never from working sets; without warm-up history they start at
+ *   percentages of the first working load ([Warmups]).
  */
 object Prefill {
 
@@ -29,12 +31,31 @@ object Prefill {
         loadType: LoadType,
         suggestion: Suggestion,
         last: SessionExercise?,
+        warmupRounding: WarmupRounding? = null,
     ): List<SetInput> {
         val lastWarmups = last?.sets.orEmpty().filter { it.kind == SetKind.WARMUP && it.completed }
-        val warmups = List(slot.warmupSets.coerceAtLeast(0)) { i ->
-            val from = lastWarmups.getOrNull(i) ?: lastWarmups.lastOrNull()
-            fromSet(from, slot.prescription, trackingType, loadType).copy(kind = SetKind.WARMUP)
+        val warmupCount = slot.warmupSets.coerceAtLeast(0)
+        val working = workingRowFor(slot, trackingType, loadType, suggestion, last)
+        val generated = if (lastWarmups.isEmpty() && warmupRounding != null) {
+            Warmups.generated(warmupCount, working, loadType, warmupRounding)
+        } else {
+            null
         }
+        val warmups = List(warmupCount) { i ->
+            val from = lastWarmups.getOrNull(i) ?: lastWarmups.lastOrNull()
+            val row = fromSet(from, slot.prescription, trackingType, loadType).copy(kind = SetKind.WARMUP)
+            generated?.getOrNull(i)?.let { grams -> row.copy(loadGrams = grams, loadDetail = working.loadDetail) } ?: row
+        }
+        return warmups + List(slot.sets.coerceAtLeast(1)) { working }
+    }
+
+    private fun workingRowFor(
+        slot: RoutineSlot,
+        trackingType: TrackingType,
+        loadType: LoadType,
+        suggestion: Suggestion,
+        last: SessionExercise?,
+    ): SetInput {
         val base = firstWorkingRow(slot.prescription, trackingType, loadType, last)
         val first = when (suggestion) {
             is Suggestion.Increase -> base.copy(
@@ -48,7 +69,7 @@ object Prefill {
             }
             Suggestion.FirstTime -> base
         }
-        return warmups + List(slot.sets.coerceAtLeast(1)) { first }
+        return first
     }
 
     /**
@@ -137,6 +158,54 @@ object Prefill {
         else -> null
     }
 }
+
+/**
+ * Warm-up loads when the exercise has no warm-up history but the first working load is known: 60 % for one
+ * warm-up, 50 % and 70 % for two, evenly from 40 % to 80 % for more. Each is rounded down to the variant's step
+ * (and to what the plates can build on a barbell) and never exceeds the working load.
+ */
+object Warmups {
+    private const val PERCENT = 100L
+    private const val SINGLE = 60L
+    private const val FIRST_OF_TWO = 50L
+    private const val SECOND_OF_TWO = 70L
+    private const val LOWEST = 40L
+    private const val HIGHEST = 80L
+
+    /** The loads of [count] warm-ups before [working]; null unless it is a weight (not a stack position, band…). */
+    fun generated(count: Int, working: SetInput, loadType: LoadType, rounding: WarmupRounding): List<Long>? {
+        val workingGrams = working.loadGrams?.takeIf { it > 0 } ?: return null
+        val weighted = loadType == LoadType.BARBELL || loadType == LoadType.DUMBBELL ||
+            (loadType == LoadType.MACHINE && !isMachinePlate(working.loadDetail))
+        if (!weighted || count <= 0) return null
+        return percents(count).map { percent ->
+            load(workingGrams * percent / PERCENT, rounding, loadType).coerceAtMost(workingGrams)
+        }
+    }
+
+    /** 60 for one warm-up, 50/70 for two, evenly spaced from 40 to 80 for more. */
+    fun percents(count: Int): List<Long> = when (count) {
+        0 -> emptyList()
+        1 -> listOf(SINGLE)
+        2 -> listOf(FIRST_OF_TWO, SECOND_OF_TWO)
+        else -> List(count) { i -> LOWEST + (HIGHEST - LOWEST) * i / (count - 1) }
+    }
+
+    private fun load(target: Long, rounding: WarmupRounding, loadType: LoadType): Long {
+        val step = rounding.stepGrams.coerceAtLeast(1)
+        val stepped = (target / step * step).coerceAtLeast(step)
+        if (loadType != LoadType.BARBELL) return stepped
+        val onBar = stepped.coerceAtLeast(rounding.barGrams)
+        if (rounding.plates.isEmpty()) return onBar
+        return PlateCalculator.platesPerSide(onBar, rounding.barGrams, rounding.plates).achievedGrams
+    }
+}
+
+/**
+ * How generated warm-up loads are rounded: the variant's stepper step and, for barbells, the bar and the
+ * plates the user owns.
+ */
+data class WarmupRounding(val stepGrams: Long, val barGrams: Long = 0, val plates: List<Long> = emptyList())
 
 /** The values of a logged set, for [es.sebas1705.ironlog.data.repository.SessionRepository.updateSet]. */
 fun SetLog.toInput() = SetInput(

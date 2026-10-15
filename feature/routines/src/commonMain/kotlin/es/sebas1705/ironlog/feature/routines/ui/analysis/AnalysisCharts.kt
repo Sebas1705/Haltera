@@ -26,11 +26,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
 import es.sebas1705.ironlog.core.ui.theme.tabularFigures
+import es.sebas1705.ironlog.domain.usecases.routinescore.GroupSets
 import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_legend
 import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_title
 import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_value
+import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_chart_value_split
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.ceil
 import kotlin.math.max
@@ -41,6 +43,7 @@ private const val FLAG_LOW = 6.0
 private const val FLAG_HIGH = 25.0
 private const val MIN_AXIS = 30.0
 private const val AXIS_STEP = 10.0
+private const val SECONDARY_ALPHA = 0.45f
 
 /** A horizontal 0–100 bar filled in the score colour. */
 @Composable
@@ -60,7 +63,7 @@ internal fun ScoreBar(score: Int, modifier: Modifier = Modifier) {
  * shaded. Major groups always show (zero included); minor groups only when trained.
  */
 @Composable
-internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, language: String) {
+internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, split: Map<MuscleGroup, GroupSets>, language: String) {
     val groups = MuscleGroup.entries.filter { it.major || (weekly[it] ?: 0.0) > 0.0 }
     val axisMax = ceil(max(MIN_AXIS, (weekly.values.maxOrNull() ?: 0.0) * 1.05) / AXIS_STEP) * AXIS_STEP
     Card(Modifier.fillMaxWidth()) {
@@ -70,9 +73,20 @@ internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, language: String) 
             Column {
                 groups.forEach { group ->
                     val sets = weekly[group] ?: 0.0
+                    val direct = split[group]?.direct ?: sets
+                    val secondary = split[group]?.secondary ?: 0.0
                     val label = groupLabel(group)
-                    val description =
+                    val description = if (secondary > 0.0) {
+                        stringResource(
+                            Res.string.routines_analysis_chart_value_split,
+                            label,
+                            formatOne(sets, language),
+                            formatOne(direct, language),
+                            formatOne(secondary, language),
+                        )
+                    } else {
                         stringResource(Res.string.routines_analysis_chart_value, label, formatOne(sets, language))
+                    }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clearAndSetSemantics { contentDescription = description },
@@ -85,7 +99,7 @@ internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, language: String) 
                             color = if (group.major) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.width(LABEL_WIDTH),
                         )
-                        SetsBar(sets, axisMax, group.major, Modifier.weight(1f).height(26.dp))
+                        SetsBar(sets, direct, axisMax, group.major, Modifier.weight(1f).height(26.dp))
                         Text(
                             formatOne(sets, language),
                             style = MaterialTheme.typography.bodySmall.tabularFigures(),
@@ -105,8 +119,9 @@ internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, language: String) 
     }
 }
 
+/** One bar: the direct sets solid, the secondary credit stacked after them in a lighter shade. */
 @Composable
-private fun SetsBar(sets: Double, axisMax: Double, major: Boolean, modifier: Modifier) {
+private fun SetsBar(sets: Double, direct: Double, axisMax: Double, major: Boolean, modifier: Modifier) {
     val band = IronlogTheme.colors.success.copy(alpha = 0.18f)
     val track = MaterialTheme.colorScheme.surfaceVariant
     val color = when {
@@ -129,12 +144,22 @@ private fun SetsBar(sets: Double, axisMax: Double, major: Boolean, modifier: Mod
         drawRect(band, topLeft = Offset(x(BAND_LOW), 0f), size = Size(x(BAND_HIGH) - x(BAND_LOW), size.height))
         val width = x(sets)
         if (width > 0f) {
+            // The whole bar in the lighter shade, then the direct part over it.
             drawRoundRect(
-                color,
+                color.copy(alpha = color.alpha * SECONDARY_ALPHA),
                 topLeft = Offset(0f, top),
                 size = Size(max(width, barHeight), barHeight),
                 cornerRadius = radius
             )
+            val directWidth = x(direct.coerceAtMost(sets))
+            if (directWidth > 0f) {
+                drawRoundRect(
+                    color,
+                    topLeft = Offset(0f, top),
+                    size = Size(max(directWidth, barHeight), barHeight),
+                    cornerRadius = radius
+                )
+            }
         }
     }
 }

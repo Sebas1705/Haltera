@@ -186,6 +186,39 @@ class SessionViewModelTest {
     }
 
     @Test
+    fun warmUpsWithoutHistoryStartAtSixtyPercentOfTheWorkingLoad() = runTest {
+        sessions.history += pastSets(listOf(80_000L to 10))
+        val vm = viewModel()
+        val warmup = cardSets(vm).first()
+        assertEquals(SetKind.WARMUP, warmup.kind)
+        assertEquals(47_500, warmup.loadGrams, "60 % of 80 kg rounded down to the 2.5 kg step")
+        assertTrue(working(vm).all { it.loadGrams == 80_000L })
+    }
+
+    @Test
+    fun aFlexibleSlotPrefillsFromTheVariantsHistoryInAFreeSession() = runTest {
+        sessions.history += ExerciseHistoryEntry(
+            "free",
+            1L,
+            SessionExercise(
+                "free-row",
+                "free",
+                0,
+                ROW_DUMBBELL,
+                slotId = null,
+                sets = listOf(
+                    SetLog("f1", "free-row", 0, reps = 10, loadGrams = 26_000, completed = true),
+                    SetLog("f2", "free-row", 1, reps = 8, loadGrams = 28_000, completed = true),
+                ),
+            ),
+        )
+        val vm = viewModel(routineSession(SessionExercise("e-row", SESSION_ID, 0, ROW_DUMBBELL, ROW_SLOT.id)))
+        val card = vm.uiState.value.cards.first()
+        assertEquals(2, card.sets.size)
+        assertTrue(card.sets.all { it.loadGrams == 28_000L && it.reps == 8 }, "heaviest working set, prescribed reps")
+    }
+
+    @Test
     fun warmUpsDoNotInheritFromWorkingSets() = runTest {
         sessions.history += pastSets(listOf(60_000L to 10), warmups = listOf(40_000))
         val vm = viewModel()

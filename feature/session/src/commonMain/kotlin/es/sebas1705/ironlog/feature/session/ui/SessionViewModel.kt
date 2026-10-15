@@ -12,7 +12,9 @@ import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.data.models.WorkoutSession
 import es.sebas1705.ironlog.data.repository.SessionRepository
+import es.sebas1705.ironlog.feature.session.load.LoadSteps
 import es.sebas1705.ironlog.feature.session.load.Prefill
+import es.sebas1705.ironlog.feature.session.load.WarmupRounding
 import es.sebas1705.ironlog.feature.session.load.toInput
 import es.sebas1705.ironlog.feature.session.platform.LiveSessionIndicator
 import es.sebas1705.ironlog.feature.session.timer.RestTimerController
@@ -207,12 +209,24 @@ class SessionViewModel(
     private suspend fun seedSlotRows(cardId: String, variantId: String, slot: RoutineSlot) {
         val variant = catalog.variant(variantId)
         val tracking = variant?.let { catalog.exercise(it.exerciseId) }?.trackingType ?: TrackingType.WEIGHT_REPS
+        val loadType = variant?.loadType ?: LoadType.NONE
+        val user = settings.settings.value
         val rows = Prefill.slotRows(
             slot = slot,
             trackingType = tracking,
-            loadType = variant?.loadType ?: LoadType.NONE,
+            loadType = loadType,
             suggestion = catalog.suggestion(slot, variantId),
             last = catalog.lastPerformance(slot.id, variantId),
+            warmupRounding = WarmupRounding(
+                stepGrams = LoadSteps.stepGrams(
+                    loadType,
+                    user.unit,
+                    user.availablePlatesGrams,
+                    override = loadSteps.step(variantId, plates = false),
+                ),
+                barGrams = user.barWeightGrams,
+                plates = user.availablePlatesGrams,
+            ),
         )
         rows.forEach { sessions.logSet(cardId, it) }
     }

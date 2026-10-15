@@ -110,6 +110,7 @@ private fun ExerciseTiles(state: ExerciseProgressState, units: UnitFormat, dates
                 Metric.ESTIMATED_ONE_RM,
                 m,
                 footnote = best?.let { dates.full(it.at) },
+                noComparison = stringResource(Res.string.progress_change_no_sets),
             )
         },
         { m ->

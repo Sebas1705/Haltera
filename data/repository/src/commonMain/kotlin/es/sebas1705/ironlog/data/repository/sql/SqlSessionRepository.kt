@@ -248,7 +248,12 @@ internal class SqlSessionRepository(
                 ) { _, _, _, _, _, _, at -> at }
                     .executeAsOneOrNull()?.let { at -> variant.id to at }
             }.maxByOrNull { it.second }
-            lastUsed?.first
+            // No history in this slot: the allowed variant used most recently anywhere (free sessions, other
+            // routines, a routine copied afresh), so the user's real history drives the default.
+            val usedAnywhere = lastUsed?.first ?: allowed.takeIf { it.isNotEmpty() }?.let { candidates ->
+                db.sessionExerciseEntityQueries.lastUsedVariant(candidates.map { it.id }, before).executeAsOneOrNull()
+            }
+            usedAnywhere
                 ?: allowed.firstOrNull { it.deprecated == 0L }?.id
                 ?: target.allowedVariantIds.firstOrNull()
                 ?: variants.firstOrNull()?.id

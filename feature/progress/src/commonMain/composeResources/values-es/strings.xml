@@ -191,6 +191,7 @@
     <string name="progress_change_from_zero">%1$s %2$s (desde 0)</string>
     <string name="progress_change_same">= igual que el periodo anterior</string>
     <string name="progress_change_none">—</string>
+    <string name="progress_change_no_sets">Sin series en el periodo anterior</string>
     <string name="progress_legend_this_period">Este periodo</string>
     <string name="progress_legend_previous_period">Periodo anterior</string>
     <string name="progress_chart_previous">Anterior: %1$s</string>
@@ -417,7 +418,7 @@
     <string name="progress_metric_muscle_sets_title">Series semanales por músculo</string>
     <string name="progress_metric_muscle_sets_summary">Series efectivas por semana de cada grupo muscular, este periodo frente al anterior.</string>
     <string name="progress_metric_muscle_sets_formula">Series efectivas de los ejercicios cuyos músculos principales incluyen el grupo ÷ semanas del periodo.</string>
-    <string name="progress_metric_muscle_sets_counts">Solo músculos principales, cada uno completo: una serie de un ejercicio con dos músculos principales cuenta una vez para cada uno. Los músculos secundarios no cuentan.</string>
+    <string name="progress_metric_muscle_sets_counts">Solo músculos principales, cada uno completo: una serie de un ejercicio con dos músculos principales cuenta una vez para cada uno. Los músculos secundarios no cuentan. El análisis de rutinas suma además media serie por músculo secundario, así que sus totales son mayores; aquí se cuenta su parte directa.</string>
     <string name="progress_metric_muscle_sets_limits">Los músculos vienen del catálogo de ejercicios, una simplificación de cómo los trabajan realmente.</string>
 
     <string name="progress_metric_muscle_volume_title">Volumen semanal por músculo</string>

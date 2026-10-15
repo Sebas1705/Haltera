@@ -105,6 +105,34 @@ class FamousRoutineScoresTest {
     }
 
     @Test
+    fun `push pull legs shoulders count presses but not rows or pulldowns`() {
+        val shoulders = score("ppl-reddit").weeklySplit.getValue(MuscleGroup.SHOULDERS)
+        // Direct: overhead press 8 + lateral raises 12 + face pulls 10. Secondary: bench and incline press only
+        // (14 sets × 0.5); before, rows and pulldowns added another 8.5 for 45.5 in all.
+        assertEquals(30.0, shoulders.direct)
+        assertEquals(7.0, shoulders.secondary)
+        assertEquals(37.0, shoulders.sets)
+        val volume = score("ppl-reddit").criterion(CriterionId.VOLUME)
+        assertTrue(volume.advice.none { it is Advice.RemoveSets && it.group == MuscleGroup.SHOULDERS })
+    }
+
+    @Test
+    fun `advice and chart agree on every number`() {
+        scores.forEach { (id, score) ->
+            score.criteria.flatMap { it.advice }.forEach { advice ->
+                val (group, sets) = when (advice) {
+                    is Advice.AddSets -> advice.group to advice.weeklySets
+                    is Advice.RemoveSets -> advice.group to advice.weeklySets
+                    is Advice.SpreadAcrossDays -> advice.group to advice.weeklySets
+                    is Advice.ShoulderOverlap -> advice.sets.group to advice.sets.sets
+                    else -> return@forEach
+                }
+                assertEquals(score.weeklySets[group] ?: 0.0, sets, "$id: $advice")
+            }
+        }
+    }
+
+    @Test
     fun `barbell novice programmes are strength focused and light on volume`() {
         listOf("linear-5x5", "starting-strength").forEach { id ->
             val score = score(id)

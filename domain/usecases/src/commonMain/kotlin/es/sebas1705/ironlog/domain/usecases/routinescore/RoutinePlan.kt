@@ -49,12 +49,24 @@ internal class SlotWork(val slot: RoutineSlot, val exercise: Exercise?) {
                 (MuscleGroup.HAMSTRINGS in secondary || MuscleGroup.GLUTES in secondary)
             )
 
+    /**
+     * Secondary muscles that earn volume credit. Pulling movements (rows, pulldowns, pull-ups: back primary)
+     * credit no shoulder volume: the catalogue tags shoulders as secondary on them, but the rear delt is a minor
+     * helper there and counting it inflated shoulder volume by about a third in push/pull/legs routines.
+     */
+    val secondaryCredit: Set<MuscleGroup> =
+        if (MuscleGroup.BACK in primary) secondary - MuscleGroup.SHOULDERS else secondary
+
     /** Fractional sets per group: primary muscles count 1, secondary muscles 0.5 (Pelland et al. 2024). */
-    fun fractionalSets(): Map<MuscleGroup, Double> = buildMap {
-        if (!resistance) return@buildMap
-        primary.forEach { put(it, sets.toDouble()) }
-        secondary.forEach { put(it, sets * SECONDARY_SHARE) }
-    }
+    fun fractionalSets(): Map<MuscleGroup, Double> = sumSets(listOf(primarySets(), secondarySets()))
+
+    /** Sets of the groups this exercise trains directly (primary muscles), one each. */
+    fun primarySets(): Map<MuscleGroup, Double> =
+        if (resistance) primary.associateWith { sets.toDouble() } else emptyMap()
+
+    /** Half-set credit of the secondary muscles ([secondaryCredit]). */
+    fun secondarySets(): Map<MuscleGroup, Double> =
+        if (resistance) secondaryCredit.associateWith { sets * SECONDARY_SHARE } else emptyMap()
 
     /** Direct (primary) sets per group, used for recovery. Rear-delt work does not load the pressing shoulder. */
     fun directSets(): Map<MuscleGroup, Double> = buildMap {
@@ -81,17 +93,20 @@ internal class SlotWork(val slot: RoutineSlot, val exercise: Exercise?) {
 internal class DayWork(val index: Int, val day: RoutineDay, val slots: List<SlotWork>) {
     val name: String get() = day.name
 
-    val sets: Map<MuscleGroup, Double> = sum(slots.map { it.fractionalSets() })
-    val direct: Map<MuscleGroup, Double> = sum(slots.map { it.directSets() })
+    val sets: Map<MuscleGroup, Double> = sumSets(slots.map { it.fractionalSets() })
+    val primarySets: Map<MuscleGroup, Double> = sumSets(slots.map { it.primarySets() })
+    val secondarySets: Map<MuscleGroup, Double> = sumSets(slots.map { it.secondarySets() })
+    val direct: Map<MuscleGroup, Double> = sumSets(slots.map { it.directSets() })
     val minutes: Int = SessionTime.minutes(slots.map { it.slot })
     val hasResistance: Boolean = slots.any { it.resistance }
 
     /** The day counts as a stimulus for [group] with at least two effective sets. */
     fun trains(group: MuscleGroup): Boolean = (sets[group] ?: 0.0) >= RoutinePlan.STIMULUS_SETS
-
-    private fun sum(maps: List<Map<MuscleGroup, Double>>): Map<MuscleGroup, Double> =
-        maps.flatMap { it.entries }.groupBy({ it.key }, { it.value }).mapValues { (_, v) -> v.sum() }
 }
+
+/** Adds up per-group set counts. */
+internal fun sumSets(maps: List<Map<MuscleGroup, Double>>): Map<MuscleGroup, Double> =
+    maps.flatMap { it.entries }.groupBy({ it.key }, { it.value }).mapValues { (_, v) -> v.sum() }
 
 /**
  * The routine as the scorer sees it: training days, the assumed schedule and weekly numbers.
@@ -129,7 +144,25 @@ internal class RoutinePlan(routine: Routine, catalogue: ScoringCatalogue) {
         days.sumOf { it.sets[group] ?: 0.0 } * cyclesPerWeek
     }
 
+    /** The direct part of [weeklySets]: sets where the group is a primary muscle. */
+    val weeklyDirect: Map<MuscleGroup, Double> = MuscleGroup.entries.associateWith { group ->
+        days.sumOf { it.primarySets[group] ?: 0.0 } * cyclesPerWeek
+    }
+
+    /** The secondary part of [weeklySets]: half a set per set where the group is a credited secondary muscle. */
+    val weeklySecondary: Map<MuscleGroup, Double> = MuscleGroup.entries.associateWith { group ->
+        days.sumOf { it.secondarySets[group] ?: 0.0 } * cyclesPerWeek
+    }
+
     fun weekly(group: MuscleGroup): Double = weeklySets[group] ?: 0.0
+
+    /** [weekly] split into direct and secondary sets, rounded to one decimal. */
+    fun groupSets(group: MuscleGroup): GroupSets = GroupSets(
+        group,
+        round1(weekly(group)),
+        direct = round1(weeklyDirect[group] ?: 0.0),
+        secondary = round1(weeklySecondary[group] ?: 0.0),
+    )
 
     fun frequency(group: MuscleGroup): Double = days.count { it.trains(group) } * cyclesPerWeek
 

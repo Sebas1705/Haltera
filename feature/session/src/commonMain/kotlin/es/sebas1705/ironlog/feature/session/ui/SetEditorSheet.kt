@@ -23,6 +23,7 @@ import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import es.sebas1705.ironlog.core.datastore.UserSettings
 import es.sebas1705.ironlog.core.units.PlateCalculator
-import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.data.models.SetKind
@@ -86,7 +86,11 @@ internal fun SetEditorSheet(
     onDelete: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    ModalBottomSheet(onDismissRequest = onDismiss) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        // Fully expanded: half-expanded hides Save on short (landscape) screens.
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    ) {
         Column(
             modifier = Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)
                 .navigationBarsPadding(),
@@ -274,7 +278,7 @@ private fun PlateBreakdown(total: Long, settings: UserSettings) {
         stringResource(
             Res.string.session_per_side,
             weightText(settings.barWeightGrams, unit),
-            loadout.perSide.joinToString(" · ") { Weights.format(it, unit) },
+            loadout.perSide.map { weightText(it, unit) }.joinToString(" + "),
         )
     }
     Text(text, style = MaterialTheme.typography.bodyMedium)

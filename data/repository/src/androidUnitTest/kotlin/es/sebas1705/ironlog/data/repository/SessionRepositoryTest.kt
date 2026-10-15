@@ -2,12 +2,14 @@ package es.sebas1705.ironlog.data.repository
 
 import app.cash.turbine.test
 import es.sebas1705.ironlog.data.models.DayKind
+import es.sebas1705.ironlog.data.models.ExerciseFilter
 import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.data.models.SetKind
 import es.sebas1705.ironlog.data.models.SlotSpec
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.repository.sql.HistoryLoader
 import es.sebas1705.ironlog.data.repository.sql.SqlBodyWeightRepository
+import es.sebas1705.ironlog.data.repository.sql.SqlExerciseRepository
 import es.sebas1705.ironlog.data.repository.sql.SqlRoutineRepository
 import es.sebas1705.ironlog.data.repository.sql.SqlSessionRepository
 import es.sebas1705.ironlog.data.routines.FamousRoutines
@@ -269,6 +271,69 @@ class SessionRepositoryTest {
         val between = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 3_000)
 
         assertEquals("bench-press.barbell", r.sessions.getSession(between)!!.exercises[1].variantId)
+    }
+
+    /** A finished free session at [at] with one exercise of [variantId], its set completed or not. */
+    private suspend fun Repos.freeSession(variantId: String, at: Long, completed: Boolean = true) {
+        val id = sessions.startFree(startedAt = at)
+        sessions.logSet(
+            sessions.addExercise(id, variantId),
+            SetInput(reps = 8, loadGrams = 30_000, completed = completed),
+        )
+        sessions.finish(id, at + 500)
+    }
+
+    @Test
+    fun `a flexible slot without history in it takes the variant used last anywhere`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        r.freeSession("bench-press.barbell", at = 1_000)
+
+        val sessionId = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 3_000)
+
+        assertEquals("bench-press.barbell", r.sessions.getSession(sessionId)!!.exercises[1].variantId)
+    }
+
+    @Test
+    fun `the any-session fallback respects before and ignores empty performances`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        r.freeSession("bench-press.barbell", at = 1_000, completed = false)
+        r.freeSession("bench-press.barbell", at = 9_000)
+
+        val sessionId = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 5_000)
+
+        // Nothing usable before 5 000: catalogue order of the allowed variants.
+        assertEquals("bench-press.dumbbell", r.sessions.getSession(sessionId)!!.exercises[1].variantId)
+    }
+
+    @Test
+    fun `history in the slot wins over a later use elsewhere`() = runTest {
+        val r = repos()
+        val routineId = r.routine()
+        val first = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 1_000)
+        r.sessions.finish(first, 1_500) // dumbbell, the slot's default
+        r.freeSession("bench-press.barbell", at = 3_000)
+
+        val second = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 5_000)
+
+        assertEquals("bench-press.dumbbell", r.sessions.getSession(second)!!.exercises[1].variantId)
+    }
+
+    @Test
+    fun `without a query the exercises logged most come first`() = runTest {
+        val r = repos()
+        val exercises = SqlExerciseRepository(db, HistoryLoader(db), UnconfinedTestDispatcher(testScheduler), clock)
+        assertEquals("bench-press", exercises.search(ExerciseFilter(), "en").first().first().id)
+        r.freeSession("squat.barbell", at = 1_000)
+        r.freeSession("squat.barbell", at = 2_000)
+
+        assertEquals("squat", exercises.search(ExerciseFilter(), "en").first().first().id)
+        // A query keeps name matches first.
+        assertEquals(
+            listOf("bench-press"),
+            exercises.search(ExerciseFilter(query = "bench"), "en").first().map { it.id }
+        )
     }
 
     @Test

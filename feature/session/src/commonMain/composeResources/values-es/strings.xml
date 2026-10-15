@@ -59,7 +59,7 @@
     <string name="session_reps">Reps</string>
     <string name="session_duration">Tiempo</string>
     <string name="session_distance">Distancia</string>
-    <string name="session_per_side">Barra %1$s + por lado: %2$s</string>
+    <string name="session_per_side">Barra %1$s + %2$s por lado</string>
     <string name="session_bar_only">Barra sola (%1$s)</string>
     <string name="session_plates_missing">Con tus discos llegas a %1$s</string>
     <string name="session_decrease">Bajar</string>

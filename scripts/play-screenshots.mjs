@@ -108,6 +108,16 @@ async function prepare(dev, { locale, lang, resize }) {
     }
     throw new Error(`Cannot find "${s}"`);
   };
+  // Bottom-bar tabs: go back until the bar is visible (sub-screens hide it).
+  const tab = async (key) => {
+    for (let i = 0; i < 6; i++) {
+      const hit = dev.nodes().filter((n) => label(n, L(key))).sort((a, b) => b.y1 - a.y1)[0];
+      const { w, h } = dev.size();
+      if (hit && (w > h ? hit.x1 < w * 0.2 : hit.y1 > h * 0.85)) { dev.tap(hit.cx, hit.cy); await sleep(900); return; }
+      dev.key(4); await sleep(600);
+    }
+    throw new Error("Cannot reach tab " + key);
+  };
   const hideKeyboard = async () => { dev.key(4); await sleep(500); };
   const { w, h } = { w: 0, h: 0 };
   void w; void h;
@@ -139,7 +149,7 @@ async function prepare(dev, { locale, lang, resize }) {
   const { w: W, h: H } = dev.size();
 
   // a famous routine, copied and made active ("Make it my active routine" is on by default)
-  await press(L("tab_routines"));
+  await tab("tab_routines");
   await press(L("routines_from_catalogue"));
   const first = await dev.find((n) => n.y1 > 350 && n.text.length > 12 && !/^Routine score|^Puntuación/.test(n.text) && !n.text.includes("·") && !n.text.startsWith("Credit") && !n.text.startsWith("Crédito"));
   dev.tap(first.cx, first.cy); await sleep(1500);
@@ -147,7 +157,7 @@ async function prepare(dev, { locale, lang, resize }) {
   dev.key(4); await sleep(800);
 
   // nutrition goals
-  await press(L("tab_nutrition"));
+  await tab("tab_nutrition");
   await press(L("nutrition_set_goals"));
   const energy = await dev.find((n) => n.text === L("nutrition_kcal_goal"));
   dev.tap(W / 2, energy.cy + 20); dev.selectAll(); dev.type("2600");
@@ -163,7 +173,7 @@ async function prepare(dev, { locale, lang, resize }) {
   // food
     const foods = [["breakfast", "oat bran", 80], ["lunch", "chicken breast", 200], ["lunch", "rice", 150], ["dinner", "salmon", 150], ["snacks", "banana", 120]];
   for (const [meal, query, grams] of foods) {
-    await press(L("tab_nutrition"));
+    await tab("tab_nutrition");
     const keys = { breakfast: "nutrition_meal_breakfast", lunch: "nutrition_meal_lunch", dinner: "nutrition_meal_dinner", snacks: "nutrition_meal_snack" };
     const names = Object.values(keys).map(L);
     let target = null;
@@ -190,28 +200,28 @@ async function prepare(dev, { locale, lang, resize }) {
     const add = await dev.find((n) => n.text.startsWith(prefix) && n.text.length > prefix.length);
     dev.tap(add.cx, add.cy); await sleep(1500);
   }
-  return { L, press, dev, W, H };
+  return { L, press, tab, dev, W, H };
 }
 
 // ---------------------------------------------------------------- screens
 const screens = {
-  today: async ({ press, L }) => { await press(L("tab_today")); },
-  analysis: async ({ press, L, dev }) => {
-    await press(L("tab_routines"));
+  today: async ({ press, tab, L }) => { await tab("tab_today"); },
+  analysis: async ({ press, tab, L, dev }) => {
+    await tab("tab_routines");
     const row = await dev.find((n) => n.y1 > 300 && n.text.length > 10 && n.text !== L("tab_routines") && !/^Routine score|^Puntuación/.test(n.text));
     dev.tap(row.cx, row.cy); await sleep(1500);
     await press(L("routines_analysis_open")); await sleep(1200);
   },
-  overview: async ({ press, L }) => { await press(L("tab_progress")); await press(L("progress_tab_overview")); await sleep(1200); },
-  exerciseProgress: async ({ press, L }) => {
-    await press(L("tab_progress")); await press(L("progress_tab_exercises"), 0); await sleep(1500);
+  overview: async ({ press, tab, L }) => { await tab("tab_progress"); await press(L("progress_tab_overview")); await sleep(1200); },
+  exerciseProgress: async ({ press, tab, L }) => {
+    await tab("tab_progress"); await press(L("progress_tab_exercises"), 0); await sleep(1500);
   },
-  exerciseDetail: async ({ press, L, dev }) => {
-    await press(L("tab_exercises")); await sleep(800);
+  exerciseDetail: async ({ press, tab, L, dev }) => {
+    await tab("tab_exercises"); await sleep(800);
     const row = await dev.find((n) => n.text === "Bench Press" || n.text === "Press de banca");
     dev.tap(row.cx, row.cy); await sleep(1500);
   },
-  nutrition: async ({ press, L }) => { await press(L("tab_nutrition")); await sleep(1000); },
+  nutrition: async ({ press, tab, L }) => { await tab("tab_nutrition"); await sleep(1000); },
 };
 
 const sets = {

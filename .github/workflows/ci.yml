@@ -84,3 +84,6 @@ jobs:
       # App icons, splash theme and logo are generated from brand/tokens.json (docs/BRAND.md).
       - name: Brand files up to date
         run: node scripts/brand.mjs --check
+      # The former app name must not come back outside the allow-list in docs/NAMING.md.
+      - name: No stray former app name
+        run: node scripts/check-name.mjs

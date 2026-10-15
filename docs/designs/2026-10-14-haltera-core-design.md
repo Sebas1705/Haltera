@@ -274,7 +274,7 @@ Percentage-based programmes (5/3/1, nSuns, PHAT) arrive in F9.
 
 ### 10.1 Sharing format (built in F8, fixed now)
 
-`haltera-routine v1`: JSON referencing catalogue exercises by stable id, embedding any user exercises. Without an account: `.haltera` file, QR code (deflate + base64url) or link with data in the fragment (`haltera.web.app/r#<data>`). With an account: short link `haltera.web.app/r/{code}` backed by Firestore. Import always shows a preview and creates a copy.
+`haltera-routine v1`: JSON referencing catalogue exercises by stable id, embedding any user exercises. Without an account: `.haltera` file, QR code (deflate + base64url) or link with data in the fragment (`haltera.web.app/r#<data>`). With an account: short link `haltera.web.app/r/{code}` backed by Firestore. Import always shows a preview and creates a copy. Import still reads the formats written under the former name Ironlog: format key `ironlog-routine`, `.ironlog` files, `ironlog:r1:`, `IRONLOG:R2:` and `IRONLOG:T1:` codes.
 
 ### 10.2 Nutrition sources (F7, decided now)
 

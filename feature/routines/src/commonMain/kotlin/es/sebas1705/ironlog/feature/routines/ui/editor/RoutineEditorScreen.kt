@@ -9,6 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.TextButton
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineFocus
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_open
+import es.sebas1705.ironlog.feature.routines.ui.components.ScoreBadge
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -89,6 +97,7 @@ internal fun RoutineEditorScreen(
     onBack: () -> Unit,
     onOpenSlot: (slotId: String) -> Unit,
     onAddSlot: (dayId: String) -> Unit,
+    onOpenAnalysis: () -> Unit,
     viewModel: RoutineEditorViewModel = koinViewModel { parametersOf(routineId) },
     export: RoutineExportViewModel = koinViewModel(),
 ) {
@@ -129,6 +138,7 @@ internal fun RoutineEditorScreen(
                 onRename = { renaming = it },
                 onOpenSlot = onOpenSlot,
                 onAddSlot = onAddSlot,
+                onOpenAnalysis = onOpenAnalysis,
                 modifier = Modifier.padding(padding),
             )
         }
@@ -157,17 +167,21 @@ private fun EditorContent(
     onRename: (RoutineDay) -> Unit,
     onOpenSlot: (String) -> Unit,
     onAddSlot: (String) -> Unit,
+    onOpenAnalysis: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val days = state.days
+    val listState = rememberLazyListState()
+    val flashDayId = highlightedDay(state, listState, send)
     val nextDayName = stringResource(Res.string.routines_day_default_name, days.size + 1)
     val restName = stringResource(Res.string.routines_rest_day_default_name)
     LazyColumn(
         modifier = modifier.fillMaxSize(),
+        state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        item(key = "header") { Header(state, send) }
+        item(key = "header") { Header(state, send, onOpenAnalysis) }
         if (days.isEmpty()) {
             item(key = "empty") {
                 Text(
@@ -187,6 +201,7 @@ private fun EditorContent(
                 onRename = { onRename(day) },
                 onOpenSlot = onOpenSlot,
                 onAddSlot = { onAddSlot(day.id) },
+                highlighted = day.id == flashDayId,
             )
         }
         item(key = "add-day") {
@@ -211,7 +226,7 @@ private fun EditorContent(
 }
 
 @Composable
-private fun Header(state: RoutineEditorState, send: (RoutineEditorIntent) -> Unit) {
+private fun Header(state: RoutineEditorState, send: (RoutineEditorIntent) -> Unit, onOpenAnalysis: () -> Unit) {
     // Local text keeps typing smooth; every change is also sent to be saved.
     var name by rememberSaveable { mutableStateOf(state.name) }
     var description by rememberSaveable { mutableStateOf(state.description) }
@@ -251,6 +266,7 @@ private fun Header(state: RoutineEditorState, send: (RoutineEditorIntent) -> Uni
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        if (state.score?.focus?.let { it != RoutineFocus.EMPTY } == true) AnalysisRow(state.score, onOpenAnalysis)
     }
 }
 
@@ -312,3 +328,42 @@ private fun EditorTopBar(
         },
     )
 }
+
+/**
+ * Scrolls to a day just created by duplication once it is in the list and returns its id while it should be
+ * highlighted (a moment), else null.
+ */
+@Composable
+private fun highlightedDay(
+    state: RoutineEditorState,
+    listState: LazyListState,
+    send: (RoutineEditorIntent) -> Unit,
+): String? {
+    var flashDayId by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(state.highlightDayId, state.days) {
+        val id = state.highlightDayId ?: return@LaunchedEffect
+        if (state.days.none { it.id == id }) return@LaunchedEffect // Wait for the routine to include the copy.
+        flashDayId = id
+        send(RoutineEditorIntent.HighlightShown)
+    }
+    LaunchedEffect(flashDayId) {
+        val id = flashDayId ?: return@LaunchedEffect
+        val position = state.days.indexOfFirst { it.id == id }
+        // Item 0 is the header.
+        if (position >= 0) listState.animateScrollToItem(position + 1)
+        delay(HIGHLIGHT_MS)
+        flashDayId = null
+    }
+    return flashDayId
+}
+
+/** "Score 87 · See analysis" in the header. */
+@Composable
+private fun AnalysisRow(score: RoutineScore?, onOpenAnalysis: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        ScoreBadge(score)
+        TextButton(onClick = onOpenAnalysis) { Text(stringResource(Res.string.routines_analysis_open)) }
+    }
+}
+
+private const val HIGHLIGHT_MS = 1_800L

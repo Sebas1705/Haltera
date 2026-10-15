@@ -13,5 +13,10 @@ kotlin {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }
+        // Scores every famous routine against the bundled catalogue (RoutineScorerFamousTest).
+        androidUnitTest.dependencies {
+            implementation(project(":data:routines"))
+            implementation(libs.kotlinx.serialization.json)
+        }
     }
 }

@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.data.models.Routine
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.ironlog.feature.routines.ui.components.ScoreBadge
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.routines_active
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete
@@ -144,6 +146,7 @@ internal fun RoutinesScreen(
                 items(state.routines, key = { it.id }) { routine ->
                     RoutineCard(
                         routine = routine,
+                        score = state.scores[routine.id],
                         onOpen = { onOpenRoutine(routine.id) },
                         onSetActive = { viewModel.onEvent(RoutinesIntent.SetActive(routine.id, it)) },
                         onDelete = { viewModel.onEvent(RoutinesIntent.RequestDelete(routine)) },
@@ -169,6 +172,7 @@ internal fun RoutinesScreen(
 @Composable
 private fun RoutineCard(
     routine: Routine,
+    score: RoutineScore?,
     onOpen: () -> Unit,
     onSetActive: (Boolean) -> Unit,
     onDelete: () -> Unit,
@@ -197,11 +201,18 @@ private fun RoutineCard(
                     )
                     if (routine.isActive) ActiveBadge()
                 }
-                Text(
-                    cycleLabel(routine.days.size, trainingDays(routine.days.map { it.kind })),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        cycleLabel(routine.days.size, trainingDays(routine.days.map { it.kind })),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f, fill = false),
+                    )
+                    ScoreBadge(score)
+                }
                 if (routine.description.isNotBlank()) {
                     Text(
                         routine.description,

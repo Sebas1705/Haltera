@@ -59,8 +59,9 @@ class TemplatePreviewViewModelTest {
 
     @Test
     fun `catalogue lists the bundled templates`() {
-        val vm = CatalogueViewModel(routines, english)
+        val vm = CatalogueViewModel(routines, exercises, english)
         assertEquals(listOf(template), vm.uiState.value.templates)
+        assertEquals(setOf(template.id), vm.uiState.value.scores.keys)
         assertEquals("en", vm.uiState.value.language)
     }
 
@@ -69,6 +70,7 @@ class TemplatePreviewViewModelTest {
         val state = viewModel().uiState.value
         assertEquals(template, state.template)
         assertEquals(setOf("bench-press", "plank"), state.index.exercises.keys)
+        assertTrue(assertNotNull(state.score).scored)
     }
 
     @Test

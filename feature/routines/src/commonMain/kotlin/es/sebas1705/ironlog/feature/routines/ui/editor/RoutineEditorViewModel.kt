@@ -9,11 +9,13 @@ import es.sebas1705.ironlog.data.models.RoutineDay
 import es.sebas1705.ironlog.data.models.RoutineSlot
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
 import es.sebas1705.ironlog.feature.routines.model.AppLanguage
 import es.sebas1705.ironlog.feature.routines.model.ExerciseIndex
 import es.sebas1705.ironlog.feature.routines.model.attempt
 import es.sebas1705.ironlog.feature.routines.model.indexFor
 import es.sebas1705.ironlog.feature.routines.model.movedIndex
+import es.sebas1705.ironlog.feature.routines.model.scoreRoutine
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -36,6 +38,10 @@ internal data class RoutineEditorState(
     val routine: Routine? = null,
     val index: ExerciseIndex = ExerciseIndex(),
     val pendingDelete: PendingDelete? = null,
+    /** Advice-only score of the routine, refreshed as it changes; null until its exercises are loaded. */
+    val score: RoutineScore? = null,
+    /** One-shot: a day just created by duplication, to scroll to and highlight. */
+    val highlightDayId: String? = null,
     val error: Boolean = false,
 ) : MVIBaseState {
     val days: List<RoutineDay> get() = routine?.days.orEmpty()
@@ -48,6 +54,10 @@ internal sealed interface RoutineEditorIntent : MVIBaseIntent {
     data class AddDay(val name: String, val kind: DayKind) : RoutineEditorIntent
     data class RenameDay(val dayId: String, val name: String) : RoutineEditorIntent
     data class SetDayKind(val dayId: String, val kind: DayKind) : RoutineEditorIntent
+
+    /** Copies a day with its slots right after it. */
+    data class DuplicateDay(val dayId: String) : RoutineEditorIntent
+    data object HighlightShown : RoutineEditorIntent
 
     /** Moves a day one place up (-1) or down (+1). */
     data class MoveDay(val dayId: String, val delta: Int) : RoutineEditorIntent
@@ -106,7 +116,8 @@ internal class RoutineEditorViewModel(
         val targets = routine.days.flatMap { day -> day.slots.map { it.target } }
         val known = currentState.index
         attempt { exercises.indexFor(targets, known) }.onSuccess { index ->
-            if (index != known) updateState { it.copy(index = index) }
+            val score = scoreRoutine(routine, index)
+            updateState { it.copy(index = index, score = score) }
         }
     }
 
@@ -130,6 +141,8 @@ internal class RoutineEditorViewModel(
             is RoutineEditorIntent.SetDayKind -> day(intent.dayId)?.let { day ->
                 if (day.kind != intent.kind) safely { routines.updateDay(day.id, day.name, intent.kind) }
             }
+            is RoutineEditorIntent.DuplicateDay -> duplicateDay(intent.dayId)
+            RoutineEditorIntent.HighlightShown -> updateState { it.copy(highlightDayId = null) }
             is RoutineEditorIntent.MoveDay -> moveDay(intent.dayId, intent.delta)
             is RoutineEditorIntent.MoveSlot -> moveSlot(intent.slotId, intent.delta)
             is RoutineEditorIntent.RequestDeleteDay ->
@@ -140,6 +153,12 @@ internal class RoutineEditorViewModel(
             RoutineEditorIntent.DismissDelete -> updateState { it.copy(pendingDelete = null) }
             RoutineEditorIntent.ErrorShown -> updateState { it.copy(error = false) }
         }
+    }
+
+    private suspend fun duplicateDay(dayId: String) {
+        val day = day(dayId) ?: return
+        val copyId = safely { routines.duplicateDay(day.id, currentState.language) } ?: return
+        updateState { it.copy(highlightDayId = copyId) }
     }
 
     private suspend fun moveDay(dayId: String, delta: Int) {

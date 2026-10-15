@@ -7,6 +7,11 @@ internal fun interface AppLanguage {
     fun code(): String
 }
 
+/** Epoch millis now; a seam so tests fix the time. */
+internal fun interface RoutinesClock {
+    fun now(): Long
+}
+
 /** Runs [block], turning failures into a [Result] but letting cancellation through. */
 @Suppress("TooGenericExceptionCaught") // Repository failures of any kind become a message, never a crash.
 internal suspend inline fun <T> attempt(block: () -> T): Result<T> = try {

@@ -150,4 +150,73 @@ class RoutineRepositoryTest {
         assertEquals(template.days.map { it.name.es }, routine.days.map { it.name })
         assertEquals(template.days.first().slots, routine.days.first().slots.map { it.toSpec() })
     }
+
+    @Test
+    fun `duplicating a day copies every slot right after the original`() = runTest {
+        val repo = repository()
+        val id = repo.createRoutine("R")
+        val push = repo.addDay(id, "Push")
+        repo.addDay(id, "Legs")
+        val full = SlotSpec(
+            target = SlotTarget.Flexible("bench-press", listOf("bench-press.dumbbell")),
+            sets = 4,
+            warmupSets = 2,
+            prescription = Prescription.RepRange(6, 10),
+            restBetweenSetsS = 150,
+            restAfterS = 200,
+            supersetGroup = 1,
+            bilateral = true,
+            notes = "Pause on the chest",
+            progression = ProgressionRule.DoubleProgression(2, LoadIncrement.Weight(2_000)),
+        )
+        repo.addSlot(push, squat)
+        repo.addSlot(push, full)
+        clock.millis = 5_000
+
+        val copy = repo.duplicateDay(push)
+
+        val routine = repo.getRoutine(id)!!
+        assertEquals(listOf("Push", "Push (copy)", "Legs"), routine.days.map { it.name })
+        assertEquals(listOf(0, 1, 2), routine.days.map { it.position })
+        val original = routine.days[0]
+        val duplicate = routine.days[1]
+        assertEquals(copy, duplicate.id)
+        assertEquals(original.kind, duplicate.kind)
+        assertEquals(original.slots.map { it.toSpec() }, duplicate.slots.map { it.toSpec() })
+        assertEquals(listOf(0, 1), duplicate.slots.map { it.position })
+        assertTrue(duplicate.slots.none { slot -> original.slots.any { it.id == slot.id } }, "new slot ids")
+        assertTrue(duplicate.slots.all { it.dayId == copy })
+        assertEquals(5_000L, routine.updatedAt)
+    }
+
+    @Test
+    fun `a duplicated day is named in Spanish and keeps the next-day override on the same day`() = runTest {
+        val repo = repository()
+        val id = repo.createRoutine("R")
+        val a = repo.addDay(id, "Torso")
+        repo.addDay(id, "Pierna")
+        repo.setNextDayIndex(id, 1)
+
+        repo.duplicateDay(a, "es")
+
+        val routine = repo.getRoutine(id)!!
+        assertEquals(listOf("Torso", "Torso (copia)", "Pierna"), routine.days.map { it.name })
+        assertEquals(2, routine.nextDayIndex)
+    }
+
+    @Test
+    fun `a duplicated day is tracked for sync by the existing triggers`() = runTest {
+        val repo = repository()
+        val id = repo.createRoutine("R")
+        val day = repo.addDay(id, "A")
+        repo.addSlot(day, squat)
+        // Pretend everything was uploaded.
+        db.syncTrackingQueries.putState("routines", id, 1L, 0L, 0L)
+
+        repo.duplicateDay(day)
+
+        val state = db.syncTrackingQueries.selectState("routines", id).executeAsOne()
+        assertEquals(1L, state.dirty)
+        assertEquals(0L, state.deleted)
+    }
 }

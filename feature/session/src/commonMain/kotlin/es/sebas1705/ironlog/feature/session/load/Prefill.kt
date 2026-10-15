@@ -137,6 +137,35 @@ object Prefill {
             }
     }
 
+    /**
+     * The warm-ups to regenerate after the user changed the first working set [before] into [after] (e.g. a
+     * first-time exercise, whose warm-ups start without a load): the pending warm-ups not edited by the user
+     * ([edited]) that have no load or still hold the loads generated from the old working load. Each takes
+     * the [Warmups] percentage of the new working load.
+     */
+    fun warmupFollowers(
+        sets: List<SetLog>,
+        before: SetLog,
+        after: SetInput,
+        edited: Set<String>,
+        loadType: LoadType,
+        rounding: WarmupRounding,
+    ): List<Pair<String, SetInput>> {
+        if (before.kind != SetKind.WORKING || after.kind != SetKind.WORKING) return emptyList()
+        if (before.loadGrams == after.loadGrams) return emptyList()
+        val sorted = sets.sortedBy { it.position }
+        if (sorted.firstOrNull { it.kind == SetKind.WORKING }?.id != before.id) return emptyList()
+        val warmups = sorted.takeWhile { it.id != before.id }.filter { it.kind == SetKind.WARMUP }
+        val loads = Warmups.generated(warmups.size, after, loadType, rounding) ?: return emptyList()
+        val old = Warmups.generated(warmups.size, before.toInput(), loadType, rounding)
+        return warmups.mapIndexedNotNull { i, row ->
+            val pending = !row.completed && row.id !in edited
+            val follows = row.loadGrams == null || row.loadGrams == old?.getOrNull(i)
+            if (!pending || !follows || row.loadGrams == loads[i]) return@mapIndexedNotNull null
+            row.id to row.toInput().copy(loadGrams = loads[i], loadDetail = after.loadDetail)
+        }
+    }
+
     /** Values of [from] (or the [prescription] target) restricted to what [trackingType] records. */
     fun fromSet(from: SetLog?, prescription: Prescription?, trackingType: TrackingType, loadType: LoadType) = SetInput(
         kind = from?.kind ?: SetKind.WORKING,

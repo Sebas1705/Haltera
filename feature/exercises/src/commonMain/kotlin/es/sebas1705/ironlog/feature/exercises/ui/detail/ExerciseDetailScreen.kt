@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.exercises.ui.detail
 
 import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -42,10 +43,11 @@ import es.sebas1705.ironlog.core.ui.components.ErrorScreen
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.data.models.Muscle
-import es.sebas1705.ironlog.feature.exercises.model.formatDate
 import es.sebas1705.ironlog.feature.exercises.model.formatDuration
+import es.sebas1705.ironlog.feature.exercises.model.localDate
 import es.sebas1705.ironlog.feature.exercises.resources.Res
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_back
+import es.sebas1705.ironlog.feature.exercises.resources.exercises_date_full
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_detail_category
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_detail_history
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_detail_instructions
@@ -63,6 +65,7 @@ import es.sebas1705.ironlog.feature.exercises.resources.exercises_distance
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_error
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_load
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_load_level
+import es.sebas1705.ironlog.feature.exercises.resources.exercises_months_short
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_record_heaviest
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_record_one_rm
 import es.sebas1705.ironlog.feature.exercises.resources.exercises_record_reps
@@ -73,6 +76,8 @@ import es.sebas1705.ironlog.feature.exercises.resources.exercises_sets
 import es.sebas1705.ironlog.feature.exercises.ui.CustomBadge
 import es.sebas1705.ironlog.feature.exercises.ui.SmallChip
 import es.sebas1705.ironlog.feature.exercises.ui.common.label
+import kotlinx.datetime.number
+import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -133,42 +138,47 @@ private fun DetailContent(
     onSelectVariant: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(
-        modifier = modifier.centeredContent(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        item(key = "media") {
-            ExerciseMedia(
-                exerciseName = detail.name,
-                frames = detail.frames,
-                primaryMuscles = detail.primaryMuscles,
-            )
-        }
-        if (detail.variants.size > 1) {
-            item(key = "variants") {
-                Section(stringResource(Res.string.exercises_detail_variant)) {
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        detail.variants.forEach { variant ->
-                            FilterChip(
-                                selected = variant.id == detail.selectedVariantId,
-                                onClick = { onSelectVariant(variant.id) },
-                                label = { Text(variant.name ?: stringResource(variant.equipment.label)) },
-                            )
+    // The window height caps the photo (landscape), so the variants and facts stay in the first screen.
+    BoxWithConstraints(modifier) {
+        val mediaMaxHeight = maxHeight * MEDIA_MAX_HEIGHT_FRACTION
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().centeredContent(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            item(key = "media") {
+                ExerciseMedia(
+                    exerciseName = detail.name,
+                    frames = detail.frames,
+                    primaryMuscles = detail.primaryMuscles,
+                    maxHeight = mediaMaxHeight,
+                )
+            }
+            if (detail.variants.size > 1) {
+                item(key = "variants") {
+                    Section(stringResource(Res.string.exercises_detail_variant)) {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            detail.variants.forEach { variant ->
+                                FilterChip(
+                                    selected = variant.id == detail.selectedVariantId,
+                                    onClick = { onSelectVariant(variant.id) },
+                                    label = { Text(variant.name ?: stringResource(variant.equipment.label)) },
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-        item(key = "facts") { Facts(detail) }
-        item(key = "muscles") { Muscles(detail) }
-        item(key = "instructions") { Instructions(detail.steps) }
-        item(key = "records") { Records(state.records, state.unit) }
-        item(key = "history-title") { SectionTitle(stringResource(Res.string.exercises_detail_history)) }
-        if (state.history.isEmpty()) {
-            item(key = "history-empty") { MutedText(stringResource(Res.string.exercises_detail_no_history)) }
-        } else {
-            items(state.history, key = { "history-${it.sessionId}" }) { row -> HistoryItem(row, state.unit) }
+            item(key = "facts") { Facts(detail) }
+            item(key = "muscles") { Muscles(detail) }
+            item(key = "instructions") { Instructions(detail.steps) }
+            item(key = "records") { Records(state.records, state.unit) }
+            item(key = "history-title") { SectionTitle(stringResource(Res.string.exercises_detail_history)) }
+            if (state.history.isEmpty()) {
+                item(key = "history-empty") { MutedText(stringResource(Res.string.exercises_detail_no_history)) }
+            } else {
+                items(state.history, key = { "history-${it.sessionId}" }) { row -> HistoryItem(row, state.unit) }
+            }
         }
     }
 }
@@ -353,3 +363,14 @@ private fun SectionTitle(title: String) {
 private fun MutedText(text: String) {
     Text(text, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 }
+
+/** "Oct 14, 2026" / "14 oct 2026": the app's localised date, never ISO. */
+@Composable
+private fun formatDate(epochMillis: Long): String {
+    val date = localDate(epochMillis)
+    val month = stringArrayResource(Res.array.exercises_months_short)[date.month.number - 1]
+    return stringResource(Res.string.exercises_date_full, date.day.toString(), month, date.year.toString())
+}
+
+/** Share of the window height the photo may take (landscape), so the content below stays visible. */
+private const val MEDIA_MAX_HEIGHT_FRACTION = 0.4f

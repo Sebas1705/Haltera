@@ -679,6 +679,52 @@ class SessionViewModelTest {
         assertEquals(start + 3_600_000, saved.endedAt)
         assertEquals(listOf(10, 10), saved.exercises.single().sets.map { it.reps })
         assertEquals(listOf(65_000L, 65_000L), saved.exercises.single().sets.map { it.loadGrams })
+        assertTrue(vm.uiState.value.closed, "saving an edited session goes back to its detail")
+        assertNull(vm.uiState.value.summary, "no second \"Workout complete\"")
+    }
+
+    @Test
+    fun finishingRemovesTheExercisesWithoutACompletedSet() = runTest {
+        val plank = SessionExercise("e-plank", SESSION_ID, 1, PLANK_VARIANT, null)
+        val vm = viewModel(routineSession(benchExercise(), plank))
+        vm.onEvent(SessionIntent.ToggleSet(working(vm).first().id))
+
+        vm.onEvent(SessionIntent.RequestFinish)
+        vm.onEvent(SessionIntent.ConfirmFinish)
+
+        val session = sessions.sessions.value.getValue(SESSION_ID)
+        assertEquals(listOf("e-bench"), session.exercises.map { it.id }, "the untouched plank is gone")
+        assertEquals(1, session.exercises.single().sets.size)
+    }
+
+    @Test
+    fun savingALoggedSessionRemovesTheExercisesWithoutACompletedSet() = runTest {
+        val plank = SessionExercise("e-plank", SESSION_ID, 1, PLANK_VARIANT, null)
+        val start = clock.now - 3 * day
+        val vm = viewModel(routineSession(benchExercise(), plank).copy(startedAt = start, endedAt = start + 3_600_000))
+        vm.onEvent(SessionIntent.ToggleSet(working(vm).first().id))
+
+        vm.onEvent(SessionIntent.Save)
+
+        assertEquals(listOf("e-bench"), sessions.sessions.value.getValue(SESSION_ID).exercises.map { it.id })
+        assertNotNull(vm.uiState.value.summary, "a session logged after the fact still shows its summary")
+    }
+
+    @Test
+    fun firstTimeWarmUpsFollowTheFirstWorkingLoad() = runTest {
+        val vm = viewModel()
+        val warmup = cardSets(vm).first()
+        assertNull(warmup.loadGrams, "no history: the warm-up starts without a load")
+
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 80_000) }
+        assertEquals(47_500, sessions.set(warmup.id)!!.loadGrams, "60 % of 80 kg rounded down to the 2.5 kg step")
+
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 100_000) }
+        assertEquals(60_000, sessions.set(warmup.id)!!.loadGrams, "a generated warm-up keeps following set 1")
+
+        edit(vm, warmup.id) { it.copy(loadGrams = 40_000) }
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 120_000) }
+        assertEquals(40_000, sessions.set(warmup.id)!!.loadGrams, "a warm-up the user edited is never overwritten")
     }
 
     @Test

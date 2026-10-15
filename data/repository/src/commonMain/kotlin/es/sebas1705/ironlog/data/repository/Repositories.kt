@@ -207,6 +207,21 @@ interface SessionRepository {
     suspend fun finish(sessionId: String, endedAt: Long? = null)
 
     /**
+     * Deletes the session's uncompleted sets and the exercises left without a completed set, and renumbers
+     * what remains (finishing or saving a session). The database does it in one transaction; this default
+     * goes through the single-row operations (fakes).
+     */
+    suspend fun dropIncomplete(sessionId: String) {
+        getSession(sessionId)?.exercises.orEmpty().forEach { exercise ->
+            if (exercise.sets.none { it.completed }) {
+                removeExercise(exercise.id)
+            } else {
+                exercise.sets.filterNot { it.completed }.forEach { deleteSet(it.id) }
+            }
+        }
+    }
+
+    /**
      * Changes when a session started and ended ([endedAt] null makes it in progress again). An end
      * before the start is moved to the start.
      */

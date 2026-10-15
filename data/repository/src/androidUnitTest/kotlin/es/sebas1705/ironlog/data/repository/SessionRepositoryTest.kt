@@ -74,6 +74,7 @@ class SessionRepositoryTest {
         val first = r.sessions.startFromRoutineDay(routineId, 0)
         val bench = r.sessions.getSession(first)!!.exercises[1]
         r.sessions.substituteExercise(bench.id, "bench-press.barbell")
+        r.logBench(first)
         r.sessions.finish(first)
         clock.millis += 1_000
 
@@ -263,14 +264,22 @@ class SessionRepositoryTest {
         val routineId = r.routine()
         val early = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 1_000)
         r.sessions.substituteExercise(r.sessions.getSession(early)!!.exercises[1].id, "bench-press.barbell")
+        r.logBench(early)
         r.sessions.finish(early, 1_500)
         val late = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 5_000)
         r.sessions.substituteExercise(r.sessions.getSession(late)!!.exercises[1].id, "bench-press.dumbbell")
+        r.logBench(late)
         r.sessions.finish(late, 5_500)
 
         val between = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 3_000)
 
         assertEquals("bench-press.barbell", r.sessions.getSession(between)!!.exercises[1].variantId)
+    }
+
+    /** A completed set on the flexible bench slot of [sessionId] (only performed exercises are history). */
+    private suspend fun Repos.logBench(sessionId: String) {
+        val bench = sessions.getSession(sessionId)!!.exercises[1]
+        sessions.logSet(bench.id, SetInput(reps = 8, loadGrams = 30_000, completed = true))
     }
 
     /** A finished free session at [at] with one exercise of [variantId], its set completed or not. */
@@ -312,6 +321,7 @@ class SessionRepositoryTest {
         val r = repos()
         val routineId = r.routine()
         val first = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 1_000)
+        r.logBench(first)
         r.sessions.finish(first, 1_500) // dumbbell, the slot's default
         r.freeSession("bench-press.barbell", at = 3_000)
 
@@ -424,5 +434,49 @@ class SessionRepositoryTest {
         assertEquals(81_000L, repo.observeAll().first().first { it.id == first }.weightGrams)
         repo.delete(first)
         assertEquals(1, repo.observeAll().first().size)
+    }
+
+    @Test
+    fun `dropping incomplete rows deletes pending sets and exercises left empty`() = runTest {
+        val r = repos()
+        val session = r.sessions.startFree()
+        val squat = r.sessions.addExercise(session, "squat.barbell")
+        val bench = r.sessions.addExercise(session, "bench-press.barbell")
+        val plank = r.sessions.addExercise(session, "plank.bodyweight")
+        r.sessions.logSet(squat, SetInput(reps = 5, loadGrams = 100_000, completed = false))
+        val done = r.sessions.logSet(squat, SetInput(reps = 5, loadGrams = 100_000, completed = true))
+        r.sessions.logSet(bench, SetInput(reps = 5, loadGrams = 80_000, completed = false))
+        r.sessions.logSet(plank, SetInput(durationS = 60, completed = true))
+
+        r.sessions.dropIncomplete(session)
+
+        val exercises = r.sessions.getSession(session)!!.exercises
+        assertEquals(listOf(squat, plank), exercises.map { it.id })
+        assertEquals(listOf(0, 1), exercises.map { it.position })
+        assertEquals(listOf(done), exercises[0].sets.map { it.id })
+        assertEquals(0, exercises[0].sets.single().position)
+    }
+
+    @Test
+    fun `exercises without completed sets in finished sessions stay out of history`() = runTest {
+        val r = repos()
+        clock.millis = 1_000
+        val session = r.sessions.startFree()
+        val squat = r.sessions.addExercise(session, "squat.barbell")
+        val bench = r.sessions.addExercise(session, "bench-press.barbell")
+        r.sessions.logSet(squat, SetInput(reps = 5, loadGrams = 100_000, completed = true))
+        r.sessions.logSet(bench, SetInput(reps = 5, loadGrams = 80_000, completed = false))
+        // Saved before saving pruned empty exercises: the bench row is still there.
+        r.sessions.finish(session, endedAt = 2_000)
+
+        assertEquals(listOf(squat), r.sessions.observeHistory().first().single().exercises.map { it.id })
+        assertEquals(
+            listOf(squat),
+            r.sessions.observeSessionsBetween(0, 5_000).first().single().exercises.map { it.id }
+        )
+        assertTrue(r.sessions.lastForVariant("bench-press.barbell").isEmpty())
+        assertEquals(1, r.sessions.lastForVariant("squat.barbell").size)
+        // The session itself (editing) still shows every exercise.
+        assertEquals(2, r.sessions.getSession(session)!!.exercises.size)
     }
 }

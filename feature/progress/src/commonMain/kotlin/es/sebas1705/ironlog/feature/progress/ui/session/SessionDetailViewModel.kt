@@ -137,15 +137,19 @@ internal class SessionDetailViewModel(
                     summary = ProgressMath.summarize(session, routineNames),
                     endedAt = session.endedAt,
                     notes = session.notes,
-                    exercises = session.exercises.sortedBy { it.position }.map { exercise ->
-                        ExerciseDetail(
-                            id = exercise.id,
-                            variant = variants[exercise.variantId],
-                            notes = exercise.notes,
-                            sets = exercise.sets.sortedBy { it.position },
-                            volumeGrams = Stats.volume(exercise),
-                        )
-                    },
+                    // Older saves may keep exercises without a completed set: nothing was logged, so hide them.
+                    exercises = session.exercises
+                        .filter { e -> session.inProgress || e.sets.any { it.completed } }
+                        .sortedBy { it.position }
+                        .map { exercise ->
+                            ExerciseDetail(
+                                id = exercise.id,
+                                variant = variants[exercise.variantId],
+                                notes = exercise.notes,
+                                sets = exercise.sets.sortedBy { it.position },
+                                volumeGrams = Stats.volume(exercise),
+                            )
+                        },
                     unit = userSettings.unit,
                 )
             }

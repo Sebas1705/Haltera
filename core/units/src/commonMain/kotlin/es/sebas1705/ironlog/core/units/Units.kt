@@ -75,3 +75,13 @@ fun roundToIncrement(grams: Long, incrementGrams: Long, rounding: Rounding = Rou
         Rounding.NEAREST -> if (grams - down < up - grams) down else up
     }
 }
+
+/**
+ * A volume (gram-reps) in [unit], rounded to whole units with grouped thousands ("907.5 kg" shows as "908").
+ * Every screen showing a volume (summary, session detail, progress) uses it, so they agree.
+ */
+fun Weights.formatVolume(gramReps: Long, unit: WeightUnit, language: String = appLanguage()): String =
+    format(gramReps, unit, decimals = VOLUME_DECIMALS, language = language)
+
+/** Decimals of a volume on screen ([formatVolume]). */
+const val VOLUME_DECIMALS = 0

@@ -129,6 +129,8 @@ data class SessionState(
     val busy: Boolean = false,
     /** Finished live in this screen: "Done" leaves via `onFinished` (back to Today). */
     val finishedHere: Boolean = false,
+    /** An already saved session was edited and saved again: the screen leaves (no summary). */
+    val closed: Boolean = false,
     /** Discarded (or deleted, in log mode) in this screen: the screen leaves. */
     val discarded: Boolean = false,
 ) : MVIBaseState {

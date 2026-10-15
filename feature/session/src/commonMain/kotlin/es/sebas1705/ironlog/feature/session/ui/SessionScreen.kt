@@ -76,6 +76,7 @@ fun SessionScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val language = uiLanguage()
     LaunchedEffect(language) { viewModel.onEvent(SessionIntent.SetLanguage(language)) }
+    LaunchedEffect(state.closed) { if (state.closed) onBack() }
     LaunchedEffect(state.discarded) {
         if (state.discarded) if (state.logMode) onBack() else onFinished()
     }
@@ -112,7 +113,7 @@ internal fun SessionContent(
     ) { padding ->
         val summary = state.summary
         when {
-            state.loading || state.discarded -> LoadingScreen(Modifier.padding(padding))
+            state.loading || state.discarded || state.closed -> LoadingScreen(Modifier.padding(padding))
             state.missing -> Centered(stringResource(Res.string.session_missing), Modifier.padding(padding))
             // A live session finished here returns to Today; a logged or edited one goes back where it came from.
             summary != null -> SummaryView(

@@ -6,6 +6,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.text.intl.Locale
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
+import es.sebas1705.ironlog.core.units.formatVolume
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.SetKind
@@ -108,6 +109,13 @@ internal fun unitLabel(unit: WeightUnit): String =
 /** "62.5 kg" in the user's unit. */
 @Composable
 internal fun weightText(grams: Long, unit: WeightUnit): String = "${Weights.format(grams, unit)} ${unitLabel(unit)}"
+
+/** A volume (gram-reps) rounded like everywhere else ([formatVolume]): "908 kg". */
+@Composable
+internal fun volumeText(
+    gramReps: Long,
+    unit: WeightUnit
+): String = "${Weights.formatVolume(gramReps, unit)} ${unitLabel(unit)}"
 
 /** A load as entered: weight, signed bodyweight load, plate number or band level. */
 @Composable

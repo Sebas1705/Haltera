@@ -1,14 +1,17 @@
 package es.sebas1705.ironlog.feature.exercises.ui.detail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.ImageLoader
 import coil3.PlatformContext
@@ -67,12 +71,14 @@ internal fun ExerciseMedia(
     frames: List<String>,
     primaryMuscles: List<Muscle>,
     modifier: Modifier = Modifier,
+    maxHeight: Dp = Dp.Infinity,
 ) {
     var failed by remember(frames) { mutableStateOf(false) }
     if (frames.isEmpty() || failed) {
-        MusclePlaceholder(primaryMuscles, modifier)
+        MusclePlaceholder(primaryMuscles, modifier.heightIn(max = maxHeight))
         return
     }
+    var loaded by remember(frames) { mutableStateOf(false) }
     val context = LocalPlatformContext.current
     val loader = remember(context) { FrameImages.loader(context) }
     var shown by remember(frames) { mutableIntStateOf(0) }
@@ -83,25 +89,32 @@ internal fun ExerciseMedia(
         }
     }
     val description = stringResource(Res.string.exercises_media_description, exerciseName)
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .aspectRatio(MEDIA_ASPECT_RATIO)
-            .clip(MaterialTheme.shapes.medium)
-            .semantics { contentDescription = description },
-    ) {
-        // Every frame stays composed (and loaded once); only the current one is visible.
-        frames.forEachIndexed { index, path ->
-            AsyncImage(
-                model = frameUrl(path),
-                contentDescription = null,
-                imageLoader = loader,
-                contentScale = ContentScale.Fit,
-                onError = { failed = true },
-                modifier = Modifier
-                    .fillMaxSize()
-                    .alpha(if (index == shown) 1f else 0f),
-            )
+    // The box keeps the photo's aspect ratio (capped at [maxHeight]) before it loads, so nothing jumps.
+    Box(modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .heightIn(max = maxHeight)
+                .aspectRatio(MEDIA_ASPECT_RATIO)
+                .clip(MaterialTheme.shapes.medium)
+                .background(if (loaded) Color.Transparent else MaterialTheme.colorScheme.surfaceVariant)
+                .semantics { contentDescription = description },
+            contentAlignment = Alignment.Center,
+        ) {
+            if (!loaded) CircularProgressIndicator()
+            // Every frame stays composed (and loaded once); only the current one is visible.
+            frames.forEachIndexed { index, path ->
+                AsyncImage(
+                    model = frameUrl(path),
+                    contentDescription = null,
+                    imageLoader = loader,
+                    contentScale = ContentScale.Fit,
+                    onSuccess = { if (index == 0) loaded = true },
+                    onError = { failed = true },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(if (index == shown) 1f else 0f),
+                )
+            }
         }
     }
 }

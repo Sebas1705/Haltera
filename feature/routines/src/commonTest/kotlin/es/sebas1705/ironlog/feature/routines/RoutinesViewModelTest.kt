@@ -4,6 +4,9 @@ import app.cash.turbine.test
 import es.sebas1705.ironlog.core.testing.CoroutineTestRule
 import es.sebas1705.ironlog.data.models.DayKind
 import es.sebas1705.ironlog.data.models.Routine
+import es.sebas1705.ironlog.data.models.SlotSpec
+import es.sebas1705.ironlog.data.models.SlotTarget
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineFocus
 import es.sebas1705.ironlog.feature.routines.ui.list.RoutinesIntent
 import es.sebas1705.ironlog.feature.routines.ui.list.RoutinesViewModel
 import kotlinx.coroutines.test.runTest
@@ -12,12 +15,14 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class RoutinesViewModelTest {
     private val rule = CoroutineTestRule()
     private val repo = FakeRoutineRepository()
+    private val exercises = FakeExerciseRepository(TestCatalog.all)
 
     @BeforeTest
     fun setUp() = rule.setup()
@@ -29,7 +34,7 @@ class RoutinesViewModelTest {
     fun `lists routines with the active one first`() = runTest {
         repo.seed(Routine(id = "a", name = "A"))
         repo.seed(Routine(id = "b", name = "B", isActive = true))
-        val vm = RoutinesViewModel(repo)
+        val vm = RoutinesViewModel(repo, exercises)
 
         vm.uiState.test {
             val state = awaitItem()
@@ -41,7 +46,7 @@ class RoutinesViewModelTest {
     @Test
     fun `set active and deactivate go through the repository`() = runTest {
         repo.seed(Routine(id = "a", name = "A"))
-        val vm = RoutinesViewModel(repo)
+        val vm = RoutinesViewModel(repo, exercises)
 
         vm.onEvent(RoutinesIntent.SetActive("a", active = true))
         assertTrue(repo.routine("a").isActive)
@@ -55,7 +60,7 @@ class RoutinesViewModelTest {
     @Test
     fun `delete waits for confirmation`() = runTest {
         val routine = repo.seed(Routine(id = "a", name = "A"))
-        val vm = RoutinesViewModel(repo)
+        val vm = RoutinesViewModel(repo, exercises)
 
         vm.onEvent(RoutinesIntent.RequestDelete(routine))
         assertEquals(routine, vm.uiState.value.pendingDelete)
@@ -74,7 +79,7 @@ class RoutinesViewModelTest {
 
     @Test
     fun `create makes a routine with one training day and opens it once`() = runTest {
-        val vm = RoutinesViewModel(repo)
+        val vm = RoutinesViewModel(repo, exercises)
 
         vm.uiState.test {
             assertNull(awaitItem().openRoutineId)
@@ -93,7 +98,7 @@ class RoutinesViewModelTest {
     fun `a failing write shows an error instead of crashing`() = runTest {
         repo.seed(Routine(id = "a", name = "A"))
         repo.failure = IllegalStateException("disk full")
-        val vm = RoutinesViewModel(repo)
+        val vm = RoutinesViewModel(repo, exercises)
 
         vm.onEvent(RoutinesIntent.Create("R", "Day 1"))
         assertTrue(vm.uiState.value.error)
@@ -102,5 +107,18 @@ class RoutinesViewModelTest {
 
         vm.onEvent(RoutinesIntent.ErrorShown)
         assertFalse(vm.uiState.value.error)
+    }
+
+    @Test
+    fun `every routine gets a score badge once its exercises load`() = runTest {
+        val routine = repo.seed(Routine(id = "a", name = "A"))
+        val day = repo.addDay(routine.id, "Push")
+        repo.addSlot(day, SlotSpec(SlotTarget.Fixed(TestCatalog.BENCH_BARBELL), sets = 4))
+        repo.seed(Routine(id = "empty", name = "Empty"))
+        val vm = RoutinesViewModel(repo, exercises)
+
+        val scores = vm.uiState.value.scores
+        assertTrue(assertNotNull(scores["a"]).scored)
+        assertEquals(RoutineFocus.EMPTY, assertNotNull(scores["empty"]).focus)
     }
 }

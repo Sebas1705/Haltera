@@ -15,6 +15,7 @@ import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.data.models.SlotSpec
 import es.sebas1705.ironlog.data.models.WorkoutSession
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 // Repository contracts used by features and use cases. Implementations are internal to this module
 // and bound in `repositoryModule`. Times are epoch millis; loads are grams.
@@ -101,6 +102,25 @@ interface RoutineRepository {
     /** Moves a day to [toPosition] (clamped), shifting the others. */
     suspend fun moveDay(dayId: String, toPosition: Int)
 
+    /**
+     * Copies a day with all its slots (target, prescription, rest, superset, bilateral, notes, progression) under
+     * new ids, inserts the copy right after the original and returns its id. The copy is named
+     * "<name> (copy)", or "<name> (copia)" when [language] is Spanish (as in [copyTemplate]).
+     *
+     * This default composes the other operations so simple implementations get it for free; the SQL
+     * repository overrides it with a single transaction.
+     */
+    suspend fun duplicateDay(dayId: String, language: String = "en"): String {
+        val routine = requireNotNull(observeRoutines().first().firstOrNull { r -> r.days.any { it.id == dayId } }) {
+            "Unknown routine day $dayId"
+        }
+        val day = routine.days.first { it.id == dayId }
+        val copyId = addDay(routine.id, copyName(day.name, language), day.kind)
+        day.slots.forEach { addSlot(copyId, it.toSpec()) }
+        moveDay(copyId, day.position + 1)
+        return copyId
+    }
+
     /** Appends a slot to a day and returns its id. */
     suspend fun addSlot(dayId: String, spec: SlotSpec): String
 
@@ -115,6 +135,12 @@ interface RoutineRepository {
 
     /** Copies a famous routine into "My routines" with names in [language]; returns the new routine id. */
     suspend fun copyTemplate(templateId: String, language: String): String
+
+    companion object {
+        /** The name of a duplicated day: "<name> (copy)" or, in Spanish, "<name> (copia)". */
+        fun copyName(name: String, language: String): String =
+            if (language.lowercase().startsWith("es")) "$name (copia)" else "$name (copy)"
+    }
 }
 
 /** Workout sessions (spec §3.3, §5). Every write is persisted immediately. */

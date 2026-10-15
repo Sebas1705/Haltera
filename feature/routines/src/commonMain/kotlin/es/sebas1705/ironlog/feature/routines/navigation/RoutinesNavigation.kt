@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import es.sebas1705.ironlog.feature.routines.ui.analysis.RoutineAnalysisScreen
 import es.sebas1705.ironlog.feature.routines.ui.catalogue.CatalogueScreen
 import es.sebas1705.ironlog.feature.routines.ui.catalogue.TemplatePreviewScreen
 import es.sebas1705.ironlog.feature.routines.ui.editor.RoutineEditorScreen
@@ -37,6 +38,10 @@ internal data class TemplatePreviewRoute(val templateId: String)
 
 @Serializable
 internal data class ImportRoutineRoute(val source: String)
+
+/** Analysis of a saved routine ([routineId]) or of a famous-routine template ([templateId]). */
+@Serializable
+internal data class RoutineAnalysisRoute(val routineId: String? = null, val templateId: String? = null)
 
 /**
  * Registers the routines destinations. The app shell calls this from its NavHost.
@@ -73,6 +78,7 @@ fun NavGraphBuilder.routinesGraph(
             onBack = back,
             onOpenSlot = { navController.navigate(SlotEditorRoute(routineId, it)) },
             onAddSlot = { navController.navigate(ExercisePickerRoute(routineId, it)) },
+            onOpenAnalysis = { navController.navigate(RoutineAnalysisRoute(routineId = routineId)) },
         )
     }
     composable<ExercisePickerRoute> { entry ->
@@ -95,10 +101,15 @@ fun NavGraphBuilder.routinesGraph(
     composable<CatalogueRoute> {
         CatalogueScreen(onBack = back, onOpenTemplate = { navController.navigate(TemplatePreviewRoute(it)) })
     }
+    composable<RoutineAnalysisRoute> { entry ->
+        val route = entry.toRoute<RoutineAnalysisRoute>()
+        RoutineAnalysisScreen(routineId = route.routineId, templateId = route.templateId, onBack = back)
+    }
     composable<TemplatePreviewRoute> { entry ->
         TemplatePreviewScreen(
             templateId = entry.toRoute<TemplatePreviewRoute>().templateId,
             onBack = back,
+            onOpenAnalysis = { navController.navigate(RoutineAnalysisRoute(templateId = it)) },
             onAdded = { routineId ->
                 // The copy opens in the editor; back goes to My routines.
                 navController.navigate(RoutineEditorRoute(routineId)) {

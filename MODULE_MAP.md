@@ -15,11 +15,11 @@
 | `data:routines` | `FamousRoutines.all`: the bundled famous-routine templates (spec §6.3), checked against `catalog.json` by a test |
 | `data:remote` | Firebase (GitLive): `FirestoreRemoteStore` (`users/{uid}/{collection}/{id}` with `payload`, `updatedAt`, `deleted`, `schema`), `FirebaseAccountService` (anonymous, link/sign in with Google, sign out, delete), `NotConfigured*` no-ops without Firebase config, `FirebaseConfig` / `isFirebaseConfigured`, `remoteModule` |
 | `data:repository` | Repository interfaces (`CatalogRepository`, `ExerciseRepository`, `RoutineRepository`, `SessionRepository`, `BodyWeightRepository`) with internal SQL implementations bound in `repositoryModule` |
-| `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats`; `ExerciseNaming` (title = exercise, subtitle = variant label); use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`) |
+| `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats` (+ `Metric` catalogue and progress analytics), `RoutineScorer` (package `routinescore`: evidence-based routine score and advice, docs/designs/2026-10-15-routine-scoring.md); `ExerciseNaming` (title = exercise, subtitle = variant label); use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`) |
 | `feature:today` | Today tab (spec §7) |
-| `feature:routines` | Routines tab: my routines, editor, famous routines |
+| `feature:routines` | Routines tab: my routines, editor (incl. duplicate day), famous routines, routine analysis (score badges, criteria, weekly sets chart) |
 | `feature:exercises` | Exercises tab: search, filters, detail, custom exercises |
-| `feature:progress` | Progress tab: calendar, history, PRs, charts |
+| `feature:progress` | Progress tab: overview (period comparisons, heatmap), calendar, exercise progress (e1RM trend, progression table, compare), muscles (weekly sets/volume, balance), body weight; every metric has an ⓘ explanation |
 | `feature:session` | Live session (spec §5) |
 
 ## Feature module contract

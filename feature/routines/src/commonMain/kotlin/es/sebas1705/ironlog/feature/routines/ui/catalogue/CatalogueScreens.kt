@@ -31,6 +31,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.material3.TextButton
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.ironlog.feature.routines.resources.routines_analysis_open
+import es.sebas1705.ironlog.feature.routines.ui.components.ScoreBadge
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,17 +88,29 @@ internal fun CatalogueScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             items(state.templates, key = { it.id }) { template ->
-                TemplateCard(template, state.language, onClick = { onOpenTemplate(template.id) })
+                TemplateCard(
+                    template,
+                    state.language,
+                    state.scores[template.id],
+                    onClick = { onOpenTemplate(template.id) }
+                )
             }
         }
     }
 }
 
 @Composable
-private fun TemplateCard(template: RoutineTemplate, language: String, onClick: () -> Unit) {
+private fun TemplateCard(template: RoutineTemplate, language: String, score: RoutineScore?, onClick: () -> Unit) {
     Card(Modifier.fillMaxWidth().clickable(role = Role.Button, onClick = onClick)) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(template.name.get(language), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    template.name.get(language),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                ScoreBadge(score, Modifier.padding(top = 2.dp))
+            }
             Text(
                 cycleLabel(template.days.size, trainingDays(template.days.map { it.kind })) + " · " +
                     levelLabel(template.level),
@@ -123,6 +139,7 @@ internal fun TemplatePreviewScreen(
     templateId: String,
     onBack: () -> Unit,
     onAdded: (routineId: String) -> Unit,
+    onOpenAnalysis: (templateId: String) -> Unit,
     viewModel: TemplatePreviewViewModel = koinViewModel { parametersOf(templateId) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -173,12 +190,17 @@ internal fun TemplatePreviewScreen(
             )
             return@Scaffold
         }
-        TemplateContent(template, state, Modifier.padding(padding))
+        TemplateContent(template, state, { onOpenAnalysis(template.id) }, Modifier.padding(padding))
     }
 }
 
 @Composable
-private fun TemplateContent(template: RoutineTemplate, state: TemplatePreviewState, modifier: Modifier = Modifier) {
+private fun TemplateContent(
+    template: RoutineTemplate,
+    state: TemplatePreviewState,
+    onOpenAnalysis: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -198,6 +220,15 @@ private fun TemplateContent(template: RoutineTemplate, state: TemplatePreviewSta
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                if (state.score != null) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ScoreBadge(state.score)
+                        TextButton(onClick = onOpenAnalysis) { Text(stringResource(Res.string.routines_analysis_open)) }
+                    }
+                }
             }
         }
         template.days.forEachIndexed { index, day ->

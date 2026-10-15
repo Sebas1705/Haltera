@@ -1,7 +1,7 @@
 # Release and distribution
 
 Ironlog is distributed to testers through **Firebase App Distribution** (Firebase project
-`ironlog-sebas1705`, group `testers`). Google Play comes later (see [Play Store](#play-store-later)).
+`ironlog-sebas1705`, group `testers`). Google Play is wired up but waits for the owner (see [Google Play](#google-play)).
 The same Firebase project backs the account and sync feature (Authentication + Firestore, see
 [Firebase in the app](#firebase-in-the-app) and docs/designs/2026-10-14-sync-design.md).
 
@@ -103,14 +103,50 @@ exists; iOS calls `FirebaseApp.configure()` only when the plist is bundled.
 - iOS: the URL scheme `GOOGLE_REVERSED_CLIENT_ID` in `iosApp/project.yml` must match the plist's
   `REVERSED_CLIENT_ID`.
 
-## Play Store (later)
+## Releases (tags)
 
-Not automated yet: there is no `release.yml` and no Play upload. Steps still to do, owner only:
+`.github/workflows/release.yml` makes a version. Push a tag `vX.Y.Z` (or `vX.Y.Z-beta.N`, a pre-release), or run the
+workflow by hand with the version. It:
 
-1. Create the app `es.sebas1705.ironlog` in the Play Console (free app).
-2. Enroll in **Play App Signing** and register our key as the **upload key** (Google keeps the app
-   signing key; `ironlog-release.jks` stays our upload key, so the CI AAB can be uploaded as is).
-3. Fill in the store listing (texts en/es, screenshots, icon, feature graphic), content rating, data
-   safety and privacy policy.
-4. Then (F5): a Play service account in Doppler and a `release.yml` that uploads the AAB from
-   `build-release` to a Play track on `vX.Y.Z` tags.
+1. builds the signed APK and AAB with `.github/actions/build-release` (`VERSION_NAME` = the version,
+   `VERSION_CODE` = commit count);
+2. creates the GitHub Release with the APK, the AAB, their SHA-256 and the notes GitHub generates from the PRs
+   since the previous tag;
+3. turns those into en-US and es-ES notes (`scripts/release-notes.mjs`, only feat/fix/perf PRs, 500 characters)
+   and uploads the APK to App Distribution with them;
+4. uploads the AAB and R8 `mapping.txt` to Google Play, **only if** the repository variable `PLAY_TRACK` is set
+   and `PLAY_SERVICE_ACCOUNT_JSON` exists in Doppler; otherwise those steps are skipped with a notice and the
+   workflow still succeeds.
+
+Before tagging, run `node scripts/verify-release.mjs` (release build, 16 KB alignment, manifest audit,
+SDK levels, mapping) and read the diff of [docs/play/RELEASE-AUDIT.md](play/RELEASE-AUDIT.md).
+
+## Google Play
+
+Package `es.sebas1705.ironlog`. The pipeline is complete; what is missing is Console setup (owner only). The step by
+step Console guide is coming as [docs/play/PLAY-CONSOLE-GUIDE.md](play/PLAY-CONSOLE-GUIDE.md).
+
+| Piece | What it does |
+|---|---|
+| `.github/actions/play` | Runs `fastlane supply` with `PLAY_SERVICE_ACCOUNT_JSON` from Doppler `ironlog/prd`. Does nothing, and says so, while the secret is missing. |
+| `release.yml` | Uploads the AAB (with mapping and changelogs) to the track in the variable `PLAY_TRACK`. `PLAY_RELEASE_STATUS` (optional variable, default `completed`) can be `draft` for an app that is not yet published. |
+| `play-listing.yml` | On changes to `fastlane/metadata/android/**` on `main` (or by hand): publishes texts, icon and screenshots. Skipped while `PLAY_TRACK` is unset. |
+| `play-promote.yml` | By hand: moves the latest release between tracks (internal, alpha, beta, production), optionally as a staged rollout. |
+
+The listing lives in `fastlane/metadata/android/{en-US,es-ES}`: `title.txt`, `short_description.txt` (80 characters),
+`full_description.txt` (4000) and `images/` (`icon.png`, `featureGraphic.png`, `phoneScreenshots`,
+`sevenInchScreenshots`, `tenInchScreenshots`). `title.txt` currently holds the placeholder `Ironlog`; the display name is read
+from one place (`app_name` in `composeApp/src/commonMain/composeResources/values/strings.xml`, via
+`scripts/lib/app-name.mjs`) and the feature graphic is not generated until the name is final. The screenshots are real
+captures from an emulator with seeded data: `node scripts/play-screenshots.mjs` (see its header).
+
+### Owner-only steps
+
+1. Create the app in Play Console, enrol in Play App Signing and register `ironlog-release.jks` as the upload key.
+2. Complete App content (privacy policy, data safety, content rating, foreground service declaration for
+   `specialUse`, the exact-alarm declaration if the permission stays), and the first manual upload of an AAB.
+3. Create a service account with Play Console access (Release manager on this app), store its JSON key in Doppler:
+   `doppler secrets set PLAY_SERVICE_ACCOUNT_JSON --project ironlog --config prd < play-key.json`
+   and delete the local file.
+4. Set the repository variable: `gh variable set PLAY_TRACK --body internal` (or `alpha` for closed testing).
+5. Tag a release. Promote with *Play promote* when the testing requirements are met.

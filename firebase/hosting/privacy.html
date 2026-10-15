@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Privacy policy · Haltera</title>
+  <meta name="description" content="What data Haltera stores, where it goes, why, for how long, and your rights.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="alternate" hreflang="es" href="/privacidad">
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="top">
+  <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Haltera</a>
+  <nav class="links" aria-label="Site">
+    <a href="/delete-account">Delete account</a>
+    <a href="/privacidad" hreflang="es" lang="es">Español</a>
+  </nav>
+</header>
+<main id="content">
+  <h1>Privacy policy</h1>
+  <p class="updated">Effective date: 16 October 2026. Language: English. <a href="/privacidad" hreflang="es" lang="es">Versión en español</a>.</p>
+  <p>Haltera is a free, open-source gym logbook, nutrition log and progress app for Android and iOS (<a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>, MIT licence). It has no ads, no in-app purchases and no analytics, and your data is not sold or used to profile you. This page explains exactly what the app does with your data.</p>
+
+  <h2 id="controller">1. Who is responsible</h2>
+  <p>The controller is Sebastián Ramiro Entrerrios García (GitHub: Sebas1705), an individual developer based in Spain. Contact is through GitHub Issues: <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a>. Issues are public, so never put personal data in one (see <a href="#rights">your rights</a>).</p>
+
+  <h2 id="data">2. What data the app handles</h2>
+  <p><strong>On your phone</strong> the app stores what you log: routines, workout sessions (dates, exercises, sets, repetitions, loads, effort, notes), body weight entries, custom exercises, foods and recipes, meals you log, and your settings (units, bar and plates, rest timer options, nutrition goals). For nutrition goals you may also enter sex, birth year, height, activity level and objective; all optional.</p>
+  <p><strong>In the cloud</strong> the app keeps a copy of that logbook so it is not lost if you lose or change your phone. The copy is made automatically with an anonymous account created the first time you open the app; no email or password is needed. It contains:</p>
+  <div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Data</th><th scope="col">When</th></tr></thead>
+    <tbody>
+      <tr><td>An anonymous account identifier (Firebase Authentication)</td><td>Always, from the first launch</td></tr>
+      <tr><td>Your routines, sessions with sets and loads, body weight, custom exercises, foods, meals, settings and nutrition goals (including sex, birth year and height if you entered them)</td><td>Always while you are online, and again after every change</td></tr>
+      <tr><td>Your Google account email, name and account identifier</td><td>Only if you choose to link or sign in with Google</td></tr>
+      <tr><td>Technical data of each request, such as your IP address</td><td>Handled by Google as part of providing Firebase</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>Some of this can be health-related (body weight, nutrition, training). You decide whether to enter it. The app does not need your location, contacts, microphone or camera, and does not read other apps.</p>
+
+  <h2 id="purposes">3. Why, and on what legal basis</h2>
+  <ul>
+    <li><strong>Provide the app and the cloud copy</strong> (store your logbook, restore it on a new phone, sync between your devices): performance of the service you ask for (GDPR art. 6.1.b).</li>
+    <li><strong>Health-related data you choose to log</strong> (weight, nutrition, training): your explicit consent by entering it (art. 9.2.a). You can withdraw it at any time by deleting the entries or your account.</li>
+    <li><strong>Linking a Google account</strong>: your consent, which you give by tapping the button and can revoke by signing out or deleting your account (art. 6.1.a).</li>
+    <li><strong>Security and abuse prevention</strong> of the backend (Firebase rules, rate limiting): legitimate interest (art. 6.1.f).</li>
+    <li>No advertising, no profiling, no automated decisions, and no analytics or crash-reporting service.</li>
+  </ul>
+
+  <h2 id="recipients">4. Who receives data</h2>
+  <ul>
+    <li><strong>Google (Firebase Authentication and Cloud Firestore)</strong> acts as the processor that stores your account and cloud copy. The database is located in the European Union (eur3). Google may transfer data outside the EEA under its own data processing terms and standard contractual clauses. Data is encrypted in transit (HTTPS/TLS).</li>
+    <li><strong>Google Play services</strong> provide Google sign-in (only if you use it) and the barcode and QR scanner, which runs on your device. The app does not receive camera permission and no image is sent to the developer.</li>
+    <li><strong>Open Food Facts</strong> (openfoodfacts.org): when you scan or type a product barcode, the app asks them for the product. They receive the barcode and your IP address, not your account.</li>
+    <li><strong>GitHub</strong> (raw.githubusercontent.com): exercise demonstration images are loaded from a public repository when you open an exercise. GitHub receives the image path and your IP address, not your account.</li>
+    <li><strong>The developer</strong> can technically access the cloud database through the Firebase console. This is only done to support you or to migrate data, for example when the app was renamed from Ironlog to Haltera. Any manual backup made for that purpose is kept outside the public repository, is not shared, and is deleted when no longer needed.</li>
+    <li>Your data is not sold, rented or shared with anyone else. Each user can read only their own data: this is enforced by the database security rules.</li>
+  </ul>
+  <p>Android's own device backup (Google's Auto Backup) may also copy the app's local data to your Google account if you have it enabled in system settings. That is controlled by you and Google, not by the developer.</p>
+
+  <h2 id="retention">5. How long it is kept</h2>
+  <ul>
+    <li>On your phone: until you delete the data in the app, erase it when deleting your account, or uninstall the app.</li>
+    <li>In the cloud: for as long as your account exists. When you delete your account in the app, all your cloud documents and your account are deleted (see <a href="/delete-account">how to delete your account</a>). While the account exists, an item you delete may remain as an empty marker in the cloud so other devices learn about the deletion; these markers go away with the account.</li>
+    <li>Deleted data may remain for a limited time in Google's own backup systems under Google's retention terms.</li>
+  </ul>
+
+  <h2 id="rights">6. Your rights</h2>
+  <p>You have the right of access, rectification, erasure, restriction, objection and portability, and the right to withdraw consent. You can view and edit everything in the app, export your routines, and delete your account and cloud data in <strong>Settings → Account → Delete account</strong>. For other requests, open an issue at <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> without including personal data (it is public); I will reply there and, if I need to verify something, agree a way that does not require posting personal data publicly. I cannot identify an anonymous account from outside the app, so for those accounts the in-app deletion is the only reliable route.</p>
+  <p>If you think your data is mishandled you can complain to the Spanish data protection authority, the Agencia Española de Protección de Datos (<a href="https://www.aepd.es">aepd.es</a>).</p>
+
+  <h2 id="children">7. Children</h2>
+  <p>Haltera is not directed at children and is intended for people aged 18 or over. If you are a parent and believe a child has used the app and its cloud copy, ask for deletion as described above.</p>
+
+  <h2 id="health">8. Health disclaimer</h2>
+  <p>Haltera is a logbook and planning tool. Its figures, charts, scores and suggestions are not medical advice and do not diagnose, treat or prevent any condition. Ask a qualified professional before changing your training or diet, especially if you have a health condition.</p>
+
+  <h2 id="security">9. Security</h2>
+  <p>Data travels encrypted. Access to each user's cloud data is restricted to that user by security rules, and the app has no ads or third-party analytics code. No system is perfectly secure, and your device security (screen lock, updates) matters too. Security vulnerabilities can be reported through a private security advisory in the GitHub repository.</p>
+
+  <h2 id="changes">10. Changes to this policy</h2>
+  <p>If the app starts handling data differently, this page is updated before the change ships and the effective date at the top is changed. The history is public in the repository.</p>
+
+  <h2 id="contact">11. Contact</h2>
+  <p>GitHub Issues: <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a>. The source code, which you can read to check anything written here, is at <a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>.</p>
+</main>
+<footer>
+  <a href="/">Home</a><a href="/privacy">Privacy</a><a href="/delete-account">Delete account</a><a href="https://github.com/Sebas1705/Haltera">GitHub</a>
+</footer>
+</body>
+</html>

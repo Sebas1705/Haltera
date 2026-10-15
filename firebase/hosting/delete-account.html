@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Delete your account · Haltera</title>
+  <meta name="description" content="How to delete your Haltera account and cloud data, what is deleted and what is kept.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="alternate" hreflang="es" href="/borrar-cuenta">
+</head>
+<body>
+<a class="skip" href="#content">Skip to content</a>
+<header class="top">
+  <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Haltera</a>
+  <nav class="links" aria-label="Site">
+    <a href="/privacy">Privacy</a>
+    <a href="/borrar-cuenta" hreflang="es" lang="es">Español</a>
+  </nav>
+</header>
+<main id="content">
+  <h1>Delete your Haltera account and data</h1>
+  <p class="updated">Applies to Haltera, package <code>es.sebas1705.haltera</code>, and to the earlier test builds named Ironlog (<code>es.sebas1705.ironlog</code>), which use the same cloud project. Effective 16 October 2026.</p>
+
+  <h2 id="in-app">Delete it in the app (recommended)</h2>
+  <ol>
+    <li>Open Haltera and go to <strong>Settings → Account</strong>.</li>
+    <li>Tap <strong>Delete account</strong>.</li>
+    <li>Optional: tick <strong>Also erase data on this device</strong> if you also want your routines, sessions, body weight, foods and settings removed from this phone. It is off by default.</li>
+    <li>Confirm. If you signed in with Google, Google may ask you to sign in again to confirm; if you cancel that, your cloud copy is already removed and you can tap Delete account again to finish.</li>
+  </ol>
+  <p>You need to be online. The same page is linked from <strong>Settings → About → Delete my account and data</strong>.</p>
+
+  <h2 id="deleted">What is deleted</h2>
+  <ul>
+    <li>Every document of your cloud copy: routines, sessions with sets and loads, body weight, custom exercises, foods, meals, and your settings and nutrition goals (including sex, birth year and height if you entered them).</li>
+    <li>Your account: the anonymous identifier and, if you linked Google, the link to your Google account (email, name) held by Firebase Authentication.</li>
+    <li>Optionally, the same data on this phone (the checkbox above).</li>
+  </ul>
+
+  <h2 id="kept">What is kept</h2>
+  <ul>
+    <li><strong>The data on your phone</strong> stays unless you ticked the box, or you uninstall the app or clear its storage. It is only on your device and the developer cannot see it.</li>
+    <li>The exercise catalogue that ships with the app (it is not your data).</li>
+    <li>Copies in Google's own systems: deleted data can remain for a limited time in Google's backups under Google's retention terms. If Android Auto Backup is on, Google may also hold a copy of the phone data in your Google account backup; manage or delete it in your Google account settings.</li>
+    <li>A manual backup of the database, if the developer made one for a migration (such as the Ironlog to Haltera rename), is kept outside the public repository and deleted when it is no longer needed.</li>
+  </ul>
+
+  <h2 id="timing">How long it takes</h2>
+  <p>The deletion of your cloud documents and your account is done by the app when you confirm and normally finishes within seconds, before the confirmation message "Account deleted" appears. If it fails or you are offline, the app shows an error: try again when you are online. Residual copies in Google's backup systems are outside the developer's control.</p>
+
+  <h2 id="without-app">If you cannot use the app</h2>
+  <p>Reinstall the app and delete from <strong>Settings → Account</strong>. If you signed in with Google on a new install, you get your data back and can then delete it.</p>
+  <p>If that is impossible, you can ask me to delete it by opening a GitHub issue titled <strong>Delete my data</strong> at <a href="https://github.com/Sebas1705/Haltera/issues/new">github.com/Sebas1705/Haltera/issues/new</a>. Please be aware of the limits, which are real:</p>
+  <ul>
+    <li>Issues are public. Do <strong>not</strong> post your email or any other personal data. The issue only needs the title and the line "Please delete my data"; I will reply there.</li>
+    <li>The app does not display your account identifier, and I cannot tell who owns an anonymous account from outside the app. <strong>Anonymous accounts cannot be matched to a person, so I cannot delete those on request</strong>: use the app.</li>
+    <li>For a Google-linked account I can find the account by its Google email. Because anyone could claim an email in an issue, I will only delete after you prove control of that Google account in a way I will agree with you in the issue (for example by signing in to the app with it and changing a value I ask for, or by a verification that does not require publishing the email). If it cannot be verified, I will not delete it, to protect the real owner.</li>
+  </ul>
+  <p>Processing of an agreed request may take several days; this is a volunteer project run by one person. You also have the other rights described in the <a href="/privacy#rights">privacy policy</a>.</p>
+</main>
+<footer>
+  <a href="/">Home</a><a href="/privacy">Privacy</a><a href="/delete-account">Delete account</a><a href="https://github.com/Sebas1705/Haltera">GitHub</a>
+</footer>
+</body>
+</html>

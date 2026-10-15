@@ -1,0 +1,47 @@
+name: Deploy Firebase Hosting
+
+# The public pages (landing, privacy policy, account deletion; Spanish and English) live in
+# firebase/hosting and are served at https://haltera.web.app (Hosting site `haltera` of the Firebase
+# project ironlog-sebas1705). What main says is what production serves.
+#
+# Hosting only: the CI service account has App Distribution and Hosting roles, not Firestore rules.
+# Rules are still deployed by hand (docs/RELEASE.md, "Firebase in the app").
+# Credentials: FIREBASE_SERVICE_ACCOUNT_JSON from Doppler ironlog/prd (service account ironlog-ci). The
+# Hosting role is granted once with `node scripts/grant-hosting-role.mjs`.
+on:
+  push:
+    branches: [main]
+    paths: ["firebase/hosting/**", "firebase/firebase.json", ".github/workflows/deploy-firebase.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-firebase
+  cancel-in-progress: false
+
+jobs:
+  hosting:
+    runs-on: ubuntu-latest
+    env:
+      DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dopplerhq/cli-action@v4
+      - uses: actions/setup-node@v6
+        with: { node-version: 22 }
+      - name: Check the pages
+        run: node --test scripts/hosting-pages.test.mjs
+      - name: Deploy Hosting to haltera
+        working-directory: firebase
+        run: |
+          [ -n "$DOPPLER_TOKEN" ] || { echo "::warning::No DOPPLER_TOKEN secret: deploy skipped"; exit 0; }
+          doppler run --project ironlog --config prd -- bash -c '
+            umask 077
+            printf "%s" "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-sa.json"
+            export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
+            npx --yes firebase-tools@15.32.1 deploy --only hosting --project ironlog-sebas1705 --non-interactive'
+      - name: Remove credentials from the runner
+        if: always()
+        run: rm -f "$RUNNER_TEMP/firebase-sa.json"

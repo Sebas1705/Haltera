@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Borrar tu cuenta · Haltera</title>
+  <meta name="description" content="Cómo borrar tu cuenta de Haltera y tus datos en la nube, qué se borra y qué se conserva.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="alternate" hreflang="en" href="/delete-account">
+</head>
+<body>
+<a class="skip" href="#content">Saltar al contenido</a>
+<header class="top">
+  <a class="brand" href="/"><img src="/favicon.svg" alt="" width="32" height="32">Haltera</a>
+  <nav class="links" aria-label="Sitio">
+    <a href="/privacidad">Privacidad</a>
+    <a href="/delete-account" hreflang="en" lang="en">English</a>
+  </nav>
+</header>
+<main id="content">
+  <h1>Borrar tu cuenta y tus datos de Haltera</h1>
+  <p class="updated">Vale para Haltera, paquete <code>es.sebas1705.haltera</code>, y para las versiones de prueba anteriores llamadas Ironlog (<code>es.sebas1705.ironlog</code>), que usan el mismo proyecto en la nube. En vigor desde el 16 de octubre de 2026.</p>
+
+  <h2 id="in-app">Bórrala en la app (recomendado)</h2>
+  <ol>
+    <li>Abre Haltera y ve a <strong>Ajustes → Cuenta</strong>.</li>
+    <li>Pulsa <strong>Eliminar cuenta</strong>.</li>
+    <li>Opcional: marca <strong>Borrar también los datos de este dispositivo</strong> si quieres quitar de este móvil tus rutinas, sesiones, peso corporal, alimentos y ajustes. Viene desmarcado.</li>
+    <li>Confirma. Si iniciaste sesión con Google, Google puede pedirte que inicies sesión de nuevo para confirmar; si lo cancelas, tu copia en la nube ya está eliminada y puedes volver a pulsar Eliminar cuenta para terminar.</li>
+  </ol>
+  <p>Necesitas conexión. La misma página está enlazada desde <strong>Ajustes → Acerca de → Eliminar mi cuenta y mis datos</strong>.</p>
+
+  <h2 id="deleted">Qué se borra</h2>
+  <ul>
+    <li>Todos los documentos de tu copia en la nube: rutinas, sesiones con series y cargas, peso corporal, ejercicios propios, alimentos, comidas, y tus ajustes y objetivos de nutrición (incluidos sexo, año de nacimiento y altura si los indicaste).</li>
+    <li>Tu cuenta: el identificador anónimo y, si vinculaste Google, el enlace con tu cuenta de Google (correo, nombre) que guarda Firebase Authentication.</li>
+    <li>Opcionalmente, esos mismos datos en este móvil (la casilla de arriba).</li>
+  </ul>
+
+  <h2 id="kept">Qué se conserva</h2>
+  <ul>
+    <li><strong>Los datos de tu móvil</strong> se quedan, salvo que marques la casilla, desinstales la app o borres su almacenamiento. Solo están en tu dispositivo y el desarrollador no puede verlos.</li>
+    <li>El catálogo de ejercicios que viene con la app (no son tus datos).</li>
+    <li>Copias en los sistemas de Google: los datos borrados pueden permanecer un tiempo limitado en sus copias de seguridad según los plazos de Google. Si tienes activado el Auto Backup de Android, Google también puede guardar una copia de los datos del móvil en la copia de tu cuenta de Google; gestiónala o bórrala en los ajustes de tu cuenta de Google.</li>
+    <li>Una copia manual de la base de datos, si el desarrollador la hizo para una migración (como el cambio de nombre de Ironlog a Haltera), se guarda fuera del repositorio público y se borra cuando deja de ser necesaria.</li>
+  </ul>
+
+  <h2 id="timing">Cuánto tarda</h2>
+  <p>El borrado de tus documentos en la nube y de tu cuenta lo hace la app al confirmar y normalmente termina en segundos, antes de que aparezca el mensaje «Cuenta eliminada». Si falla o no hay conexión, la app muestra un error: inténtalo de nuevo con conexión. Las copias residuales en los sistemas de copia de Google quedan fuera del control del desarrollador.</p>
+
+  <h2 id="without-app">Si no puedes usar la app</h2>
+  <p>Reinstala la app y bórrala desde <strong>Ajustes → Cuenta</strong>. Si en una instalación nueva inicias sesión con Google, recuperas tus datos y después puedes borrarlos.</p>
+  <p>Si eso es imposible, puedes pedirme que los borre abriendo una incidencia en GitHub con el título <strong>Delete my data</strong> en <a href="https://github.com/Sebas1705/Haltera/issues/new">github.com/Sebas1705/Haltera/issues/new</a>. Ten en cuenta los límites, que son reales:</p>
+  <ul>
+    <li>Las incidencias son públicas. <strong>No</strong> publiques tu correo ni otros datos personales. La incidencia solo necesita el título y la línea «Please delete my data»; responderé allí.</li>
+    <li>La app no muestra el identificador de tu cuenta y no puedo saber de quién es una cuenta anónima desde fuera de la app. <strong>Las cuentas anónimas no se pueden asociar a una persona, así que no puedo borrarlas a petición</strong>: usa la app.</li>
+    <li>Una cuenta vinculada a Google puedo localizarla por su correo de Google. Como cualquiera podría afirmar un correo en una incidencia, solo borraré tras comprobar que controlas esa cuenta de Google de una forma que acordaremos en la incidencia (por ejemplo iniciando sesión en la app con ella y cambiando un valor que te pida, o una verificación que no exija publicar el correo). Si no se puede verificar, no la borraré, para proteger a su verdadero titular.</li>
+  </ul>
+  <p>Tramitar una solicitud acordada puede llevar varios días; es un proyecto voluntario llevado por una sola persona. También tienes los demás derechos descritos en la <a href="/privacidad#rights">política de privacidad</a>.</p>
+</main>
+<footer>
+  <a href="/">Inicio</a><a href="/privacidad">Privacidad</a><a href="/borrar-cuenta">Borrar cuenta</a><a href="https://github.com/Sebas1705/Haltera">GitHub</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500" role="img" aria-label="Haltera, tu diario de entrenamiento y nutrición">
+<rect width="1024" height="500" fill="#1E2126"/>
+<rect x="0" y="490" width="1024" height="10" fill="#FF5A1F"/>
+<g transform="translate(80 115) scale(2.5)"><rect width="108" height="108" rx="24" fill="#1E2126"/><path d="M53,26 H55 A3,3 0 0 1 58,29 V79 A3,3 0 0 1 55,82 H53 A3,3 0 0 1 50,79 V29 A3,3 0 0 1 53,26 Z" fill="#FF5A1F"/><path d="M35,20 H73 A5,5 0 0 1 78,25 V25 A5,5 0 0 1 73,30 H35 A5,5 0 0 1 30,25 V25 A5,5 0 0 1 35,20 Z" fill="#F4F4F5"/><path d="M35,78 H73 A5,5 0 0 1 78,83 V83 A5,5 0 0 1 73,88 H35 A5,5 0 0 1 30,83 V83 A5,5 0 0 1 35,78 Z" fill="#F4F4F5"/><path d="M27,16 H29 A3,3 0 0 1 32,19 V31 A3,3 0 0 1 29,34 H27 A3,3 0 0 1 24,31 V19 A3,3 0 0 1 27,16 Z" fill="#FF5A1F"/><path d="M79,16 H81 A3,3 0 0 1 84,19 V31 A3,3 0 0 1 81,34 H79 A3,3 0 0 1 76,31 V19 A3,3 0 0 1 79,16 Z" fill="#FF5A1F"/><path d="M27,74 H29 A3,3 0 0 1 32,77 V89 A3,3 0 0 1 29,92 H27 A3,3 0 0 1 24,89 V77 A3,3 0 0 1 27,74 Z" fill="#FF5A1F"/><path d="M79,74 H81 A3,3 0 0 1 84,77 V89 A3,3 0 0 1 81,92 H79 A3,3 0 0 1 76,89 V77 A3,3 0 0 1 79,74 Z" fill="#FF5A1F"/></g>
+<text x="398" y="248" font-family="'Barlow Semi Condensed', 'Arial Narrow', sans-serif" font-weight="600" font-size="150" letter-spacing="2" fill="#F4F4F5">Haltera</text>
+<rect x="398" y="282" width="96" height="8" rx="4" fill="#FF5A1F"/>
+<text x="398" y="348" font-family="Inter, Arial, sans-serif" font-weight="500" font-size="32" fill="#B6BAC1">Tu diario de entrenamiento y nutrición</text>
+</svg>

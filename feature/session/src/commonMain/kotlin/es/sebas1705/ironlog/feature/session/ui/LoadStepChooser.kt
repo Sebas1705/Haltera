@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.feature.session.resources.Res
@@ -51,11 +52,10 @@ internal object LoadStepOptions {
 
     /** A typed custom step: a positive number of plates, or a positive weight in [unit] (comma or dot). */
     fun parse(text: String, plateMode: Boolean, unit: WeightUnit): Long? {
-        val clean = text.trim().replace(',', '.')
         return if (plateMode) {
-            clean.toLongOrNull()?.takeIf { it > 0 }
+            text.trim().toLongOrNull()?.takeIf { it > 0 }
         } else {
-            clean.toDoubleOrNull()?.takeIf { it > 0 }?.let { Weights.toGrams(it, unit) }?.takeIf { it > 0 }
+            Numbers.parse(text)?.takeIf { it > 0 }?.let { Weights.toGrams(it, unit) }?.takeIf { it > 0 }
         }
     }
 }

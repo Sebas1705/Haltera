@@ -26,6 +26,7 @@
     <string name="session_move_down">Move down</string>
     <string name="session_remove_exercise">Remove exercise</string>
     <string name="session_set_complete">Set %1$d done</string>
+    <string name="session_warmup_complete">Warm-up %1$d done</string>
     <string name="session_set_start_timer">Start timed set</string>
     <string name="session_edit_set">Edit set</string>
 

@@ -40,6 +40,7 @@ import es.sebas1705.ironlog.feature.routines.model.SlotLimits
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot_message
+import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot_action
 import es.sebas1705.ironlog.feature.routines.resources.routines_delete_slot_title
 import es.sebas1705.ironlog.feature.routines.resources.routines_error
 import es.sebas1705.ironlog.feature.routines.resources.routines_notes
@@ -97,7 +98,7 @@ internal fun SlotEditorScreen(
                         IconButton(onClick = { send(SlotEditorIntent.RequestDelete) }) {
                             Icon(
                                 Icons.Filled.Delete,
-                                contentDescription = stringResource(Res.string.routines_delete_slot_title)
+                                contentDescription = stringResource(Res.string.routines_delete_slot_action)
                             )
                         }
                     }

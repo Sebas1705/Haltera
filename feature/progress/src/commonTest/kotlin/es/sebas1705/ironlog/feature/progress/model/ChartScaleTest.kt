@@ -5,7 +5,6 @@ import es.sebas1705.ironlog.feature.progress.ui.components.UnitFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.fillPattern
 import es.sebas1705.ironlog.feature.progress.ui.components.formatNumber
 import es.sebas1705.ironlog.feature.progress.ui.components.signed
-import es.sebas1705.ironlog.feature.progress.ui.components.signedPercent
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,35 +34,48 @@ class ChartScaleTest {
 
     @Test
     fun `compact and trimmed numbers`() {
-        assertEquals("950", ChartScale.compact(950.0))
-        assertEquals("1.5k", ChartScale.compact(1_500.0))
-        assertEquals("12k", ChartScale.compact(12_400.0))
-        assertEquals("1.2M", ChartScale.compact(1_200_000.0))
-        assertEquals("62.5", ChartScale.trim(62.5))
-        assertEquals("62", ChartScale.trim(62.0))
-        assertEquals("2.5", ChartScale.trim(2.5, 2))
+        assertEquals("950", ChartScale.compact(950.0, EN))
+        assertEquals("1.5k", ChartScale.compact(1_500.0, EN))
+        assertEquals("1,5k", ChartScale.compact(1_500.0, ES))
+        assertEquals("12k", ChartScale.compact(12_400.0, EN))
+        assertEquals("1.2M", ChartScale.compact(1_200_000.0, EN))
+        assertEquals("62.5", ChartScale.trim(62.5, language = EN))
+        assertEquals("62,5", ChartScale.trim(62.5, language = ES))
+        assertEquals("62", ChartScale.trim(62.0, language = ES))
+        assertEquals("2.5", ChartScale.trim(2.5, 2, EN))
     }
 
     @Test
     fun `numbers, signs and patterns`() {
-        assertEquals("1234.5", formatNumber(1_234.5, 1))
-        assertEquals("12 400", formatNumber(12_400.0, 0))
-        assertEquals("−3.0", formatNumber(-3.0, 1))
-        assertEquals("0", formatNumber(-0.2, 0))
-        assertEquals("+2.5 kg", signed(2.5) { "${ChartScale.trim(it)} kg" })
-        assertEquals("−2.5 kg", signed(-2.5) { "${ChartScale.trim(it)} kg" })
-        assertEquals("+20 %", signedPercent(20.0))
+        assertEquals("1,234.5", formatNumber(1_234.5, 1, EN))
+        assertEquals("1234,5", formatNumber(1_234.5, 1, ES))
+        assertEquals("12,400", formatNumber(12_400.0, 0, EN))
+        assertEquals("12 400", formatNumber(12_400.0, 0, ES))
+        assertEquals("−3.0", formatNumber(-3.0, 1, EN))
+        assertEquals("−3,0", formatNumber(-3.0, 1, ES))
+        assertEquals("0,94", formatNumber(0.9412, 2, ES))
+        assertEquals("0", formatNumber(-0.2, 0, ES))
+        assertEquals("+2.5 kg", signed(2.5) { "${ChartScale.trim(it, language = EN)} kg" })
+        assertEquals("−2,5 kg", signed(-2.5) { "${ChartScale.trim(it, language = ES)} kg" })
         assertEquals("14 Oct", fillPattern("%2\$s %1\$s", "Oct", "14"))
         assertEquals("3 × 5", fillPattern("%1\$s × %2\$d", "3", "5"))
     }
 
     @Test
     fun `unit formats convert grams for display`() {
-        val kg = UnitFormat(WeightUnit.KG, "kg")
+        val kg = UnitFormat(WeightUnit.KG, "kg", EN)
         assertEquals(100.0, kg.toUnit(100_000.0))
         assertEquals("62.5 kg", kg.weight(62_500.0))
-        assertEquals("12 400 kg", kg.volume(12_400_000.0))
-        val lb = UnitFormat(WeightUnit.LB, "lb")
+        assertEquals("12,400 kg", kg.volume(12_400_000.0))
+        val kgEs = UnitFormat(WeightUnit.KG, "kg", ES)
+        assertEquals("62,5 kg", kgEs.weight(62_500.0))
+        assertEquals("12 400 kg", kgEs.volume(12_400_000.0))
+        val lb = UnitFormat(WeightUnit.LB, "lb", EN)
         assertEquals(220.462, lb.toUnit(100_000.0), 0.001)
+    }
+
+    private companion object {
+        const val EN = "en"
+        const val ES = "es"
     }
 }

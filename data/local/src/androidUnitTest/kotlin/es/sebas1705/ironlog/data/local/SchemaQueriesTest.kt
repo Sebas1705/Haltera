@@ -79,6 +79,38 @@ class SchemaQueriesTest {
     }
 
     @Test
+    fun `an exact or prefix match on the localised name ranks first`() {
+        val pulls = """
+            {"catalogVersion":1,"contentHash":"p","deprecatedIds":[],"exercises":[
+              {"id":"rocky-pull-up","name":{"en":"Rocky Pull-Up / Pulldown","es":"Dominadas Rocky / jalón Rocky"},
+               "category":"STRENGTH","trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["LATS"],
+               "secondaryMuscles":[],"instructions":{"en":[],"es":[]},
+               "variants":[{"id":"rocky-pull-up.cable","equipment":"CABLE","loadType":"MACHINE","frames":[]}]},
+              {"id":"wide-grip-lat-pulldown","name":{"en":"Wide-Grip Lat Pulldown","es":"Jalón al pecho"},
+               "category":"STRENGTH","trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["LATS"],
+               "secondaryMuscles":[],"instructions":{"en":[],"es":[]},
+               "variants":[{"id":"wide-grip-lat-pulldown.cable","equipment":"CABLE","loadType":"MACHINE","frames":[]}]},
+              {"id":"pulldown-row","name":{"en":"Pulldown Row","es":"Remo jalón"},
+               "category":"STRENGTH","trackingType":"WEIGHT_REPS","level":"BEGINNER","primaryMuscles":["LATS"],
+               "secondaryMuscles":[],"instructions":{"en":[],"es":[]},
+               "variants":[{"id":"pulldown-row.cable","equipment":"CABLE","loadType":"MACHINE","frames":[]}]}
+            ]}
+        """.trimIndent()
+        CatalogImporter(db, now = { 0L }).importIfNewer(pulls)
+
+        // "jalon": the prefix match first, then word starts by name ("Dominadas…" before "Remo…").
+        assertEquals(
+            listOf("wide-grip-lat-pulldown", "rocky-pull-up", "pulldown-row"),
+            search("jalon", language = "es"),
+        )
+        // English ranks by the English name: "Pulldown Row" starts with the query.
+        assertEquals(
+            listOf("pulldown-row", "rocky-pull-up", "wide-grip-lat-pulldown"),
+            search("pulldown", language = "en"),
+        )
+    }
+
+    @Test
     fun `deleting a routine cascades to days and slots and detaches sessions`() {
         CatalogImporter(db, now = { 0L }).importIfNewer(catalog)
         db.routineEntityQueries.insert("r1", "Mine", "", null, null, 0, 0)

@@ -67,6 +67,7 @@
     <string name="routines_no_slots">No exercises yet.</string>
     <string name="routines_delete_slot">Delete %1$s</string>
     <string name="routines_delete_slot_title">Remove exercise?</string>
+    <string name="routines_delete_slot_action">Remove exercise</string>
     <string name="routines_delete_slot_message">“%1$s” will be removed from this day.</string>
 
     <!-- Slot labels -->
@@ -190,7 +191,8 @@
     <string name="routines_show_qr">Show QR</string>
     <string name="routines_share_more">More options</string>
     <string name="routines_share_error">Could not share the routine.</string>
-    <string name="routines_qr_hint">In Ironlog on another phone, open My routines, tap Import and scan this code.</string>
+    <string name="routines_qr_hint">In Ironlog on another phone, open Routines, tap Import and scan this code.</string>
+    <string name="routines_qr_image">QR code of the routine %1$s</string>
     <string name="routines_qr_too_large">This routine is too large for a QR code. Share it as a file instead.</string>
     <string name="routines_close">Close</string>
     <string name="routines_import">Import</string>

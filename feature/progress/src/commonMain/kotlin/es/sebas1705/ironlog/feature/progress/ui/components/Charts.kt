@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -49,6 +50,12 @@ import kotlin.math.abs
 
 private const val BAR_GAP_FRACTION = 0.25f
 private const val GHOST_ALPHA = 0.35f
+
+/** Ghost outline opacity on dark surfaces (on-surface-variant at 80 %). */
+private const val GHOST_ALPHA_DARK = 0.8f
+
+/** Surfaces darker than this luminance are treated as the dark theme. */
+private const val DARK_LUMINANCE = 0.5f
 private const val DIM_ALPHA = 0.6f
 private const val MAX_X_LABELS = 4
 private const val DOT_FACTOR = 1.4f
@@ -93,7 +100,14 @@ internal fun BarChart(
     val measurer = rememberTextMeasurer()
     var selected by remember(values) { mutableStateOf<Int?>(null) }
     val plot = remember { PlotHolder() }
-    val ghostColor = MaterialTheme.colorScheme.outline
+    // Dashed "previous period" outlines: on a dark card the faint outline colour is hard to see, so use the
+    // stronger on-surface-variant there.
+    val scheme = MaterialTheme.colorScheme
+    val ghostColor = if (scheme.surface.luminance() < DARK_LUMINANCE) {
+        scheme.onSurfaceVariant.copy(alpha = GHOST_ALPHA_DARK)
+    } else {
+        scheme.outline.copy(alpha = GHOST_ALPHA)
+    }
     Canvas(
         modifier
             .fillMaxWidth()
@@ -138,7 +152,7 @@ private fun DrawScope.drawBars(values: List<Double>, ghost: List<Double>?, scale
         ghost?.getOrNull(i)?.takeIf { it > 0 }?.let { g ->
             val top = area.y(scale, g)
             drawRoundRect(
-                colors.ghost.copy(alpha = GHOST_ALPHA),
+                colors.ghost,
                 topLeft = Offset(left, top),
                 size = Size(barWidth, area.bottom - top),
                 cornerRadius = radius,

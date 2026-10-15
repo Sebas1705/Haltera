@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.exercises
 
 import app.cash.turbine.test
 import es.sebas1705.ironlog.core.units.WeightUnit
+import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.ExerciseSource
 import es.sebas1705.ironlog.data.models.LoadType
@@ -141,7 +142,11 @@ class ExerciseDetailViewModelTest {
 
         val history = vm.uiState.value.history
         assertEquals(listOf("s2", "s1"), history.map { it.sessionId })
-        assertEquals(TopSet(LoadText("82.5", isLevel = false), 5, null, null), history[0].topSet)
+        // Loads follow the app language ("82.5" / "82,5").
+        assertEquals(
+            TopSet(LoadText(Weights.format(82_500, WeightUnit.KG), isLevel = false), 5, null, null),
+            history[0].topSet
+        )
         assertEquals(TopSet(LoadText("80", isLevel = false), 5, null, null), history[1].topSet)
         assertEquals(3, history[1].sets)
 
@@ -173,7 +178,7 @@ class ExerciseDetailViewModelTest {
         advanceUntilIdle()
         assertEquals(WeightUnit.LB, vm.uiState.value.unit)
         assertEquals(
-            LoadText("220.46", isLevel = false),
+            LoadText(Weights.format(100_000, WeightUnit.LB), isLevel = false),
             vm.uiState.value.records.first { it.kind == RecordRowKind.HEAVIEST_LOAD }.load,
         )
     }

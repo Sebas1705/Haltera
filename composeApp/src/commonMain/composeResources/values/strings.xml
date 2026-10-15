@@ -19,6 +19,7 @@
     <string name="unit_lb">lb</string>
     <string name="credits_title">Credits</string>
     <string name="credits_catalog">Exercise catalogue</string>
+    <string name="credits_catalog_text">Exercise data and images come from free-exercise-db by yuhonas (github.com/yuhonas/free-exercise-db), released into the public domain under the Unlicense. The grouping into exercises and variants, the Spanish translations and the additional exercises are by the Ironlog authors.</string>
     <string name="credits_license">Ironlog licence</string>
     <string name="credits_fonts">Fonts (SIL Open Font License 1.1)</string>
     <string name="settings_account">Account</string>

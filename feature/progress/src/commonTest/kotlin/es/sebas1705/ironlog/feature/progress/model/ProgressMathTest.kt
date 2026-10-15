@@ -96,6 +96,20 @@ class ProgressMathTest {
     }
 
     @Test
+    fun `the exercise count leaves out exercises without completed sets`() {
+        val finished = session(
+            "s",
+            utc(2026, 10, 15),
+            performed("squat.barbell", set(100.0, 5)),
+            performed("bench.barbell", set(80.0, 5, completed = false)),
+            performed("row.barbell"),
+            performed("curl.dumbbell", set(12.0, 10, SetKind.WARMUP), set(14.0, 8, completed = false)),
+        )
+
+        assertEquals(2, ProgressMath.summarize(finished, emptyMap()).exerciseCount)
+    }
+
+    @Test
     fun `month key navigates across years`() {
         assertEquals(MonthKey(2027, 1), MonthKey(2026, 12).plus(1))
         assertEquals(MonthKey(2025, 11), MonthKey(2026, 1).plus(-2))

@@ -87,7 +87,7 @@ internal fun StatCard(
                         )
                     }
                 }
-                metric?.let { InfoButton(it) }
+                metric?.let { InfoButton(it, label = title) }
             }
             Spacer(Modifier.height(8.dp))
             Column(Modifier.padding(end = 12.dp), content = content)
@@ -169,7 +169,7 @@ internal fun ComparisonTile(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f).clearAndSetSemantics { contentDescription = description },
                 )
-                InfoButton(metric)
+                InfoButton(metric, label = title)
             }
             Text(
                 value,

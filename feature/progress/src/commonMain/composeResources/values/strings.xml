@@ -186,11 +186,11 @@
     <string name="progress_period_12m">12 months</string>
     <string name="progress_period_all">All time</string>
     <string name="progress_overview_caption">%1$s, compared with %2$s</string>
-    <string name="progress_overview_caption_all">%1$s · all time has no previous period to compare with</string>
+    <string name="progress_overview_caption_all">%1$s · no comparison (all history)</string>
     <string name="progress_change_value">%1$s %2$s (%3$s)</string>
     <string name="progress_change_from_zero">%1$s %2$s (from 0)</string>
     <string name="progress_change_same">= same as the previous period</string>
-    <string name="progress_change_none">No previous period</string>
+    <string name="progress_change_none">—</string>
     <string name="progress_legend_this_period">This period</string>
     <string name="progress_legend_previous_period">Previous period</string>
     <string name="progress_chart_previous">Previous: %1$s</string>
@@ -221,7 +221,7 @@
     <string name="progress_chart_sessions_week">Sessions per week</string>
     <string name="progress_chart_sessions_empty">No sessions in this period yet. Each bar will count the sessions of one week.</string>
     <string name="progress_chart_sets_week">Effective sets per week</string>
-    <string name="progress_chart_sets_empty">No effective sets in this period yet. Each bar will count the working sets of one week.</string>
+    <string name="progress_chart_sets_empty">No effective sets in this period yet. Each bar will count the effective sets of one week.</string>
     <string name="progress_chart_heatmap">Training days</string>
     <plurals name="progress_heatmap_days">
         <item quantity="one">%1$d training day in the last %2$d weeks</item>
@@ -229,7 +229,7 @@
     </plurals>
     <string name="progress_heatmap_less">Less</string>
     <string name="progress_heatmap_more">More</string>
-    <string name="progress_heatmap_tooltip">%1$s session(s) · %2$s effective sets</string>
+    <string name="progress_heatmap_tooltip">%1$s · %2$s effective sets</string>
     <string name="progress_heatmap_tooltip_rest">No session</string>
     <string name="progress_chart_duration">Average session duration</string>
     <string name="progress_chart_duration_subtitle">Mean of each week’s sessions, from start to finish</string>
@@ -306,7 +306,10 @@
     <string name="progress_bw_week">Week of</string>
     <string name="progress_bw_avg">Average</string>
     <string name="progress_bw_range">Min–max</string>
-    <string name="progress_bw_week_description">Week of %1$s: average %2$s from %3$d entries, range %4$s, change %5$s</string>
+    <plurals name="progress_bw_week_description">
+        <item quantity="one">Week of %1$s: average %2$s from %3$d entry, range %4$s, change %5$s</item>
+        <item quantity="other">Week of %1$s: average %2$s from %3$d entries, range %4$s, change %5$s</item>
+    </plurals>
 
     <!-- Metric explanations (one block per Metric) -->
     <string name="progress_metric_e1rm_title">Estimated 1RM (e1RM)</string>

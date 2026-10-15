@@ -3,6 +3,7 @@ package es.sebas1705.ironlog.feature.routines.ui.analysis
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.domain.usecases.routinescore.Advice
 import es.sebas1705.ironlog.domain.usecases.routinescore.BalanceSide
 import es.sebas1705.ironlog.domain.usecases.routinescore.CriterionId
@@ -17,7 +18,6 @@ import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.*
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.abs
 import kotlin.math.roundToInt
 
 // Localised text for RoutineScore data (findings, advice, labels). Numbers are formatted here; words come from resources.
@@ -31,13 +31,8 @@ internal fun scoreColor(score: Int): Color = when {
 }
 
 /** A number with at most one decimal, with the decimal separator of [language]. */
-internal fun formatOne(value: Double, language: String): String {
-    val tenths = (value * TENTHS).roundToInt()
-    val text = if (tenths % TENTHS == 0) "${tenths / TENTHS}" else "${tenths / TENTHS}.${abs(tenths % TENTHS)}"
-    return if (language.startsWith("es")) text.replace('.', ',') else text
-}
-
-private const val TENTHS = 10
+internal fun formatOne(value: Double, language: String): String =
+    Numbers.format(value, maxDecimals = 1, language = language)
 
 internal fun formatPercent(fraction: Double, language: String): String {
     val value = (fraction * 100).roundToInt()

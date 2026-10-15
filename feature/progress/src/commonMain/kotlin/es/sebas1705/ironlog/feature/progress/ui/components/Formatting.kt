@@ -3,8 +3,10 @@ package es.sebas1705.ironlog.feature.progress.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.intl.Locale
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
+import es.sebas1705.ironlog.core.units.appLanguage
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.feature.progress.model.ChartScale
@@ -61,7 +63,6 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
-import kotlin.math.pow
 import kotlin.math.roundToLong
 
 /** The UI language code ("en", "es"), used to pick catalogue names. */
@@ -168,33 +169,19 @@ private fun equipmentResource(equipment: Equipment): StringResource = when (equi
     Equipment.NONE -> Res.string.progress_equipment_none
 }
 
-private const val GROUP_SIZE = 3
-private const val GROUP_THRESHOLD = 10_000.0
-
 /**
- * [value] with exactly [decimals] decimals ("." separator); integer parts from 10 000 are grouped by
- * thousands with a narrow no-break space ("12 400"), which reads the same in English and Spanish.
+ * [value] with exactly [decimals] decimals in the app [language] (core:units [Numbers]): "12 400" or
+ * "12,400", "0,94" or "0.94", with a typographic minus.
  */
-internal fun formatNumber(value: Double, decimals: Int): String {
-    val factor = 10.0.pow(decimals)
-    val scaled = kotlin.math.abs(value * factor).roundToLong()
-    val integer = (scaled / factor.toLong()).toString()
-    val fraction = if (decimals > 0) "." + (scaled % factor.toLong()).toString().padStart(decimals, '0') else ""
-    val grouped = if (kotlin.math.abs(value) >= GROUP_THRESHOLD) {
-        integer.reversed().chunked(GROUP_SIZE).joinToString(" ").reversed()
-    } else {
-        integer
-    }
-    val negative = value < 0 && scaled != 0L
-    return (if (negative) "−" else "") + grouped + fraction
-}
+internal fun formatNumber(value: Double, decimals: Int, language: String = appLanguage()): String =
+    Numbers.format(value, maxDecimals = decimals, minDecimals = decimals, language = language, typographicMinus = true)
 
 /** Replaces `%1$s`, `%2$d`… in a raw resource pattern (for formatting outside composition). */
 internal fun fillPattern(pattern: String, vararg args: String): String =
     args.foldIndexed(pattern) { i, text, arg -> text.replace("%${i + 1}\$s", arg).replace("%${i + 1}\$d", arg) }
 
 /** Weight, volume and axis formatters for one unit, usable from Canvas code. */
-internal class UnitFormat(val unit: WeightUnit, val label: String) {
+internal class UnitFormat(val unit: WeightUnit, val label: String, private val language: String = appLanguage()) {
     /** Grams (or gram-reps) in [unit]. */
     fun toUnit(grams: Double): Double = when (unit) {
         WeightUnit.KG -> grams / Weights.GRAMS_PER_KG
@@ -203,19 +190,20 @@ internal class UnitFormat(val unit: WeightUnit, val label: String) {
 
     fun weight(grams: Double, decimals: Int = 1): String = "${trimmed(toUnit(grams), decimals)} $label"
 
-    fun volume(gramReps: Double): String = "${formatNumber(toUnit(gramReps), 0)} $label"
+    fun volume(gramReps: Double): String = "${formatNumber(toUnit(gramReps), 0, language)} $label"
 
     /** Axis ticks of values already in [unit]. */
-    fun axis(value: Double): String = ChartScale.compact(value)
+    fun axis(value: Double): String = ChartScale.compact(value, language)
 
-    /** "62.5" / "62": up to [decimals] decimals without trailing zeros. */
-    private fun trimmed(value: Double, decimals: Int): String = ChartScale.trim(value, decimals)
+    /** "62.5" / "62,5" / "62": up to [decimals] decimals without trailing zeros. */
+    private fun trimmed(value: Double, decimals: Int): String = ChartScale.trim(value, decimals, language)
 }
 
 @Composable
 internal fun rememberUnitFormat(unit: WeightUnit): UnitFormat {
     val label = unitLabel(unit)
-    return remember(unit, label) { UnitFormat(unit, label) }
+    val language = currentLanguage()
+    return remember(unit, label, language) { UnitFormat(unit, label, language) }
 }
 
 /** Date and duration formatters usable outside composition (Canvas tooltips and labels). */

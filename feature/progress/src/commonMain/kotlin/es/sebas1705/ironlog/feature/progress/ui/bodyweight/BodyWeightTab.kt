@@ -56,6 +56,7 @@ import es.sebas1705.ironlog.feature.progress.ui.components.rememberUnitFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.signed
 import es.sebas1705.ironlog.feature.progress.ui.components.unitLabel
 import es.sebas1705.ironlog.feature.progress.model.ChartPoint
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -217,7 +218,15 @@ private fun WeekRow(week: WeeklyWeight, units: UnitFormat, dates: DateFormat) {
         arrow + signed(units.toUnit(c)) { formatNumber(it, 1) }
     } ?: "—"
     val label = dates.epochDay(week.weekStart)
-    val description = stringResource(Res.string.progress_bw_week_description, label, avg, week.entries, range, change)
+    val description = pluralStringResource(
+        Res.plurals.progress_bw_week_description,
+        week.entries,
+        label,
+        avg,
+        week.entries,
+        range,
+        change,
+    )
     WeekCells(
         listOf(label, avg, range, change),
         MaterialTheme.typography.bodySmall.tabularFigures(),

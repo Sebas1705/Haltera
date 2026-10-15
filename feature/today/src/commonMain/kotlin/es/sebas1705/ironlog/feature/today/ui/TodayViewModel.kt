@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.today.ui
 
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.DayKind
 import es.sebas1705.ironlog.data.models.Equipment
@@ -218,7 +219,7 @@ internal class TodayViewModel(
 
         /** A positive decimal with a dot or a comma, up to [MAX_BODY_WEIGHT]; null otherwise. */
         fun parseWeight(text: String): Double? =
-            text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it > 0 && it <= MAX_BODY_WEIGHT }
+            Numbers.parse(text)?.takeIf { it > 0 && it <= MAX_BODY_WEIGHT }
 
         /** Runs [block]; a failure (other than cancellation) becomes null. */
         private suspend fun <T> attempt(block: suspend () -> T): T? =

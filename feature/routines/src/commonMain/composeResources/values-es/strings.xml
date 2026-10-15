@@ -67,6 +67,7 @@
     <string name="routines_no_slots">Aún no hay ejercicios.</string>
     <string name="routines_delete_slot">Eliminar %1$s</string>
     <string name="routines_delete_slot_title">¿Quitar ejercicio?</string>
+    <string name="routines_delete_slot_action">Quitar ejercicio</string>
     <string name="routines_delete_slot_message">Se quitará «%1$s» de este día.</string>
 
     <!-- Slot labels -->
@@ -142,14 +143,14 @@
 
     <!-- Equipment -->
     <string name="routines_equipment_barbell">Barra</string>
-    <string name="routines_equipment_ez_bar">Barra EZ</string>
+    <string name="routines_equipment_ez_bar">Barra Z</string>
     <string name="routines_equipment_trap_bar">Barra hexagonal</string>
     <string name="routines_equipment_dumbbell">Mancuerna</string>
     <string name="routines_equipment_kettlebell">Kettlebell</string>
-    <string name="routines_equipment_smith">Máquina Smith</string>
+    <string name="routines_equipment_smith">Multipower</string>
     <string name="routines_equipment_machine">Máquina</string>
     <string name="routines_equipment_cable">Polea</string>
-    <string name="routines_equipment_band">Banda</string>
+    <string name="routines_equipment_band">Goma elástica</string>
     <string name="routines_equipment_bodyweight">Peso corporal</string>
     <string name="routines_equipment_medicine_ball">Balón medicinal</string>
     <string name="routines_equipment_swiss_ball">Fitball</string>
@@ -190,7 +191,8 @@
     <string name="routines_show_qr">Mostrar QR</string>
     <string name="routines_share_more">Más opciones</string>
     <string name="routines_share_error">No se pudo compartir la rutina.</string>
-    <string name="routines_qr_hint">En Ironlog en otro móvil, abre Mis rutinas, pulsa Importar y escanea este código.</string>
+    <string name="routines_qr_hint">En otro móvil con Ironlog, abre Rutinas, pulsa Importar y escanea este código.</string>
+    <string name="routines_qr_image">Código QR de la rutina %1$s</string>
     <string name="routines_qr_too_large">Esta rutina es demasiado grande para un código QR. Compártela como archivo.</string>
     <string name="routines_close">Cerrar</string>
     <string name="routines_import">Importar</string>

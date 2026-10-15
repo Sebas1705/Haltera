@@ -117,7 +117,7 @@
     <string name="progress_bw_change">%1$s en los últimos 30 días</string>
     <string name="progress_bw_change_none">Registra más entradas para ver tu tendencia de 30 días.</string>
     <string name="progress_bw_chart">Peso corporal</string>
-    <string name="progress_bw_average">Media de 7 entradas</string>
+    <string name="progress_bw_average">Media de 7 registros</string>
     <string name="progress_bw_entries">Entradas</string>
     <string name="progress_bw_add_title">Registrar peso corporal</string>
     <string name="progress_bw_edit_title">Editar entrada</string>
@@ -153,7 +153,7 @@
     <string name="progress_equipment_smith">Multipower</string>
     <string name="progress_equipment_machine">Máquina</string>
     <string name="progress_equipment_cable">Polea</string>
-    <string name="progress_equipment_band">Banda</string>
+    <string name="progress_equipment_band">Goma elástica</string>
     <string name="progress_equipment_bodyweight">Peso corporal</string>
     <string name="progress_equipment_medicine_ball">Balón medicinal</string>
     <string name="progress_equipment_swiss_ball">Fitball</string>
@@ -186,11 +186,11 @@
     <string name="progress_period_12m">12 meses</string>
     <string name="progress_period_all">Todo</string>
     <string name="progress_overview_caption">%1$s, comparado con %2$s</string>
-    <string name="progress_overview_caption_all">%1$s · todo el historial no tiene un periodo anterior con el que comparar</string>
+    <string name="progress_overview_caption_all">%1$s · sin comparación (todo el historial)</string>
     <string name="progress_change_value">%1$s %2$s (%3$s)</string>
     <string name="progress_change_from_zero">%1$s %2$s (desde 0)</string>
     <string name="progress_change_same">= igual que el periodo anterior</string>
-    <string name="progress_change_none">Sin periodo anterior</string>
+    <string name="progress_change_none">—</string>
     <string name="progress_legend_this_period">Este periodo</string>
     <string name="progress_legend_previous_period">Periodo anterior</string>
     <string name="progress_chart_previous">Anterior: %1$s</string>
@@ -221,7 +221,7 @@
     <string name="progress_chart_sessions_week">Sesiones por semana</string>
     <string name="progress_chart_sessions_empty">Aún no hay sesiones en este periodo. Cada barra contará las sesiones de una semana.</string>
     <string name="progress_chart_sets_week">Series efectivas por semana</string>
-    <string name="progress_chart_sets_empty">Aún no hay series efectivas en este periodo. Cada barra contará las series de trabajo de una semana.</string>
+    <string name="progress_chart_sets_empty">Aún no hay series efectivas en este periodo. Cada barra contará las series efectivas de una semana.</string>
     <string name="progress_chart_heatmap">Días de entrenamiento</string>
     <plurals name="progress_heatmap_days">
         <item quantity="one">%1$d día de entrenamiento en las últimas %2$d semanas</item>
@@ -229,7 +229,7 @@
     </plurals>
     <string name="progress_heatmap_less">Menos</string>
     <string name="progress_heatmap_more">Más</string>
-    <string name="progress_heatmap_tooltip">%1$s sesión(es) · %2$s series efectivas</string>
+    <string name="progress_heatmap_tooltip">%1$s · %2$s series efectivas</string>
     <string name="progress_heatmap_tooltip_rest">Sin sesión</string>
     <string name="progress_chart_duration">Duración media de la sesión</string>
     <string name="progress_chart_duration_subtitle">Media de las sesiones de cada semana, de inicio a fin</string>
@@ -255,7 +255,7 @@
     <string name="progress_chart_top_set_subtitle">Carga más pesada levantada al menos una repetición, por sesión</string>
     <string name="progress_chart_not_enough_sessions">Este gráfico aparece tras dos sesiones con una serie con peso.</string>
     <string name="progress_chart_volume_subtitle">Carga × repeticiones por sesión, últimas %1$d sesiones</string>
-    <string name="progress_chart_volume_session_empty">Aún no hay volumen: las series de peso corporal sin lastre, por tiempo y con banda no suman carga × repeticiones.</string>
+    <string name="progress_chart_volume_session_empty">Aún no hay volumen: las series de peso corporal sin lastre, por tiempo y con goma elástica no suman carga × repeticiones.</string>
     <string name="progress_chart_rep_ranges">Rangos de repeticiones</string>
     <string name="progress_chart_rep_ranges_subtitle">Series efectivas de esta variante por repeticiones</string>
     <string name="progress_chart_rep_ranges_empty">Aquí se agruparán por rango las series con repeticiones.</string>
@@ -306,38 +306,41 @@
     <string name="progress_bw_week">Semana del</string>
     <string name="progress_bw_avg">Media</string>
     <string name="progress_bw_range">Mín–máx</string>
-    <string name="progress_bw_week_description">Semana del %1$s: media %2$s con %3$d registros, rango %4$s, cambio %5$s</string>
+    <plurals name="progress_bw_week_description">
+        <item quantity="one">Semana del %1$s: media %2$s con %3$d registro, rango %4$s, cambio %5$s</item>
+        <item quantity="other">Semana del %1$s: media %2$s con %3$d registros, rango %4$s, cambio %5$s</item>
+    </plurals>
 
     <!-- Metric explanations (one block per Metric) -->
     <string name="progress_metric_e1rm_title">1RM estimado</string>
     <string name="progress_metric_e1rm_summary">La carga más pesada que probablemente podrías levantar una vez, estimada a partir de una serie de varias repeticiones.</string>
     <string name="progress_metric_e1rm_formula">Fórmula de Epley: carga × (1 + repeticiones ÷ 30), para cada serie. Cada sesión muestra su mejor serie. Una sola repetición cuenta como la propia carga. Ejemplo: 100 kg × 5 → 116,7 kg.</string>
-    <string name="progress_metric_e1rm_counts">Series completadas de trabajo, descendentes y al fallo con peso y al menos una repetición. No cuentan los calentamientos, las series sin completar, las de peso corporal sin lastre o asistidas, las bandas ni las máquinas registradas por número de placa.</string>
+    <string name="progress_metric_e1rm_counts">Series efectivas, descendentes y al fallo completadas, con peso y al menos una repetición. No cuentan los calentamientos, las series sin completar, las de peso corporal sin lastre o asistidas, las gomas elásticas ni las máquinas registradas por número de placa.</string>
     <string name="progress_metric_e1rm_limits">Es una estimación, más precisa entre 1 y 10 repeticiones; se desvía con muchas repeticiones y con series lejos del fallo. Úsala para compararte en el tiempo, no como un máximo real.</string>
 
     <string name="progress_metric_top_set_title">Serie más pesada</string>
     <string name="progress_metric_top_set_summary">La carga más pesada que levantaste al menos una repetición en una sesión.</string>
     <string name="progress_metric_top_set_formula">Carga máxima entre las series contadas de la sesión.</string>
-    <string name="progress_metric_top_set_counts">Series completadas de trabajo, descendentes y al fallo con peso y al menos una repetición. Los calentamientos no cuentan.</string>
+    <string name="progress_metric_top_set_counts">Series efectivas, descendentes y al fallo completadas, con peso y al menos una repetición. Los calentamientos no cuentan.</string>
     <string name="progress_metric_top_set_limits">Ignora las repeticiones: 100 kg × 1 y 100 kg × 8 se ven igual. Mira el 1RM estimado para tenerlas en cuenta.</string>
 
     <string name="progress_metric_volume_title">Volumen</string>
     <string name="progress_metric_volume_summary">Cuánto peso has movido: carga por repeticiones, sumado.</string>
-    <string name="progress_metric_volume_formula">Σ carga × repeticiones de las series completadas de trabajo, descendentes y al fallo. Los ejercicios con mancuernas de un ejercicio de rutina marcado como de ambas manos cuentan doble (una mancuerna por mano). Se muestra en tu unidad (kg o lb).</string>
-    <string name="progress_metric_volume_counts">Los ejercicios de peso corporal solo cuentan el lastre añadido: las series sin lastre y las asistidas suman 0 de volumen (aunque sí cuentan como series efectivas). Los calentamientos, las series sin completar, las bandas y las máquinas registradas por número de placa no suman nada.</string>
+    <string name="progress_metric_volume_formula">Σ carga × repeticiones de las series efectivas, descendentes y al fallo completadas. Los ejercicios con mancuernas de un ejercicio de rutina marcado como de ambas manos cuentan doble (una mancuerna por mano). Se muestra en tu unidad (kg o lb).</string>
+    <string name="progress_metric_volume_counts">Los ejercicios de peso corporal solo cuentan el lastre añadido: las series sin lastre y las asistidas suman 0 de volumen (aunque sí cuentan como series efectivas). Los calentamientos, las series sin completar, las gomas elásticas y las máquinas registradas por número de placa no suman nada.</string>
     <string name="progress_metric_volume_limits">El volumen favorece los ejercicios compuestos pesados y las repeticiones altas; no mide el esfuerzo. Un ejercicio con mancuernas añadido fuera de una rutina cuenta la carga tal como la introdujiste.</string>
 
     <string name="progress_metric_sets_title">Series efectivas</string>
     <string name="progress_metric_sets_summary">El número de series que hicieron trabajo real.</string>
     <string name="progress_metric_sets_formula">Número de series completadas que no son de calentamiento y tienen al menos una repetición, una duración o una distancia.</string>
-    <string name="progress_metric_sets_counts">Series de trabajo, descendentes y al fallo de cualquier ejercicio, incluidas las de peso corporal, por tiempo y de cardio.</string>
+    <string name="progress_metric_sets_counts">Series efectivas, descendentes y al fallo de cualquier ejercicio, incluidas las de peso corporal, por tiempo y de cardio.</string>
     <string name="progress_metric_sets_limits">Ironlog no puede saber lo dura que fue una serie: una serie fácil cuenta igual que una al fallo. El RPE, cuando lo registras, no se usa para filtrar series.</string>
 
     <string name="progress_metric_prs_title">Récords personales</string>
     <string name="progress_metric_prs_summary">Tus mejores marcas en una variante de ejercicio y cuándo las lograste.</string>
     <string name="progress_metric_prs_formula">Carga más pesada (al menos una repetición) · mejor 1RM estimado · más repeticiones con una carga (más repeticiones que nunca con esa carga o una más pesada) · mejor volumen de sesión. Un récord debe superar estrictamente todas las sesiones anteriores; en caso de empate se queda la primera fecha.</string>
-    <string name="progress_metric_prs_counts">Series de trabajo completadas de la variante elegida: la barra, las mancuernas y las demás variantes tienen récords separados. La primera sesión de una variante es el punto de partida, no un récord.</string>
-    <string name="progress_metric_prs_limits">Los récords se recalculan a partir de tu registro, así que editar o borrar sesiones antiguas puede cambiarlos. Se excluyen las bandas y las máquinas registradas por número de placa.</string>
+    <string name="progress_metric_prs_counts">Series efectivas completadas de la variante elegida: la barra, las mancuernas y las demás variantes tienen récords separados. La primera sesión de una variante es el punto de partida, no un récord.</string>
+    <string name="progress_metric_prs_limits">Los récords se recalculan a partir de tu registro, así que editar o borrar sesiones antiguas puede cambiarlos. Se excluyen las gomas elásticas y las máquinas registradas por número de placa.</string>
 
     <string name="progress_metric_new_prs_title">Récords nuevos</string>
     <string name="progress_metric_new_prs_summary">Cuántos récords personales lograste en el periodo.</string>
@@ -408,7 +411,7 @@
     <string name="progress_metric_table_title">Tabla de progresión</string>
     <string name="progress_metric_table_summary">Una fila por sesión de esta variante, la más reciente primero.</string>
     <string name="progress_metric_table_formula">Mejor serie = la serie con el mayor 1RM estimado (en caso de empate, la más pesada). 1RM est. = estimación de Epley de esa serie. Volumen = Σ carga × repeticiones. Δ = cambio del 1RM estimado frente a la sesión anterior que lo tenía.</string>
-    <string name="progress_metric_table_counts">Series completadas de trabajo, descendentes y al fallo de la variante elegida. PR marca una sesión que logró al menos un récord personal.</string>
+    <string name="progress_metric_table_counts">Series efectivas, descendentes y al fallo completadas de la variante elegida. PR marca una sesión que logró al menos un récord personal.</string>
     <string name="progress_metric_table_limits">Lee hasta tus últimas 200 sesiones del ejercicio.</string>
 
     <string name="progress_metric_muscle_sets_title">Series semanales por músculo</string>

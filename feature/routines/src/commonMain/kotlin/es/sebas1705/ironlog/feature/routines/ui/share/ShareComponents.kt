@@ -34,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.routines_close
 import es.sebas1705.ironlog.feature.routines.resources.routines_qr_hint
+import es.sebas1705.ironlog.feature.routines.resources.routines_qr_image
 import es.sebas1705.ironlog.feature.routines.resources.routines_qr_too_large
 import es.sebas1705.ironlog.feature.routines.resources.routines_share_error
 import es.sebas1705.ironlog.feature.routines.resources.routines_share_file
@@ -101,7 +102,10 @@ private fun QrDialog(qr: QrState, onDismiss: () -> Unit) {
                     ) {
                         Image(
                             painter = rememberQrCodePainter(qr.code),
-                            contentDescription = stringResource(Res.string.routines_show_qr),
+                            contentDescription = stringResource(
+                                Res.string.routines_qr_image,
+                                qr.name.ifBlank { stringResource(Res.string.routines_untitled) },
+                            ),
                             modifier = Modifier.fillMaxSize(),
                         )
                     }

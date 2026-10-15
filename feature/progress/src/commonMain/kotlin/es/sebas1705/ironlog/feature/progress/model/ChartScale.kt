@@ -1,12 +1,13 @@
 package es.sebas1705.ironlog.feature.progress.model
 
+import es.sebas1705.ironlog.core.units.Numbers
+import es.sebas1705.ironlog.core.units.appLanguage
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.log10
 import kotlin.math.pow
 import kotlin.math.roundToInt
-import kotlin.math.roundToLong
 
 /** A y axis from [min] to [max] with a tick every [step]. */
 internal data class AxisScale(val min: Double, val max: Double, val step: Double) {
@@ -68,21 +69,17 @@ internal object ChartScale {
     }
 
     /** "950", "12.5k", "1.2M": short numbers for axis ticks. */
-    fun compact(value: Double): String {
+    fun compact(value: Double, language: String = appLanguage()): String {
         val absolute = abs(value)
         return when {
-            absolute >= MILLION -> trim(value / MILLION) + "M"
-            absolute >= TEN * THOUSAND -> trim(value / THOUSAND, decimals = 0) + "k"
-            absolute >= THOUSAND -> trim(value / THOUSAND) + "k"
-            else -> trim(value)
+            absolute >= MILLION -> trim(value / MILLION, language = language) + "M"
+            absolute >= TEN * THOUSAND -> trim(value / THOUSAND, decimals = 0, language = language) + "k"
+            absolute >= THOUSAND -> trim(value / THOUSAND, language = language) + "k"
+            else -> trim(value, language = language)
         }
     }
 
-    /** [value] with up to [decimals] decimals and no trailing zeros. */
-    fun trim(value: Double, decimals: Int = 1): String {
-        val factor = TEN.pow(decimals)
-        val rounded = (value * factor).roundToLong() / factor
-        val text = rounded.toString()
-        return if (text.contains('.')) text.trimEnd('0').trimEnd('.') else text
-    }
+    /** [value] with up to [decimals] decimals and no trailing zeros, in the app [language]. */
+    fun trim(value: Double, decimals: Int = 1, language: String = appLanguage()): String =
+        Numbers.format(value, maxDecimals = decimals, language = language, grouping = false)
 }

@@ -260,6 +260,9 @@ private fun HeatmapCard(state: OverviewState, dates: DateFormat) {
     )
     val sessionsPattern = stringResource(Res.string.progress_heatmap_tooltip)
     val restPattern = stringResource(Res.string.progress_heatmap_tooltip_rest)
+    // "1 session" / "2 sessions" for every count a cell can show (the tooltip is built outside composition).
+    val maxSessions = heatmap.weeks.maxOfOrNull { week -> week.maxOfOrNull { it.sessions } ?: 0 } ?: 0
+    val sessionLabels = (1..maxSessions).map { pluralStringResource(Res.plurals.progress_session_count, it, it) }
     StatCard(title, metric = Metric.TRAINING_HEATMAP, subtitle = subtitle) {
         HeatmapChart(
             heatmap = heatmap,
@@ -268,7 +271,8 @@ private fun HeatmapCard(state: OverviewState, dates: DateFormat) {
                 if (cell.sessions == 0) {
                     "$day\n$restPattern"
                 } else {
-                    "$day\n" + fillPattern(sessionsPattern, cell.sessions.toString(), cell.effectiveSets.toString())
+                    val sessions = sessionLabels.getOrNull(cell.sessions - 1) ?: cell.sessions.toString()
+                    "$day\n" + fillPattern(sessionsPattern, sessions, formatNumber(cell.effectiveSets.toDouble(), 0))
                 }
             },
             description = "$title. $subtitle",

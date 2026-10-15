@@ -48,7 +48,8 @@ internal object ProgressMath {
         durationMillis = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) },
         routineName = session.routineId?.let { routineNames[it] },
         dayName = session.dayName,
-        exerciseCount = session.exercises.size,
+        // Only exercises with at least one completed set: empty ones are left over from the plan.
+        exerciseCount = session.exercises.count { exercise -> exercise.sets.any { it.completed } },
         volumeGrams = session.exercises.sumOf { Stats.volume(it) },
     )
 

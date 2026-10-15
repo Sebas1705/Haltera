@@ -209,11 +209,14 @@ internal fun Metric.text(): MetricText = when (this) {
     )
 }
 
-/** The ⓘ button: opens the explanation of [metric]. */
+/**
+ * The ⓘ button: opens the explanation of [metric]. [label] is the title of the tile or card it sits on, so
+ * TalkBack names what the user sees (several tiles share one metric explanation).
+ */
 @Composable
-internal fun InfoButton(metric: Metric, modifier: Modifier = Modifier) {
+internal fun InfoButton(metric: Metric, modifier: Modifier = Modifier, label: String? = null) {
     var open by remember { mutableStateOf(false) }
-    val title = stringResource(metric.text().title)
+    val title = label ?: stringResource(metric.text().title)
     IconButton(onClick = { open = true }, modifier = modifier) {
         Icon(
             Icons.Outlined.Info,

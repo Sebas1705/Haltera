@@ -4,6 +4,7 @@ import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.BodyWeightEntry
@@ -74,7 +75,7 @@ internal class BodyWeightViewModel(
             BodyWeightIntent.OpenAdd -> showDialog(WeightDialog.Add, input = "")
             is BodyWeightIntent.OpenEdit -> showDialog(
                 WeightDialog.Edit(intent.entry),
-                input = Weights.format(intent.entry.weightGrams, currentState.unit),
+                input = Weights.format(intent.entry.weightGrams, currentState.unit, grouping = false),
             )
             is BodyWeightIntent.InputChanged -> updateState { it.copy(input = intent.text, inputError = false) }
             BodyWeightIntent.Dismiss -> showDialog(null, input = "")
@@ -138,7 +139,7 @@ internal class BodyWeightViewModel(
 
         /** Parses a weight typed in [unit] ("72.5" or "72,5") to grams; null if not a plausible weight. */
         fun parseWeight(text: String, unit: WeightUnit): Long? {
-            val value = text.trim().replace(',', '.').toDoubleOrNull() ?: return null
+            val value = Numbers.parse(text) ?: return null
             if (value <= 0.0 || value >= MAX_WEIGHT || value.isNaN()) return null
             return Weights.toGrams(value, unit)
         }

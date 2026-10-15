@@ -97,6 +97,9 @@ sealed interface RoutineDecodeResult {
 /** JSON codec of [RoutineFile]. */
 object RoutineExport {
     const val FORMAT = "haltera-routine"
+
+    /** The format key written while the app was called Ironlog; still read, never written. */
+    const val LEGACY_FORMAT = "ironlog-routine"
     const val VERSION = 1
 
     private val json = Json {
@@ -152,7 +155,7 @@ object RoutineExport {
         } catch (_: IllegalArgumentException) {
             return RoutineDecodeResult.Invalid("not a JSON object")
         }
-        if ((root["format"] as? JsonPrimitive)?.content != FORMAT) return RoutineDecodeResult.Invalid("unknown format")
+        if ((root["format"] as? JsonPrimitive)?.content !in setOf(FORMAT, LEGACY_FORMAT)) return RoutineDecodeResult.Invalid("unknown format")
         val version = (root["version"] as? JsonPrimitive)?.intOrNull
             ?: return RoutineDecodeResult.Invalid("missing version")
         if (version > VERSION) return RoutineDecodeResult.UnsupportedVersion(version)

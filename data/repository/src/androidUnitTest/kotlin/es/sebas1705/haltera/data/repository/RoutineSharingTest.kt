@@ -150,7 +150,7 @@ class RoutineSharingTest {
         assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("{not json"))
         assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("""{"format":"other","version":1}"""))
         assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("""{"format":"haltera-routine","version":1}"""))
-        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("haltera:r1:%%%"))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("ironlog:r1:%%%"))
     }
 
     @Test
@@ -180,8 +180,8 @@ class RoutineSharingTest {
         assertTrue(code.removePrefix(RoutineShareCode.PREFIX_V1).all { it.isLetterOrDigit() || it == '-' || it == '_' })
         assertEquals(json, RoutineShareCode.decode(code))
         // The prefix is read case-insensitively; the payload is not touched.
-        assertEquals(json, RoutineShareCode.decode("HALTERA:R1:" + code.removePrefix(RoutineShareCode.PREFIX_V1)))
-        assertNull(RoutineShareCode.decode("haltera:r1:AAAA"))
+        assertEquals(json, RoutineShareCode.decode("IRONLOG:R1:" + code.removePrefix(RoutineShareCode.PREFIX_V1)))
+        assertNull(RoutineShareCode.decode("ironlog:r1:AAAA"))
         assertNull(RoutineShareCode.decode("hello"))
         // The preview accepts the QR payload directly.
         assertTrue(ready(env.sharing.preview(code)).missingIds.isEmpty())
@@ -204,6 +204,30 @@ class RoutineSharingTest {
         assertTrue(shared.startsWith(RoutineShareCode.PREFIX))
         assertTrue(ready(env.sharing.preview(shared)).missingIds.isEmpty())
         assertNull(env.sharing.shareCode("nope"))
+    }
+
+    @Test
+    fun `codes and files written under the former Ironlog name are still read`() = runTest {
+        val env = env()
+        val id = env.seedRoutine()
+        val json = env.sharing.export(id)!!
+        assertTrue(""""format":"haltera-routine"""" in json)
+        val legacyJson = json.replace("haltera-routine", "ironlog-routine")
+        assertTrue(ready(env.sharing.preview(legacyJson)).missingIds.isEmpty())
+
+        val v2 = RoutineShareCode.encode(json).replaceFirst(RoutineShareCode.PREFIX, "IRONLOG:R2:")
+        assertEquals(json, RoutineShareCode.decode(v2))
+        assertTrue(RoutineShareCode.isCode(v2))
+        assertTrue(ready(env.sharing.preview(v2)).missingIds.isEmpty())
+
+        val v1 = RoutineShareCode.encodeV1(json)
+        assertTrue(v1.startsWith("ironlog:r1:"))
+        assertEquals(json, RoutineShareCode.decode(v1))
+
+        val template = "IRONLOG:T1:PPL-REDDIT:1"
+        assertTrue(RoutineShareCode.isTemplateCode(template))
+        assertEquals(RoutineOrigin("ppl-reddit", 1), RoutineShareCode.decodeTemplate(template))
+        assertEquals(RoutineOrigin("ppl-reddit", 1), ready(env.sharing.preview(template, language = "en")).template)
     }
 
     @Test

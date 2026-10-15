@@ -23,7 +23,7 @@ settings:
     CURRENT_PROJECT_VERSION: "1"
     # REVERSED_CLIENT_ID of GoogleService-Info.plist (Google enabled in Firebase on 2026-10-14).
     # Without a matching URL scheme the app hides Google sign-in (GoogleSignIn.swift, isConfigured).
-    GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.695669078657-cvv2rrr9t5tgi79fs92elrojvc9k5u98
+    GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.695669078657-oc65frc18bt4n31radd8q1m6r1j6jdoo
 
 targets:
   Haltera:

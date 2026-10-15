@@ -117,7 +117,13 @@ class NutritionViewModelsTest {
             setOf(FoodField.NAME, FoodField.KCAL, FoodField.PROTEIN, FoodField.CARBS, FoodField.FAT),
             vm.uiState.value.errors,
         )
-        listOf(FoodField.NAME to "Protein bar", FoodField.KCAL to "350", FoodField.PROTEIN to "30", FoodField.CARBS to "35,5", FoodField.FAT to "9")
+        listOf(
+            FoodField.NAME to "Protein bar",
+            FoodField.KCAL to "350",
+            FoodField.PROTEIN to "30",
+            FoodField.CARBS to "35,5",
+            FoodField.FAT to "9"
+        )
             .forEach { (field, text) -> vm.onEvent(FoodEditorIntent.Changed(field, text)) }
         vm.onEvent(FoodEditorIntent.Changed(FoodField.SERVING_NAME, "bar"))
         assertEquals(setOf(FoodField.SERVING_GRAMS), vm.uiState.value.errors)
@@ -179,7 +185,11 @@ class NutritionViewModelsTest {
 
     @Test
     fun `search waits for typing to settle and finds Spanish names`() = runTest {
-        val vm = FoodSearchViewModel(repo, AppLanguage { "es" }, es.sebas1705.ironlog.feature.nutrition.scan.NoBarcodeScanner)
+        val vm = FoodSearchViewModel(
+            repo,
+            AppLanguage { "es" },
+            es.sebas1705.ironlog.feature.nutrition.scan.NoBarcodeScanner
+        )
         vm.onEvent(FoodSearchIntent.QueryChanged("lec"))
         vm.onEvent(FoodSearchIntent.QueryChanged("leche"))
         advanceUntilIdle()
@@ -192,7 +202,12 @@ class NutritionViewModelsTest {
         repo.goals.value = repo.goals.value.copy(kcal = 2_000)
         repo.addEntry(DAY, Meal.LUNCH, "oats", 500.0) // 1900 kcal: within 10 %
         repo.addEntry(LocalDate(2026, 10, 10), Meal.LUNCH, "oats", 100.0) // 380 kcal
-        val vm = StatsViewModel(repo, FakeBodyWeightRepository(listOf(BodyWeightEntry("w", 1, 80_000, ""))), FixedToday, TimeZone.UTC)
+        val vm = StatsViewModel(
+            repo,
+            FakeBodyWeightRepository(listOf(BodyWeightEntry("w", 1, 80_000, ""))),
+            FixedToday,
+            TimeZone.UTC
+        )
         advanceUntilIdle()
         val state = vm.uiState.value
         assertEquals(2, state.daily.size)

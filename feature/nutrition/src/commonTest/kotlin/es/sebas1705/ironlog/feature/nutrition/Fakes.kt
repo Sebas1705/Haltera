@@ -28,7 +28,10 @@ val DAY = LocalDate(2026, 10, 15)
 internal val FixedToday = Today { DAY }
 
 val OATS = Food(
-    id = "oats", source = FoodSource.GENERIC, nameEn = "Rolled oats", nameEs = "Copos de avena",
+    id = "oats",
+    source = FoodSource.GENERIC,
+    nameEn = "Rolled oats",
+    nameEs = "Copos de avena",
     per100 = Nutrients(kcal = 380.0, protein = 13.0, carbs = 68.0, fat = 6.0),
 )
 
@@ -50,7 +53,12 @@ class FakeNutritionRepository(foods: List<Food> = listOf(OATS, MILK)) : Nutritio
     override suspend fun importBundledFoods(json: String) = FoodImportResult.UpToDate(1)
 
     override fun observeDay(date: LocalDate): Flow<FoodDay> =
-        entries.map { all -> FoodDay(date, all.filter { it.date == date }.map { it.copy(food = foods.value[it.foodId]) }) }
+        entries.map { all ->
+            FoodDay(
+                date,
+                all.filter { it.date == date }.map { it.copy(food = foods.value[it.foodId]) }
+            )
+        }
 
     override fun observeDays(from: LocalDate, to: LocalDate): Flow<List<FoodDay>> = entries.map { all ->
         all.filter { it.date in from..to }.map { it.copy(food = foods.value[it.foodId]) }.groupBy { it.date }
@@ -64,7 +72,18 @@ class FakeNutritionRepository(foods: List<Food> = listOf(OATS, MILK)) : Nutritio
     }
 
     override suspend fun updateEntry(entryId: String, grams: Double, servings: Double?) =
-        entries.update { list -> list.map { if (it.id == entryId) it.copy(grams = grams, servings = servings) else it } }
+        entries.update { list ->
+            list.map {
+                if (it.id == entryId) {
+                    it.copy(
+                        grams = grams,
+                        servings = servings
+                    )
+                } else {
+                    it
+                }
+            }
+        }
 
     override suspend fun moveEntry(entryId: String, date: LocalDate, meal: Meal) =
         entries.update { list -> list.map { if (it.id == entryId) it.copy(date = date, meal = meal) else it } }
@@ -84,7 +103,11 @@ class FakeNutritionRepository(foods: List<Food> = listOf(OATS, MILK)) : Nutritio
     override suspend fun search(query: String, language: String, limit: Int): List<Food> =
         foods.value.values.filter { it.name(language).contains(query, ignoreCase = true) }
 
-    override fun observeRecents(limit: Int): Flow<List<Food>> = entries.map { all -> all.mapNotNull { foods.value[it.foodId] }.distinct() }
+    override fun observeRecents(limit: Int): Flow<List<Food>> = entries.map { all ->
+        all.mapNotNull {
+            foods.value[it.foodId]
+        }.distinct()
+    }
 
     override fun observeFavourites(): Flow<List<Food>> = foods.map { all -> all.values.filter { it.favourite } }
 
@@ -108,7 +131,18 @@ class FakeNutritionRepository(foods: List<Food> = listOf(OATS, MILK)) : Nutritio
     }
 
     override suspend fun updateFood(foodId: String, input: FoodInput) =
-        foods.update { all -> all.mapValues { (id, f) -> if (id == foodId) f.copy(nameEn = input.nameEn, per100 = input.per100) else f } }
+        foods.update { all ->
+            all.mapValues { (id, f) ->
+                if (id == foodId) {
+                    f.copy(
+                        nameEn = input.nameEn,
+                        per100 = input.per100
+                    )
+                } else {
+                    f
+                }
+            }
+        }
 
     override suspend fun deleteFood(foodId: String): Boolean {
         foods.update { it - foodId }

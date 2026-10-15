@@ -19,11 +19,13 @@ import es.sebas1705.ironlog.data.models.Routine
 import es.sebas1705.ironlog.data.models.RoutineDay
 import es.sebas1705.ironlog.data.models.RoutineSlot
 import es.sebas1705.ironlog.data.models.SessionExercise
+import es.sebas1705.ironlog.data.models.SetInput
 import es.sebas1705.ironlog.data.models.SetKind
 import es.sebas1705.ironlog.data.models.SetLog
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.data.models.WorkoutSession
+import es.sebas1705.ironlog.domain.usecases.naming.VariantLabel
 import es.sebas1705.ironlog.domain.usecases.progression.IncreaseReason
 import es.sebas1705.ironlog.domain.usecases.progression.Suggestion
 import es.sebas1705.ironlog.domain.usecases.session.SuggestNextLoad
@@ -56,6 +58,7 @@ class SessionViewModelTest {
     private val alert = FakeRestAlert()
     private val indicator = FakeIndicator()
     private val timer = RestTimerController(store, alert, settings) { clock.now }
+    private val loadSteps = FakeLoadStepStore()
 
     @BeforeTest
     fun setUp() = rule.setup()
@@ -66,12 +69,12 @@ class SessionViewModelTest {
     private fun viewModel(session: WorkoutSession = routineSession()): SessionViewModel {
         sessions.put(session)
         val catalog = SessionCatalog(
-            exercises = FakeExerciseRepository(listOf(BENCH, PLANK, ROW)),
+            exercises = FakeExerciseRepository(listOf(BENCH, PLANK, ROW, PULLDOWN)),
             routines = FakeRoutineRepository(listOf(ROUTINE)),
             sessions = sessions,
             suggestNextLoad = SuggestNextLoad(sessions),
         )
-        return SessionViewModel(SESSION_ID, sessions, catalog, settings, timer, indicator) { clock.now }
+        return SessionViewModel(SESSION_ID, sessions, catalog, settings, timer, indicator, loadSteps) { clock.now }
             .also { it.onEvent(SessionIntent.SetLanguage("en")) }
     }
 
@@ -93,7 +96,17 @@ class SessionViewModelTest {
         BENCH_SLOT.id
     )
 
-    private fun pastBench(load: Long, reps: List<Int>, sessionId: String = "old", at: Long = 1L) = ExerciseHistoryEntry(
+    private fun pastBench(load: Long, reps: List<Int>, sessionId: String = "old", at: Long = 1L) =
+        pastSets(reps.map { load to it }, sessionId = sessionId, at = at)
+
+    /** A finished bench performance with one completed working set per (load, reps) pair. */
+    private fun pastSets(
+        sets: List<Pair<Long, Int>>,
+        sessionId: String = "old",
+        at: Long = 1L,
+        slotId: String? = BENCH_SLOT.id,
+        warmups: List<Long> = emptyList(),
+    ) = ExerciseHistoryEntry(
         sessionId,
         at,
         SessionExercise(
@@ -101,20 +114,24 @@ class SessionViewModelTest {
             sessionId,
             0,
             BENCH_BARBELL,
-            BENCH_SLOT.id,
-            sets = reps.mapIndexed { i, r ->
-                SetLog(
-                    "$sessionId-$i",
-                    "$sessionId-e",
-                    i,
-                    SetKind.WORKING,
-                    r,
-                    load,
-                    completed = true
-                )
+            slotId,
+            sets = warmups.mapIndexed { i, load ->
+                SetLog("$sessionId-w$i", "$sessionId-e", i, SetKind.WARMUP, 5, load, completed = true)
+            } + sets.mapIndexed { i, (load, r) ->
+                SetLog("$sessionId-$i", "$sessionId-e", warmups.size + i, SetKind.WORKING, r, load, completed = true)
             },
         ),
     )
+
+    private fun working(vm: SessionViewModel, cardId: String = "e-bench") =
+        cardSets(vm, cardId).filter { it.kind == SetKind.WORKING }
+
+    /** Edits a set through the sheet like the user does. */
+    private fun edit(vm: SessionViewModel, setId: String, change: (SetInput) -> SetInput) {
+        vm.onEvent(SessionIntent.EditSet(setId))
+        vm.onEvent(SessionIntent.ChangeDraft(change(vm.uiState.value.editor!!.draft)))
+        vm.onEvent(SessionIntent.SaveDraft)
+    }
 
     private fun cardSets(vm: SessionViewModel, cardId: String = "e-bench") = vm.uiState.value.cards.first {
         it.id == cardId
@@ -135,13 +152,136 @@ class SessionViewModelTest {
     }
 
     @Test
-    fun prefillCopiesTheLastSessionWhenKeepingTheLoad() = runTest {
+    fun prefillKeepsTheLastLoadWithThePrescribedReps() = runTest {
         sessions.history += pastBench(60_000, listOf(10, 9, 8))
         val vm = viewModel()
-        val working = cardSets(vm).filter { it.kind == SetKind.WORKING }
-        assertEquals(listOf(10, 9, 8), working.map { it.reps })
+        val working = working(vm)
+        assertEquals(listOf(8, 8, 8), working.map { it.reps }, "reps start at the prescription")
         assertTrue(working.all { it.loadGrams == 60_000L })
         assertIs<Suggestion.Keep>(vm.uiState.value.cards.first().suggestion)
+    }
+
+    @Test
+    fun firstWorkingSetStartsAtTheHeaviestSetOfTheLastSessionOfTheSlot() = runTest {
+        sessions.history += pastSets(listOf(100_000L to 5), sessionId = "older", at = 1L)
+        sessions.history += pastSets(listOf(60_000L to 10, 70_000L to 8, 65_000L to 9), sessionId = "last", at = 2L)
+        val vm = viewModel()
+        val working = working(vm)
+        assertEquals(
+            List(3) { 70_000L },
+            working.map { it.loadGrams },
+            "the latest session's max, not the all-time max"
+        )
+        assertEquals(List(3) { 8 }, working.map { it.reps })
+        assertTrue(working.none { it.completed })
+    }
+
+    @Test
+    fun withoutSlotHistoryTheVariantsLatestSessionInAnySlotIsUsed() = runTest {
+        sessions.history += pastSets(listOf(80_000L to 6, 85_000L to 4), slotId = null)
+        val vm = viewModel()
+        assertEquals(Suggestion.FirstTime, vm.uiState.value.cards.first().suggestion)
+        val working = working(vm)
+        assertTrue(working.all { it.loadGrams == 85_000L && it.reps == 8 })
+    }
+
+    @Test
+    fun warmUpsWithoutHistoryStartAtSixtyPercentOfTheWorkingLoad() = runTest {
+        sessions.history += pastSets(listOf(80_000L to 10))
+        val vm = viewModel()
+        val warmup = cardSets(vm).first()
+        assertEquals(SetKind.WARMUP, warmup.kind)
+        assertEquals(47_500, warmup.loadGrams, "60 % of 80 kg rounded down to the 2.5 kg step")
+        assertTrue(working(vm).all { it.loadGrams == 80_000L })
+    }
+
+    @Test
+    fun aFlexibleSlotPrefillsFromTheVariantsHistoryInAFreeSession() = runTest {
+        sessions.history += ExerciseHistoryEntry(
+            "free",
+            1L,
+            SessionExercise(
+                "free-row",
+                "free",
+                0,
+                ROW_DUMBBELL,
+                slotId = null,
+                sets = listOf(
+                    SetLog("f1", "free-row", 0, reps = 10, loadGrams = 26_000, completed = true),
+                    SetLog("f2", "free-row", 1, reps = 8, loadGrams = 28_000, completed = true),
+                ),
+            ),
+        )
+        val vm = viewModel(routineSession(SessionExercise("e-row", SESSION_ID, 0, ROW_DUMBBELL, ROW_SLOT.id)))
+        val card = vm.uiState.value.cards.first()
+        assertEquals(2, card.sets.size)
+        assertTrue(card.sets.all { it.loadGrams == 28_000L && it.reps == 8 }, "heaviest working set, prescribed reps")
+    }
+
+    @Test
+    fun warmUpsDoNotInheritFromWorkingSets() = runTest {
+        sessions.history += pastSets(listOf(60_000L to 10), warmups = listOf(40_000))
+        val vm = viewModel()
+        val warmup = cardSets(vm).first()
+        assertEquals(SetKind.WARMUP, warmup.kind)
+        assertEquals(40_000, warmup.loadGrams)
+
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 80_000) }
+        assertEquals(40_000, sessions.set(warmup.id)!!.loadGrams, "a working-set change never reaches warm-ups")
+    }
+
+    @Test
+    fun changingASetUpdatesThePendingRowsBelowThatStillFollowIt() = runTest {
+        sessions.history += pastBench(60_000, listOf(10, 10, 10))
+        val vm = viewModel()
+        val (first, second, third) = working(vm)
+
+        edit(vm, first.id) { it.copy(loadGrams = 70_000, reps = 6) }
+        vm.onEvent(SessionIntent.ToggleSet(first.id))
+
+        assertTrue(sessions.set(first.id)!!.completed)
+        assertEquals(listOf(70_000L, 70_000L), listOf(second, third).map { sessions.set(it.id)!!.loadGrams })
+        assertEquals(listOf(6, 6), listOf(second, third).map { sessions.set(it.id)!!.reps })
+        assertEquals(setOf(first.id), vm.uiState.value.editedSetIds, "rows updated as defaults are not edited")
+    }
+
+    @Test
+    fun rowsTheUserEditedOrCompletedAreNeverOverwritten() = runTest {
+        sessions.history += pastBench(60_000, listOf(10, 10, 10))
+        val vm = viewModel()
+        vm.onEvent(SessionIntent.AddSet("e-bench"))
+        val rows = working(vm)
+        val (first, second, third) = rows
+        val fourth = rows[3]
+
+        edit(vm, third.id) { it.copy(loadGrams = 62_500) }
+        vm.onEvent(SessionIntent.ToggleSet(second.id))
+        edit(vm, first.id) { it.copy(loadGrams = 75_000) }
+
+        assertEquals(60_000, sessions.set(second.id)!!.loadGrams, "completed")
+        assertEquals(62_500, sessions.set(third.id)!!.loadGrams, "edited by the user")
+        assertEquals(62_500, sessions.set(fourth.id)!!.loadGrams, "followed the edited row above it")
+        assertTrue(third.id in vm.uiState.value.editedSetIds)
+    }
+
+    @Test
+    fun aNewSetCopiesThePreviousSet() = runTest {
+        val vm = viewModel()
+        edit(vm, working(vm).last().id) { it.copy(loadGrams = 50_000, reps = 9) }
+        vm.onEvent(SessionIntent.AddSet("e-bench"))
+        val added = working(vm).last()
+        assertEquals(50_000, added.loadGrams)
+        assertEquals(9, added.reps)
+    }
+
+    @Test
+    fun anAddedExerciseStartsAtItsHeaviestRecentSet() = runTest {
+        sessions.history += pastSets(listOf(60_000L to 10, 72_500L to 6), slotId = null)
+        val vm = viewModel(routineSession(SessionExercise("e-plank", SESSION_ID, 0, PLANK_VARIANT, PLANK_SLOT.id)))
+        vm.onEvent(SessionIntent.AddExercise(BENCH_BARBELL))
+        val added = vm.uiState.value.cards.last()
+        assertEquals(List(3) { 72_500L }, added.sets.map { it.loadGrams })
+        assertEquals(List(3) { 6 }, added.sets.map { it.reps }, "no prescription: the reps of that set")
     }
 
     @Test
@@ -316,7 +456,7 @@ class SessionViewModelTest {
         val after = vm.uiState.value.cards.first()
         assertEquals(ROW_DUMBBELL, after.variantId)
         assertEquals(2, after.sets.size)
-        assertTrue(after.sets.all { it.loadGrams == 24_000L && it.reps == 10 })
+        assertTrue(after.sets.all { it.loadGrams == 24_000L && it.reps == 8 })
     }
 
     @Test
@@ -337,6 +477,41 @@ class SessionViewModelTest {
         assertEquals(added.id, vm.uiState.value.cards.first().id)
         vm.onEvent(SessionIntent.RemoveExercise(added.id))
         assertEquals(listOf("e-bench"), vm.uiState.value.cards.map { it.id })
+    }
+
+    @Test
+    fun theTitleIsTheExerciseAndTheVariantChipsUseTheVariantLabels() = runTest {
+        val vm = viewModel(
+            routineSession(SessionExercise("e-pull", SESSION_ID, 0, PULLDOWN_WIDE, PULLDOWN_SLOT.id))
+        )
+        val card = vm.uiState.value.cards.single()
+        assertEquals("Lat Pulldown", card.name.plain("en"))
+        assertEquals(VariantLabel.Named(LocalizedText("Wide grip", "Agarre ancho")), card.name.label)
+        assertEquals(
+            listOf("Wide grip", "Close grip", "CABLE"),
+            card.variantOptions.map { o -> o.name.label?.text("en") { it.name } },
+        )
+        assertTrue(card.variantOptions.all { it.name.plain("en") == "Lat Pulldown" })
+        assertEquals("Lat Pulldown", store.state.value.label, "the notification shows the exercise")
+    }
+
+    @Test
+    fun theLoadStepIsRememberedPerVariant() = runTest {
+        val vm = viewModel()
+        val set = working(vm).first()
+        vm.onEvent(SessionIntent.EditSet(set.id))
+        assertNull(vm.uiState.value.editor!!.weightStep, "default step until the user picks one")
+
+        vm.onEvent(SessionIntent.SetLoadStep(1_250, plates = false))
+        assertEquals(1_250L, vm.uiState.value.editor!!.weightStep)
+        assertEquals(1_250L, loadSteps.step(BENCH_BARBELL))
+        vm.onEvent(SessionIntent.CloseEditor)
+
+        vm.onEvent(SessionIntent.EditSet(working(vm).last().id))
+        assertEquals(1_250L, vm.uiState.value.editor!!.weightStep, "same variant, same step")
+        vm.onEvent(SessionIntent.SetLoadStep(null, plates = false))
+        assertNull(loadSteps.step(BENCH_BARBELL))
+        assertNull(vm.uiState.value.editor!!.weightStep)
     }
 
     // endregion
@@ -427,7 +602,7 @@ class SessionViewModelTest {
         val vm = viewModel(pastSession(startedAt = start))
 
         val working = cardSets(vm).filter { it.kind == SetKind.WORKING }
-        assertEquals(listOf(10, 9, 8), working.map { it.reps })
+        assertEquals(listOf(8, 8, 8), working.map { it.reps })
         assertTrue(working.all { it.loadGrams == 60_000L && !it.completed })
         assertIs<Suggestion.Keep>(vm.uiState.value.cards.first().suggestion)
     }
@@ -504,6 +679,52 @@ class SessionViewModelTest {
         assertEquals(start + 3_600_000, saved.endedAt)
         assertEquals(listOf(10, 10), saved.exercises.single().sets.map { it.reps })
         assertEquals(listOf(65_000L, 65_000L), saved.exercises.single().sets.map { it.loadGrams })
+        assertTrue(vm.uiState.value.closed, "saving an edited session goes back to its detail")
+        assertNull(vm.uiState.value.summary, "no second \"Workout complete\"")
+    }
+
+    @Test
+    fun finishingRemovesTheExercisesWithoutACompletedSet() = runTest {
+        val plank = SessionExercise("e-plank", SESSION_ID, 1, PLANK_VARIANT, null)
+        val vm = viewModel(routineSession(benchExercise(), plank))
+        vm.onEvent(SessionIntent.ToggleSet(working(vm).first().id))
+
+        vm.onEvent(SessionIntent.RequestFinish)
+        vm.onEvent(SessionIntent.ConfirmFinish)
+
+        val session = sessions.sessions.value.getValue(SESSION_ID)
+        assertEquals(listOf("e-bench"), session.exercises.map { it.id }, "the untouched plank is gone")
+        assertEquals(1, session.exercises.single().sets.size)
+    }
+
+    @Test
+    fun savingALoggedSessionRemovesTheExercisesWithoutACompletedSet() = runTest {
+        val plank = SessionExercise("e-plank", SESSION_ID, 1, PLANK_VARIANT, null)
+        val start = clock.now - 3 * day
+        val vm = viewModel(routineSession(benchExercise(), plank).copy(startedAt = start, endedAt = start + 3_600_000))
+        vm.onEvent(SessionIntent.ToggleSet(working(vm).first().id))
+
+        vm.onEvent(SessionIntent.Save)
+
+        assertEquals(listOf("e-bench"), sessions.sessions.value.getValue(SESSION_ID).exercises.map { it.id })
+        assertNotNull(vm.uiState.value.summary, "a session logged after the fact still shows its summary")
+    }
+
+    @Test
+    fun firstTimeWarmUpsFollowTheFirstWorkingLoad() = runTest {
+        val vm = viewModel()
+        val warmup = cardSets(vm).first()
+        assertNull(warmup.loadGrams, "no history: the warm-up starts without a load")
+
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 80_000) }
+        assertEquals(47_500, sessions.set(warmup.id)!!.loadGrams, "60 % of 80 kg rounded down to the 2.5 kg step")
+
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 100_000) }
+        assertEquals(60_000, sessions.set(warmup.id)!!.loadGrams, "a generated warm-up keeps following set 1")
+
+        edit(vm, warmup.id) { it.copy(loadGrams = 40_000) }
+        edit(vm, working(vm).first().id) { it.copy(loadGrams = 120_000) }
+        assertEquals(40_000, sessions.set(warmup.id)!!.loadGrams, "a warm-up the user edited is never overwritten")
     }
 
     @Test
@@ -530,6 +751,7 @@ class SessionViewModelTest {
         const val PLANK_VARIANT = "plank.none"
         const val ROW_BARBELL = "row.barbell"
         const val ROW_DUMBBELL = "row.dumbbell"
+        const val PULLDOWN_WIDE = "lat-pulldown.wide-grip"
 
         fun exercise(id: String, en: String, tracking: TrackingType, vararg variants: Pair<Equipment, LoadType>) = Exercise(
             id = id,
@@ -555,6 +777,27 @@ class SessionViewModelTest {
             TrackingType.WEIGHT_REPS,
             Equipment.BARBELL to LoadType.BARBELL,
             Equipment.DUMBBELL to LoadType.DUMBBELL,
+        )
+
+        val PULLDOWN = exercise("lat-pulldown", "Lat Pulldown", TrackingType.WEIGHT_REPS).copy(
+            variants = listOf(
+                ExerciseVariant(
+                    PULLDOWN_WIDE,
+                    "lat-pulldown",
+                    Equipment.CABLE,
+                    LoadType.MACHINE,
+                    LocalizedText("Wide grip", "Agarre ancho"),
+                ),
+                ExerciseVariant(
+                    "lat-pulldown.close-grip",
+                    "lat-pulldown",
+                    Equipment.CABLE,
+                    LoadType.MACHINE,
+                    LocalizedText("Close grip", "Agarre cerrado"),
+                    position = 1,
+                ),
+                ExerciseVariant("lat-pulldown.cable", "lat-pulldown", Equipment.CABLE, LoadType.MACHINE, position = 2),
+            ),
         )
 
         val BENCH_SLOT = RoutineSlot(
@@ -587,10 +830,20 @@ class SessionViewModelTest {
             sets = 2,
             prescription = Prescription.RepRange(8, 12),
         )
+        val PULLDOWN_SLOT = RoutineSlot(
+            id = "slot-pull",
+            dayId = "day-1",
+            position = 3,
+            target = SlotTarget.Flexible("lat-pulldown"),
+            sets = 3,
+            prescription = Prescription.RepRange(10, 12),
+        )
         val ROUTINE = Routine(
             id = "r1",
             name = "Push",
-            days = listOf(RoutineDay("day-1", "r1", 0, "Push", slots = listOf(BENCH_SLOT, PLANK_SLOT, ROW_SLOT))),
+            days = listOf(
+                RoutineDay("day-1", "r1", 0, "Push", slots = listOf(BENCH_SLOT, PLANK_SLOT, ROW_SLOT, PULLDOWN_SLOT)),
+            ),
         )
     }
 }

@@ -2,10 +2,11 @@
     <string name="progress_title">Progress</string>
 
     <!-- Tabs -->
+    <string name="progress_tab_overview">Overview</string>
     <string name="progress_tab_calendar">Calendar</string>
     <string name="progress_tab_exercises">Exercises</string>
+    <string name="progress_tab_muscles">Muscles</string>
     <string name="progress_tab_body_weight">Body weight</string>
-    <string name="progress_tab_volume">Volume</string>
 
     <!-- Shared -->
     <string name="progress_back">Back</string>
@@ -22,8 +23,6 @@
     <string name="progress_duration_m">%1$s min</string>
     <string name="progress_variant_name">%1$s (%2$s)</string>
     <string name="progress_unknown_exercise">Unknown exercise</string>
-    <string name="progress_chart_description">%1$s: from %2$s to %3$s</string>
-    <string name="progress_chart_not_enough">Not enough data yet.</string>
     <plurals name="progress_exercise_count">
         <item quantity="one">%1$d exercise</item>
         <item quantity="other">%1$d exercises</item>
@@ -109,14 +108,12 @@
     <string name="progress_records_title">Personal records</string>
     <string name="progress_record_heaviest">Heaviest load</string>
     <string name="progress_record_one_rm">Best estimated 1RM</string>
-    <string name="progress_record_reps">Most reps</string>
     <string name="progress_record_volume">Best session volume</string>
     <string name="progress_no_records">No records yet.</string>
 
     <!-- Body weight -->
     <string name="progress_bw_log">Log weight</string>
     <string name="progress_bw_empty">Log your body weight to see your trend.</string>
-    <string name="progress_bw_latest">Latest: %1$s</string>
     <string name="progress_bw_change">%1$s in the last 30 days</string>
     <string name="progress_bw_change_none">Log more entries to see your 30-day trend.</string>
     <string name="progress_bw_chart">Body weight</string>
@@ -126,11 +123,7 @@
     <string name="progress_bw_edit_title">Edit entry</string>
     <string name="progress_bw_field">Weight (%1$s)</string>
     <string name="progress_bw_invalid">Enter a valid weight.</string>
-
-    <!-- Weekly volume -->
-    <string name="progress_volume_intro">Volume (load × reps) of working sets per week, by primary muscle.</string>
-    <string name="progress_volume_empty">No volume logged in the last 4 weeks.</string>
-    <string name="progress_volume_week">Week of %1$s</string>
+    <string name="progress_bw_date">Date</string>
 
     <!-- Muscles -->
     <string name="progress_muscle_abdominals">Abdominals</string>
@@ -151,6 +144,21 @@
     <string name="progress_muscle_traps">Traps</string>
     <string name="progress_muscle_triceps">Triceps</string>
     <string name="progress_muscle_full_body">Full body</string>
+    <string name="progress_group_chest">Chest</string>
+    <string name="progress_group_back">Back</string>
+    <string name="progress_group_shoulders">Shoulders</string>
+    <string name="progress_group_quads">Quadriceps</string>
+    <string name="progress_group_hamstrings">Hamstrings</string>
+    <string name="progress_group_glutes">Glutes</string>
+    <string name="progress_group_biceps">Biceps</string>
+    <string name="progress_group_triceps">Triceps</string>
+    <string name="progress_group_calves">Calves</string>
+    <string name="progress_group_abs">Abdominals</string>
+    <string name="progress_group_traps">Traps</string>
+    <string name="progress_group_lower_back">Lower back</string>
+    <string name="progress_group_forearms">Forearms</string>
+    <string name="progress_group_hips">Hip adductors and abductors</string>
+    <string name="progress_group_neck">Neck</string>
 
     <!-- Equipment -->
     <string name="progress_equipment_barbell">Barbell</string>
@@ -188,4 +196,286 @@
     <string name="progress_delete_session_text">Its exercises and sets are deleted for good.</string>
     <string name="progress_more">More options</string>
     <string name="progress_change_failed">Could not save the change</string>
+    <!-- Statistics: shared -->
+    <string name="progress_period_4w">4 weeks</string>
+    <string name="progress_period_3m">3 months</string>
+    <string name="progress_period_12m">12 months</string>
+    <string name="progress_period_all">All time</string>
+    <string name="progress_overview_caption">%1$s, compared with %2$s</string>
+    <string name="progress_overview_caption_all">%1$s · no comparison (all history)</string>
+    <string name="progress_change_value">%1$s %2$s (%3$s)</string>
+    <string name="progress_change_from_zero">%1$s %2$s (from 0)</string>
+    <string name="progress_change_same">= same as the previous period</string>
+    <string name="progress_change_none">—</string>
+    <string name="progress_change_no_sets">No sets in the previous period</string>
+    <string name="progress_legend_this_period">This period</string>
+    <string name="progress_legend_previous_period">Previous period</string>
+    <string name="progress_chart_previous">Previous: %1$s</string>
+    <string name="progress_chart_per_week">Per 7-day block, counted back from today</string>
+    <string name="progress_chart_per_week_of_4">Weekly average of each 4-week block, counted back from today</string>
+    <string name="progress_chart_bars_description">%1$s. %2$d bars from %3$s to %4$s. Highest: %5$s (%6$s). Latest: %7$s.</string>
+    <string name="progress_chart_line_description">%1$s. %2$d points from %3$s to %4$s. First: %5$s, latest: %6$s, lowest: %7$s, highest: %8$s.</string>
+    <string name="progress_axis_sessions">sessions</string>
+    <string name="progress_axis_sets">sets</string>
+    <string name="progress_axis_minutes">min</string>
+    <string name="progress_unit_sets_week">sets/wk</string>
+    <string name="progress_info_about">How %1$s is calculated</string>
+    <string name="progress_info_formula">How it is calculated</string>
+    <string name="progress_info_counts">What counts</string>
+    <string name="progress_info_limits">Limitations</string>
+    <string name="progress_trend_value">%1$s/week</string>
+
+    <!-- Overview -->
+    <string name="progress_overview_empty">Finish or log a session to fill this page: your sessions, volume, effective sets, training time and records will appear here, compared with the previous period.</string>
+    <string name="progress_tile_sessions">Sessions</string>
+    <string name="progress_tile_volume">Total volume</string>
+    <string name="progress_tile_sets">Effective sets</string>
+    <string name="progress_tile_time">Training time</string>
+    <string name="progress_tile_prs">New records</string>
+    <string name="progress_tile_duration">Avg. session</string>
+    <string name="progress_chart_weekly_volume">Weekly volume</string>
+    <string name="progress_chart_volume_empty">No volume in this period yet. Bars will show the load × reps of each week, with the previous period as an outline behind them.</string>
+    <string name="progress_chart_sessions_week">Sessions per week</string>
+    <string name="progress_chart_sessions_empty">No sessions in this period yet. Each bar will count the sessions of one week.</string>
+    <string name="progress_chart_sets_week">Effective sets per week</string>
+    <string name="progress_chart_sets_empty">No effective sets in this period yet. Each bar will count the effective sets of one week.</string>
+    <string name="progress_chart_heatmap">Training days</string>
+    <plurals name="progress_heatmap_days">
+        <item quantity="one">%1$d training day in the last %2$d weeks</item>
+        <item quantity="other">%1$d training days in the last %2$d weeks</item>
+    </plurals>
+    <string name="progress_heatmap_less">Less</string>
+    <string name="progress_heatmap_more">More</string>
+    <string name="progress_heatmap_tooltip">%1$s · %2$s effective sets</string>
+    <string name="progress_heatmap_tooltip_rest">No session</string>
+    <string name="progress_chart_duration">Average session duration</string>
+    <string name="progress_chart_duration_subtitle">Mean of each week’s sessions, from start to finish</string>
+    <string name="progress_chart_duration_empty">Durations appear once two weeks of the period have finished sessions.</string>
+    <string name="progress_chart_adherence">Plan adherence</string>
+    <string name="progress_adherence_detail">%1$s sessions per week logged, %2$s planned by your active routine</string>
+    <string name="progress_adherence_no_routine">Activate a routine with rest days to compare the sessions you log with its plan.</string>
+    <string name="progress_adherence_no_plan">Your active routine has no rest days, so it does not describe a week: its days are followed in order whenever you train. Adherence needs a cycle with rest days.</string>
+
+    <!-- Exercise progress -->
+    <string name="progress_tile_best_e1rm">Best e1RM</string>
+    <string name="progress_tile_trend">e1RM trend</string>
+    <string name="progress_tile_exercise_sessions">Sessions</string>
+    <plurals name="progress_tile_exercise_sets">
+        <item quantity="one">%1$d effective set in total</item>
+        <item quantity="other">%1$d effective sets in total</item>
+    </plurals>
+    <plurals name="progress_trend_detail">
+        <item quantity="one">R² %1$s · %2$d session</item>
+        <item quantity="other">R² %1$s · %2$d sessions</item>
+    </plurals>
+    <string name="progress_trend_none">Needs 3 sessions with weight</string>
+    <string name="progress_chart_one_rm_subtitle">Best set of each session, with its least-squares trend</string>
+    <string name="progress_chart_one_rm_empty">The estimated 1RM line appears after two sessions with a weighted set.</string>
+    <string name="progress_chart_trend_line">Trend</string>
+    <string name="progress_compare_with">Compare with another variant or exercise</string>
+    <string name="progress_compare_selected">Comparing with %1$s</string>
+    <string name="progress_compare_none">No comparison</string>
+    <string name="progress_chart_top_set_subtitle">Heaviest load lifted for at least one rep, per session</string>
+    <string name="progress_chart_not_enough_sessions">This chart appears after two sessions with a weighted set.</string>
+    <string name="progress_chart_volume_subtitle">Load × reps per session, last %1$d sessions</string>
+    <string name="progress_chart_volume_session_empty">No volume yet: unloaded bodyweight, timed and band sets add no load × reps.</string>
+    <string name="progress_chart_rep_ranges">Rep ranges</string>
+    <string name="progress_chart_rep_ranges_subtitle">Effective sets of this variant by repetitions</string>
+    <string name="progress_chart_rep_ranges_empty">Sets with reps will be grouped here by range.</string>
+    <string name="progress_rep_range">%1$d–%2$d</string>
+    <string name="progress_rep_range_open">%1$d+</string>
+    <string name="progress_rep_range_axis">Repetitions per set</string>
+    <string name="progress_table_title">Progression table</string>
+    <string name="progress_table_subtitle">Newest first · loads and volume in %1$s</string>
+    <string name="progress_table_empty">Each session of this exercise will add a row here.</string>
+    <string name="progress_table_date">Date</string>
+    <string name="progress_table_best">Best set</string>
+    <string name="progress_table_e1rm">e1RM</string>
+    <string name="progress_table_volume">Volume</string>
+    <string name="progress_table_delta">Δ</string>
+    <string name="progress_table_pr">personal record</string>
+    <string name="progress_table_show_all">Show all %1$d sessions</string>
+    <string name="progress_table_show_less">Show fewer</string>
+    <string name="progress_table_row_description">%1$s: best set %2$s, estimated 1RM %3$s, volume %4$s, change %5$s</string>
+    <string name="progress_set_value">%1$s × %2$d</string>
+    <string name="progress_record_reps_at_load">Most reps at a load</string>
+
+    <!-- Muscles -->
+    <string name="progress_chart_muscle_sets">Weekly sets per muscle</string>
+    <string name="progress_chart_muscle_volume">Weekly volume per muscle</string>
+    <string name="progress_chart_muscle_subtitle">Primary muscles · solid bar this period, thin bar the previous one</string>
+    <string name="progress_muscles_empty">No sets in this period yet. Each muscle you train will get a bar, compared with the previous period.</string>
+    <string name="progress_chart_balance">Muscle balance</string>
+    <string name="progress_balance_empty">Balance ratios appear once the period has effective sets.</string>
+    <string name="progress_balance_push">Push</string>
+    <string name="progress_balance_pull">Pull</string>
+    <string name="progress_balance_upper">Upper body</string>
+    <string name="progress_balance_lower">Lower body</string>
+    <string name="progress_balance_detail">%1$s %2$s vs %3$s %4$s sets/wk</string>
+    <string name="progress_balance_previous">Previous period: %1$s</string>
+    <string name="progress_balance_only_first">only the first side</string>
+
+    <!-- Body weight -->
+    <string name="progress_bw_latest_title">Latest</string>
+    <string name="progress_bw_rate_title">Rate of change</string>
+    <string name="progress_bw_rate_detail">Fitted over %1$d entries of the last %2$d days</string>
+    <string name="progress_bw_rate_none">Needs 3 entries over 7+ days</string>
+    <string name="progress_bw_chart_subtitle">Each entry and the average of the last 7 entries</string>
+    <string name="progress_bw_chart_empty">Log two entries to draw your body-weight line.</string>
+    <string name="progress_bw_entries_series">Entries</string>
+    <string name="progress_bw_weekly_title">Weekly average</string>
+    <string name="progress_bw_weekly_subtitle">Monday to Sunday, newest first · in %1$s</string>
+    <string name="progress_bw_weekly_empty">Each week with entries will get a row with its average.</string>
+    <string name="progress_bw_week">Week of</string>
+    <string name="progress_bw_avg">Average</string>
+    <string name="progress_bw_range">Min–max</string>
+    <plurals name="progress_bw_week_description">
+        <item quantity="one">Week of %1$s: average %2$s from %3$d entry, range %4$s, change %5$s</item>
+        <item quantity="other">Week of %1$s: average %2$s from %3$d entries, range %4$s, change %5$s</item>
+    </plurals>
+
+    <!-- Metric explanations (one block per Metric) -->
+    <string name="progress_metric_e1rm_title">Estimated 1RM (e1RM)</string>
+    <string name="progress_metric_e1rm_summary">The heaviest load you could probably lift once, estimated from a set of several reps.</string>
+    <string name="progress_metric_e1rm_formula">Epley formula: load × (1 + reps ÷ 30), for every set. A session shows its best set. A single rep counts as the load itself. Example: 100 kg × 5 → 116.7 kg.</string>
+    <string name="progress_metric_e1rm_counts">Completed working, drop and to-failure sets with a weight and at least one rep. Warm-ups, unfinished sets, unloaded or assisted bodyweight sets, bands and machines logged by plate number do not count.</string>
+    <string name="progress_metric_e1rm_limits">It is an estimate, most accurate between 1 and 10 reps; it drifts with high reps and with sets far from failure. Use it to compare yourself over time, not as a real max.</string>
+
+    <string name="progress_metric_top_set_title">Top set</string>
+    <string name="progress_metric_top_set_summary">The heaviest load you lifted for at least one rep in a session.</string>
+    <string name="progress_metric_top_set_formula">Maximum load among the session’s counted sets.</string>
+    <string name="progress_metric_top_set_counts">Completed working, drop and to-failure sets with a weight and at least one rep. Warm-ups do not count.</string>
+    <string name="progress_metric_top_set_limits">It ignores reps: 100 kg × 1 and 100 kg × 8 look the same. Check the estimated 1RM to take reps into account.</string>
+
+    <string name="progress_metric_volume_title">Volume</string>
+    <string name="progress_metric_volume_summary">How much weight you moved: load times reps, added up.</string>
+    <string name="progress_metric_volume_formula">Σ load × reps over completed working, drop and to-failure sets. Dumbbell exercises from a routine exercise marked as using both hands count twice (one dumbbell per hand). Shown in your unit (kg or lb).</string>
+    <string name="progress_metric_volume_counts">Bodyweight exercises count only added load: unloaded and assisted sets add 0 volume (they still count as effective sets). Warm-ups, unfinished sets, bands and machines logged by plate number add nothing.</string>
+    <string name="progress_metric_volume_limits">Volume favours heavy compound lifts and high reps; it does not measure effort. A dumbbell exercise added outside a routine counts the load as you entered it.</string>
+
+    <string name="progress_metric_sets_title">Effective sets</string>
+    <string name="progress_metric_sets_summary">The number of sets that did real work.</string>
+    <string name="progress_metric_sets_formula">Count of completed sets that are not warm-ups and have at least one rep, a duration or a distance.</string>
+    <string name="progress_metric_sets_counts">Working, drop and to-failure sets of any exercise, including bodyweight, timed and cardio sets.</string>
+    <string name="progress_metric_sets_limits">Ironlog cannot know how hard a set was: an easy set counts the same as a set to failure. RPE, when you log it, is not used to filter sets.</string>
+
+    <string name="progress_metric_prs_title">Personal records</string>
+    <string name="progress_metric_prs_summary">Your bests for one exercise variant, and when you set them.</string>
+    <string name="progress_metric_prs_formula">Heaviest load (for at least one rep) · best estimated 1RM · most reps at a load (more reps than ever done at that load or heavier) · best session volume. A record must beat every earlier session strictly; ties keep the first date.</string>
+    <string name="progress_metric_prs_counts">Completed working sets of the selected variant: barbell, dumbbells and the other variants keep separate records. The first session of a variant is the starting point, not a record.</string>
+    <string name="progress_metric_prs_limits">Records are recalculated from your log, so editing or deleting old sessions can change them. Bands and machines logged by plate number are left out.</string>
+
+    <string name="progress_metric_new_prs_title">New records</string>
+    <string name="progress_metric_new_prs_summary">How many personal records you set in the period.</string>
+    <string name="progress_metric_new_prs_formula">Count of records (heaviest load, estimated 1RM, reps at a load, session volume) set by sessions in the period, each compared with your whole history before that session.</string>
+    <string name="progress_metric_new_prs_counts">Every variant and every kind of record counts separately, so one session can set several.</string>
+    <string name="progress_metric_new_prs_limits">Records come easily with a new exercise or after a break, so more records does not always mean more progress.</string>
+
+    <string name="progress_metric_sessions_title">Sessions</string>
+    <string name="progress_metric_sessions_summary">Finished sessions started in the period.</string>
+    <string name="progress_metric_sessions_formula">Count of sessions with a start date in the period and an end time.</string>
+    <string name="progress_metric_sessions_counts">Routine and free sessions, live or logged afterwards. A session still in progress does not count yet.</string>
+    <string name="progress_metric_sessions_limits">A ten-minute session counts the same as a two-hour one.</string>
+
+    <string name="progress_metric_duration_title">Session duration</string>
+    <string name="progress_metric_duration_summary">How long a session usually lasts, from start to finish.</string>
+    <string name="progress_metric_duration_formula">Σ (end time − start time) ÷ number of finished sessions. The chart shows that average for each week.</string>
+    <string name="progress_metric_duration_counts">Finished sessions of the period, by the day they started.</string>
+    <string name="progress_metric_duration_limits">It is only as accurate as the recorded times: a session finished late, or logged with a guessed duration, moves it. Edit the session’s date and time to fix it.</string>
+
+    <string name="progress_metric_time_title">Training time</string>
+    <string name="progress_metric_time_summary">Total time spent in sessions.</string>
+    <string name="progress_metric_time_formula">Σ (end time − start time) of the finished sessions in the period.</string>
+    <string name="progress_metric_time_counts">Every finished session of the period, routine or free.</string>
+    <string name="progress_metric_time_limits">It includes rest between sets and anything else between start and finish.</string>
+
+    <string name="progress_metric_frequency_title">Sessions per week</string>
+    <string name="progress_metric_frequency_summary">How often you train.</string>
+    <string name="progress_metric_frequency_formula">Sessions in each block of 7 days. When the chart uses 4-week blocks (long histories), each bar is the block’s sessions ÷ 4.</string>
+    <string name="progress_metric_frequency_counts">Finished sessions, by the day they started; several sessions on one day all count.</string>
+    <string name="progress_metric_frequency_limits">Blocks are counted back from today, so they do not always start on a Monday.</string>
+
+    <string name="progress_metric_moving_title">Moving average</string>
+    <string name="progress_metric_moving_summary">A smoothed line that hides day-to-day noise.</string>
+    <string name="progress_metric_moving_formula">Each point is the average of that entry and up to 6 entries before it (7 entries in total).</string>
+    <string name="progress_metric_moving_counts">Every body-weight entry, whatever the day.</string>
+    <string name="progress_metric_moving_limits">It counts entries, not days: with irregular weigh-ins it spans different lengths of time, and it reacts to real changes a few entries late.</string>
+
+    <string name="progress_metric_change_title">Change vs the previous period</string>
+    <string name="progress_metric_change_summary">How this period compares with the one just before it.</string>
+    <string name="progress_metric_change_formula">Change = this period − previous period. % = change ÷ previous × 100. The period is the last 28, 91 or 364 days ending today (today included); the previous period is the same number of days right before it, so both have the same length and the same weekdays.</string>
+    <string name="progress_metric_change_counts">▲ means higher and ▼ lower: the arrows only describe the direction, not whether it is good. All time has no previous period.</string>
+    <string name="progress_metric_change_limits">Without anything in the previous period there is no percentage. Today is not over, so the current period can still grow.</string>
+
+    <string name="progress_metric_adherence_title">Plan adherence</string>
+    <string name="progress_metric_adherence_summary">Sessions you logged compared with what your active routine plans.</string>
+    <string name="progress_metric_adherence_formula">Planned per week = training days of the cycle × 7 ÷ cycle length (one routine day per calendar day). Logged per week = sessions in the period ÷ weeks in the period. Adherence = logged ÷ planned × 100.</string>
+    <string name="progress_metric_adherence_counts">Every finished session counts, routine or free. It can go above 100 %.</string>
+    <string name="progress_metric_adherence_limits">It uses the routine that is active today for the whole period. A routine without rest days has no weekly plan (it is followed in order, whenever you train), so adherence is not shown for it.</string>
+
+    <string name="progress_metric_heatmap_title">Training days</string>
+    <string name="progress_metric_heatmap_summary">Each square is a day; coloured squares are days you trained.</string>
+    <string name="progress_metric_heatmap_formula">Darker means more effective sets that day. The training days shown are split into four equal groups (quartiles) by effective sets, so the colours adapt to your usual amount.</string>
+    <string name="progress_metric_heatmap_counts">Finished sessions by the day they started; several sessions on one day add up. Columns are weeks from Monday (top) to Sunday.</string>
+    <string name="progress_metric_heatmap_limits">Colours are relative to the days shown, not absolute amounts. Tap a day to see its numbers.</string>
+
+    <string name="progress_metric_trend_title">e1RM trend</string>
+    <string name="progress_metric_trend_summary">The average weekly change of your estimated 1RM over this variant’s history.</string>
+    <string name="progress_metric_trend_formula">Least-squares line through each session’s estimated 1RM against its date; its slope × 7 gives kg (or lb) per week. R² (0–1) says how well a straight line fits: close to 1 is a steady trend.</string>
+    <string name="progress_metric_trend_counts">Sessions with an estimated 1RM; it needs at least 3.</string>
+    <string name="progress_metric_trend_limits">Few sessions, one very good or bad day, or a long break can swing it. Progress is rarely a straight line, so read it together with the chart.</string>
+
+    <string name="progress_metric_reps_title">Rep ranges</string>
+    <string name="progress_metric_reps_summary">How your sets of this variant are spread by repetitions.</string>
+    <string name="progress_metric_reps_formula">Effective sets counted in five ranges: 1–5, 6–8, 9–12, 13–20 and 21 or more reps. Tap a bar to see its share.</string>
+    <string name="progress_metric_reps_counts">Effective sets with reps of the selected variant. Timed and distance sets are left out.</string>
+    <string name="progress_metric_reps_limits">The ranges only describe what you did; none is better than another.</string>
+
+    <string name="progress_metric_table_title">Progression table</string>
+    <string name="progress_metric_table_summary">One row per session of this variant, newest first.</string>
+    <string name="progress_metric_table_formula">Best set = the set with the highest estimated 1RM (ties go to the heavier). e1RM = Epley estimate of that set. Volume = Σ load × reps. Δ = change of the estimated 1RM against the previous session that had one.</string>
+    <string name="progress_metric_table_counts">Completed working, drop and to-failure sets of the selected variant. PR marks a session that set at least one personal record.</string>
+    <string name="progress_metric_table_limits">It reads up to your last 200 sessions of the exercise.</string>
+
+    <string name="progress_metric_muscle_sets_title">Weekly sets per muscle</string>
+    <string name="progress_metric_muscle_sets_summary">Effective sets per week for each muscle group, this period against the previous one.</string>
+    <string name="progress_metric_muscle_sets_formula">Effective sets of the exercises whose primary muscles include the group ÷ weeks in the period.</string>
+    <string name="progress_metric_muscle_sets_counts">Primary muscles only, each in full: a set of an exercise with two primary muscles counts once for each. Secondary muscles are not counted. The routine analysis also adds half a set for secondary muscles, so its totals are higher; its direct part is what is counted here.</string>
+    <string name="progress_metric_muscle_sets_limits">Muscles come from the exercise catalogue, a simplification of how exercises really load them.</string>
+
+    <string name="progress_metric_muscle_volume_title">Weekly volume per muscle</string>
+    <string name="progress_metric_muscle_volume_summary">Volume (load × reps) per week for each muscle group.</string>
+    <string name="progress_metric_muscle_volume_formula">Σ load × reps of the exercises whose primary muscles include the group ÷ weeks in the period.</string>
+    <string name="progress_metric_muscle_volume_counts">The usual volume rules (bodyweight adds only extra load) with primary muscles counted in full.</string>
+    <string name="progress_metric_muscle_volume_limits">Volumes of different muscles are not comparable: legs move far more weight than arms.</string>
+
+    <string name="progress_metric_balance_title">Muscle balance</string>
+    <string name="progress_metric_balance_summary">How your effective sets split between opposite groups.</string>
+    <string name="progress_metric_balance_formula">Ratio = weekly sets of the first side ÷ weekly sets of the second. Push: chest, shoulders, triceps. Pull: lats, middle back, biceps, traps. Upper body: chest, shoulders, arms, back, traps, neck. Lower body: quadriceps, hamstrings, glutes, calves, adductors, abductors.</string>
+    <string name="progress_metric_balance_counts">Effective sets by primary muscle. A set counts once per side even when several of its muscles are on that side. Abdominals, lower back and full-body exercises are left out.</string>
+    <string name="progress_metric_balance_limits">A ratio only describes your split; there is no universally right value. Shoulders count as push, although rear-delt work is a pull.</string>
+
+    <string name="progress_metric_bw_weekly_title">Weekly average</string>
+    <string name="progress_metric_bw_weekly_summary">Your average body weight in each calendar week.</string>
+    <string name="progress_metric_bw_weekly_formula">Average = Σ entries of the week ÷ number of entries. Δ = this week’s average − the previous week with entries.</string>
+    <string name="progress_metric_bw_weekly_counts">Weeks run Monday to Sunday; weeks without entries are skipped.</string>
+    <string name="progress_metric_bw_weekly_limits">A week with a single entry is as noisy as that one weigh-in.</string>
+
+    <string name="progress_metric_bw_change_title">30-day change</string>
+    <string name="progress_metric_bw_change_summary">How much your latest entry differs from a month earlier.</string>
+    <string name="progress_metric_bw_change_formula">Latest entry − the oldest entry within the 30 days before it.</string>
+    <string name="progress_metric_bw_change_counts">Needs at least one earlier entry inside those 30 days.</string>
+    <string name="progress_metric_bw_change_limits">It compares two single weigh-ins, so daily swings of water and food show in it. The rate of change uses every recent entry instead.</string>
+
+    <string name="progress_metric_bw_rate_title">Rate of change</string>
+    <string name="progress_metric_bw_rate_summary">How fast your body weight has been changing per week lately.</string>
+    <string name="progress_metric_bw_rate_formula">Least-squares line through the entries of the last 28 days; its slope × 7 gives kg (or lb) per week.</string>
+    <string name="progress_metric_bw_rate_counts">Needs at least 3 entries spread over 7 days or more.</string>
+    <string name="progress_metric_bw_rate_limits">Water, food and the time of day move body weight by 1–2 kg; weighing in under similar conditions gives a cleaner trend.</string>
+
+    <string name="progress_metric_compare_title">Compare</string>
+    <string name="progress_metric_compare_summary">Puts the estimated 1RM of another variant or exercise on the same chart.</string>
+    <string name="progress_metric_compare_formula">Each line is the best estimated 1RM of each session of that variant, on the same scale.</string>
+    <string name="progress_metric_compare_counts">The same rules as the estimated 1RM.</string>
+    <string name="progress_metric_compare_limits">Different exercises have different strength levels: compare their shapes and trends more than their heights.</string>
 </resources>

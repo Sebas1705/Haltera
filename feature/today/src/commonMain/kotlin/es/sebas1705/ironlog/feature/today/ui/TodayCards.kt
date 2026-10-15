@@ -134,6 +134,17 @@ internal fun PlanCard(
                     fontWeight = FontWeight.SemiBold,
                 )
                 if (next.planSaysRest) RestHint()
+                // The primary action comes before the exercise list so it stays above the fold on
+                // small phones with long days.
+                Button(
+                    onClick = { onIntent(TodayIntent.StartNextDay) },
+                    enabled = startEnabled,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(Res.string.today_start))
+                }
                 if (next.exercises.isEmpty()) {
                     Text(stringResource(Res.string.today_no_exercises), style = MaterialTheme.typography.bodyMedium)
                 } else {
@@ -143,15 +154,6 @@ internal fun PlanCard(
                             SlotRow(slot)
                         }
                     }
-                }
-                Button(
-                    onClick = { onIntent(TodayIntent.StartNextDay) },
-                    enabled = startEnabled,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(Res.string.today_start))
                 }
             }
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -186,7 +188,7 @@ private fun SlotRow(slot: SlotUi) {
     val language = currentLanguage()
     val detail = when {
         slot.flexible -> stringResource(Res.string.today_flexible)
-        else -> slot.equipment?.let { equipmentLabel(it) }?.let { stringResource(it) }
+        else -> slot.variantName?.get(language) ?: slot.equipment?.let { equipmentLabel(it) }?.let { stringResource(it) }
     }
     Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f)) {

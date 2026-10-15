@@ -1,7 +1,7 @@
 # Curation of the exercise catalogue (spec §6.2). Code and keys in English; `es` values in Spanish.
 # Once a version ships, set released: true; any later change then needs catalogVersion + 1 and released: false.
-catalogVersion: 1
-released: false
+catalogVersion: 2
+released: true
 
 # Source ids (free-exercise-db) left out: strongman implements and band/chain powerlifting setups
 # a regular gym does not have.
@@ -195,6 +195,7 @@ groups:
       - source: Pullups
       - source: Band_Assisted_Pull-Up
         suffix: band-assisted
+        name: { en: Band-assisted, es: Asistida con goma }
   - id: lat-pulldown
     name: { en: Lat Pulldown, es: Jalón al pecho }
     variants:
@@ -319,8 +320,10 @@ groups:
     variants:
       - source: Running_Treadmill
         suffix: treadmill
+        name: { en: Treadmill, es: En cinta }
       - suffix: outdoor
         equipment: NONE
+        name: { en: Outdoors, es: Al aire libre }
   - id: walking
     name: { en: Walking, es: Caminar }
     instructions:
@@ -329,5 +332,7 @@ groups:
     variants:
       - source: Walking_Treadmill
         suffix: treadmill
+        name: { en: Treadmill, es: En cinta }
       - suffix: outdoor
         equipment: NONE
+        name: { en: Outdoors, es: Al aire libre }

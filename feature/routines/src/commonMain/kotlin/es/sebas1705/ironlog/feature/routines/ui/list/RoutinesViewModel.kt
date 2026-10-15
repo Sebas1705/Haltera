@@ -4,14 +4,22 @@ import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.data.models.Routine
+import es.sebas1705.ironlog.data.repository.ExerciseRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.ironlog.feature.routines.model.ExerciseIndex
 import es.sebas1705.ironlog.feature.routines.model.attempt
+import es.sebas1705.ironlog.feature.routines.model.indexFor
+import es.sebas1705.ironlog.feature.routines.model.scoreRoutine
+import es.sebas1705.ironlog.feature.routines.model.targetsOf
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.catch
 
 internal data class RoutinesState(
     val loading: Boolean = true,
     val routines: List<Routine> = emptyList(),
+    /** Advice-only score per routine id, filled once their exercises are loaded. */
+    val scores: Map<String, RoutineScore> = emptyMap(),
     /** Routine waiting for the delete confirmation. */
     val pendingDelete: Routine? = null,
     /** One-shot: a routine just created, to open in the editor. */
@@ -35,13 +43,20 @@ internal sealed interface RoutinesIntent : MVIBaseIntent {
 /** My routines: list, active routine, delete with confirmation and creation. */
 internal class RoutinesViewModel(
     private val routines: RoutineRepository,
+    private val exercises: ExerciseRepository,
 ) : MVIBaseViewModel<RoutinesState, RoutinesIntent>(RoutinesState()) {
+
+    /** Exercises of every routine, kept across emissions so only new ones are loaded. */
+    private var index = ExerciseIndex()
 
     init {
         execute {
             routines.observeRoutines()
                 .catch { updateState { it.copy(loading = false, error = true) } }
-                .collect { list -> updateState { it.copy(loading = false, routines = list) } }
+                .collect { list ->
+                    updateState { it.copy(loading = false, routines = list) }
+                    score(list)
+                }
         }
     }
 
@@ -58,6 +73,14 @@ internal class RoutinesViewModel(
             is RoutinesIntent.Create -> create(intent.name, intent.firstDayName)
             RoutinesIntent.OpenHandled -> updateState { it.copy(openRoutineId = null) }
             RoutinesIntent.ErrorShown -> updateState { it.copy(error = false) }
+        }
+    }
+
+    private suspend fun score(list: List<Routine>) {
+        attempt { exercises.indexFor(targetsOf(list), index) }.onSuccess { loaded ->
+            index = loaded
+            val scores = list.associate { it.id to scoreRoutine(it, loaded) }
+            updateState { it.copy(scores = scores) }
         }
     }
 

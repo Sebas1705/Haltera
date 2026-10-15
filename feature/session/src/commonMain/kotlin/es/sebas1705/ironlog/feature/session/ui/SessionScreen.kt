@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.session.ui
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -75,6 +76,7 @@ fun SessionScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val language = uiLanguage()
     LaunchedEffect(language) { viewModel.onEvent(SessionIntent.SetLanguage(language)) }
+    LaunchedEffect(state.closed) { if (state.closed) onBack() }
     LaunchedEffect(state.discarded) {
         if (state.discarded) if (state.logMode) onBack() else onFinished()
     }
@@ -111,7 +113,7 @@ internal fun SessionContent(
     ) { padding ->
         val summary = state.summary
         when {
-            state.loading || state.discarded -> LoadingScreen(Modifier.padding(padding))
+            state.loading || state.discarded || state.closed -> LoadingScreen(Modifier.padding(padding))
             state.missing -> Centered(stringResource(Res.string.session_missing), Modifier.padding(padding))
             // A live session finished here returns to Today; a logged or edited one goes back where it came from.
             summary != null -> SummaryView(
@@ -220,7 +222,7 @@ private fun ExerciseList(state: SessionState, onEvent: (SessionIntent) -> Unit, 
     }
     val current = state.currentCardId
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(padding),
+        modifier = Modifier.fillMaxSize().padding(padding).centeredContent(),
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
@@ -263,6 +265,9 @@ private fun SessionOverlays(state: SessionState, onEvent: (SessionIntent) -> Uni
         card = card,
         draft = editor.draft,
         settings = state.settings,
+        steps = VariantSteps(editor.weightStep, editor.plateStep) { step, plates ->
+            onEvent(SessionIntent.SetLoadStep(step, plates))
+        },
         onChange = { onEvent(SessionIntent.ChangeDraft(it)) },
         onSave = { onEvent(SessionIntent.SaveDraft) },
         onDelete = { onEvent(SessionIntent.DeleteEditedSet) },

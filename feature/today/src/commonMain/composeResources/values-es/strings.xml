@@ -48,6 +48,7 @@
     <string name="today_weight_dialog_title">Registrar peso corporal</string>
     <string name="today_weight_label">Peso (%1$s)</string>
     <string name="today_weight_invalid">Introduce un peso válido</string>
+    <string name="today_weight_date">Fecha</string>
     <string name="today_save">Guardar</string>
     <string name="today_unit_kg">kg</string>
     <string name="today_unit_lb">lb</string>
@@ -62,10 +63,10 @@
     <string name="today_equipment_trap_bar">Barra hexagonal</string>
     <string name="today_equipment_dumbbell">Mancuerna</string>
     <string name="today_equipment_kettlebell">Kettlebell</string>
-    <string name="today_equipment_smith">Máquina Smith</string>
+    <string name="today_equipment_smith">Multipower</string>
     <string name="today_equipment_machine">Máquina</string>
     <string name="today_equipment_cable">Polea</string>
-    <string name="today_equipment_band">Banda</string>
+    <string name="today_equipment_band">Goma elástica</string>
     <string name="today_equipment_bodyweight">Peso corporal</string>
     <string name="today_equipment_medicine_ball">Balón medicinal</string>
     <string name="today_equipment_swiss_ball">Fitball</string>

@@ -19,12 +19,64 @@ class UnitsTest {
     }
 
     @Test
+    fun `volumes round to whole units everywhere`() {
+        assertEquals("908", Weights.formatVolume(907_500, WeightUnit.KG, language = "en"))
+        assertEquals("15,090", Weights.formatVolume(15_090_400, WeightUnit.KG, language = "en"))
+    }
+
+    @Test
     fun `format trims trailing zeros`() {
-        assertEquals("62.5", Weights.format(62_500, WeightUnit.KG))
-        assertEquals("60", Weights.format(60_000, WeightUnit.KG))
-        assertEquals("1.25", Weights.format(1_250, WeightUnit.KG))
-        assertEquals("-10", Weights.format(-10_000, WeightUnit.KG))
-        assertEquals("45", Weights.format(Weights.lbToGrams(45.0), WeightUnit.LB))
+        assertEquals("62.5", Weights.format(62_500, WeightUnit.KG, language = "en"))
+        assertEquals("60", Weights.format(60_000, WeightUnit.KG, language = "en"))
+        assertEquals("1.25", Weights.format(1_250, WeightUnit.KG, language = "en"))
+        assertEquals("-10", Weights.format(-10_000, WeightUnit.KG, language = "en"))
+        assertEquals("45", Weights.format(Weights.lbToGrams(45.0), WeightUnit.LB, language = "en"))
+    }
+
+    @Test
+    fun `format uses the decimal comma and groups thousands in Spanish`() {
+        assertEquals("79,6", Weights.format(79_600, WeightUnit.KG, decimals = 1, language = "es"))
+        assertEquals("1,25", Weights.format(1_250, WeightUnit.KG, language = "es"))
+        assertEquals("15 090", Weights.format(15_090_000, WeightUnit.KG, decimals = 0, language = "es"))
+        assertEquals("1250", Weights.format(1_250_000, WeightUnit.KG, decimals = 0, language = "es"))
+        assertEquals("15,090", Weights.format(15_090_000, WeightUnit.KG, decimals = 0, language = "en"))
+        assertEquals(
+            "15090",
+            Weights.format(15_090_000, WeightUnit.KG, decimals = 0, language = "en", grouping = false)
+        )
+    }
+
+    @Test
+    fun `numbers format per language`() {
+        assertEquals("0,94", Numbers.format(0.9412, maxDecimals = 2, language = "es"))
+        assertEquals("0.94", Numbers.format(0.9412, maxDecimals = 2, language = "en"))
+        assertEquals("129,0", Numbers.format(129.0, maxDecimals = 1, minDecimals = 1, language = "es"))
+        assertEquals("−0,17", Numbers.format(-0.17, language = "es", typographicMinus = true))
+        assertEquals("0", Numbers.format(-0.2, maxDecimals = 0, language = "es", typographicMinus = true))
+        assertEquals("78 815", Numbers.format(78_815L, language = "es"))
+        assertEquals("78,815", Numbers.format(78_815L, language = "en"))
+        assertEquals("1,234.5", Numbers.format(1_234.5, maxDecimals = 1, language = "en"))
+        assertEquals(',', Numbers.decimalSeparator("es-ES"))
+        assertEquals('.', Numbers.decimalSeparator("en"))
+    }
+
+    @Test
+    fun `percent keeps the sign with its number`() {
+        assertEquals("31 %", Numbers.percent(31.0, language = "es"))
+        assertEquals("−31 %", Numbers.percent(-31.0, language = "es"))
+        assertEquals("31%", Numbers.percent(31.0, language = "en"))
+        assertEquals("12.5%", Numbers.percent(12.5, maxDecimals = 1, language = "en"))
+    }
+
+    @Test
+    fun `parse accepts comma and dot`() {
+        assertEquals(1.5, Numbers.parse("1,5"))
+        assertEquals(1.5, Numbers.parse(" 1.5 "))
+        assertEquals(15_090.5, Numbers.parse("15 090,5"))
+        assertEquals(15_090.5, Numbers.parse("15,090.5"))
+        assertEquals(null, Numbers.parse(""))
+        assertEquals(null, Numbers.parse("abc"))
+        assertEquals(62_500L, Weights.parse("62,5", WeightUnit.KG))
     }
 
     @Test

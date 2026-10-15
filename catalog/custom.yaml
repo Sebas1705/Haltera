@@ -99,7 +99,7 @@ exercises:
       es: ["Cuélgate de una barra con los brazos estirados.", "Eleva el cuerpo hasta la horizontal, boca arriba y en línea recta.", "Mantén la posición (encoge las piernas o usa una goma para facilitarlo)."]
     variants:
       - { suffix: bodyweight, equipment: BODYWEIGHT }
-      - { suffix: band-assisted, equipment: BAND }
+      - { suffix: band-assisted, equipment: BAND, name: { en: Band-assisted, es: Asistido con goma } }
   - id: football
     name: { en: Football, es: Fútbol }
     category: SPORT

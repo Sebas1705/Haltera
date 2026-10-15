@@ -6,11 +6,13 @@ import androidx.compose.runtime.produceState
 import androidx.compose.ui.text.intl.Locale
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
+import es.sebas1705.ironlog.core.units.formatVolume
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.LoadType
 import es.sebas1705.ironlog.data.models.SetKind
 import es.sebas1705.ironlog.data.models.SetLog
 import es.sebas1705.ironlog.data.models.TrackingType
+import es.sebas1705.ironlog.domain.usecases.naming.VariantLabel
 import es.sebas1705.ironlog.feature.session.load.Prefill
 import es.sebas1705.ironlog.feature.session.load.isMachinePlate
 import es.sebas1705.ironlog.feature.session.resources.Res
@@ -69,10 +71,17 @@ private const val MILLIS_PER_TICK = 1_000L
 @Composable
 internal fun ExerciseName.title(): String = plain(uiLanguage())
 
-/** Equipment shown under the name, unless the variant has its own name. */
+/** The variant label shown under the title (and on variant chips): the variant's own name, else its equipment. */
 @Composable
-internal fun ExerciseName.subtitle(): String? =
-    if (variant != null) exercise?.get(uiLanguage()) else equipment?.let { stringResource(equipmentLabel(it)) }
+internal fun ExerciseName.subtitle(): String? = when (val label = label) {
+    is VariantLabel.Named -> label.name.get(uiLanguage())
+    is VariantLabel.OfEquipment -> stringResource(equipmentLabel(label.equipment))
+    null -> null
+}
+
+/** Title and variant label on one line, where there is no room for a subtitle: "Lat Pulldown · Wide grip". */
+@Composable
+internal fun ExerciseName.fullTitle(): String = listOfNotNull(title(), subtitle()).joinToString(" · ")
 
 internal fun equipmentLabel(equipment: Equipment): StringResource = when (equipment) {
     Equipment.BARBELL -> Res.string.session_equipment_barbell
@@ -100,6 +109,13 @@ internal fun unitLabel(unit: WeightUnit): String =
 /** "62.5 kg" in the user's unit. */
 @Composable
 internal fun weightText(grams: Long, unit: WeightUnit): String = "${Weights.format(grams, unit)} ${unitLabel(unit)}"
+
+/** A volume (gram-reps) rounded like everywhere else ([formatVolume]): "908 kg". */
+@Composable
+internal fun volumeText(
+    gramReps: Long,
+    unit: WeightUnit
+): String = "${Weights.formatVolume(gramReps, unit)} ${unitLabel(unit)}"
 
 /** A load as entered: weight, signed bodyweight load, plate number or band level. */
 @Composable

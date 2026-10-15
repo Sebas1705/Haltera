@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.exercises
 
 import app.cash.turbine.test
 import es.sebas1705.ironlog.core.units.WeightUnit
+import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.ExerciseSource
 import es.sebas1705.ironlog.data.models.LoadType
@@ -98,6 +99,37 @@ class ExerciseDetailViewModelTest {
     }
 
     @Test
+    fun `the most recently trained variant is selected by default`() = runTest {
+        repository.history.value = mapOf(
+            "bench-press.barbell" to listOf(entry("s1", 1_000, "bench-press.barbell", 60_000L to 8)),
+            "bench-press.dumbbell" to listOf(entry("s2", 2_000, "bench-press.dumbbell", 30_000L to 10)),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        assertEquals("bench-press.dumbbell", vm.uiState.value.detail?.selectedVariantId)
+        assertEquals(listOf("s2"), vm.uiState.value.history.map { it.sessionId })
+        vm.onEvent(ExerciseDetailIntent.SelectVariant("bench-press.barbell"))
+        advanceUntilIdle()
+        assertEquals("bench-press.barbell", vm.uiState.value.detail?.selectedVariantId, "the user's choice wins")
+    }
+
+    @Test
+    fun `loads show at most one decimal`() = runTest {
+        repository.history.value = mapOf(
+            "bench-press.barbell" to listOf(entry("s1", 1_000, "bench-press.barbell", 80_750L to 10)),
+        )
+        val vm = viewModel()
+        advanceUntilIdle()
+
+        // Epley: 80.75 × (1 + 10/30) = 107.67 kg, shown as 107.7 (decimal comma in Spanish).
+        assertEquals(
+            LoadText(Weights.format(107_667, WeightUnit.KG, decimals = 1), isLevel = false),
+            vm.uiState.value.records.first { it.kind == RecordRowKind.ESTIMATED_ONE_RM }.load,
+        )
+    }
+
+    @Test
     fun `blank steps are dropped`() = runTest {
         val vm = viewModel()
         advanceUntilIdle()
@@ -134,14 +166,18 @@ class ExerciseDetailViewModelTest {
                 entry("s1", 1_000, "bench-press.barbell", 60_000L to 8, 80_000L to 5, 80_000L to 3),
                 entry("s2", 2_000, "bench-press.barbell", 82_500L to 5),
             ),
-            "bench-press.dumbbell" to listOf(entry("s3", 3_000, "bench-press.dumbbell", 30_000L to 10)),
+            "bench-press.dumbbell" to listOf(entry("s3", 500, "bench-press.dumbbell", 30_000L to 10)),
         )
         val vm = viewModel()
         advanceUntilIdle()
 
         val history = vm.uiState.value.history
         assertEquals(listOf("s2", "s1"), history.map { it.sessionId })
-        assertEquals(TopSet(LoadText("82.5", isLevel = false), 5, null, null), history[0].topSet)
+        // Loads follow the app language ("82.5" / "82,5").
+        assertEquals(
+            TopSet(LoadText(Weights.format(82_500, WeightUnit.KG), isLevel = false), 5, null, null),
+            history[0].topSet
+        )
         assertEquals(TopSet(LoadText("80", isLevel = false), 5, null, null), history[1].topSet)
         assertEquals(3, history[1].sets)
 
@@ -173,7 +209,7 @@ class ExerciseDetailViewModelTest {
         advanceUntilIdle()
         assertEquals(WeightUnit.LB, vm.uiState.value.unit)
         assertEquals(
-            LoadText("220.46", isLevel = false),
+            LoadText(Weights.format(100_000, WeightUnit.LB, decimals = 1), isLevel = false),
             vm.uiState.value.records.first { it.kind == RecordRowKind.HEAVIEST_LOAD }.load,
         )
     }

@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.today.ui
 
 import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.data.models.DayKind
 import es.sebas1705.ironlog.data.models.Equipment
@@ -90,9 +91,16 @@ internal class TodayViewModel(
             TodayIntent.OpenDayPicker -> updateState { it.copy(dayPickerOpen = it.plan != null) }
             TodayIntent.DismissDayPicker -> updateState { it.copy(dayPickerOpen = false) }
             is TodayIntent.ChooseDay -> chooseDay(intent.dayIndex)
-            TodayIntent.OpenWeightDialog -> updateState { it.copy(weightDialog = WeightDialogUi()) }
+            TodayIntent.OpenWeightDialog -> openWeightDialog()
             is TodayIntent.WeightInputChanged -> updateState { state ->
                 state.copy(weightDialog = state.weightDialog?.copy(input = intent.text, invalid = false))
+            }
+            is TodayIntent.WeightDateChanged -> updateState { state ->
+                state.copy(
+                    weightDialog = state.weightDialog?.let {
+                        it.copy(dateUtcMillis = intent.dateUtcMillis.coerceAtMost(it.maxDateUtcMillis))
+                    },
+                )
             }
             TodayIntent.SaveWeight -> saveWeight()
             TodayIntent.DismissWeightDialog -> updateState { it.copy(weightDialog = null) }
@@ -153,6 +161,12 @@ internal class TodayViewModel(
         }
     }
 
+    /** Opens "Log body weight" dated today; any earlier date can be picked. */
+    private fun openWeightDialog() {
+        val today = PastSessionTime.todayUtcMillis(clock.now(), clock.timeZone)
+        updateState { it.copy(weightDialog = WeightDialogUi(dateUtcMillis = today, maxDateUtcMillis = today)) }
+    }
+
     private suspend fun saveWeight() {
         val dialog = currentState.weightDialog ?: return
         val grams = parseWeight(dialog.input)?.let { Weights.toGrams(it, currentState.unit) }
@@ -160,7 +174,8 @@ internal class TodayViewModel(
             updateState { it.copy(weightDialog = dialog.copy(invalid = true)) }
             return
         }
-        val saved = attempt { bodyWeight.add(grams) }
+        val measuredAt = PastSessionTime.measuredAt(dialog.dateUtcMillis, clock.now(), clock.timeZone)
+        val saved = attempt { bodyWeight.add(grams, measuredAt) }
         updateState {
             if (saved == null) it.copy(error = TodayError.SAVE_FAILED) else it.copy(weightDialog = null)
         }
@@ -192,6 +207,7 @@ internal class TodayViewModel(
         return SlotUi(
             slotId = slot.id,
             name = resolved.name,
+            variantName = resolved.variantName,
             equipment = resolved.equipment,
             flexible = slot.target is SlotTarget.Flexible,
             sets = slot.sets,
@@ -201,14 +217,15 @@ internal class TodayViewModel(
 
     private suspend fun resolve(target: SlotTarget): ResolvedName = when (target) {
         is SlotTarget.Fixed -> {
+            // Title = the exercise; the variant's own name goes under it (ExerciseNaming).
             val variant = attempt { exercises.getVariant(target.variantId) }
-            val name = variant?.name ?: variant?.let { attempt { exercises.getExercise(it.exerciseId) }?.name }
-            ResolvedName(name, variant?.equipment)
+            val exercise = variant?.let { attempt { exercises.getExercise(it.exerciseId) }?.name }
+            ResolvedName(exercise ?: variant?.name, variant?.name, variant?.equipment)
         }
-        is SlotTarget.Flexible -> ResolvedName(attempt { exercises.getExercise(target.exerciseId) }?.name, null)
+        is SlotTarget.Flexible -> ResolvedName(attempt { exercises.getExercise(target.exerciseId) }?.name, null, null)
     }
 
-    private data class ResolvedName(val name: LocalizedText?, val equipment: Equipment?)
+    private data class ResolvedName(val name: LocalizedText?, val variantName: LocalizedText?, val equipment: Equipment?)
 
     companion object {
         /** Upper bound for a body weight entry in either unit; anything above is a typo. */
@@ -216,7 +233,7 @@ internal class TodayViewModel(
 
         /** A positive decimal with a dot or a comma, up to [MAX_BODY_WEIGHT]; null otherwise. */
         fun parseWeight(text: String): Double? =
-            text.trim().replace(',', '.').toDoubleOrNull()?.takeIf { it > 0 && it <= MAX_BODY_WEIGHT }
+            Numbers.parse(text)?.takeIf { it > 0 && it <= MAX_BODY_WEIGHT }
 
         /** Runs [block]; a failure (other than cancellation) becomes null. */
         private suspend fun <T> attempt(block: suspend () -> T): T? =

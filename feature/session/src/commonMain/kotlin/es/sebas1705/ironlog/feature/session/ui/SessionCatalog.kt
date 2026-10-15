@@ -6,6 +6,7 @@ import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
 import es.sebas1705.ironlog.data.models.ExerciseVariant
 import es.sebas1705.ironlog.data.models.RoutineSlot
 import es.sebas1705.ironlog.data.models.SessionExercise
+import es.sebas1705.ironlog.data.models.SetKind
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
@@ -65,13 +66,17 @@ class SessionCatalog(
         if (key in lastCache) return lastCache[key]
         val before = sessionStartedAt
         val fromSlot = slotId?.let {
-            sessions.lastForSlotAndVariant(it, variantId, limit = 1, before = before).firstOrNull()
+            sessions.lastForSlotAndVariant(it, variantId, limit = LAST_LIMIT, before = before).latestWithWork()
         }
-        val last = fromSlot?.exercise
-            ?: sessions.lastForVariant(variantId, limit = 1, before = before).firstOrNull()?.exercise
+        val last = fromSlot
+            ?: sessions.lastForVariant(variantId, limit = LAST_LIMIT, before = before).latestWithWork()
         lastCache[key] = last
         return last
     }
+
+    /** The latest performance with a completed working set (an exercise left empty says nothing). */
+    private fun List<ExerciseHistoryEntry>.latestWithWork(): SessionExercise? =
+        firstOrNull { entry -> entry.exercise.sets.any { it.kind == SetKind.WORKING && it.completed } }?.exercise
 
     /** Last working load of a variant in any context, for the flexible-slot picker. */
     suspend fun lastLoad(variantId: String): Long? =
@@ -104,5 +109,6 @@ class SessionCatalog(
     private companion object {
         const val SEARCH_LIMIT = 60
         const val HISTORY_LIMIT = 500
+        const val LAST_LIMIT = 5
     }
 }

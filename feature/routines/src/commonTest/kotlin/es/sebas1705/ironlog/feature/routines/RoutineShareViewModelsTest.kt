@@ -4,6 +4,7 @@ import es.sebas1705.ironlog.core.testing.CoroutineTestRule
 import es.sebas1705.ironlog.data.models.LocalizedText
 import es.sebas1705.ironlog.data.repository.share.ImportPreview
 import es.sebas1705.ironlog.data.repository.share.ImportPreviewResult
+import es.sebas1705.ironlog.data.repository.share.QrCapacity
 import es.sebas1705.ironlog.data.repository.share.RoutineFile
 import es.sebas1705.ironlog.data.repository.share.RoutineShareCode
 import es.sebas1705.ironlog.data.repository.share.RoutineSharing
@@ -52,12 +53,14 @@ private class FakeSharing(private val routines: FakeRoutineRepository) : Routine
     var exportJson: String? = """{"format":"ironlog-routine"}"""
     var result: ImportPreviewResult = ImportPreviewResult.Ready(PREVIEW)
     val previewed = mutableListOf<String>()
+    val languages = mutableListOf<String>()
     val imports = mutableListOf<Boolean>()
 
     override suspend fun export(routineId: String): String? = exportJson
 
-    override suspend fun preview(text: String): ImportPreviewResult {
+    override suspend fun preview(text: String, language: String): ImportPreviewResult {
         previewed += text
+        languages += language
         return result
     }
 
@@ -104,6 +107,9 @@ class RoutineShareViewModelsTest {
         val qr = assertNotNull(vm.uiState.value.qr)
         assertEquals("Legs", qr.name)
         assertEquals(sharing.exportJson, RoutineShareCode.decode(qr.code!!))
+        // v2 by default: the whole code is in the QR alphanumeric charset.
+        assertTrue(qr.code.orEmpty().startsWith(RoutineShareCode.PREFIX))
+        assertTrue(QrCapacity.isAlphanumeric(qr.code.orEmpty()))
 
         vm.onEvent(RoutineExportIntent.DismissQr)
         assertNull(vm.uiState.value.qr)
@@ -130,6 +136,7 @@ class RoutineShareViewModelsTest {
         val bridge = FakeBridge(picked = "file text")
         val vm = RoutineImportViewModel(ImportSource.FILE, sharing, routines, bridge, english)
         assertEquals(listOf("file text"), sharing.previewed)
+        assertEquals(listOf("en"), sharing.languages)
         assertEquals(FakeSharing.PREVIEW, vm.uiState.value.preview)
 
         vm.onEvent(RoutineImportIntent.SetDropMissing(true))

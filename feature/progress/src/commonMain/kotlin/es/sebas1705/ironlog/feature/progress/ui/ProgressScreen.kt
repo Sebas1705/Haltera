@@ -17,22 +17,25 @@ import es.sebas1705.ironlog.feature.progress.resources.Res
 import es.sebas1705.ironlog.feature.progress.resources.progress_tab_body_weight
 import es.sebas1705.ironlog.feature.progress.resources.progress_tab_calendar
 import es.sebas1705.ironlog.feature.progress.resources.progress_tab_exercises
-import es.sebas1705.ironlog.feature.progress.resources.progress_tab_volume
+import es.sebas1705.ironlog.feature.progress.resources.progress_tab_muscles
+import es.sebas1705.ironlog.feature.progress.resources.progress_tab_overview
 import es.sebas1705.ironlog.feature.progress.ui.bodyweight.BodyWeightTab
 import es.sebas1705.ironlog.feature.progress.ui.calendar.CalendarTab
 import es.sebas1705.ironlog.feature.progress.ui.exercise.ExerciseProgressTab
-import es.sebas1705.ironlog.feature.progress.ui.volume.MuscleVolumeTab
+import es.sebas1705.ironlog.feature.progress.ui.muscles.MusclesTab
+import es.sebas1705.ironlog.feature.progress.ui.overview.OverviewTab
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
 private enum class ProgressTab(val label: StringResource) {
+    OVERVIEW(Res.string.progress_tab_overview),
     CALENDAR(Res.string.progress_tab_calendar),
     EXERCISES(Res.string.progress_tab_exercises),
+    MUSCLES(Res.string.progress_tab_muscles),
     BODY_WEIGHT(Res.string.progress_tab_body_weight),
-    VOLUME(Res.string.progress_tab_volume),
 }
 
-/** Root of the Progress tab (the shell draws the top bar): calendar, exercises, body weight and volume. */
+/** Root of the Progress tab (the shell draws the top bar): overview, calendar, exercises, muscles and body weight. */
 @Composable
 internal fun ProgressScreen(
     onOpenSession: (SessionSummary) -> Unit,
@@ -51,10 +54,11 @@ internal fun ProgressScreen(
             }
         }
         when (ProgressTab.entries[selected]) {
+            ProgressTab.OVERVIEW -> OverviewTab()
             ProgressTab.CALENDAR -> CalendarTab(onOpenSession, onLogged = onOpenSessionId)
             ProgressTab.EXERCISES -> ExerciseProgressTab()
+            ProgressTab.MUSCLES -> MusclesTab()
             ProgressTab.BODY_WEIGHT -> BodyWeightTab()
-            ProgressTab.VOLUME -> MuscleVolumeTab()
         }
     }
 }

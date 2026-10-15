@@ -6,4 +6,6 @@ import org.koin.dsl.module
 /** Preferences backed by the platform default store (multiplatform-settings no-arg). */
 val datastoreModule = module {
     single<SettingsRepository> { KeyValueSettingsRepository(Settings()) }
+    // Device-local, not synced: separate from SettingsRepository (and so from SettingsSyncBridge).
+    single<LoadStepStore> { SettingsLoadStepStore(Settings()) }
 }

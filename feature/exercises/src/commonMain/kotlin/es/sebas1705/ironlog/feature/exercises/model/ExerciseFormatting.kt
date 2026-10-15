@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.exercises.model
 
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.LoadType
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Instant
@@ -26,9 +27,9 @@ internal fun Equipment.defaultLoadType(): LoadType = when (this) {
     Equipment.SWISS_BALL, Equipment.FOAM_ROLLER, Equipment.CARDIO_MACHINE, Equipment.OTHER, Equipment.NONE -> LoadType.NONE
 }
 
-/** Local calendar date of [epochMillis] as ISO `yyyy-MM-dd` (locale independent). */
-internal fun formatDate(epochMillis: Long, timeZone: TimeZone = TimeZone.currentSystemDefault()): String =
-    Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(timeZone).date.toString()
+/** Local calendar date of [epochMillis] (shown with the localised month names of the screen). */
+internal fun localDate(epochMillis: Long, timeZone: TimeZone = TimeZone.currentSystemDefault()): LocalDate =
+    Instant.fromEpochMilliseconds(epochMillis).toLocalDateTime(timeZone).date
 
 /** A duration in seconds as `m:ss`, or `h:mm:ss` from one hour. */
 internal fun formatDuration(seconds: Int): String {

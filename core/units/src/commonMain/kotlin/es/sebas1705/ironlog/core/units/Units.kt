@@ -1,6 +1,5 @@
 package es.sebas1705.ironlog.core.units
 
-import kotlin.math.abs
 import kotlin.math.roundToLong
 
 /** Display and entry unit for weights. Loads are always stored as grams (`Long`). */
@@ -14,8 +13,6 @@ enum class WeightUnit {
 
 /** Conversions between stored grams and the display units (spec §3.3: no floating point in storage). */
 object Weights {
-    private const val DECIMAL_BASE = 10L
-
     const val GRAMS_PER_KG = 1_000L
 
     /** International avoirdupois pound. */
@@ -44,18 +41,20 @@ object Weights {
     }
 
     /**
-     * [grams] in [unit] with at most [decimals] decimals and no trailing zeros: 62_500 g -> "62.5",
-     * 60_000 g -> "60". Locale independent (always a dot).
+     * [grams] in [unit] with at most [decimals] decimals and no trailing zeros, in the app [language]
+     * (see [Numbers.format]): 62_500 g -> "62.5" / "62,5", 15_090_000 g -> "15,090" / "15 090".
+     * [grouping] is off for text that goes back into an input field.
      */
-    fun format(grams: Long, unit: WeightUnit, decimals: Int = 2): String {
-        var factor = 1L
-        repeat(decimals) { factor *= DECIMAL_BASE }
-        val scaled = (fromGrams(grams, unit) * factor).roundToLong()
-        val sign = if (scaled < 0) "-" else ""
-        val whole = abs(scaled) / factor
-        val fraction = (abs(scaled) % factor).toString().padStart(decimals, '0').trimEnd('0')
-        return if (fraction.isEmpty()) "$sign$whole" else "$sign$whole.$fraction"
-    }
+    fun format(
+        grams: Long,
+        unit: WeightUnit,
+        decimals: Int = 2,
+        language: String = appLanguage(),
+        grouping: Boolean = true,
+    ): String = Numbers.format(fromGrams(grams, unit), maxDecimals = decimals, language = language, grouping = grouping)
+
+    /** Parses a typed weight ("62,5" or "62.5") in [unit] to grams, or null. */
+    fun parse(text: String, unit: WeightUnit): Long? = Numbers.parse(text)?.let { toGrams(it, unit) }
 }
 
 enum class Rounding { NEAREST, DOWN, UP }
@@ -76,3 +75,13 @@ fun roundToIncrement(grams: Long, incrementGrams: Long, rounding: Rounding = Rou
         Rounding.NEAREST -> if (grams - down < up - grams) down else up
     }
 }
+
+/**
+ * A volume (gram-reps) in [unit], rounded to whole units with grouped thousands ("907.5 kg" shows as "908").
+ * Every screen showing a volume (summary, session detail, progress) uses it, so they agree.
+ */
+fun Weights.formatVolume(gramReps: Long, unit: WeightUnit, language: String = appLanguage()): String =
+    format(gramReps, unit, decimals = VOLUME_DECIMALS, language = language)
+
+/** Decimals of a volume on screen ([formatVolume]). */
+const val VOLUME_DECIMALS = 0

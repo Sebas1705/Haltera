@@ -109,6 +109,51 @@ internal class SqlRoutineRepository(
         }
     }
 
+    override suspend fun duplicateDay(dayId: String, language: String): String = io {
+        val day = requireNotNull(db.routineDayEntityQueries.selectById(dayId).executeAsOneOrNull()) {
+            "Unknown routine day $dayId"
+        }
+        val copyId = newId()
+        db.transaction {
+            // Make room right after the original.
+            db.routineDayEntityQueries.selectByRoutine(day.routineId).executeAsList()
+                .filter { it.position > day.position }
+                .forEach { db.routineDayEntityQueries.setPosition(it.position + 1, it.id) }
+            db.routineDayEntityQueries.insert(
+                copyId,
+                day.routineId,
+                day.position + 1,
+                RoutineRepository.copyName(day.name, language),
+                day.kind,
+            )
+            // Copied column by column, so the JSON of target, prescription and progression is kept verbatim.
+            db.routineSlotEntityQueries.selectByDay(dayId).executeAsList().forEach { slot ->
+                db.routineSlotEntityQueries.insert(
+                    id = newId(),
+                    dayId = copyId,
+                    position = slot.position,
+                    target = slot.target,
+                    sets = slot.sets,
+                    warmupSets = slot.warmupSets,
+                    prescription = slot.prescription,
+                    restBetweenSetsS = slot.restBetweenSetsS,
+                    restAfterS = slot.restAfterS,
+                    supersetGroup = slot.supersetGroup,
+                    bilateral = slot.bilateral,
+                    notes = slot.notes,
+                    progression = slot.progression,
+                )
+            }
+            // A manual next-day override after the original keeps pointing at the same day.
+            val routine = db.routineEntityQueries.selectById(day.routineId).executeAsOne()
+            if (routine.nextDayIndex > day.position) {
+                db.routineEntityQueries.clampNextDayIndex(nextDayIndex = routine.nextDayIndex + 1, id = day.routineId)
+            }
+            touch(day.routineId)
+        }
+        copyId
+    }
+
     override suspend fun addSlot(dayId: String, spec: SlotSpec): String = io {
         val id = newId()
         db.transaction {

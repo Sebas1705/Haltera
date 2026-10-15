@@ -103,10 +103,10 @@
     <string name="exercises_equipment_trap_bar">Barra hexagonal</string>
     <string name="exercises_equipment_dumbbell">Mancuerna</string>
     <string name="exercises_equipment_kettlebell">Kettlebell</string>
-    <string name="exercises_equipment_smith">Máquina Smith</string>
+    <string name="exercises_equipment_smith">Multipower</string>
     <string name="exercises_equipment_machine">Máquina</string>
     <string name="exercises_equipment_cable">Polea</string>
-    <string name="exercises_equipment_band">Banda elástica</string>
+    <string name="exercises_equipment_band">Goma elástica</string>
     <string name="exercises_equipment_bodyweight">Peso corporal</string>
     <string name="exercises_equipment_medicine_ball">Balón medicinal</string>
     <string name="exercises_equipment_swiss_ball">Fitball</string>
@@ -114,4 +114,20 @@
     <string name="exercises_equipment_cardio_machine">Máquina de cardio</string>
     <string name="exercises_equipment_other">Otro</string>
     <string name="exercises_equipment_none">Sin material</string>
+    <!-- Dates in records and history: "14 oct 2026" (day, month, year). -->
+    <string name="exercises_date_full">%1$s %2$s %3$s</string>
+    <string-array name="exercises_months_short">
+        <item>ene</item>
+        <item>feb</item>
+        <item>mar</item>
+        <item>abr</item>
+        <item>may</item>
+        <item>jun</item>
+        <item>jul</item>
+        <item>ago</item>
+        <item>sept</item>
+        <item>oct</item>
+        <item>nov</item>
+        <item>dic</item>
+    </string-array>
 </resources>

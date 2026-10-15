@@ -18,6 +18,7 @@
     <string name="routines_set_inactive">Deactivate</string>
     <string name="routines_more_actions">More actions for %1$s</string>
     <string name="routines_new_routine">New routine</string>
+    <string name="routines_add_routine">Add routine</string>
     <string name="routines_from_catalogue">From catalogue</string>
     <string name="routines_new_routine_default_name">My routine</string>
     <string name="routines_untitled">Untitled routine</string>
@@ -67,6 +68,7 @@
     <string name="routines_no_slots">No exercises yet.</string>
     <string name="routines_delete_slot">Delete %1$s</string>
     <string name="routines_delete_slot_title">Remove exercise?</string>
+    <string name="routines_delete_slot_action">Remove exercise</string>
     <string name="routines_delete_slot_message">“%1$s” will be removed from this day.</string>
 
     <!-- Slot labels -->
@@ -75,7 +77,10 @@
     <string name="routines_slot_any_variant">Any variant</string>
     <string name="routines_slot_flexible_label">%1$s · %2$s</string>
     <string name="routines_slot_sets_value">%1$d × %2$s</string>
-    <string name="routines_slot_warmup_value">+%1$d warm-up</string>
+    <plurals name="routines_slot_warmup_value">
+        <item quantity="one">+%1$d warm-up</item>
+        <item quantity="other">+%1$d warm-ups</item>
+    </plurals>
     <string name="routines_slot_superset">Superset %1$s</string>
     <string name="routines_prescription_range_value">%1$d–%2$d reps</string>
     <string name="routines_prescription_reps_value">%1$d reps</string>
@@ -190,7 +195,8 @@
     <string name="routines_show_qr">Show QR</string>
     <string name="routines_share_more">More options</string>
     <string name="routines_share_error">Could not share the routine.</string>
-    <string name="routines_qr_hint">In Ironlog on another phone, open My routines, tap Import and scan this code.</string>
+    <string name="routines_qr_hint">In Ironlog on another phone, open Routines, tap Add routine › Scan QR and scan this code.</string>
+    <string name="routines_qr_image">QR code of the routine %1$s</string>
     <string name="routines_qr_too_large">This routine is too large for a QR code. Share it as a file instead.</string>
     <string name="routines_close">Close</string>
     <string name="routines_import">Import</string>
@@ -200,7 +206,10 @@
     <string name="routines_import_add">Add to my routines</string>
     <string name="routines_import_set_active">Set as active routine</string>
     <string name="routines_import_copy_note">The routine is added as a new copy. Nothing you have is changed.</string>
-    <string name="routines_import_custom_count">Includes %1$d custom exercises, added to your exercises.</string>
+    <plurals name="routines_import_custom_count">
+        <item quantity="one">Includes %1$d custom exercise, added to your exercises.</item>
+        <item quantity="other">Includes %1$d custom exercises, added to your exercises.</item>
+    </plurals>
     <string name="routines_import_missing_title">Exercises not on this device</string>
     <string name="routines_import_missing_keep">Add them as custom exercises</string>
     <string name="routines_import_missing_drop">Leave them out</string>
@@ -208,4 +217,124 @@
     <string name="routines_import_unsupported">This routine was made with a newer version of Ironlog. Update the app to import it.</string>
     <string name="routines_import_scan_unsupported">QR scanning is not available on this device yet. Import the file instead.</string>
     <string name="routines_import_rest_day">Rest day</string>
+    <!-- Duplicate day -->
+    <string name="routines_day_actions">More actions for %1$s</string>
+    <string name="routines_duplicate_day">Duplicate day</string>
+    <!-- Routine score and analysis -->
+    <string name="routines_score_short">Score %1$d</string>
+    <string name="routines_score_description">Routine score %1$d out of 100: %2$s</string>
+    <string name="routines_score_cardio">Cardio</string>
+    <string name="routines_analysis_title">Routine analysis</string>
+    <string name="routines_analysis_open">See analysis</string>
+    <string name="routines_analysis_out_of">/100</string>
+    <string name="routines_analysis_disclaimer">Suggestions only: nothing in your routine is changed or blocked.</string>
+    <string name="routines_analysis_schedule">Weekly numbers assume about %1$s sessions a week.</string>
+    <string name="routines_analysis_not_scored">This analysis is built for strength training. Cardio and interval programmes are not scored.</string>
+    <string name="routines_analysis_empty">Add exercises to training days to see an analysis.</string>
+    <string name="routines_analysis_missing">This routine no longer exists.</string>
+    <string name="routines_analysis_chart_title">Weekly sets per muscle</string>
+    <string name="routines_analysis_chart_legend">Shaded band: 10 to 20 sets a week, the usual target for muscle growth. Solid: direct sets (primary muscle); lighter: secondary muscles, half a set each.</string>
+    <string name="routines_analysis_chart_value">%1$s: %2$s sets a week</string>
+    <string name="routines_analysis_weight">Weight %1$d</string>
+    <string name="routines_analysis_how">How this is calculated</string>
+    <string name="routines_analysis_sources">Sources: %1$s</string>
+    <string name="routines_analysis_no_advice">Nothing to change here.</string>
+    <string name="routines_analysis_from_logs">From your logged sessions</string>
+    <string name="routines_or">%1$s or %2$s</string>
+    <string name="routines_any_day">any training day</string>
+    <string name="routines_not_available">n/a</string>
+    <string name="routines_verdict_excellent">Excellent</string>
+    <string name="routines_verdict_good">Good</string>
+    <string name="routines_verdict_fair">Fair</string>
+    <string name="routines_verdict_needs_work">Needs work</string>
+    <string name="routines_verdict_excellent_text">Well built: it follows the training research closely.</string>
+    <string name="routines_verdict_good_text">A solid routine. The suggestions below could make it even better.</string>
+    <string name="routines_verdict_fair_text">It works, but some of the changes below would help.</string>
+    <string name="routines_verdict_needs_work_text">Several points fall short of what the research suggests. See the advice below.</string>
+    <string name="routines_focus_strength">Strength focus</string>
+    <string name="routines_focus_hypertrophy">Muscle-building focus</string>
+    <!-- Muscle groups -->
+    <string name="routines_group_chest">Chest</string>
+    <string name="routines_group_back">Back</string>
+    <string name="routines_group_shoulders">Shoulders</string>
+    <string name="routines_group_quads">Quadriceps</string>
+    <string name="routines_group_hamstrings">Hamstrings</string>
+    <string name="routines_group_glutes">Glutes</string>
+    <string name="routines_group_biceps">Biceps</string>
+    <string name="routines_group_triceps">Triceps</string>
+    <string name="routines_group_calves">Calves</string>
+    <string name="routines_group_abs">Abdominals</string>
+    <string name="routines_group_traps">Traps</string>
+    <string name="routines_group_lower_back">Lower back</string>
+    <string name="routines_group_forearms">Forearms</string>
+    <string name="routines_group_hips">Hip adductors and abductors</string>
+    <string name="routines_group_neck">Neck</string>
+    <!-- Criteria -->
+    <string name="routines_criterion_volume">Weekly volume</string>
+    <string name="routines_criterion_frequency">Frequency</string>
+    <string name="routines_criterion_coverage">Muscle coverage</string>
+    <string name="routines_criterion_balance">Balance</string>
+    <string name="routines_criterion_rep_ranges">Rep ranges and loading</string>
+    <string name="routines_criterion_recovery">Recovery</string>
+    <string name="routines_criterion_progression">Progression rules</string>
+    <string name="routines_criterion_session_length">Session length</string>
+    <string name="routines_criterion_adherence">Adherence</string>
+    <string name="routines_criterion_load_progress">Load progress</string>
+    <string name="routines_info_volume">Working sets are counted per muscle group each week: one set for each primary muscle and half a set for each secondary muscle. Pulling movements (rows, pulldowns, pull-ups) give no shoulder credit: the rear delt only helps there. Progress › Muscles counts primary muscles only, so it matches the direct part of these numbers. A cycle of N days is scaled to 7 days; a cycle without rest days is assumed to run 3 sessions a week (or one cycle a week from 5 days). Meta-analyses find that muscle growth rises with weekly sets, with about 10 to 20 hard sets per muscle a good target and smaller returns beyond that; strength needs less. Groups under 10 sets score lower (strength routines from 6), groups over 20 a little lower, and groups under 6 or over 25 are flagged. Large groups weigh twice as much as small ones.</string>
+    <string name="routines_info_frequency">A group counts as trained on a day when it gets at least 2 sets there (secondary muscles count half). Training a muscle twice a week or more beats once a week for growth, although with equal volume the difference is small. Each group with at least 6 weekly sets scores fully from twice a week, 40 points at once a week and less below that.</string>
+    <string name="routines_info_coverage">Each major group (chest, back, shoulders, quads, hamstrings, glutes, biceps, triceps, calves and abs) should get at least about one set a week. Position stands recommend training all major muscle groups. Large groups count double.</string>
+    <string name="routines_info_balance">Push work (chest and shoulder presses, dips) is compared with pull work (rows, pull-downs, face pulls), and quad-dominant work (squats, leg presses, lunges) with hip-dominant work (deadlifts, hip hinges, leg curls). Balancing opposing muscle groups is a common guideline, and the hamstring to quadriceps ratio is a classic marker of muscle balance. Ratios between 2:3 and 3:2 for push and pull, and between 1:2 and 2:1 for the legs, score fully; the score falls as the ratio moves away. These bands are a heuristic, not an exact rule.</string>
+    <string name="routines_info_rep_ranges">Each working set is placed by its target reps: heavy (7 or fewer), moderate (8 to 12) or light (13 or more). Growth is similar across a wide range of loads when sets are hard, but heavy loads build more strength. The score rewards using more than one zone and having at least one heavy multi-joint lift; strength routines need it more.</string>
+    <string name="routines_info_recovery">Muscle protein synthesis stays raised for about 36 hours after hard training, and frequency studies spread sessions for the same muscle across the week. A conflict is a group (abs and calves aside) getting at least 4 direct sets on two training days in a row; each one costs 20 points. A cycle without rest days at 3 sessions a week is assumed to leave a day between sessions.</string>
+    <string name="routines_info_progression">Adding load or reps over time (progressive overload) is the core principle of resistance training. This is the share of resistance exercises with a progression rule; 80 percent or more scores fully.</string>
+    <string name="routines_info_session_length">Duration is estimated from every set (about 4 seconds a rep plus 10 seconds to set up, or the prescribed time), the rest between sets and after each exercise, supersets resting once per round, and 45 seconds to change exercise. Up to 75 minutes scores fully and over 90 minutes is flagged. This is a practical heuristic, not a research threshold.</string>
+    <string name="routines_info_adherence">Results come from the training actually done. Over the last 4 weeks (or since the first session), finished sessions of this routine are compared with the sessions the plan expects, and logged working sets with the sets each day plans. Sessions count 60 percent and sets 40 percent.</string>
+    <string name="routines_info_load_progress">For each exercise logged at least 3 times over at least 2 weeks in the last 8 weeks, the best estimated one-rep max (or the most reps for bodyweight work) of the latest sessions is compared with the earliest. Progressing on 70 percent of exercises scores fully.</string>
+    <!-- Findings -->
+    <string name="routines_finding_volume">%1$d of %2$d major groups get 10 to 20 sets a week.</string>
+    <string name="routines_finding_volume_low">Under 6 sets: %1$s.</string>
+    <string name="routines_finding_volume_high">Over 25 sets: %1$s.</string>
+    <string name="routines_finding_frequency_ok">Every trained group gets at least two sessions a week.</string>
+    <string name="routines_finding_frequency_low">Trained less than twice a week: %1$s.</string>
+    <string name="routines_finding_coverage_ok">Every major muscle group gets some work.</string>
+    <string name="routines_finding_coverage_missing">Not trained: %1$s.</string>
+    <string name="routines_finding_balance">Push to pull %1$s. Quads to hamstrings and glutes %2$s.</string>
+    <string name="routines_finding_rep_ranges">Working sets: heavy %1$s, moderate %2$s, light %3$s.</string>
+    <string name="routines_finding_heavy_compound">Includes heavy multi-joint lifts.</string>
+    <string name="routines_finding_no_heavy_compound">No heavy multi-joint lift.</string>
+    <string name="routines_finding_recovery_ok">No muscle is trained hard on two days in a row.</string>
+    <string name="routines_finding_recovery">Trained hard two days in a row: %1$s.</string>
+    <string name="routines_finding_session_length">Longest day: %1$s, about %2$d min. Average %3$d min.</string>
+    <string name="routines_finding_progression">%1$d of %2$d exercises have a progression rule.</string>
+    <string name="routines_finding_adherence">%1$d of %2$d planned sessions in the last %3$d weeks, with %4$s of the planned sets.</string>
+    <string name="routines_finding_load_progress">%1$d of %2$d tracked exercises progressed in the last %3$d weeks.</string>
+    <!-- Advice -->
+    <string name="routines_advice_add_sets">%1$s: %2$s sets a week. Add %3$d to %4$d sets of %5$s on %6$s.</string>
+    <string name="routines_advice_remove_sets">%1$s: %2$s sets a week. Beyond about 25 the extra sets add little; trimming %3$d to %4$d would save time and recovery.</string>
+    <string name="routines_advice_spread">%1$s: trained %2$s× a week. Move about half of its %3$s weekly sets to %4$s.</string>
+    <string name="routines_advice_cover">%1$s: not trained. Add about 3 sets of %2$s on %3$s.</string>
+    <string name="routines_advice_more_pull">Pull work is low (push to pull %1$s). Add 3 to 4 sets of %2$s on %3$s.</string>
+    <string name="routines_advice_more_push">Push work is low (push to pull %1$s). Add 3 to 4 sets of %2$s on %3$s.</string>
+    <string name="routines_advice_more_quads">Quad work is low (quads to hamstrings and glutes %1$s). Add 3 to 4 sets of %2$s on %3$s.</string>
+    <string name="routines_advice_more_posterior">Hamstring and glute work is low (quads to hamstrings and glutes %1$s). Add 3 to 4 sets of %2$s on %3$s.</string>
+    <string name="routines_advice_heavy_compound">Add one multi-joint lift in the 3 to 6 rep range, such as %1$s, to build strength.</string>
+    <string name="routines_advice_zone_heavy">Every set is heavy. Some accessory work at 8 to 15 reps adds volume with less fatigue.</string>
+    <string name="routines_advice_zone_moderate">Every set is in the 8 to 12 range. A heavy multi-joint lift at 3 to 6 reps builds strength too.</string>
+    <string name="routines_advice_zone_light">Every set is light. Heavier sets of 6 to 12 reps build more strength in less time.</string>
+    <string name="routines_advice_separate">%1$s: trained hard on %2$s and %3$s back to back. Put a rest day or other muscles between them, or trim the sets.</string>
+    <string name="routines_advice_shorten">%1$s takes about %2$d min. Superset accessories, trim rest or move an exercise to another day.</string>
+    <string name="routines_advice_progression">%1$d of %2$d exercises have no progression rule. Add double or linear progression so loads go up over time.</string>
+    <string name="routines_advice_schedule">%1$d of %2$d planned sessions done. Fewer training days or a shorter cycle may fit your week better.</string>
+    <string name="routines_advice_plateau">No recent progress on %1$s. Consider a lighter week, a different rep range or another variant.</string>
+    <string name="routines_sets_split">%1$s + %2$s</string>
+    <plurals name="routines_sets_direct">
+        <item quantity="one">%1$s direct</item>
+        <item quantity="other">%1$s direct</item>
+    </plurals>
+    <plurals name="routines_sets_secondary">
+        <item quantity="one">%1$s secondary</item>
+        <item quantity="other">%1$s secondary</item>
+    </plurals>
+    <string name="routines_analysis_chart_value_split">%1$s: %2$s sets a week (%3$s)</string>
+    <string name="routines_advice_shoulder_overlap">Shoulders: %1$s sets a week (%2$s from presses). The group covers the front, side and rear delts, and presses already train the front one. Keep the lateral raise and rear-delt work; if recovery suffers, trim pressing sets first.</string>
 </resources>

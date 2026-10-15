@@ -6,16 +6,21 @@ import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.data.models.RoutineTemplate
 import es.sebas1705.ironlog.data.repository.ExerciseRepository
 import es.sebas1705.ironlog.data.repository.RoutineRepository
+import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
+import es.sebas1705.ironlog.domain.usecases.routinescore.toScoringRoutine
 import es.sebas1705.ironlog.feature.routines.model.AppLanguage
 import es.sebas1705.ironlog.feature.routines.model.ExerciseIndex
 import es.sebas1705.ironlog.feature.routines.model.attempt
 import es.sebas1705.ironlog.feature.routines.model.indexFor
+import es.sebas1705.ironlog.feature.routines.model.scoreRoutine
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 
 internal data class CatalogueState(
     val language: String = "en",
     val templates: List<RoutineTemplate> = emptyList(),
+    /** Advice-only score per template id, filled once the exercises are loaded. */
+    val scores: Map<String, RoutineScore> = emptyMap(),
 ) : MVIBaseState
 
 internal sealed interface CatalogueIntent : MVIBaseIntent
@@ -23,10 +28,22 @@ internal sealed interface CatalogueIntent : MVIBaseIntent
 /** The famous routines catalogue (spec §6.3). Templates are bundled, so they are read once. */
 internal class CatalogueViewModel(
     routines: RoutineRepository,
+    private val exercises: ExerciseRepository,
     language: AppLanguage,
 ) : MVIBaseViewModel<CatalogueState, CatalogueIntent>(
     CatalogueState(language = language.code(), templates = routines.templates()),
 ) {
+    init {
+        execute {
+            val templates = currentState.templates
+            val targets = templates.flatMap { t -> t.days.flatMap { day -> day.slots.map { it.target } } }
+            attempt { exercises.indexFor(targets) }.onSuccess { index ->
+                val scores = templates.associate { it.id to scoreRoutine(it.toScoringRoutine(currentState.language), index) }
+                updateState { it.copy(scores = scores) }
+            }
+        }
+    }
+
     override fun intentHandler(intent: CatalogueIntent): Job = execute { }
 }
 
@@ -34,6 +51,8 @@ internal data class TemplatePreviewState(
     val language: String = "en",
     val template: RoutineTemplate? = null,
     val index: ExerciseIndex = ExerciseIndex(),
+    /** Advice-only score of the template, once its exercises are loaded. */
+    val score: RoutineScore? = null,
     /** Make the copy the active routine. */
     val makeActive: Boolean = false,
     val copying: Boolean = false,
@@ -69,7 +88,15 @@ internal class TemplatePreviewViewModel(
         }
         execute {
             val targets = currentState.template?.days.orEmpty().flatMap { day -> day.slots.map { it.target } }
-            attempt { exercises.indexFor(targets) }.onSuccess { index -> updateState { it.copy(index = index) } }
+            attempt { exercises.indexFor(targets) }.onSuccess { index ->
+                val score = currentState.template?.let {
+                    scoreRoutine(
+                        it.toScoringRoutine(currentState.language),
+                        index
+                    )
+                }
+                updateState { it.copy(index = index, score = score) }
+            }
         }
     }
 

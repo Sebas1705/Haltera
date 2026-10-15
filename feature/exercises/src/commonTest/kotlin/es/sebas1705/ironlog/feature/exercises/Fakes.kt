@@ -88,7 +88,11 @@ class FakeExerciseRepository(initial: List<Exercise> = emptyList()) : ExerciseRe
         history.map { it[variantId].orEmpty().sortedByDescending { e -> e.sessionStartedAt }.take(limit) }
 
     override fun observeExerciseHistory(exerciseId: String, limit: Int): Flow<List<ExerciseHistoryEntry>> =
-        history.map { all -> all.values.flatten().filter { it.exercise.variantId.startsWith("$exerciseId.") } }
+        history.map { all ->
+            all.values.flatten().filter { it.exercise.variantId.startsWith("$exerciseId.") }
+                .sortedByDescending { it.sessionStartedAt }
+                .take(limit)
+        }
 
     private fun Exercise.matches(filter: ExerciseFilter): Boolean {
         val q = filter.query.trim().lowercase()

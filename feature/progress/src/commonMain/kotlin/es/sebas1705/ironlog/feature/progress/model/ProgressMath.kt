@@ -1,14 +1,11 @@
 package es.sebas1705.ironlog.feature.progress.model
 
 import es.sebas1705.ironlog.data.models.BodyWeightEntry
-import es.sebas1705.ironlog.data.models.ExerciseHistoryEntry
-import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.ironlog.domain.usecases.stats.ProgressionRow
 import es.sebas1705.ironlog.data.models.WorkoutSession
 import es.sebas1705.ironlog.domain.usecases.stats.Stats
-import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
-import kotlinx.datetime.plus
 
 /** One row of a day's session list. [durationMillis] is null while the session is in progress. */
 internal data class SessionSummary(
@@ -39,17 +36,10 @@ internal data class BodyWeightChart(
     val average: List<ChartPoint> = emptyList(),
 )
 
-/** Volume of one muscle per week; [weeks] is aligned with the week starts it was computed for. */
-internal data class MuscleVolume(val muscle: Muscle, val weeks: List<Long>) {
-    val total: Long get() = weeks.sum()
-}
-
 /** Pure calculations behind the progress screens. */
 internal object ProgressMath {
     const val MOVING_AVERAGE_WINDOW = 7
     const val TREND_DAYS = 30
-    const val WEEKS_SHOWN = 4
-    private const val DAYS_PER_WEEK = 7
     private const val MILLIS_PER_DAY = 86_400_000L
 
     fun summarize(session: WorkoutSession, routineNames: Map<String, String>): SessionSummary = SessionSummary(
@@ -58,7 +48,8 @@ internal object ProgressMath {
         durationMillis = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) },
         routineName = session.routineId?.let { routineNames[it] },
         dayName = session.dayName,
-        exerciseCount = session.exercises.size,
+        // Only exercises with at least one completed set: empty ones are left over from the plan.
+        exerciseCount = session.exercises.count { exercise -> exercise.sets.any { it.completed } },
         volumeGrams = session.exercises.sumOf { Stats.volume(it) },
     )
 
@@ -71,25 +62,15 @@ internal object ProgressMath {
         .sortedBy { it.startedAt }
         .groupBy({ it.startedAt.toLocalDate(timeZone) }, { summarize(it, routineNames) })
 
-    /**
-     * Per-session points of an exercise history (any order): heaviest counted load, best estimated 1RM
-     * and volume. Several entries of the same session are merged; sessions without a value are skipped.
-     */
-    fun exerciseCharts(history: List<ExerciseHistoryEntry>): ExerciseCharts {
-        val sessions = history.groupBy { it.sessionId }.values
-            .map { entries -> entries.first().sessionStartedAt to entries }
-            .sortedBy { it.first }
-        fun series(value: (List<ExerciseHistoryEntry>) -> Long): List<ChartPoint> =
-            sessions.mapNotNull { (at, entries) ->
-                val v = value(entries)
-                if (v > 0) ChartPoint(at, v.toDouble()) else null
-            }
+    /** Points of the three exercise charts from progression [rows] (any order), oldest first; zero values are skipped. */
+    fun exerciseCharts(rows: List<ProgressionRow>): ExerciseCharts {
+        val ordered = rows.sortedBy { it.at }
+        fun series(value: (ProgressionRow) -> Long?): List<ChartPoint> =
+            ordered.mapNotNull { row -> value(row)?.takeIf { it > 0 }?.let { ChartPoint(row.at, it.toDouble()) } }
         return ExerciseCharts(
-            topSet = series { entries ->
-                entries.flatMap { Stats.countedSets(it.exercise.sets) }.maxOfOrNull { it.loadGrams ?: 0 } ?: 0
-            },
-            oneRm = series { entries -> entries.maxOf { Stats.bestOneRm(it.exercise) } },
-            volume = series { entries -> entries.sumOf { Stats.volume(it.exercise) } },
+            topSet = series { it.topLoad },
+            oneRm = series { it.oneRm },
+            volume = series { it.volume },
         )
     }
 
@@ -121,36 +102,5 @@ internal object ProgressMath {
             .minByOrNull { it.measuredAt }
             ?: return null
         return latest.weightGrams - baseline.weightGrams
-    }
-
-    /** The Monday of each of the last [count] weeks ending with the week of [today], oldest first. */
-    fun lastWeekStarts(today: LocalDate, count: Int = WEEKS_SHOWN): List<LocalDate> {
-        val current = today.weekStart()
-        return (count - 1 downTo 0).map { current.plus(-it * DAYS_PER_WEEK, DateTimeUnit.DAY) }
-    }
-
-    /**
-     * Volume per primary muscle and week. Each exercise's volume counts in full for every primary
-     * muscle of its exercise. Sessions in progress or outside the weeks are ignored. Muscles with no
-     * volume are dropped; the rest are sorted by total volume, highest first.
-     */
-    fun weeklyMuscleVolume(
-        sessions: List<WorkoutSession>,
-        musclesByVariant: Map<String, List<Muscle>>,
-        weekStarts: List<LocalDate>,
-        timeZone: TimeZone,
-    ): List<MuscleVolume> {
-        val totals = mutableMapOf<Muscle, LongArray>()
-        val performed = sessions.filter { !it.inProgress }.flatMap { session ->
-            val week = weekStarts.indexOf(session.startedAt.toLocalDate(timeZone).weekStart())
-            if (week < 0) emptyList() else session.exercises.map { week to it }
-        }
-        performed.forEach { (week, exercise) ->
-            val volume = Stats.volume(exercise)
-            val muscles = if (volume > 0) musclesByVariant[exercise.variantId].orEmpty().distinct() else emptyList()
-            muscles.forEach { muscle -> totals.getOrPut(muscle) { LongArray(weekStarts.size) }[week] += volume }
-        }
-        return totals.map { (muscle, weeks) -> MuscleVolume(muscle, weeks.toList()) }
-            .sortedWith(compareByDescending<MuscleVolume> { it.total }.thenBy { it.muscle.ordinal })
     }
 }

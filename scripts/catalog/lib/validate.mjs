@@ -46,9 +46,38 @@ function checkVariantNames(e, errors) {
       const name = v.name?.[lang];
       if (typeof name !== 'string') continue;
       if (seen.has(name)) errors.push(`${e.id}: duplicate variant name.${lang} "${name}"`);
+      // The app shows the exercise name as the title and the variant label under it.
+      if (name.trim().toLowerCase() === String(e.name?.[lang] ?? '').trim().toLowerCase()) {
+        errors.push(`${v.id}: variant name.${lang} repeats the exercise name`);
+      }
       seen.add(name);
     }
   }
+}
+
+/** Equipment whose label says nothing useful when it tells variants apart ("No equipment", "Other"…). */
+const GENERIC_EQUIPMENT = ['NONE', 'OTHER', 'CARDIO_MACHINE'];
+
+/**
+ * Labels the app shows for the variants of multi-variant exercises (variant name, else the equipment) and
+ * warnings for the odd ones: a generic equipment label, or a band variant of a bodyweight movement without
+ * a name (it reads as just "Band"). Advisory, unlike [validateCatalog].
+ */
+export function reviewVariantLabels(catalog) {
+  const rows = [];
+  const warnings = [];
+  for (const e of catalog.exercises ?? []) {
+    if (!Array.isArray(e.variants) || e.variants.length < 2) continue;
+    const kinds = new Set(e.variants.map((v) => v.loadType));
+    for (const v of e.variants) {
+      const label = v.name?.en ?? `(${v.equipment})`;
+      rows.push(`${e.name?.en} | ${label}`);
+      if (v.name != null) continue;
+      if (GENERIC_EQUIPMENT.includes(v.equipment)) warnings.push(`${v.id}: generic label ${v.equipment}`);
+      if (v.equipment === 'BAND' && kinds.has('BODYWEIGHT')) warnings.push(`${v.id}: band variant of a bodyweight movement needs a name`);
+    }
+  }
+  return { rows, warnings };
 }
 
 export function validateCatalog(catalog) {

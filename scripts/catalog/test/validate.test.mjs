@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { validateCatalog } from '../lib/validate.mjs';
+import { reviewVariantLabels, validateCatalog } from '../lib/validate.mjs';
 
 const variant = (over = {}) => ({ id: 'bench-press.barbell', equipment: 'BARBELL', loadType: 'BARBELL', name: null, instructions: null, frames: [], ...over });
 const exercise = (over = {}) => ({
@@ -97,4 +97,24 @@ test('variants sharing equipment need distinct names', () => {
 test('a variant name must have en and es', () => {
   const errors = validateCatalog(catalog([exercise({ variants: [variant({ name: { en: 'Wide' } })] })]));
   assert.ok(errors.some((e) => e.includes('bench-press.barbell: variant name needs en and es')));
+});
+
+test('a variant name repeating the exercise name is reported', () => {
+  const errors = validateCatalog(catalog([exercise({ variants: [variant({ name: { en: 'bench press', es: 'Con barra' } })] })]));
+  assert.ok(errors.some((e) => e.includes('repeats the exercise name')));
+});
+
+test('the label review flags generic and unnamed band labels', () => {
+  const { rows, warnings } = reviewVariantLabels(catalog([
+    exercise({
+      id: 'pull-up', name: { en: 'Pull-Up', es: 'Dominada' }, trackingType: 'BODYWEIGHT_REPS', variants: [
+        variant({ id: 'pull-up.bodyweight', equipment: 'BODYWEIGHT', loadType: 'BODYWEIGHT' }),
+        variant({ id: 'pull-up.band-assisted', equipment: 'BAND', loadType: 'BAND' }),
+        variant({ id: 'pull-up.none', equipment: 'NONE', loadType: 'NONE', name: { en: 'Named', es: 'Con nombre' } }),
+      ],
+    }),
+    exercise(),
+  ]));
+  assert.equal(rows.length, 3, 'single-variant exercises are skipped');
+  assert.deepEqual(warnings, ['pull-up.band-assisted: band variant of a bodyweight movement needs a name']);
 });

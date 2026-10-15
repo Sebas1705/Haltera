@@ -46,6 +46,7 @@ import es.sebas1705.ironlog.feature.progress.ui.components.rememberDateFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.rememberUnitFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.signed
 import es.sebas1705.ironlog.feature.progress.ui.components.variantLabel
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -124,7 +125,8 @@ private fun ExerciseTiles(state: ExerciseProgressState, units: UnitFormat, dates
                 Metric.ONE_RM_TREND,
                 m,
                 footnote = trend?.let {
-                    stringResource(Res.string.progress_trend_detail, formatNumber(it.trend.r2, 2), it.trend.n)
+                    val n = it.trend.n
+                    pluralStringResource(Res.plurals.progress_trend_detail, n, formatNumber(it.trend.r2, 2), n)
                 } ?: stringResource(Res.string.progress_trend_none),
             )
         },
@@ -137,10 +139,7 @@ private fun ExerciseTiles(state: ExerciseProgressState, units: UnitFormat, dates
                 Metric.PROGRESSION_TABLE,
                 m,
                 footnote = state.rows.sumOf { it.effectiveSets }.let {
-                    stringResource(
-                        Res.string.progress_tile_exercise_sets,
-                        it
-                    )
+                    pluralStringResource(Res.plurals.progress_tile_exercise_sets, it, it)
                 },
             )
         },

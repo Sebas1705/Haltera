@@ -37,6 +37,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.LocalContentColor
 import es.sebas1705.ironlog.core.ui.theme.tabularFigures
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.domain.usecases.stats.Comparison
 import es.sebas1705.ironlog.domain.usecases.stats.Metric
 import es.sebas1705.ironlog.domain.usecases.stats.StatsPeriod
@@ -131,7 +132,8 @@ internal fun periodLabel(period: StatsPeriod): String = stringResource(
 @Composable
 internal fun TileGrid(tiles: List<@Composable (Modifier) -> Unit>, modifier: Modifier = Modifier) {
     BoxWithConstraints(modifier.fillMaxWidth()) {
-        val columns = if (maxWidth < 560.dp) 2 else 3
+        // Fewer tiles than columns share the whole row instead of leaving empty cells (N5).
+        val columns = (if (maxWidth < 560.dp) 2 else 3).coerceAtMost(tiles.size.coerceAtLeast(1))
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
             tiles.chunked(columns).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -224,4 +226,4 @@ internal fun changeText(comparison: Comparison, formatDelta: (Double) -> String)
 internal fun signed(value: Double, format: (Double) -> String): String =
     (if (value > 0) "+" else if (value < 0) "−" else "") + format(kotlin.math.abs(value))
 
-internal fun signedPercent(percent: Double): String = signed(percent) { formatNumber(it, 0) + " %" }
+internal fun signedPercent(percent: Double): String = signed(percent) { Numbers.percent(it) }

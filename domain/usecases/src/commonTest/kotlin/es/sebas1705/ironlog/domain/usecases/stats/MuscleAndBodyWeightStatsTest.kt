@@ -1,6 +1,7 @@
 package es.sebas1705.ironlog.domain.usecases.stats
 
 import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -33,17 +34,19 @@ class MuscleAndBodyWeightStatsTest {
     @Test
     fun `weekly sets and volume per primary muscle against the previous period`() {
         val result = MuscleStats.compare(sessions, muscles, current, previous)
-        val chest = result.first { it.muscle == Muscle.CHEST }
+        val chest = result.first { it.group == MuscleGroup.CHEST }
         assertEquals(Comparison(2.0, 1.0), chest.setsPerWeek)
         assertEquals(Comparison(800_000.0, 400_000.0), chest.volumePerWeek)
         // Both primary muscles get the full set count.
-        assertEquals(chest.setsPerWeek, result.first { it.muscle == Muscle.TRICEPS }.setsPerWeek)
-        assertEquals(Comparison(0.5, 0.0), result.first { it.muscle == Muscle.ABDOMINALS }.setsPerWeek)
-        assertEquals(Comparison(0.0, 0.0), result.first { it.muscle == Muscle.ABDOMINALS }.volumePerWeek)
-        // Sorted by this period's sets: chest and triceps (2) before glutes and quads (1.5; ties by muscle order).
+        assertEquals(chest.setsPerWeek, result.first { it.group == MuscleGroup.TRICEPS }.setsPerWeek)
+        assertEquals(Comparison(0.5, 0.0), result.first { it.group == MuscleGroup.ABS }.setsPerWeek)
+        assertEquals(Comparison(0.0, 0.0), result.first { it.group == MuscleGroup.ABS }.volumePerWeek)
+        // Lats and middle back are one "Back" group: a row set counts once.
+        assertEquals(Comparison(1.0, 0.0), result.first { it.group == MuscleGroup.BACK }.setsPerWeek)
+        // Sorted by this period's sets: chest and triceps (2) before quads and glutes (1.5; ties by group order).
         assertEquals(
-            listOf(Muscle.CHEST, Muscle.TRICEPS, Muscle.GLUTES, Muscle.QUADRICEPS),
-            result.take(4).map { it.muscle }
+            listOf(MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.QUADS, MuscleGroup.GLUTES),
+            result.take(4).map { it.group }
         )
         // Without a previous window there is no comparison.
         assertNull(MuscleStats.compare(sessions, muscles, current, null).first().setsPerWeek.previous)

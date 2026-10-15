@@ -115,10 +115,10 @@
     <string name="progress_bw_log">Registrar peso</string>
     <string name="progress_bw_empty">Registra tu peso corporal para ver tu tendencia.</string>
     <string name="progress_bw_change">%1$s en los últimos 30 días</string>
-    <string name="progress_bw_change_none">Registra más entradas para ver tu tendencia de 30 días.</string>
+    <string name="progress_bw_change_none">Registra más pesos para ver tu tendencia de 30 días.</string>
     <string name="progress_bw_chart">Peso corporal</string>
     <string name="progress_bw_average">Media de 7 registros</string>
-    <string name="progress_bw_entries">Entradas</string>
+    <string name="progress_bw_entries">Registros</string>
     <string name="progress_bw_add_title">Registrar peso corporal</string>
     <string name="progress_bw_edit_title">Editar entrada</string>
     <string name="progress_bw_field">Peso (%1$s)</string>
@@ -144,6 +144,21 @@
     <string name="progress_muscle_traps">Trapecios</string>
     <string name="progress_muscle_triceps">Tríceps</string>
     <string name="progress_muscle_full_body">Cuerpo completo</string>
+    <string name="progress_group_chest">Pecho</string>
+    <string name="progress_group_back">Espalda</string>
+    <string name="progress_group_shoulders">Hombros</string>
+    <string name="progress_group_quads">Cuádriceps</string>
+    <string name="progress_group_hamstrings">Isquiotibiales</string>
+    <string name="progress_group_glutes">Glúteos</string>
+    <string name="progress_group_biceps">Bíceps</string>
+    <string name="progress_group_triceps">Tríceps</string>
+    <string name="progress_group_calves">Gemelos</string>
+    <string name="progress_group_abs">Abdominales</string>
+    <string name="progress_group_traps">Trapecios</string>
+    <string name="progress_group_lower_back">Zona lumbar</string>
+    <string name="progress_group_forearms">Antebrazos</string>
+    <string name="progress_group_hips">Aductores y abductores</string>
+    <string name="progress_group_neck">Cuello</string>
 
     <!-- Equipment -->
     <string name="progress_equipment_barbell">Barra</string>
@@ -245,8 +260,14 @@
     <string name="progress_tile_best_e1rm">Mejor 1RM est.</string>
     <string name="progress_tile_trend">Tendencia del 1RM</string>
     <string name="progress_tile_exercise_sessions">Sesiones</string>
-    <string name="progress_tile_exercise_sets">%1$d series efectivas en total</string>
-    <string name="progress_trend_detail">R² %1$s · %2$d sesiones</string>
+    <plurals name="progress_tile_exercise_sets">
+        <item quantity="one">%1$d serie efectiva en total</item>
+        <item quantity="other">%1$d series efectivas en total</item>
+    </plurals>
+    <plurals name="progress_trend_detail">
+        <item quantity="one">R² %1$s · %2$d sesión</item>
+        <item quantity="other">R² %1$s · %2$d sesiones</item>
+    </plurals>
     <string name="progress_trend_none">Necesita 3 sesiones con peso</string>
     <string name="progress_chart_one_rm_subtitle">Mejor serie de cada sesión, con su tendencia por mínimos cuadrados</string>
     <string name="progress_chart_one_rm_empty">La línea del 1RM estimado aparece tras dos sesiones con una serie con peso.</string>

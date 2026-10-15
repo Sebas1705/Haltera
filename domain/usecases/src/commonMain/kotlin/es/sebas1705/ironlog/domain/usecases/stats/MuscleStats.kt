@@ -1,9 +1,13 @@
 package es.sebas1705.ironlog.domain.usecases.stats
 
 import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
 
-/** Weekly effective sets and volume of one muscle, this period against the previous one. */
-data class MuscleComparison(val muscle: Muscle, val setsPerWeek: Comparison, val volumePerWeek: Comparison)
+/**
+ * Weekly effective sets and volume of one muscle group (the same 15 groups as the routine analysis), this
+ * period against the previous one.
+ */
+data class MuscleComparison(val group: MuscleGroup, val setsPerWeek: Comparison, val volumePerWeek: Comparison)
 
 /** The pairs of Metric.MUSCLE_BALANCE: which primary muscles count on each side. */
 enum class BalanceKind(val first: Set<Muscle>, val second: Set<Muscle>) {
@@ -38,13 +42,16 @@ data class Balance(val kind: BalanceKind, val first: Double, val second: Double)
 }
 
 /**
- * Per-muscle statistics (Metric.MUSCLE_SETS, Metric.MUSCLE_VOLUME, Metric.MUSCLE_BALANCE). Only the
+ * Per-muscle-group statistics (Metric.MUSCLE_SETS, Metric.MUSCLE_VOLUME, Metric.MUSCLE_BALANCE). Only the
  * exercise's primary muscles count, each in full: a set of an exercise with two primary muscles is one
  * set for each of them. Secondary muscles are not counted.
  */
 object MuscleStats {
 
-    private class Totals(val sets: MutableMap<Muscle, Int> = mutableMapOf(), val volume: MutableMap<Muscle, Long> = mutableMapOf())
+    private class Totals(
+        val sets: MutableMap<MuscleGroup, Int> = mutableMapOf(),
+        val volume: MutableMap<MuscleGroup, Long> = mutableMapOf(),
+    )
 
     private fun totals(
         sessions: List<DatedSession>,
@@ -57,7 +64,9 @@ object MuscleStats {
         exercises.forEach { exercise ->
             val sets = TrainingMath.effectiveSets(exercise)
             val volume = TrainingMath.volume(exercise, bilateralSlots)
-            musclesByVariant[exercise.variantId].orEmpty().distinct().forEach { muscle ->
+            // Lats and middle back are both "Back": a row set counts once for the group.
+            val groups = musclesByVariant[exercise.variantId].orEmpty().mapNotNull(MuscleGroup::of).distinct()
+            groups.forEach { muscle ->
                 if (sets > 0) totals.sets[muscle] = (totals.sets[muscle] ?: 0) + sets
                 if (volume > 0) totals.volume[muscle] = (totals.volume[muscle] ?: 0) + volume
             }
@@ -81,7 +90,7 @@ object MuscleStats {
         val muscles = now.sets.keys + now.volume.keys + before?.sets?.keys.orEmpty() + before?.volume?.keys.orEmpty()
         return muscles.map { muscle ->
             MuscleComparison(
-                muscle = muscle,
+                group = muscle,
                 setsPerWeek = Comparison(
                     (now.sets[muscle] ?: 0) / current.weeks,
                     previous?.let { (before?.sets?.get(muscle) ?: 0) / it.weeks },
@@ -95,7 +104,7 @@ object MuscleStats {
             compareByDescending<MuscleComparison> { it.setsPerWeek.current }
                 .thenByDescending { it.volumePerWeek.current }
                 .thenByDescending { it.setsPerWeek.previous ?: 0.0 }
-                .thenBy { it.muscle.ordinal },
+                .thenBy { it.group.ordinal },
         )
     }
 

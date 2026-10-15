@@ -36,7 +36,7 @@ import es.sebas1705.ironlog.feature.progress.ui.components.UnitFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.changeText
 import es.sebas1705.ironlog.feature.progress.ui.components.formatNumber
 import es.sebas1705.ironlog.feature.progress.ui.components.fullWidth
-import es.sebas1705.ironlog.feature.progress.ui.components.muscleLabel
+import es.sebas1705.ironlog.feature.progress.ui.components.muscleGroupLabel
 import es.sebas1705.ironlog.feature.progress.ui.components.rememberDateFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.rememberUnitFormat
 import es.sebas1705.ironlog.domain.usecases.stats.MuscleComparison
@@ -134,7 +134,7 @@ private fun MuscleListCard(
             rows.forEach { row ->
                 val comparison = value(row)
                 ComparisonBarRow(
-                    label = muscleLabel(row.muscle),
+                    label = muscleGroupLabel(row.group),
                     current = comparison.current,
                     previous = comparison.previous,
                     max = max,

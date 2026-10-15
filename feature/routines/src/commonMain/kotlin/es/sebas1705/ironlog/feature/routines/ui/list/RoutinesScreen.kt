@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -45,6 +44,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.addPathNodes
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -72,6 +76,7 @@ import es.sebas1705.ironlog.feature.routines.resources.routines_import
 import es.sebas1705.ironlog.feature.routines.resources.routines_import_file
 import es.sebas1705.ironlog.feature.routines.resources.routines_import_scan
 import es.sebas1705.ironlog.feature.routines.resources.routines_more_actions
+import es.sebas1705.ironlog.feature.routines.resources.routines_add_routine
 import es.sebas1705.ironlog.feature.routines.resources.routines_new_routine
 import es.sebas1705.ironlog.feature.routines.resources.routines_new_routine_default_name
 import es.sebas1705.ironlog.feature.routines.resources.routines_day_default_name
@@ -258,9 +263,10 @@ private fun AddButtons(onCreate: () -> Unit, onOpenCatalogue: () -> Unit, onImpo
         ExtendedFloatingActionButton(
             onClick = { menu = true },
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-            text = { Text(stringResource(Res.string.routines_new_routine)) },
+            text = { Text(stringResource(Res.string.routines_add_routine)) },
         )
-        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+        // Inset from the screen edges (N7): the menu opens over the FAB, not flush against the side.
+        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }, offset = DpOffset((-16).dp, 8.dp)) {
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.routines_new_routine)) },
                 leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
@@ -398,7 +404,7 @@ private fun ImportMenuButton(onImport: (ImportSource) -> Unit) {
 private fun ImportMenuItems(onImport: (ImportSource) -> Unit, closeMenu: () -> Unit) {
     DropdownMenuItem(
         text = { Text(stringResource(Res.string.routines_import_file)) },
-        leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
+        leadingIcon = { Icon(FileImportIcon, contentDescription = null) },
         onClick = {
             closeMenu()
             onImport(ImportSource.FILE)
@@ -412,4 +418,11 @@ private fun ImportMenuItems(onImport: (ImportSource) -> Unit, closeMenu: () -> U
             onImport(ImportSource.SCAN)
         },
     )
+}
+
+/** Material's "file download" glyph (an arrow into a tray) for importing a file; the core icon set has none. */
+private val FileImportIcon: ImageVector by lazy {
+    ImageVector.Builder("FileImport", 24.dp, 24.dp, 24f, 24f).apply {
+        addPath(addPathNodes("M19,9h-4V3H9v6H5l7,7 7,-7zM5,18v2h14v-2H5z"), fill = SolidColor(Color.Black))
+    }.build()
 }

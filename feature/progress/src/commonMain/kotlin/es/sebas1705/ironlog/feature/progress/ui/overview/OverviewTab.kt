@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.domain.usecases.stats.Adherence
 import es.sebas1705.ironlog.domain.usecases.stats.Metric
 import es.sebas1705.ironlog.domain.usecases.stats.OverviewStats
@@ -334,7 +335,7 @@ private fun AdherenceCard(adherence: Adherence?, hasActiveRoutine: Boolean) {
             )
             return@StatCard
         }
-        Text("${formatNumber(adherence.percent, 0)} %", style = MaterialTheme.typography.headlineMedium)
+        Text(Numbers.percent(adherence.percent), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(8.dp))
         LinearProgressIndicator(
             progress = { (adherence.percent / 100).toFloat().coerceIn(0f, 1f) },

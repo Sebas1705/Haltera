@@ -1,6 +1,5 @@
 package es.sebas1705.ironlog.feature.progress.ui.calendar
 
-import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
@@ -45,6 +46,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.feature.progress.model.MonthKey
 import es.sebas1705.ironlog.feature.progress.model.SessionSummary
@@ -75,6 +78,12 @@ import org.koin.compose.viewmodel.koinViewModel
 
 private const val DAYS_PER_WEEK = 7
 
+// Max width of each pane of the two-pane calendar on expanded windows.
+private val CalendarPaneMaxWidth = 560.dp
+
+// Cap on a day cell so six weeks fit in a landscape viewport.
+private val DayCellMaxHeight = 72.dp
+
 /** Calendar tab: the month grid and the sessions of the selected day. */
 @Composable
 internal fun CalendarTab(
@@ -91,33 +100,30 @@ internal fun CalendarTab(
             }
         }
     }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize().centeredContent(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        item {
-            MonthHeader(
-                month = state.month,
-                onPrevious = { viewModel.onEvent(CalendarIntent.PreviousMonth) },
-                onNext = { viewModel.onEvent(CalendarIntent.NextMonth) },
-            )
-        }
-        item {
-            MonthGrid(
-                month = state.month,
-                today = state.today,
-                selected = state.selectedDay,
-                sessionsByDay = state.sessionsByDay,
-                onSelect = { viewModel.onEvent(CalendarIntent.SelectDay(it)) },
-            )
-        }
+    val month: @Composable () -> Unit = {
+        MonthHeader(
+            month = state.month,
+            onPrevious = { viewModel.onEvent(CalendarIntent.PreviousMonth) },
+            onNext = { viewModel.onEvent(CalendarIntent.NextMonth) },
+        )
+    }
+    val grid: @Composable () -> Unit = {
+        MonthGrid(
+            month = state.month,
+            today = state.today,
+            selected = state.selectedDay,
+            sessionsByDay = state.sessionsByDay,
+            onSelect = { viewModel.onEvent(CalendarIntent.SelectDay(it)) },
+        )
+    }
+    val dayItems: LazyListScope.() -> Unit = {
         item { DayHeader(state) }
         addSessionItems(state, onAdd = { viewModel.onEvent(CalendarIntent.OpenLogPast) })
         items(state.selectedSessions, key = { it.id }) { session ->
             SessionCard(session, state.unit, onClick = { onOpenSession(session) })
         }
     }
+    CalendarLayout(month, grid, dayItems)
     state.logPast?.let { dialog ->
         LogSessionDialog(
             initial = dialog.initial,
@@ -182,7 +188,10 @@ private fun MonthGrid(
         cells.chunked(DAYS_PER_WEEK).forEach { week ->
             Row(Modifier.fillMaxWidth()) {
                 week.forEach { date ->
-                    Box(Modifier.weight(1f).aspectRatio(1f), contentAlignment = Alignment.Center) {
+                    Box(
+                        Modifier.weight(1f).heightIn(max = DayCellMaxHeight).aspectRatio(1f),
+                        contentAlignment = Alignment.Center,
+                    ) {
                         if (date != null) {
                             DayCell(
                                 date = date,
@@ -309,6 +318,46 @@ private fun LazyListScope.addSessionItems(state: CalendarState, onAdd: () -> Uni
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(Res.string.progress_add_session))
             }
+        }
+    }
+}
+
+/** The month above the day's sessions; side by side on wide windows (N2) so the day stays in view. */
+@Composable
+private fun CalendarLayout(
+    month: @Composable () -> Unit,
+    grid: @Composable () -> Unit,
+    dayItems: LazyListScope.() -> Unit,
+) {
+    if (LocalWindowSize.current.isExpanded) {
+        Row(
+            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.CenterHorizontally),
+        ) {
+            LazyColumn(
+                modifier = Modifier.weight(1f).widthIn(max = CalendarPaneMaxWidth),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
+                item { month() }
+                item { grid() }
+            }
+            LazyColumn(
+                modifier = Modifier.weight(1f).widthIn(max = CalendarPaneMaxWidth),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                content = dayItems,
+            )
+        }
+    } else {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize().centeredContent(),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            item { month() }
+            item { grid() }
+            dayItems()
         }
     }
 }

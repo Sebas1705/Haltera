@@ -240,7 +240,9 @@ internal fun LineChart(
         time.inset = LINE_INSET_DP.dp.toPx()
         plot.area = area
         series.forEach { line -> drawSeries(line, line.points.map { Offset(time.x(it.x, area), area.y(scale, it.y)) }) }
-        listOf(time.minX, (time.minX + time.maxX) / 2, time.maxX).distinct()
+        // The middle label snaps to the data point closest to the centre, so every label sits under a point.
+        val middle = all.minBy { abs(it.x - (time.minX + time.maxX) / 2) }.x
+        listOf(time.minX, middle, time.maxX).distinct()
             .forEach { drawXLabel(dateLabel(it), time.x(it, area), measurer, style) }
         selected?.let { (s, p) ->
             val point = series.getOrNull(s)?.points?.getOrNull(p) ?: return@let

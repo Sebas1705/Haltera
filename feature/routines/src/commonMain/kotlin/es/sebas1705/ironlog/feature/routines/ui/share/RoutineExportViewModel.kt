@@ -42,8 +42,9 @@ internal class RoutineExportViewModel(
             }
             is RoutineExportIntent.ShowQr -> guarded {
                 val name = routines.getRoutine(intent.routineId)?.name.orEmpty()
-                val json = checkNotNull(sharing.export(intent.routineId)) { "missing routine" }
-                val code = RoutineShareCode.encode(json).takeIf { it.length <= RoutineShareCode.MAX_QR_LENGTH }
+                // A template code for an unmodified catalogue copy, else base45 (QR alphanumeric mode).
+                val code = checkNotNull(sharing.shareCode(intent.routineId)) { "missing routine" }
+                    .takeIf { it.length <= RoutineShareCode.MAX_QR_LENGTH }
                 updateState { it.copy(qr = QrState(name, code)) }
             }
             RoutineExportIntent.DismissQr -> updateState { it.copy(qr = null) }

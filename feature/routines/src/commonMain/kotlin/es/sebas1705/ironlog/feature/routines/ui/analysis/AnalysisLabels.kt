@@ -17,6 +17,7 @@ import es.sebas1705.ironlog.domain.usecases.routinescore.Verdict
 import es.sebas1705.ironlog.feature.routines.resources.Res
 import es.sebas1705.ironlog.feature.routines.resources.*
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
 
@@ -35,8 +36,7 @@ internal fun formatOne(value: Double, language: String): String =
     Numbers.format(value, maxDecimals = 1, language = language)
 
 internal fun formatPercent(fraction: Double, language: String): String {
-    val value = (fraction * 100).roundToInt()
-    return if (language.startsWith("es")) "$value %" else "$value%"
+    return Numbers.percent((fraction * 100).roundToInt().toDouble(), language = language)
 }
 
 private fun formatRatio(sides: SideRatio?, language: String, none: String): String {
@@ -131,11 +131,7 @@ internal fun findingLines(finding: Finding, language: String): List<String> {
             if (finding.high.isNotEmpty()) {
                 val list = finding.high.map { sets ->
                     val split = if (sets.secondary > 0.0) {
-                        " (" + stringResource(
-                            Res.string.routines_sets_split,
-                            formatOne(sets.direct, language),
-                            formatOne(sets.secondary, language),
-                        ) + ")"
+                        " (" + setsSplit(sets.direct, sets.secondary, language) + ")"
                     } else {
                         ""
                     }
@@ -253,8 +249,7 @@ internal fun adviceText(advice: Advice, language: String, exerciseName: (String)
     is Advice.ShoulderOverlap -> stringResource(
         Res.string.routines_advice_shoulder_overlap,
         formatOne(advice.sets.sets, language),
-        formatOne(advice.sets.direct, language),
-        formatOne(advice.sets.secondary, language),
+        setsSplit(advice.sets.direct, advice.sets.secondary, language),
     )
     is Advice.Cover -> stringResource(
         Res.string.routines_advice_cover,
@@ -300,3 +295,18 @@ internal fun adviceText(advice: Advice, language: String, exerciseName: (String)
         exercises(advice.exerciseIds, exerciseName)
     )
 }
+
+/** "30 direct + 7 secondary" / "30 directas + 1 secundaria", each part agreeing with its own count. */
+@Composable
+internal fun setsSplit(direct: Double, secondary: Double, language: String): String = stringResource(
+    Res.string.routines_sets_split,
+    pluralStringResource(Res.plurals.routines_sets_direct, pluralQuantity(direct), formatOne(direct, language)),
+    pluralStringResource(
+        Res.plurals.routines_sets_secondary,
+        pluralQuantity(secondary),
+        formatOne(secondary, language)
+    ),
+)
+
+/** The plural quantity of a possibly fractional count: 1 is "one", 1.5 or 0 is "other". */
+internal fun pluralQuantity(value: Double): Int = if (value % 1.0 == 0.0) value.toInt() else 2

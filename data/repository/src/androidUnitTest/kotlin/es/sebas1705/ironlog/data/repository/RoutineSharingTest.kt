@@ -11,12 +11,14 @@ import es.sebas1705.ironlog.data.models.NewExercise
 import es.sebas1705.ironlog.data.models.NewVariant
 import es.sebas1705.ironlog.data.models.Prescription
 import es.sebas1705.ironlog.data.models.ProgressionRule
+import es.sebas1705.ironlog.data.models.RoutineOrigin
 import es.sebas1705.ironlog.data.models.SlotSpec
 import es.sebas1705.ironlog.data.models.SlotTarget
 import es.sebas1705.ironlog.data.models.TrackingType
 import es.sebas1705.ironlog.data.repository.share.DefaultRoutineSharing
 import es.sebas1705.ironlog.data.repository.share.ImportPreview
 import es.sebas1705.ironlog.data.repository.share.ImportPreviewResult
+import es.sebas1705.ironlog.data.repository.share.QrCapacity
 import es.sebas1705.ironlog.data.repository.share.RoutineDecodeResult
 import es.sebas1705.ironlog.data.repository.share.RoutineExport
 import es.sebas1705.ironlog.data.repository.share.RoutineShareCode
@@ -169,17 +171,120 @@ class RoutineSharingTest {
     }
 
     @Test
-    fun `qr payload round trips through deflate and base64url`() = runTest {
+    fun `v1 qr payload still round trips through deflate and base64url`() = runTest {
         val env = env()
         val json = env.sharing.export(env.seedRoutine())!!
-        val code = RoutineShareCode.encode(json)
-        assertTrue(code.startsWith(RoutineShareCode.PREFIX))
+        val code = RoutineShareCode.encodeV1(json)
+        assertTrue(code.startsWith(RoutineShareCode.PREFIX_V1))
         assertTrue(code.length < json.length)
-        assertTrue(code.removePrefix(RoutineShareCode.PREFIX).all { it.isLetterOrDigit() || it == '-' || it == '_' })
+        assertTrue(code.removePrefix(RoutineShareCode.PREFIX_V1).all { it.isLetterOrDigit() || it == '-' || it == '_' })
         assertEquals(json, RoutineShareCode.decode(code))
+        // The prefix is read case-insensitively; the payload is not touched.
+        assertEquals(json, RoutineShareCode.decode("IRONLOG:R1:" + code.removePrefix(RoutineShareCode.PREFIX_V1)))
         assertNull(RoutineShareCode.decode("ironlog:r1:AAAA"))
         assertNull(RoutineShareCode.decode("hello"))
         // The preview accepts the QR payload directly.
         assertTrue(ready(env.sharing.preview(code)).missingIds.isEmpty())
+    }
+
+    @Test
+    fun `v2 qr payload round trips through deflate and base45 in the alphanumeric charset`() = runTest {
+        val env = env()
+        val id = env.seedRoutine()
+        val json = env.sharing.export(id)!!
+        val code = RoutineShareCode.encode(json)
+        assertTrue(code.startsWith(RoutineShareCode.PREFIX))
+        assertTrue(QrCapacity.isAlphanumeric(code))
+        assertEquals(json, RoutineShareCode.decode(code))
+        assertEquals(json, RoutineShareCode.decode("ironlog:r2:" + code.removePrefix(RoutineShareCode.PREFIX) + "\n"))
+        assertNull(RoutineShareCode.decode("IRONLOG:R2:AAAA"))
+        assertNull(RoutineShareCode.decode("IRONLOG:R2:abc"))
+        // A routine not copied from the catalogue is shared as v2.
+        val shared = env.sharing.shareCode(id)!!
+        assertTrue(shared.startsWith(RoutineShareCode.PREFIX))
+        assertTrue(ready(env.sharing.preview(shared)).missingIds.isEmpty())
+        assertNull(env.sharing.shareCode("nope"))
+    }
+
+    @Test
+    fun `an unmodified catalogue copy is shared as a template code and imported as a catalogue copy`() = runTest {
+        val env = env()
+        val id = env.routines.copyTemplate("ppl-reddit", "es")
+        val code = env.sharing.shareCode(id)!!
+        assertEquals("IRONLOG:T1:PPL-REDDIT:1", code)
+        assertTrue(QrCapacity.isAlphanumeric(code))
+        assertEquals(RoutineOrigin("ppl-reddit", 1), RoutineShareCode.decodeTemplate(code.lowercase()))
+        assertNull(RoutineShareCode.decode(code))
+
+        val preview = ready(env.sharing.preview(code, language = "en"))
+        val template = FamousRoutines.byId("ppl-reddit")!!
+        assertEquals(RoutineOrigin("ppl-reddit", 1), preview.template)
+        assertEquals(template.name.en, preview.file.routine.name)
+        assertEquals(template.days.size, preview.file.routine.days.size)
+
+        val copy = env.routines.getRoutine(env.sharing.import(preview, dropMissing = true))!!
+        assertNotEquals(id, copy.id)
+        assertEquals(template.name.en, copy.name)
+        assertEquals(RoutineOrigin("ppl-reddit", 1), copy.origin)
+        assertEquals(template.days.flatMap { it.slots }, copy.days.flatMap { d -> d.slots.map { it.toSpec() } })
+        // The copy is unmodified too, so it shares as the same code.
+        assertEquals(code, env.sharing.shareCode(copy.id))
+    }
+
+    @Test
+    fun `a modified catalogue copy is shared in full`() = runTest {
+        val env = env()
+        val id = env.routines.copyTemplate("ppl-reddit", "en")
+        val slot = env.routines.getRoutine(id)!!.days[0].slots[0]
+        env.routines.updateSlot(slot.id, slot.toSpec().copy(sets = slot.sets + 1))
+        assertTrue(env.sharing.shareCode(id)!!.startsWith(RoutineShareCode.PREFIX))
+
+        val renamed = env.routines.copyTemplate("ppl-reddit", "en")
+        env.routines.updateRoutine(renamed, "My PPL", "")
+        assertTrue(env.sharing.shareCode(renamed)!!.startsWith(RoutineShareCode.PREFIX))
+    }
+
+    @Test
+    fun `bad template codes are invalid or unsupported`() = runTest {
+        val env = env()
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("IRONLOG:T1:NOT-A-TEMPLATE:1"))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("IRONLOG:T1:PPL-REDDIT"))
+        assertIs<ImportPreviewResult.Invalid>(env.sharing.preview("IRONLOG:T1:PPL_REDDIT:1"))
+        val newer = env.sharing.preview("IRONLOG:T1:PPL-REDDIT:99")
+        assertEquals(99, assertIs<ImportPreviewResult.UnsupportedVersion>(newer).version)
+        // Every bundled template id fits the template code.
+        FamousRoutines.all.forEach { t ->
+            val code = RoutineShareCode.encodeTemplate(t.id, t.version)
+            assertEquals(RoutineOrigin(t.id, t.version), RoutineShareCode.decodeTemplate(code))
+        }
+    }
+
+    @Test
+    fun `a 6-day ppl needs a smaller qr as v2 and a tiny one as a template code`() = runTest {
+        val env = env()
+        val id = env.routines.copyTemplate("ppl-reddit", "en")
+        assertEquals(6, env.routines.getRoutine(id)!!.days.count { it.kind == DayKind.TRAINING })
+        val json = env.sharing.export(id)!!
+        val v1 = RoutineShareCode.encodeV1(json)
+        val v2 = RoutineShareCode.encode(json)
+        val template = env.sharing.shareCode(id)!!
+
+        val v1Version = QrCapacity.version(v1)!!
+        val v2Version = QrCapacity.version(v2)!!
+        val templateVersion = QrCapacity.version(template)!!
+        println(
+            "6-day PPL share code: json=${json.length} chars; " +
+                "v1=${v1.length} chars (byte mode, ${QrCapacity.dataBits(v1, v1Version)} bits, " +
+                "version $v1Version, ${QrCapacity.modules(v1Version)} modules); " +
+                "v2=${v2.length} chars (alphanumeric, ${QrCapacity.dataBits(v2, v2Version)} bits, " +
+                "version $v2Version, ${QrCapacity.modules(v2Version)} modules); " +
+                "template=${template.length} chars (version $templateVersion, ${QrCapacity.modules(templateVersion)} modules)",
+        )
+        assertTrue(!QrCapacity.isAlphanumeric(v1) && QrCapacity.isAlphanumeric(v2))
+        assertTrue(QrCapacity.dataBits(v2, v2Version) < QrCapacity.dataBits(v1, v2Version))
+        assertTrue(v2Version < v1Version, "v2 version $v2Version, v1 version $v1Version")
+        assertTrue(template.length < 32)
+        assertEquals(1, templateVersion)
+        assertEquals(json, RoutineShareCode.decode(v2))
     }
 }

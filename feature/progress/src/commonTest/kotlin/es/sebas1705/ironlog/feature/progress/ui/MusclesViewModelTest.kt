@@ -2,6 +2,7 @@ package es.sebas1705.ironlog.feature.progress.ui
 
 import app.cash.turbine.test
 import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
 import es.sebas1705.ironlog.domain.usecases.stats.BalanceKind
 import es.sebas1705.ironlog.domain.usecases.stats.Comparison
 import es.sebas1705.ironlog.domain.usecases.stats.DayWindow
@@ -54,7 +55,10 @@ class MusclesViewModelTest : MainDispatcherTest() {
             assertFalse(state.loading)
             val today = LocalDate(2026, 10, 14).toEpochDays().toInt()
             assertEquals(DayWindow(today - 27, today), state.current)
-            assertEquals(listOf(Muscle.CHEST, Muscle.TRICEPS, Muscle.MIDDLE_BACK), state.muscles.map { it.muscle })
+            assertEquals(
+                listOf(MuscleGroup.CHEST, MuscleGroup.TRICEPS, MuscleGroup.BACK),
+                state.muscles.map { it.group }
+            )
             val chest = state.muscles.first()
             assertEquals(Comparison(1.0, 0.5), chest.setsPerWeek) // 4 sets / 4 weeks vs 2 / 4
             assertEquals(Comparison(400_000.0, 200_000.0), chest.volumePerWeek)

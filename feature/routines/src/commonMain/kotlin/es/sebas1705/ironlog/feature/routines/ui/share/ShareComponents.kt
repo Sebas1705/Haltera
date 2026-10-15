@@ -42,6 +42,7 @@ import es.sebas1705.ironlog.feature.routines.resources.routines_share_error
 import es.sebas1705.ironlog.feature.routines.resources.routines_share_file
 import es.sebas1705.ironlog.feature.routines.resources.routines_show_qr
 import es.sebas1705.ironlog.feature.routines.resources.routines_untitled
+import io.github.alexzhirkevich.qrose.options.QrErrorCorrectionLevel
 import io.github.alexzhirkevich.qrose.rememberQrCodePainter
 import org.jetbrains.compose.resources.stringResource
 
@@ -107,7 +108,11 @@ private fun QrDialog(qr: QrState, onDismiss: () -> Unit) {
                             .background(Color.White, MaterialTheme.shapes.medium).padding(12.dp),
                     ) {
                         Image(
-                            painter = rememberQrCodePainter(qr.code),
+                            // Level L: the lowest error correction gives the fewest, biggest modules. The library picks
+                            // alphanumeric mode by itself, since every share code is in that charset.
+                            painter = rememberQrCodePainter(qr.code) {
+                                errorCorrectionLevel = QrErrorCorrectionLevel.Low
+                            },
                             contentDescription = stringResource(
                                 Res.string.routines_qr_image,
                                 qr.name.ifBlank { stringResource(Res.string.routines_untitled) },

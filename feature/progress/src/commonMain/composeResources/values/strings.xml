@@ -144,6 +144,21 @@
     <string name="progress_muscle_traps">Traps</string>
     <string name="progress_muscle_triceps">Triceps</string>
     <string name="progress_muscle_full_body">Full body</string>
+    <string name="progress_group_chest">Chest</string>
+    <string name="progress_group_back">Back</string>
+    <string name="progress_group_shoulders">Shoulders</string>
+    <string name="progress_group_quads">Quadriceps</string>
+    <string name="progress_group_hamstrings">Hamstrings</string>
+    <string name="progress_group_glutes">Glutes</string>
+    <string name="progress_group_biceps">Biceps</string>
+    <string name="progress_group_triceps">Triceps</string>
+    <string name="progress_group_calves">Calves</string>
+    <string name="progress_group_abs">Abdominals</string>
+    <string name="progress_group_traps">Traps</string>
+    <string name="progress_group_lower_back">Lower back</string>
+    <string name="progress_group_forearms">Forearms</string>
+    <string name="progress_group_hips">Hip adductors and abductors</string>
+    <string name="progress_group_neck">Neck</string>
 
     <!-- Equipment -->
     <string name="progress_equipment_barbell">Barbell</string>
@@ -245,8 +260,14 @@
     <string name="progress_tile_best_e1rm">Best e1RM</string>
     <string name="progress_tile_trend">e1RM trend</string>
     <string name="progress_tile_exercise_sessions">Sessions</string>
-    <string name="progress_tile_exercise_sets">%1$d effective sets in total</string>
-    <string name="progress_trend_detail">R² %1$s · %2$d sessions</string>
+    <plurals name="progress_tile_exercise_sets">
+        <item quantity="one">%1$d effective set in total</item>
+        <item quantity="other">%1$d effective sets in total</item>
+    </plurals>
+    <plurals name="progress_trend_detail">
+        <item quantity="one">R² %1$s · %2$d session</item>
+        <item quantity="other">R² %1$s · %2$d sessions</item>
+    </plurals>
     <string name="progress_trend_none">Needs 3 sessions with weight</string>
     <string name="progress_chart_one_rm_subtitle">Best set of each session, with its least-squares trend</string>
     <string name="progress_chart_one_rm_empty">The estimated 1RM line appears after two sessions with a weighted set.</string>

@@ -9,6 +9,8 @@ import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.core.units.appLanguage
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Muscle
+import es.sebas1705.ironlog.domain.usecases.routinescore.MuscleGroup
+import es.sebas1705.ironlog.feature.progress.resources.*
 import es.sebas1705.ironlog.feature.progress.model.ChartScale
 import es.sebas1705.ironlog.feature.progress.model.VariantInfo
 import es.sebas1705.ironlog.feature.progress.model.toLocalDate
@@ -265,3 +267,25 @@ internal fun rememberDateFormat(): DateFormat {
         DateFormat(months, short, full, hours, minutes, TimeZone.currentSystemDefault())
     }
 }
+
+/** Label of a muscle group: the same words as the routine analysis, so both screens name muscles alike. */
+@Composable
+internal fun muscleGroupLabel(group: MuscleGroup): String = stringResource(
+    when (group) {
+        MuscleGroup.CHEST -> Res.string.progress_group_chest
+        MuscleGroup.BACK -> Res.string.progress_group_back
+        MuscleGroup.SHOULDERS -> Res.string.progress_group_shoulders
+        MuscleGroup.QUADS -> Res.string.progress_group_quads
+        MuscleGroup.HAMSTRINGS -> Res.string.progress_group_hamstrings
+        MuscleGroup.GLUTES -> Res.string.progress_group_glutes
+        MuscleGroup.BICEPS -> Res.string.progress_group_biceps
+        MuscleGroup.TRICEPS -> Res.string.progress_group_triceps
+        MuscleGroup.CALVES -> Res.string.progress_group_calves
+        MuscleGroup.ABS -> Res.string.progress_group_abs
+        MuscleGroup.TRAPS -> Res.string.progress_group_traps
+        MuscleGroup.LOWER_BACK -> Res.string.progress_group_lower_back
+        MuscleGroup.FOREARMS -> Res.string.progress_group_forearms
+        MuscleGroup.HIPS -> Res.string.progress_group_hips
+        MuscleGroup.NECK -> Res.string.progress_group_neck
+    },
+)

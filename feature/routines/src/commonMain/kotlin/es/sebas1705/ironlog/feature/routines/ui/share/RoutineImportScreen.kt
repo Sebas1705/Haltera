@@ -55,6 +55,7 @@ import es.sebas1705.ironlog.feature.routines.resources.routines_import_title
 import es.sebas1705.ironlog.feature.routines.resources.routines_import_unsupported
 import es.sebas1705.ironlog.feature.routines.ui.components.BackButton
 import org.jetbrains.compose.resources.getString
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -139,8 +140,9 @@ private fun PreviewContent(
         items(routine.days) { day -> DayPreview(day, preview, state.language) }
         if (preview.file.customExercises.isNotEmpty()) {
             item {
+                val custom = preview.file.customExercises.size
                 Text(
-                    stringResource(Res.string.routines_import_custom_count, preview.file.customExercises.size),
+                    pluralStringResource(Res.plurals.routines_import_custom_count, custom, custom),
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }

@@ -128,7 +128,9 @@ internal fun prescriptionLabel(prescription: Prescription): String = when (presc
 @Composable
 internal fun slotSummary(spec: SlotSpec): String = buildList {
     add(stringResource(Res.string.routines_slot_sets_value, spec.sets, prescriptionLabel(spec.prescription)))
-    if (spec.warmupSets > 0) add(stringResource(Res.string.routines_slot_warmup_value, spec.warmupSets))
+    if (spec.warmupSets > 0) {
+        add(pluralStringResource(Res.plurals.routines_slot_warmup_value, spec.warmupSets, spec.warmupSets))
+    }
     spec.supersetGroup?.let { add(stringResource(Res.string.routines_slot_superset, supersetLetter(it))) }
 }.joinToString(" · ")
 

@@ -81,8 +81,7 @@ internal fun WeeklySetsCard(weekly: Map<MuscleGroup, Double>, split: Map<MuscleG
                             Res.string.routines_analysis_chart_value_split,
                             label,
                             formatOne(sets, language),
-                            formatOne(direct, language),
-                            formatOne(secondary, language),
+                            setsSplit(direct, secondary, language),
                         )
                     } else {
                         stringResource(Res.string.routines_analysis_chart_value, label, formatOne(sets, language))

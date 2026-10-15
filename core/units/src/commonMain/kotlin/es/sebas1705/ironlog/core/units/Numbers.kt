@@ -29,6 +29,9 @@ object Numbers {
     /** Typographic minus sign, used for signed values on screen. */
     const val MINUS = '−'
 
+    /** No-break space between a number and the percent sign in Spanish. */
+    const val NO_BREAK_SPACE = ' '
+
     fun decimalSeparator(language: String = appLanguage()): Char = if (isCommaLanguage(language)) ',' else '.'
 
     /**
@@ -65,6 +68,20 @@ object Numbers {
         val digits = abs(value).toString()
         val integer = if (grouping) group(digits, comma) else digits
         return if (value < 0) "-$integer" else integer
+    }
+
+    /**
+     * A percentage: "31 %" in Spanish, with a no-break space so the sign never wraps on its own line, and
+     * "31%" in English. [value] is already in percent (31.0, not 0.31).
+     */
+    fun percent(
+        value: Double,
+        maxDecimals: Int = 0,
+        language: String = appLanguage(),
+        typographicMinus: Boolean = true,
+    ): String {
+        val number = format(value, maxDecimals, language = language, typographicMinus = typographicMinus)
+        return if (isCommaLanguage(language)) "$number$NO_BREAK_SPACE%" else "$number%"
     }
 
     /**

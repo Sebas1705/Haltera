@@ -55,6 +55,14 @@ class UnitsTest {
     }
 
     @Test
+    fun `percent keeps the sign with its number`() {
+        assertEquals("31 %", Numbers.percent(31.0, language = "es"))
+        assertEquals("−31 %", Numbers.percent(-31.0, language = "es"))
+        assertEquals("31%", Numbers.percent(31.0, language = "en"))
+        assertEquals("12.5%", Numbers.percent(12.5, maxDecimals = 1, language = "en"))
+    }
+
+    @Test
     fun `parse accepts comma and dot`() {
         assertEquals(1.5, Numbers.parse("1,5"))
         assertEquals(1.5, Numbers.parse(" 1.5 "))

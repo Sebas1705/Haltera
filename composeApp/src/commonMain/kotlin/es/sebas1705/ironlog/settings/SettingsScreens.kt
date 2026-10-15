@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import es.sebas1705.ironlog.account.AccountSection
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import es.sebas1705.ironlog.core.ui.components.IronlogLogo
 import es.sebas1705.ironlog.core.ui.theme.FontLicence
 import es.sebas1705.ironlog.core.ui.theme.readFontLicences
@@ -102,7 +103,7 @@ fun SettingsScreen(onBack: () -> Unit, onCredits: () -> Unit, viewModel: Setting
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val settings = state.settings
     BackScaffold(Res.string.settings_title, onBack) { modifier ->
-        Column(modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        Column(modifier.fillMaxSize().centeredContent().verticalScroll(rememberScrollState())) {
             SectionTitle(Res.string.settings_account)
             AccountSection()
             HorizontalDivider(Modifier.padding(top = 16.dp, bottom = 8.dp))
@@ -203,11 +204,12 @@ fun CreditsScreen(onBack: () -> Unit) {
     var fonts by remember { mutableStateOf(emptyList<FontLicence>()) }
     LaunchedEffect(Unit) {
         license = Res.readBytes("files/LICENSE.txt").decodeToString().reflowed()
-        fonts = readFontLicences().map { it.copy(text = it.text.reflowed()) }
+        // The OFL keeps its own line breaks (banner, headings, numbered conditions).
+        fonts = readFontLicences().map { it.copy(text = it.text.replace("\r\n", "\n").trim()) }
     }
     BackScaffold(Res.string.credits_title, onBack) { modifier ->
         Column(
-            modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            modifier.fillMaxSize().centeredContent().verticalScroll(rememberScrollState()).padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             IronlogLogo(size = 72.dp, modifier = Modifier.align(Alignment.CenterHorizontally))

@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.core.ui.theme.IronlogTheme
+import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.domain.usecases.stats.Metric
 import es.sebas1705.ironlog.domain.usecases.stats.RepRange
 import es.sebas1705.ironlog.feature.progress.model.ChartPoint
@@ -230,11 +230,10 @@ internal fun RepRangesCard(state: ExerciseProgressState) {
             labels = labels,
             format = { formatNumber(it, 0) },
             unit = setsUnit,
-            color = IronlogTheme.colors.accent,
             maxLabels = values.size,
             tooltip = { i ->
-                val share = formatNumber(values[i] / total * 100, 0)
-                "${labels[i]}: ${format(values[i])} ($share %)"
+                val share = Numbers.percent(values[i] / total * 100)
+                "${labels[i]}: ${format(values[i])} ($share)"
             },
             description = barsDescription(title, labels, values, format),
         )

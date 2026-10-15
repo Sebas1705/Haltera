@@ -18,6 +18,7 @@
     <string name="routines_set_inactive">Desactivar</string>
     <string name="routines_more_actions">Más acciones de %1$s</string>
     <string name="routines_new_routine">Nueva rutina</string>
+    <string name="routines_add_routine">Añadir rutina</string>
     <string name="routines_from_catalogue">Del catálogo</string>
     <string name="routines_new_routine_default_name">Mi rutina</string>
     <string name="routines_untitled">Rutina sin nombre</string>
@@ -76,7 +77,10 @@
     <string name="routines_slot_any_variant">Cualquier variante</string>
     <string name="routines_slot_flexible_label">%1$s · %2$s</string>
     <string name="routines_slot_sets_value">%1$d × %2$s</string>
-    <string name="routines_slot_warmup_value">+%1$d de calentamiento</string>
+    <plurals name="routines_slot_warmup_value">
+        <item quantity="one">+%1$d de calentamiento</item>
+        <item quantity="other">+%1$d de calentamiento</item>
+    </plurals>
     <string name="routines_slot_superset">Superserie %1$s</string>
     <string name="routines_prescription_range_value">%1$d–%2$d reps</string>
     <string name="routines_prescription_reps_value">%1$d reps</string>
@@ -191,7 +195,7 @@
     <string name="routines_show_qr">Mostrar QR</string>
     <string name="routines_share_more">Más opciones</string>
     <string name="routines_share_error">No se pudo compartir la rutina.</string>
-    <string name="routines_qr_hint">En otro móvil con Ironlog, abre Rutinas, pulsa Importar y escanea este código.</string>
+    <string name="routines_qr_hint">En otro móvil con Ironlog, abre Rutinas, pulsa Añadir rutina › Escanear QR y escanea este código.</string>
     <string name="routines_qr_image">Código QR de la rutina %1$s</string>
     <string name="routines_qr_too_large">Esta rutina es demasiado grande para un código QR. Compártela como archivo.</string>
     <string name="routines_close">Cerrar</string>
@@ -202,7 +206,10 @@
     <string name="routines_import_add">Añadir a mis rutinas</string>
     <string name="routines_import_set_active">Marcar como rutina activa</string>
     <string name="routines_import_copy_note">La rutina se añade como una copia nueva. No se cambia nada de lo que ya tienes.</string>
-    <string name="routines_import_custom_count">Incluye %1$d ejercicios personalizados, que se añaden a tus ejercicios.</string>
+    <plurals name="routines_import_custom_count">
+        <item quantity="one">Incluye %1$d ejercicio personalizado, que se añade a tus ejercicios.</item>
+        <item quantity="other">Incluye %1$d ejercicios personalizados, que se añaden a tus ejercicios.</item>
+    </plurals>
     <string name="routines_import_missing_title">Ejercicios que no están en este dispositivo</string>
     <string name="routines_import_missing_keep">Añadirlos como ejercicios personalizados</string>
     <string name="routines_import_missing_drop">Omitirlos</string>
@@ -258,7 +265,7 @@
     <string name="routines_group_calves">Gemelos</string>
     <string name="routines_group_abs">Abdominales</string>
     <string name="routines_group_traps">Trapecios</string>
-    <string name="routines_group_lower_back">Lumbares</string>
+    <string name="routines_group_lower_back">Zona lumbar</string>
     <string name="routines_group_forearms">Antebrazos</string>
     <string name="routines_group_hips">Aductores y abductores</string>
     <string name="routines_group_neck">Cuello</string>
@@ -319,7 +326,15 @@
     <string name="routines_advice_progression">%1$d de %2$d ejercicios no tienen regla de progresión. Añade progresión doble o lineal para que las cargas suban con el tiempo.</string>
     <string name="routines_advice_schedule">%1$d de %2$d sesiones previstas hechas. Menos días de entrenamiento o un ciclo más corto quizá encajen mejor en tu semana.</string>
     <string name="routines_advice_plateau">Sin progreso reciente en %1$s. Prueba una semana más ligera, otro rango de repeticiones u otra variante.</string>
-    <string name="routines_sets_split">%1$s directas + %2$s secundarias</string>
-    <string name="routines_analysis_chart_value_split">%1$s: %2$s series por semana (%3$s directas + %4$s secundarias)</string>
-    <string name="routines_advice_shoulder_overlap">Hombros: %1$s series por semana (%2$s directas + %3$s secundarias de los press). El grupo abarca el deltoides anterior, el lateral y el posterior, y los press ya trabajan el anterior. Mantén las elevaciones laterales y el trabajo de deltoides posterior; si no te recuperas bien, recorta primero series de press.</string>
+    <string name="routines_sets_split">%1$s + %2$s</string>
+    <plurals name="routines_sets_direct">
+        <item quantity="one">%1$s directa</item>
+        <item quantity="other">%1$s directas</item>
+    </plurals>
+    <plurals name="routines_sets_secondary">
+        <item quantity="one">%1$s secundaria</item>
+        <item quantity="other">%1$s secundarias</item>
+    </plurals>
+    <string name="routines_analysis_chart_value_split">%1$s: %2$s series por semana (%3$s)</string>
+    <string name="routines_advice_shoulder_overlap">Hombros: %1$s series por semana (%2$s de los press). El grupo abarca el deltoides anterior, el lateral y el posterior, y los press ya trabajan el anterior. Mantén las elevaciones laterales y el trabajo de deltoides posterior; si no te recuperas bien, recorta primero series de press.</string>
 </resources>

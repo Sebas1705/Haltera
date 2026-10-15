@@ -69,7 +69,6 @@ import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_fat
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_fiber
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_grams_value
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_info
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_kcal
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_kcal_value
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_meal_breakfast
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_meal_dinner

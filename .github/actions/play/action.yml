@@ -1,0 +1,46 @@
+name: Google Play (fastlane supply)
+description: >
+  Runs `fastlane supply` against es.sebas1705.ironlog with the PLAY_SERVICE_ACCOUNT_JSON of Doppler
+  (docs/play/PLAY-CONSOLE-GUIDE.md). Until the owner has stored that secret it does nothing and says so, so the
+  workflows that use it never fail for lack of it. Needs DOPPLER_TOKEN in the environment.
+inputs:
+  args:
+    description: Arguments for `fastlane supply` (package and key are added here)
+    required: true
+outputs:
+  ran:
+    description: "'true' when supply ran"
+    value: ${{ steps.supply.outputs.ran }}
+runs:
+  using: composite
+  steps:
+    - uses: dopplerhq/cli-action@v4
+
+    - name: Is Google Play set up?
+      id: key
+      shell: bash
+      run: |
+        if [ -n "$DOPPLER_TOKEN" ] && doppler run -- bash -c '[ -n "$PLAY_SERVICE_ACCOUNT_JSON" ]'; then
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "::notice::No PLAY_SERVICE_ACCOUNT_JSON in Doppler yet: Google Play skipped (docs/play/PLAY-CONSOLE-GUIDE.md)"
+          echo "ready=false" >> "$GITHUB_OUTPUT"
+        fi
+
+    - if: steps.key.outputs.ready == 'true'
+      uses: ruby/setup-ruby@v1
+      with: { ruby-version: "3.3" }
+
+    - name: fastlane supply
+      id: supply
+      if: steps.key.outputs.ready == 'true'
+      shell: bash
+      env:
+        SUPPLY_ARGS: ${{ inputs.args }}
+      run: |
+        gem install fastlane -v 2.241.0 --no-document --silent
+        doppler run -- bash -c 'umask 077; printf "%s" "$PLAY_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-sa.json"'
+        trap 'rm -f "$RUNNER_TEMP/play-sa.json"' EXIT
+        # shellcheck disable=SC2086
+        fastlane supply --package_name es.sebas1705.ironlog --json_key "$RUNNER_TEMP/play-sa.json" $SUPPLY_ARGS
+        echo "ran=true" >> "$GITHUB_OUTPUT"

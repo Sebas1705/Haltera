@@ -56,7 +56,7 @@ internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () ->
                 TimerMath.formatElapsed(summary.durationMs),
                 Modifier.weight(1f)
             )
-            Metric(Res.string.session_summary_volume, weightText(summary.volumeGrams, unit), Modifier.weight(1f))
+            Metric(Res.string.session_summary_volume, volumeText(summary.volumeGrams, unit), Modifier.weight(1f))
             Metric(Res.string.session_summary_sets, summary.completedSets.toString(), Modifier.weight(1f))
         }
         Text(stringResource(Res.string.session_summary_records), style = MaterialTheme.typography.titleMedium)

@@ -86,6 +86,7 @@ ORDER BY
     SELECT COUNT(*) FROM SessionExerciseEntity se
     JOIN ExerciseVariantEntity uv ON uv.id = se.variantId
     WHERE uv.exerciseId = ExerciseEntity.id
+      AND EXISTS (SELECT 1 FROM SetLogEntity sl WHERE sl.sessionExerciseId = se.id AND sl.completed = 1)
   ) ELSE 0 END,
   CASE WHEN :query = '' AND category NOT IN ('STRENGTH', 'CALISTHENICS') THEN 1 ELSE 0 END,
   CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END,

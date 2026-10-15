@@ -19,6 +19,12 @@ class UnitsTest {
     }
 
     @Test
+    fun `volumes round to whole units everywhere`() {
+        assertEquals("908", Weights.formatVolume(907_500, WeightUnit.KG, language = "en"))
+        assertEquals("15,090", Weights.formatVolume(15_090_400, WeightUnit.KG, language = "en"))
+    }
+
+    @Test
     fun `format trims trailing zeros`() {
         assertEquals("62.5", Weights.format(62_500, WeightUnit.KG, language = "en"))
         assertEquals("60", Weights.format(60_000, WeightUnit.KG, language = "en"))

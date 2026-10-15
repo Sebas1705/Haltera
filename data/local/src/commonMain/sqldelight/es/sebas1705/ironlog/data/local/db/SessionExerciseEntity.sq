@@ -36,11 +36,13 @@ SELECT * FROM SessionExerciseEntity WHERE sessionId = ? ORDER BY position;
 selectBySessions:
 SELECT * FROM SessionExerciseEntity WHERE sessionId IN ? ORDER BY sessionId, position;
 
--- History of a variant in finished sessions started before :before, latest first.
+-- History of a variant in finished sessions started before :before, latest first. Here and below only
+-- performances with a completed set count (older saves may keep exercises left empty).
 historyByVariant:
 SELECT se.*, s.startedAt AS sessionStartedAt
 FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
 WHERE se.variantId = :variantId AND s.endedAt IS NOT NULL AND s.startedAt < :before
+  AND EXISTS (SELECT 1 FROM SetLogEntity sl WHERE sl.sessionExerciseId = se.id AND sl.completed = 1)
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;
 
@@ -51,6 +53,7 @@ FROM SessionExerciseEntity se
 JOIN WorkoutSessionEntity s ON s.id = se.sessionId
 JOIN ExerciseVariantEntity v ON v.id = se.variantId
 WHERE v.exerciseId = :exerciseId AND s.endedAt IS NOT NULL AND s.startedAt < :before
+  AND EXISTS (SELECT 1 FROM SetLogEntity sl WHERE sl.sessionExerciseId = se.id AND sl.completed = 1)
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;
 
@@ -60,6 +63,7 @@ historyBySlotAndVariant:
 SELECT se.*, s.startedAt AS sessionStartedAt
 FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
 WHERE se.slotId = :slotId AND se.variantId = :variantId AND s.endedAt IS NOT NULL AND s.startedAt < :before
+  AND EXISTS (SELECT 1 FROM SetLogEntity sl WHERE sl.sessionExerciseId = se.id AND sl.completed = 1)
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT :limit;
 

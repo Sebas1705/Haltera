@@ -4,9 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.intl.Locale
 import es.sebas1705.ironlog.core.units.Numbers
+import es.sebas1705.ironlog.core.units.VOLUME_DECIMALS
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
 import es.sebas1705.ironlog.core.units.appLanguage
+import es.sebas1705.ironlog.core.units.formatVolume
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Muscle
 import es.sebas1705.ironlog.feature.progress.model.ChartScale
@@ -84,7 +86,8 @@ internal fun formatWeight(grams: Long, unit: WeightUnit, decimals: Int = 2): Str
 
 /** Volume (gram-reps) shown like a weight with no decimals: "4250 kg". */
 @Composable
-internal fun formatVolume(gramReps: Long, unit: WeightUnit): String = formatWeight(gramReps, unit, decimals = 0)
+internal fun formatVolume(gramReps: Long, unit: WeightUnit): String =
+    stringResource(Res.string.progress_weight_value, Weights.formatVolume(gramReps, unit), unitLabel(unit))
 
 /** "Oct 14" / "14 oct", or with the year. */
 @Composable
@@ -190,7 +193,7 @@ internal class UnitFormat(val unit: WeightUnit, val label: String, private val l
 
     fun weight(grams: Double, decimals: Int = 1): String = "${trimmed(toUnit(grams), decimals)} $label"
 
-    fun volume(gramReps: Double): String = "${formatNumber(toUnit(gramReps), 0, language)} $label"
+    fun volume(gramReps: Double): String = "${formatNumber(toUnit(gramReps), VOLUME_DECIMALS, language)} $label"
 
     /** Axis ticks of values already in [unit]. */
     fun axis(value: Double): String = ChartScale.compact(value, language)

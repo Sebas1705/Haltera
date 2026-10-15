@@ -7,6 +7,7 @@ import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
 import es.sebas1705.ironlog.core.units.WeightUnit
 import es.sebas1705.ironlog.core.units.Weights
+import es.sebas1705.ironlog.core.units.formatVolume
 import es.sebas1705.ironlog.data.models.Equipment
 import es.sebas1705.ironlog.data.models.Exercise
 import es.sebas1705.ironlog.data.models.ExerciseCategory
@@ -121,9 +122,13 @@ class ExerciseDetailViewModel(
         combine(
             exercises.observeExercise(exerciseId),
             language.filterNotNull(),
-            selectedVariant
-        ) { exercise, lang, sel ->
-            exercise?.toDetail(lang, sel)
+            selectedVariant,
+            // The most recently trained variant is the default, so its records and history show first.
+            exercises.observeExerciseHistory(exerciseId, limit = 1)
+                .map { it.firstOrNull()?.exercise?.variantId }
+                .distinctUntilChanged(),
+        ) { exercise, lang, sel, recent ->
+            exercise?.toDetail(lang, sel, recent)
         }
             .flowOn(dispatcher)
             .catch { e ->
@@ -166,10 +171,16 @@ class ExerciseDetailViewModel(
     }
 }
 
-internal fun Exercise.toDetail(language: String, selectedVariantId: String?): ExerciseDetail {
+internal fun Exercise.toDetail(
+    language: String,
+    selectedVariantId: String?,
+    recentVariantId: String? = null,
+): ExerciseDetail {
     val selectable = variants.filterNot { it.deprecated }.ifEmpty { variants }
     // A deprecated variant chosen earlier stays selectable so its history is still reachable.
-    val selected = variants.firstOrNull { it.id == selectedVariantId } ?: selectable.firstOrNull()
+    val selected = variants.firstOrNull { it.id == selectedVariantId }
+        ?: variants.firstOrNull { it.id == recentVariantId }
+        ?: selectable.firstOrNull()
     val options = (selectable + listOfNotNull(selected)).distinctBy { it.id }
     return ExerciseDetail(
         id = id,
@@ -198,7 +209,7 @@ internal fun loadText(value: Long, loadType: LoadType, unit: WeightUnit): LoadTe
             isLevel = true
         )
     } else {
-        LoadText(Weights.format(value, unit), isLevel = false)
+        LoadText(Weights.format(value, unit, decimals = LOAD_DECIMALS), isLevel = false)
     }
 
 internal fun ExerciseHistoryEntry.toRow(loadType: LoadType, unit: WeightUnit): HistoryRow {
@@ -233,6 +244,20 @@ internal fun PersonalRecords.toRows(tracking: TrackingType, loadType: LoadType, 
         if (weighted) heaviestLoad?.let { add(it.asLoad(RecordRowKind.HEAVIEST_LOAD)) }
         if (inGrams && tracking.tracksReps) bestEstimatedOneRm?.let { add(it.asLoad(RecordRowKind.ESTIMATED_ONE_RM)) }
         if (tracking.tracksReps) mostReps?.let { add(RecordRow(RecordRowKind.MOST_REPS, null, it.value, it.at)) }
-        if (inGrams && tracking.tracksReps) bestSessionVolume?.let { add(it.asLoad(RecordRowKind.SESSION_VOLUME)) }
+        if (inGrams && tracking.tracksReps) {
+            bestSessionVolume?.let {
+                add(
+                    RecordRow(
+                        RecordRowKind.SESSION_VOLUME,
+                        LoadText(Weights.formatVolume(it.value, unit), false),
+                        null,
+                        it.at
+                    )
+                )
+            }
+        }
     }
 }
+
+/** Loads show at most one decimal, like the rest of the app ("107,7 kg"). */
+private const val LOAD_DECIMALS = 1

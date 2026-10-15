@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -27,6 +28,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -243,11 +245,29 @@ private fun VariantPicker(card: ExerciseCard, settings: UserSettings, onChoose: 
                 val last = option.lastLoadGrams?.let {
                     stringResource(Res.string.session_variant_last, loadText(it, null, option.loadType, settings.unit))
                 } ?: stringResource(Res.string.session_variant_never)
+                val selected = option.variantId == card.variantId
                 FilterChip(
-                    selected = option.variantId == card.variantId,
+                    selected = selected,
                     onClick = { onChoose(option.variantId) },
                     // Chips tell the variants apart: the variant label, never the (shared) exercise name.
                     label = { Text("${option.name.subtitle() ?: option.name.title()} · $last") },
+                    leadingIcon = if (selected) {
+                        {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                Modifier.size(FilterChipDefaults.IconSize)
+                            )
+                        }
+                    } else {
+                        null
+                    },
+                    // The current card is secondaryContainer, the default selected fill: use primary instead.
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                        selectedLeadingIconColor = MaterialTheme.colorScheme.onPrimary,
+                    ),
                 )
             }
         }

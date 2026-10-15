@@ -15,7 +15,10 @@ import kotlin.test.assertNull
 
 class NutritionStatsTest {
     private val food = Food(
-        id = "f", source = FoodSource.USER, nameEn = "Food", nameEs = "Comida",
+        id = "f",
+        source = FoodSource.USER,
+        nameEn = "Food",
+        nameEs = "Comida",
         per100 = Nutrients(kcal = 100.0, protein = 10.0, carbs = 10.0, fat = 2.0),
     )
 
@@ -23,7 +26,13 @@ class NutritionStatsTest {
 
     private fun day(day: Int, grams: Double) = FoodDay(
         date(day),
-        if (grams == 0.0) emptyList() else listOf(MealEntry("e$day", date(day), Meal.LUNCH, "f", grams, null, 0, 0, food)),
+        if (grams == 0.0) {
+            emptyList()
+        } else {
+            listOf(
+                MealEntry("e$day", date(day), Meal.LUNCH, "f", grams, null, 0, 0, food)
+            )
+        },
     )
 
     private fun intake(day: Int, kcal: Double, protein: Double = 0.0, carbs: Double = 0.0, fat: Double = 0.0) =

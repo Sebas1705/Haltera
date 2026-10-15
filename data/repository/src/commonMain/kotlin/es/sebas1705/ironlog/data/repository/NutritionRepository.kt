@@ -16,6 +16,7 @@ import kotlinx.datetime.LocalDate
  * Food log, foods and goals (docs/designs/2026-10-15-nutrition-design.md). A logbook: any date can be logged
  * and every entry edited. Amounts are grams (ml for foods measured in ml).
  */
+@Suppress("TooManyFunctions") // Food log, foods, recipes and goals of one feature.
 interface NutritionRepository {
     /** Imports the bundled generic foods when they are newer than the installed ones. */
     suspend fun importBundledFoods(json: String): FoodImportResult
@@ -79,7 +80,12 @@ interface NutritionRepository {
      * Creates ([recipeId] null) or replaces a recipe: its name and serving from [header], its items, and its
      * per-100 g values computed from them and [yieldGrams] (the cooked weight, or null for the sum of the items).
      */
-    suspend fun saveRecipe(recipeId: String?, header: FoodInput, yieldGrams: Double?, items: List<RecipeItemInput>): String
+    suspend fun saveRecipe(
+        recipeId: String?,
+        header: FoodInput,
+        yieldGrams: Double?,
+        items: List<RecipeItemInput>
+    ): String
 
     /** A food by barcode: a saved one first, else Open Food Facts (cached as an OFF food). */
     suspend fun lookupBarcode(barcode: String): BarcodeLookup

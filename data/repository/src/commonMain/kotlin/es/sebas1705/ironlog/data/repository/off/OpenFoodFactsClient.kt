@@ -66,7 +66,7 @@ class OpenFoodFactsClient(
             }
         } catch (e: CancellationException) {
             throw e
-        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught", "SwallowedException") e: Exception) {
             // Offline, DNS, TLS, timeout: the engines throw different types.
             OffResult.Unavailable
         }
@@ -87,7 +87,10 @@ class OpenFoodFactsClient(
         private const val FIELDS =
             "code,product_name,product_name_en,product_name_es,brands,nutriments,serving_size,serving_quantity," +
                 "product_quantity_unit,quantity,nutrition_data_per"
-        private val Lenient = Json { ignoreUnknownKeys = true; isLenient = true }
+        private val Lenient = Json {
+            ignoreUnknownKeys = true
+            isLenient = true
+        }
         private val BARCODE = Regex("^\\d{8,14}$")
         private val LIQUID = Regex("\\d\\s*(ml|cl|l)\\b", RegexOption.IGNORE_CASE)
 
@@ -97,40 +100,43 @@ class OpenFoodFactsClient(
         internal fun parse(barcode: String, body: String): OffResult {
             val root = runCatching { Lenient.parseToJsonElement(body).jsonObject }.getOrNull() ?: return OffResult.Unavailable
             val product = root["product"] as? JsonObject ?: return OffResult.NotFound
-            val n = product["nutriments"] as? JsonObject ?: return OffResult.NotFound
-            val kcal = n.number("energy-kcal_100g") ?: n.number("energy_100g")?.div(KJ_PER_KCAL)
-            val protein = n.number("proteins_100g")
-            val carbs = n.number("carbohydrates_100g")
-            val fat = n.number("fat_100g")
-            if (kcal == null || protein == null || carbs == null || fat == null) return OffResult.NotFound
+            val per100 = (product["nutriments"] as? JsonObject)?.let(::nutrients) ?: return OffResult.NotFound
             val generic = product.text("product_name")
             val en = product.text("product_name_en") ?: generic
             val es = product.text("product_name_es") ?: generic
             if (en == null && es == null) return OffResult.NotFound
-            val liquid = product.text("nutrition_data_per") == "100ml" ||
-                product.text("product_quantity_unit")?.lowercase() == "ml" ||
-                product.text("quantity")?.let { LIQUID.containsMatchIn(it) } == true
             return OffResult.Found(
                 OffProduct(
                     barcode = barcode,
                     nameEn = en ?: es.orEmpty(),
                     nameEs = es ?: en.orEmpty(),
                     brand = product.text("brands")?.split(',')?.firstOrNull()?.trim()?.ifBlank { null },
-                    per100 = Nutrients(
-                        kcal = kcal,
-                        protein = protein,
-                        carbs = carbs,
-                        fat = fat,
-                        fiber = n.number("fiber_100g"),
-                        sugar = n.number("sugars_100g"),
-                        salt = n.number("salt_100g"),
-                    ),
-                    unit = if (liquid) FoodUnit.ML else FoodUnit.G,
+                    per100 = per100,
+                    unit = if (isLiquid(product)) FoodUnit.ML else FoodUnit.G,
                     servingName = product.text("serving_size"),
                     servingGrams = product.number("serving_quantity")?.takeIf { it > 0 },
                 ),
             )
         }
+
+        /** Nutrients per 100 g; null without energy and the three macros. Energy falls back to kJ / 4.184. */
+        private fun nutrients(n: JsonObject): Nutrients? {
+            val kcal = n.number("energy-kcal_100g") ?: n.number("energy_100g")?.div(KJ_PER_KCAL) ?: return null
+            return Nutrients(
+                kcal = kcal,
+                protein = n.number("proteins_100g") ?: return null,
+                carbs = n.number("carbohydrates_100g") ?: return null,
+                fat = n.number("fat_100g") ?: return null,
+                fiber = n.number("fiber_100g"),
+                sugar = n.number("sugars_100g"),
+                salt = n.number("salt_100g"),
+            )
+        }
+
+        private fun isLiquid(product: JsonObject): Boolean =
+            product.text("nutrition_data_per") == "100ml" ||
+                product.text("product_quantity_unit")?.lowercase() == "ml" ||
+                product.text("quantity")?.let { LIQUID.containsMatchIn(it) } == true
 
         private fun JsonObject.text(key: String): String? =
             (this[key] as? JsonPrimitive)?.contentOrNull?.trim()?.ifBlank { null }

@@ -48,6 +48,7 @@ import es.sebas1705.ironlog.resources.Res
 import es.sebas1705.ironlog.resources.back
 import es.sebas1705.ironlog.resources.credits_catalog
 import es.sebas1705.ironlog.resources.credits_fonts
+import es.sebas1705.ironlog.resources.credits_foods
 import es.sebas1705.ironlog.resources.credits_license
 import es.sebas1705.ironlog.resources.credits_title
 import es.sebas1705.ironlog.resources.settings_account
@@ -192,14 +193,16 @@ private fun SwitchRow(label: StringResource, checked: Boolean, onChange: (Boolea
     )
 }
 
-/** Credits: the exercise catalogue attribution, the app licence and the font licences, read from the bundled files. */
+/** Credits: the exercise catalogue and food database attributions, the app licence and the font licences, read from the bundled files. */
 @Composable
 fun CreditsScreen(onBack: () -> Unit) {
     var attribution by remember { mutableStateOf("") }
+    var foods by remember { mutableStateOf("") }
     var license by remember { mutableStateOf("") }
     var fonts by remember { mutableStateOf(emptyList<FontLicence>()) }
     LaunchedEffect(Unit) {
         attribution = Res.readBytes("files/ATTRIBUTION.md").decodeToString()
+        foods = Res.readBytes("files/FOODS_ATTRIBUTION.md").decodeToString()
         license = Res.readBytes("files/LICENSE.txt").decodeToString()
         fonts = readFontLicences()
     }
@@ -211,6 +214,9 @@ fun CreditsScreen(onBack: () -> Unit) {
             IronlogLogo(size = 72.dp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Text(stringResource(Res.string.credits_catalog), style = MaterialTheme.typography.titleMedium)
             Text(attribution.withoutMarkdown(), style = MaterialTheme.typography.bodyMedium)
+            HorizontalDivider()
+            Text(stringResource(Res.string.credits_foods), style = MaterialTheme.typography.titleMedium)
+            Text(foods.withoutMarkdown(), style = MaterialTheme.typography.bodyMedium)
             HorizontalDivider()
             Text(stringResource(Res.string.credits_license), style = MaterialTheme.typography.titleMedium)
             Text(license, style = MaterialTheme.typography.bodySmall)

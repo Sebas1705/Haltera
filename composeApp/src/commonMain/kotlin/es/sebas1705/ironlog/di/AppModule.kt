@@ -10,6 +10,7 @@ import es.sebas1705.ironlog.data.repository.di.repositoryModule
 import es.sebas1705.ironlog.data.sync.di.syncModule
 import es.sebas1705.ironlog.domain.usecases.di.useCaseModule
 import es.sebas1705.ironlog.feature.exercises.di.exercisesModule
+import es.sebas1705.ironlog.feature.nutrition.di.nutritionModule
 import es.sebas1705.ironlog.feature.progress.di.progressModule
 import es.sebas1705.ironlog.feature.routines.di.routinesModule
 import es.sebas1705.ironlog.feature.session.di.sessionModule
@@ -25,15 +26,15 @@ val appModule = module {
     single { createDatabase(get<DatabaseDriverFactory>()) }
     // Anonymous sign-in, then the sync engine, once the catalogue is imported (the only start).
     single { SyncStarter(get(), get()) }
-    viewModel { StartupViewModel(get(), onImported = { get<SyncStarter>().start() }) }
+    viewModel { StartupViewModel(get(), get(), onImported = { get<SyncStarter>().start() }) }
     viewModelOf(::SettingsViewModel)
     viewModel { AccountViewModel(get(), get(), get(), get()) }
     single { IncomingRoutineChannel() }
 }
 
 /**
- * Every shared module; the platform adds its `DatabaseDriverFactory`, `FirebaseConfig` and
- * `GoogleSignInLauncher`.
+ * Every shared module; the platform adds its `DatabaseDriverFactory`, `FirebaseConfig`,
+ * `GoogleSignInLauncher`, `BarcodeScanner` and `AppVersionName`.
  */
 val appModules = listOf(
     appModule,
@@ -45,6 +46,7 @@ val appModules = listOf(
     todayModule,
     routinesModule,
     exercisesModule,
+    nutritionModule,
     progressModule,
     sessionModule,
 )

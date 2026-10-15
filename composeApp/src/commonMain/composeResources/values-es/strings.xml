@@ -6,6 +6,7 @@
     <string name="tab_today">Hoy</string>
     <string name="tab_routines">Rutinas</string>
     <string name="tab_exercises">Ejercicios</string>
+    <string name="tab_nutrition">Nutrición</string>
     <string name="tab_progress">Progreso</string>
     <string name="settings_title">Ajustes</string>
     <string name="settings_units">Unidades</string>
@@ -19,6 +20,7 @@
     <string name="unit_lb">lb</string>
     <string name="credits_title">Créditos</string>
     <string name="credits_catalog">Catálogo de ejercicios</string>
+    <string name="credits_foods">Base de datos de alimentos</string>
     <string name="credits_license">Licencia de Ironlog</string>
     <string name="credits_fonts">Tipografías (SIL Open Font License 1.1)</string>
     <string name="settings_account">Cuenta</string>

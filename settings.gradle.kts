@@ -39,4 +39,5 @@ include(
     ":feature:exercises",
     ":feature:progress",
     ":feature:session",
+    ":feature:nutrition",
 )

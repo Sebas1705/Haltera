@@ -288,8 +288,19 @@ internal fun FoodEntity.toPayload(items: List<RecipeItemPayload>) = FoodPayload(
     updatedAt = updatedAt, items = items,
 )
 
-internal fun RecipeItemEntity.toPayload() = RecipeItemPayload(id = id, foodId = foodId, grams = grams, position = position)
+internal fun RecipeItemEntity.toPayload() = RecipeItemPayload(
+    id = id,
+    foodId = foodId,
+    grams = grams,
+    position = position
+)
 
 internal fun MealEntryEntity.toPayload() = MealEntryPayload(
-    id = id, meal = meal, foodId = foodId, grams = grams, servings = servings, position = position, createdAt = createdAt,
+    id = id,
+    meal = meal,
+    foodId = foodId,
+    grams = grams,
+    servings = servings,
+    position = position,
+    createdAt = createdAt,
 )

@@ -52,6 +52,7 @@ kotlin {
             implementation(project(":feature:exercises"))
             implementation(project(":feature:progress"))
             implementation(project(":feature:session"))
+            implementation(project(":feature:nutrition"))
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)

@@ -49,7 +49,11 @@ val repositoryModule = module {
     single<RoutineSharing> { DefaultRoutineSharing(get(), get(), get(named("now"))) }
     single { FoodImporter(get<AppDatabase>(), now = get(named("now"))) }
     single {
-        OpenFoodFactsClient(openFoodFactsHttpClient(), getOrNull<AppVersionName>()?.value ?: "dev", now = get(named("now")))
+        OpenFoodFactsClient(
+            openFoodFactsHttpClient(),
+            getOrNull<AppVersionName>()?.value ?: "dev",
+            now = get(named("now"))
+        )
     }
     single<NutritionRepository> {
         SqlNutritionRepository(get(), get(), get(), get(), get(IoDispatcher), get(named("now")))

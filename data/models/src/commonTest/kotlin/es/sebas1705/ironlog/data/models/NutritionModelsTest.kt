@@ -7,11 +7,18 @@ import kotlin.test.assertNull
 
 class NutritionModelsTest {
     private val oats = Food(
-        id = "oats", source = FoodSource.GENERIC, nameEn = "Oats", nameEs = "Avena",
+        id = "oats",
+        source = FoodSource.GENERIC,
+        nameEn = "Oats",
+        nameEs = "Avena",
         per100 = Nutrients(kcal = 380.0, protein = 13.0, carbs = 68.0, fat = 6.0, fiber = 10.0),
     )
     private val milk = Food(
-        id = "milk", source = FoodSource.GENERIC, nameEn = "Milk", nameEs = "Leche", unit = FoodUnit.ML,
+        id = "milk",
+        source = FoodSource.GENERIC,
+        nameEn = "Milk",
+        nameEs = "Leche",
+        unit = FoodUnit.ML,
         per100 = Nutrients(kcal = 60.0, protein = 3.0, carbs = 5.0, fat = 3.0, sugar = 5.0),
     )
 

@@ -65,8 +65,12 @@ class NutritionRepositoryTest {
     )
 
     private fun TestScope.repository() = SqlNutritionRepository(
-        db, FoodImporter(db, now = clock), OpenFoodFactsClient(http, "1.0", now = clock), settings,
-        UnconfinedTestDispatcher(testScheduler), clock,
+        db,
+        FoodImporter(db, now = clock),
+        OpenFoodFactsClient(http, "1.0", now = clock),
+        settings,
+        UnconfinedTestDispatcher(testScheduler),
+        clock,
     ).also { FoodImporter(db, now = clock).importIfNewer(FOODS) }
 
     @Test
@@ -154,7 +158,13 @@ class NutritionRepositoryTest {
     fun `a custom food uses one name for both languages and edits change logged days`() = runTest {
         val repo = repository()
         val food = repo.createFood(
-            FoodInput(nameEn = "Protein bar", nameEs = "", per100 = Nutrients(kcal = 350.0, protein = 30.0), servingName = "bar", servingGrams = 60.0),
+            FoodInput(
+                nameEn = "Protein bar",
+                nameEs = "",
+                per100 = Nutrients(kcal = 350.0, protein = 30.0),
+                servingName = "bar",
+                servingGrams = 60.0
+            ),
         )
         assertEquals(FoodSource.USER, food.source)
         assertEquals("Protein bar", food.nameEs)
@@ -162,7 +172,10 @@ class NutritionRepositoryTest {
         repo.addEntry(day, Meal.SNACK, food.id, 60.0, servings = 1.0)
         assertEquals(210.0, repo.observeDay(day).first().totals.kcal, 1e-9)
 
-        repo.updateFood(food.id, FoodInput(nameEn = "Protein bar", nameEs = "Barrita", per100 = Nutrients(kcal = 400.0, protein = 30.0)))
+        repo.updateFood(
+            food.id,
+            FoodInput(nameEn = "Protein bar", nameEs = "Barrita", per100 = Nutrients(kcal = 400.0, protein = 30.0))
+        )
         assertEquals(240.0, repo.observeDay(day).first().totals.kcal, 1e-9)
         assertEquals("Barrita", repo.getFood(food.id)?.nameEs)
     }
@@ -171,7 +184,9 @@ class NutritionRepositoryTest {
     fun `a used food is hidden instead of deleted, an unused one is deleted`() = runTest {
         val repo = repository()
         val used = repo.createFood(FoodInput(nameEn = "Used", nameEs = "Usado", per100 = Nutrients(kcal = 100.0)))
-        val unused = repo.createFood(FoodInput(nameEn = "Unused", nameEs = "Sin usar", per100 = Nutrients(kcal = 100.0)))
+        val unused = repo.createFood(
+            FoodInput(nameEn = "Unused", nameEs = "Sin usar", per100 = Nutrients(kcal = 100.0))
+        )
         repo.addEntry(day, Meal.LUNCH, used.id, 100.0)
 
         assertFalse(repo.deleteFood(used.id))
@@ -186,7 +201,9 @@ class NutritionRepositoryTest {
     @Test
     fun `a recipe is computed from its items and yield and follows ingredient edits`() = runTest {
         val repo = repository()
-        val milkLike = repo.createFood(FoodInput(nameEn = "Oat drink", nameEs = "Bebida de avena", per100 = Nutrients(kcal = 40.0)))
+        val milkLike = repo.createFood(
+            FoodInput(nameEn = "Oat drink", nameEs = "Bebida de avena", per100 = Nutrients(kcal = 40.0))
+        )
         val id = repo.saveRecipe(
             null,
             FoodInput(nameEn = "Porridge", nameEs = "Gachas", servingName = "bowl", servingGrams = 250.0),
@@ -199,11 +216,19 @@ class NutritionRepositoryTest {
         // (304 + 100) kcal over 400 g cooked
         assertEquals(101.0, recipe.food.per100.kcal, 1e-9)
 
-        repo.updateFood(milkLike.id, FoodInput(nameEn = "Oat drink", nameEs = "Bebida de avena", per100 = Nutrients(kcal = 80.0)))
+        repo.updateFood(
+            milkLike.id,
+            FoodInput(nameEn = "Oat drink", nameEs = "Bebida de avena", per100 = Nutrients(kcal = 80.0))
+        )
         assertEquals((304.0 + 200.0) / 4.0, repo.getFood(id)!!.per100.kcal, 1e-9)
 
         // Editing replaces the items.
-        repo.saveRecipe(id, FoodInput(nameEn = "Porridge", nameEs = "Gachas"), null, listOf(RecipeItemInput("usda-1", 100.0)))
+        repo.saveRecipe(
+            id,
+            FoodInput(nameEn = "Porridge", nameEs = "Gachas"),
+            null,
+            listOf(RecipeItemInput("usda-1", 100.0))
+        )
         assertEquals(1, repo.getRecipe(id)!!.items.size)
         assertEquals(380.0, repo.getFood(id)!!.per100.kcal, 1e-9)
         assertEquals(listOf(id, milkLike.id).toSet(), repo.observeOwnFoods().first().map { it.id }.toSet())
@@ -242,7 +267,11 @@ class NutritionRepositoryTest {
         val repo = repository()
         assertFalse(repo.observeGoals().first().isSet)
         val goals = NutritionGoals(
-            kcal = 2_300, proteinG = 150, carbsG = 260, fatG = 70, macroMode = MacroMode.PERCENT,
+            kcal = 2_300,
+            proteinG = 150,
+            carbsG = 260,
+            fatG = 70,
+            macroMode = MacroMode.PERCENT,
             profile = NutritionProfile(Sex.FEMALE, 1990, 170, ActivityLevel.ACTIVE, Objective.GAIN),
         )
         repo.setGoals(goals)

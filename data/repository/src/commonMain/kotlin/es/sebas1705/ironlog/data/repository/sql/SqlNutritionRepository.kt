@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.LocalDate
 
+@Suppress("TooManyFunctions") // Implements the wide NutritionRepository contract.
 internal class SqlNutritionRepository(
     private val db: AppDatabase,
     private val importer: FoodImporter,
@@ -242,8 +243,14 @@ internal class SqlNutritionRepository(
     private fun cache(p: OffProduct): Food {
         val id = "$OFF_PREFIX${p.barcode}"
         val input = FoodInput(
-            nameEn = p.nameEn, nameEs = p.nameEs, brand = p.brand, barcode = p.barcode, per100 = p.per100,
-            unit = p.unit, servingName = p.servingName, servingGrams = p.servingGrams,
+            nameEn = p.nameEn,
+            nameEs = p.nameEs,
+            brand = p.brand,
+            barcode = p.barcode,
+            per100 = p.per100,
+            unit = p.unit,
+            servingName = p.servingName,
+            servingGrams = p.servingGrams,
         )
         db.transaction {
             if (foods.selectById(id).executeAsOneOrNull() == null) {
@@ -268,7 +275,14 @@ internal class SqlNutritionRepository(
         val name = input.cleanNames()
         foods.insert(
             id = id, source = source.name, nameEn = name.first, nameEs = name.second,
-            nameSearch = FoodImporter.searchText(name.first, name.second, input.brand), brand = input.brand?.trim()?.ifBlank { null },
+            nameSearch = FoodImporter.searchText(
+                name.first,
+                name.second,
+                input.brand
+            ),
+            brand = input.brand?.trim()?.ifBlank {
+                null
+            },
             barcode = input.barcode?.trim()?.ifBlank { null }, kcal = per100.kcal, protein = per100.protein,
             carbs = per100.carbs, fat = per100.fat, fiber = per100.fiber, sugar = per100.sugar, salt = per100.salt,
             unit = input.unit.name, servingNameEn = input.servingName?.trim()?.ifBlank { null },
@@ -281,7 +295,14 @@ internal class SqlNutritionRepository(
         val name = input.cleanNames()
         foods.updateOwned(
             nameEn = name.first, nameEs = name.second,
-            nameSearch = FoodImporter.searchText(name.first, name.second, input.brand), brand = input.brand?.trim()?.ifBlank { null },
+            nameSearch = FoodImporter.searchText(
+                name.first,
+                name.second,
+                input.brand
+            ),
+            brand = input.brand?.trim()?.ifBlank {
+                null
+            },
             barcode = input.barcode?.trim()?.ifBlank { null }, kcal = per100.kcal, protein = per100.protein,
             carbs = per100.carbs, fat = per100.fat, fiber = per100.fiber, sugar = per100.sugar, salt = per100.salt,
             unit = input.unit.name, servingNameEn = input.servingName?.trim()?.ifBlank { null },
@@ -298,14 +319,23 @@ internal class SqlNutritionRepository(
     }
 
     private fun per100Of(items: List<Pair<String, Double>>, yieldGrams: Double?): Nutrients {
-        val byId = if (items.isEmpty()) emptyMap() else foods.selectByIds(items.map { it.first }.distinct()).executeAsList().associateBy { it.id }
+        val byId = if (items.isEmpty()) {
+            emptyMap()
+        } else {
+            foods.selectByIds(
+                items.map {
+                    it.first
+                }.distinct()
+            ).executeAsList().associateBy { it.id }
+        }
         return RecipeMath.per100(items.map { (foodId, grams) -> byId[foodId]?.toModel() to grams }, yieldGrams)
     }
 
     /** Recomputes a recipe from its current items (an ingredient changed). */
     private fun recompute(recipeId: String) {
         val recipe = foods.selectById(recipeId).executeAsOneOrNull() ?: return
-        val per100 = per100Of(items.selectByRecipe(recipeId).executeAsList().map { it.foodId to it.grams }, recipe.yieldGrams)
+        val per100 =
+            per100Of(items.selectByRecipe(recipeId).executeAsList().map { it.foodId to it.grams }, recipe.yieldGrams)
         foods.updateNutrients(
             kcal = per100.kcal, protein = per100.protein, carbs = per100.carbs, fat = per100.fat, fiber = per100.fiber,
             sugar = per100.sugar, salt = per100.salt, updatedAt = now(), id = recipeId,
@@ -315,8 +345,21 @@ internal class SqlNutritionRepository(
     private fun loadRecipe(id: String): Recipe? {
         val food = foods.selectById(id).executeAsOneOrNull()?.toModel() ?: return null
         val rows = items.selectByRecipe(id).executeAsList()
-        val byId = if (rows.isEmpty()) emptyMap() else foods.selectByIds(rows.map { it.foodId }.distinct()).executeAsList().associateBy { it.id }
-        return Recipe(food, rows.map { RecipeItem(it.id, it.foodId, it.grams, it.position.toInt(), byId[it.foodId]?.toModel()) })
+        val byId = if (rows.isEmpty()) {
+            emptyMap()
+        } else {
+            foods.selectByIds(
+                rows.map {
+                    it.foodId
+                }.distinct()
+            ).executeAsList().associateBy { it.id }
+        }
+        return Recipe(
+            food,
+            rows.map {
+                RecipeItem(it.id, it.foodId, it.grams, it.position.toInt(), byId[it.foodId]?.toModel())
+            }
+        )
     }
 
     private fun withFoods(rows: List<MealEntryEntity>): List<MealEntry> {
@@ -341,7 +384,15 @@ internal fun FoodEntity.toModel() = Food(
     nameEs = nameEs,
     brand = brand,
     barcode = barcode,
-    per100 = Nutrients(kcal = kcal, protein = protein, carbs = carbs, fat = fat, fiber = fiber, sugar = sugar, salt = salt),
+    per100 = Nutrients(
+        kcal = kcal,
+        protein = protein,
+        carbs = carbs,
+        fat = fat,
+        fiber = fiber,
+        sugar = sugar,
+        salt = salt
+    ),
     unit = FoodUnit.fromDb(unit),
     servingNameEn = servingNameEn,
     servingNameEs = servingNameEs,

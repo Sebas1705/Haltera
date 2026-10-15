@@ -45,6 +45,7 @@ data class IntakeWeightTrend(val kcal: List<DatedValue>, val weightKg: List<Date
  * Nutrition statistics (design §1). Descriptive only, and over **logged days**: a day without entries is
  * unknown, not a day of zero kcal, so it never lowers an average or counts against adherence.
  */
+@Suppress("TooManyFunctions") // One small pure function per statistic.
 object NutritionStats {
     const val ADHERENCE_TOLERANCE = 0.10
     const val MOVING_AVERAGE_DAYS = 7
@@ -84,7 +85,9 @@ object NutritionStats {
             }
             .sortedBy { it.weekStart }
 
-    fun weekStart(date: LocalDate): LocalDate = date.minus(DatePeriod(days = date.dayOfWeek.ordinal - DayOfWeek.MONDAY.ordinal))
+    fun weekStart(date: LocalDate): LocalDate = date.minus(
+        DatePeriod(days = date.dayOfWeek.ordinal - DayOfWeek.MONDAY.ordinal)
+    )
 
     /** Whether [kcal] is within ±[tolerance] of [goal]. */
     fun withinGoal(kcal: Double, goal: Int, tolerance: Double = ADHERENCE_TOLERANCE): Boolean =
@@ -121,7 +124,11 @@ object NutritionStats {
             .sortedBy { it.date }
 
     /** 7-day moving averages of kcal intake and of body weight over the same period. */
-    fun intakeVsWeight(daily: List<DailyIntake>, weights: List<BodyWeightEntry>, timeZone: TimeZone): IntakeWeightTrend {
+    fun intakeVsWeight(
+        daily: List<DailyIntake>,
+        weights: List<BodyWeightEntry>,
+        timeZone: TimeZone
+    ): IntakeWeightTrend {
         val kcal = movingAverage(daily.map { DatedValue(it.date, it.nutrients.kcal) })
         val range = daily.firstOrNull()?.date?.let { first -> first..daily.last().date }
         val weight = movingAverage(dailyWeights(weights, timeZone))

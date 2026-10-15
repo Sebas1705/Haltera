@@ -1,0 +1,233 @@
+<resources>
+    <!-- Common -->
+    <string name="nutrition_back">Back</string>
+    <string name="nutrition_close">Close</string>
+    <string name="nutrition_ok">OK</string>
+    <string name="nutrition_cancel">Cancel</string>
+    <string name="nutrition_save">Save</string>
+    <string name="nutrition_add">Add</string>
+    <string name="nutrition_error">Something went wrong. Try again.</string>
+    <string name="nutrition_info">How %1$s is calculated</string>
+    <string name="nutrition_optional">(optional)</string>
+    <string name="nutrition_field_invalid">Enter a valid number</string>
+    <string name="nutrition_unknown">—</string>
+    <string name="nutrition_unknown_food">Food not on this device yet</string>
+    <string name="nutrition_kcal">kcal</string>
+    <string name="nutrition_kcal_value">%1$s kcal</string>
+    <string name="nutrition_grams_value">%1$s g</string>
+    <string name="nutrition_ml_value">%1$s ml</string>
+    <string name="nutrition_protein">Protein</string>
+    <string name="nutrition_carbs">Carbs</string>
+    <string name="nutrition_fat">Fat</string>
+    <string name="nutrition_sugar">of which sugars</string>
+    <string name="nutrition_fiber">Fibre</string>
+    <string name="nutrition_abbr_protein">P</string>
+    <string name="nutrition_abbr_carbs">C</string>
+    <string name="nutrition_abbr_fat">F</string>
+    <string name="nutrition_salt">Salt</string>
+    <string name="nutrition_date_full">%1$s %2$s %3$s %4$s</string>
+    <string-array name="nutrition_months_short">
+        <item>Jan</item>
+        <item>Feb</item>
+        <item>Mar</item>
+        <item>Apr</item>
+        <item>May</item>
+        <item>Jun</item>
+        <item>Jul</item>
+        <item>Aug</item>
+        <item>Sep</item>
+        <item>Oct</item>
+        <item>Nov</item>
+        <item>Dec</item>
+    </string-array>
+    <string-array name="nutrition_weekdays_short">
+        <item>Mon</item>
+        <item>Tue</item>
+        <item>Wed</item>
+        <item>Thu</item>
+        <item>Fri</item>
+        <item>Sat</item>
+        <item>Sun</item>
+    </string-array>
+
+    <!-- Meals -->
+    <string name="nutrition_meal">Meal</string>
+    <string name="nutrition_meal_breakfast">Breakfast</string>
+    <string name="nutrition_meal_lunch">Lunch</string>
+    <string name="nutrition_meal_dinner">Dinner</string>
+    <string name="nutrition_meal_snack">Snacks</string>
+
+    <!-- Day -->
+    <string name="nutrition_today">Today</string>
+    <string name="nutrition_day_previous">Previous day</string>
+    <string name="nutrition_day_next">Next day</string>
+    <string name="nutrition_day_pick">Go to a day</string>
+    <string name="nutrition_goals">Goals</string>
+    <string name="nutrition_stats">Statistics</string>
+    <string name="nutrition_copy_day">Copy day</string>
+    <string name="nutrition_day_summary">Day totals</string>
+    <string name="nutrition_day_info">The ring shows the energy eaten against your kcal goal; the bars, each macro against its goal. Values come from the foods as they are now: editing one of your foods also updates past days. Goals are only a guide: nothing is blocked when you go over or under.</string>
+    <string name="nutrition_goal_of">of %1$s kcal</string>
+    <string name="nutrition_no_goal">no goal set</string>
+    <string name="nutrition_remaining">Remaining</string>
+    <string name="nutrition_over">Over the goal</string>
+    <string name="nutrition_set_goals">Set goals</string>
+    <string name="nutrition_meal_empty">Nothing logged yet</string>
+    <string name="nutrition_meal_more">More options for %1$s</string>
+    <string name="nutrition_add_food">Add food</string>
+    <string name="nutrition_copy_meal">Copy from another day</string>
+    <string name="nutrition_copy_from_title">Copy every meal from</string>
+    <string name="nutrition_copy_meal_title">Copy %1$s from</string>
+    <string name="nutrition_copied">%1$s entries copied</string>
+
+    <!-- Search -->
+    <string name="nutrition_add_to">Add to %1$s</string>
+    <string name="nutrition_add_ingredient">Add ingredient</string>
+    <string name="nutrition_search_hint">Search foods (e.g. chicken, plátano)</string>
+    <string name="nutrition_search_clear">Clear search</string>
+    <string name="nutrition_search_empty">No foods found. Try other words, scan the barcode or create the food.</string>
+    <string name="nutrition_tab_recent">Recent</string>
+    <string name="nutrition_tab_favourites">Favourites</string>
+    <string name="nutrition_tab_mine">My foods</string>
+    <string name="nutrition_tab_empty_recent">Foods you log appear here.</string>
+    <string name="nutrition_tab_empty_favourites">Tap the heart of a food to keep it here.</string>
+    <string name="nutrition_tab_empty_mine">Your own foods and recipes appear here.</string>
+    <string name="nutrition_new_food">New food</string>
+    <string name="nutrition_new_recipe">New recipe</string>
+    <string name="nutrition_badge_own">My food</string>
+    <string name="nutrition_badge_recipe">Recipe</string>
+    <string name="nutrition_badge_off">Open Food Facts</string>
+    <string name="nutrition_per100_line">100 g: %1$s kcal · P %2$s · C %3$s · F %4$s</string>
+    <string name="nutrition_per100ml_line">100 ml: %1$s kcal · P %2$s · C %3$s · F %4$s</string>
+    <string name="nutrition_favourite_add">Add to favourites</string>
+    <string name="nutrition_favourite_remove">Remove from favourites</string>
+    <string name="nutrition_scan">Scan barcode</string>
+    <string name="nutrition_scan_not_found_title">Product not found</string>
+    <string name="nutrition_scan_not_found">Open Food Facts has no nutrition facts for %1$s. You can create the food with the values on its label.</string>
+    <string name="nutrition_scan_unavailable">Open Food Facts is not reachable right now. Check the connection or search the food.</string>
+    <string name="nutrition_create_food">Create food</string>
+
+    <!-- Food detail -->
+    <string name="nutrition_amount">Amount</string>
+    <string name="nutrition_amount_grams">Grams</string>
+    <string name="nutrition_amount_ml">Millilitres</string>
+    <string name="nutrition_servings">Servings</string>
+    <string name="nutrition_serving_is">1 serving (%1$s) = %2$s</string>
+    <string name="nutrition_amount_invalid">Enter an amount greater than 0</string>
+    <string name="nutrition_add_to_meal">Add to %1$s</string>
+    <string name="nutrition_delete_entry">Remove from this day</string>
+    <string name="nutrition_edit_food">Edit food</string>
+    <string name="nutrition_food_not_found">This food is no longer available.</string>
+    <string name="nutrition_for_amount">In %1$s</string>
+    <string name="nutrition_per100">Per 100 g</string>
+    <string name="nutrition_per100ml">Per 100 ml</string>
+    <string name="nutrition_per_info">Values per 100 g (or 100 ml for drinks, taking 1 ml as 1 g). The amount you eat scales them: 150 g is 1.5 times these values. Salt is sodium × 2.5. A dash means the value is unknown, not zero.</string>
+    <string name="nutrition_source_generic">Source: USDA FoodData Central (public domain)</string>
+    <string name="nutrition_source_off">Source: Open Food Facts (ODbL)</string>
+    <string name="nutrition_source_user">Your food</string>
+    <string name="nutrition_source_recipe">Your recipe, computed from its ingredients</string>
+
+    <!-- Food editor -->
+    <string name="nutrition_editor_new">New food</string>
+    <string name="nutrition_editor_edit">Edit food</string>
+    <string name="nutrition_food_name">Name</string>
+    <string name="nutrition_brand">Brand</string>
+    <string name="nutrition_barcode">Barcode</string>
+    <string name="nutrition_per100_values">Nutrition per 100 g</string>
+    <string name="nutrition_per100ml_values">Nutrition per 100 ml</string>
+    <string name="nutrition_editor_info">Copy the values from the label, per 100 g (or per 100 ml for drinks). Energy, protein, carbohydrates and fat are needed; sugars, fibre and salt can stay empty when unknown.</string>
+    <string name="nutrition_unit_g">Grams (g)</string>
+    <string name="nutrition_unit_ml">Millilitres (ml)</string>
+    <string name="nutrition_protein_g">Protein (g)</string>
+    <string name="nutrition_carbs_g">Carbs (g)</string>
+    <string name="nutrition_fat_g">Fat (g)</string>
+    <string name="nutrition_sugar_g">Sugars (g)</string>
+    <string name="nutrition_fiber_g">Fibre (g)</string>
+    <string name="nutrition_salt_g">Salt (g)</string>
+    <string name="nutrition_serving">Serving</string>
+    <string name="nutrition_serving_name">Serving name (e.g. bar)</string>
+    <string name="nutrition_serving_grams">Serving size (g or ml)</string>
+    <string name="nutrition_delete_food">Delete food</string>
+
+    <!-- Recipe editor -->
+    <string name="nutrition_recipe_new">New recipe</string>
+    <string name="nutrition_recipe_edit">Edit recipe</string>
+    <string name="nutrition_recipe_name">Recipe name</string>
+    <string name="nutrition_ingredients">Ingredients</string>
+    <string name="nutrition_ingredients_empty">Add at least one ingredient.</string>
+    <string name="nutrition_ingredients_weight">Ingredients weigh %1$s in total</string>
+    <string name="nutrition_remove_ingredient">Remove ingredient</string>
+    <string name="nutrition_yield">Cooked weight (g, optional)</string>
+    <string name="nutrition_yield_hint">Weigh the finished dish if cooking changes its weight</string>
+    <string name="nutrition_recipe_info">A recipe’s values per 100 g are the sum of its ingredients divided by its weight: the cooked weight when you enter it (water lost or gained while cooking), otherwise the total weight of the ingredients. Editing one of your foods updates the recipes that use it.</string>
+    <string name="nutrition_recipe_total">Whole recipe: %1$s in %2$s g</string>
+    <string name="nutrition_delete_recipe">Delete recipe</string>
+
+    <!-- Goals -->
+    <string name="nutrition_daily_goals">Daily goals</string>
+    <string name="nutrition_goals_info">All goals are optional and only guide the day view and the statistics. Macros can be entered in grams or as a percentage of the kcal goal (protein and carbohydrates have 4 kcal per gram, fat 9).</string>
+    <string name="nutrition_kcal_goal">Energy (kcal)</string>
+    <string name="nutrition_mode_grams">Grams</string>
+    <string name="nutrition_mode_percent">% of kcal</string>
+    <string name="nutrition_macros_kcal">These macros give %1$s</string>
+    <string name="nutrition_macros_percent_sum">Total: %1$s %</string>
+    <string name="nutrition_clear_goals">Clear goals</string>
+    <string name="nutrition_calculator">Goal calculator</string>
+    <string name="nutrition_calc_info">1. Resting energy (Mifflin–St Jeor): 10 × weight (kg) + 6.25 × height (cm) − 5 × age, plus 5 for men or minus 161 for women.\n2. Maintenance = resting energy × activity factor: sedentary 1.2, light 1.375, moderate 1.55, active 1.725, very active 1.9.\n3. Goal = maintenance − 20 % to lose, the same to maintain, + 10 % to gain, rounded to 10 kcal.\n4. Protein by body weight (2.0 g/kg losing, 1.6 maintaining, 1.8 gaining), fat 25 % of the kcal, carbohydrates the rest.\nIt is an estimate: adjust it by watching your weight trend over a few weeks.</string>
+    <string name="nutrition_sex">Sex</string>
+    <string name="nutrition_sex_male">Male</string>
+    <string name="nutrition_sex_female">Female</string>
+    <string name="nutrition_birth_year">Year of birth</string>
+    <string name="nutrition_height">Height</string>
+    <string name="nutrition_weight_latest">Latest body weight: %1$s kg</string>
+    <string name="nutrition_no_weight">Log your body weight in Progress to use the calculator.</string>
+    <string name="nutrition_activity">Activity</string>
+    <string name="nutrition_activity_sedentary">Sedentary</string>
+    <string name="nutrition_activity_light">Light</string>
+    <string name="nutrition_activity_moderate">Moderate</string>
+    <string name="nutrition_activity_active">Active</string>
+    <string name="nutrition_activity_very_active">Very active</string>
+    <string name="nutrition_objective">Objective</string>
+    <string name="nutrition_objective_lose">Lose</string>
+    <string name="nutrition_objective_maintain">Maintain</string>
+    <string name="nutrition_objective_gain">Gain</string>
+    <string name="nutrition_calc_missing">Fill in sex, year of birth and height (and log your weight) to get a suggestion.</string>
+    <string name="nutrition_calc_bmr">Resting energy: %1$s</string>
+    <string name="nutrition_calc_maintenance">Maintenance (× %1$s): %2$s</string>
+    <string name="nutrition_calc_goal">Suggested goal: %1$s</string>
+    <string name="nutrition_calc_macros">Protein %1$s (%2$s g/kg) · Carbs %3$s · Fat %4$s</string>
+    <string name="nutrition_calc_use">Use these values</string>
+
+    <!-- Statistics -->
+    <string name="nutrition_range_week">7 days</string>
+    <string name="nutrition_range_month">30 days</string>
+    <string name="nutrition_range_quarter">90 days</string>
+    <string name="nutrition_stats_empty">No food logged in this period yet.</string>
+    <string name="nutrition_stats_not_enough">Not enough logged days yet.</string>
+    <string name="nutrition_stats_days_logged">%1$s of %2$s days logged</string>
+    <string name="nutrition_stats_average">Daily average</string>
+    <string name="nutrition_stats_average_info">Mean over the days with food logged. Days without entries are left out instead of counting as 0 kcal, because a missing day is unknown, not a fast.</string>
+    <string name="nutrition_stats_kcal">Energy per day</string>
+    <string name="nutrition_stats_kcal_info">One bar per logged day; empty slots are days without entries. The dashed line is your kcal goal and green bars are within ±10 % of it.</string>
+    <string name="nutrition_stats_within">Within ±10 % of the goal</string>
+    <string name="nutrition_stats_goal_line">Goal: %1$s kcal</string>
+    <string name="nutrition_stats_macros">Macros per day</string>
+    <string name="nutrition_stats_macros_info">Energy from each macro per day, stacked: protein and carbohydrates × 4 kcal/g, fat × 9 kcal/g. The total can differ slightly from the kcal of the foods (fibre, alcohol and rounding).</string>
+    <string name="nutrition_stats_donut">Average macro split</string>
+    <string name="nutrition_stats_donut_info">Share of the energy from protein, carbohydrates and fat over the period (4, 4 and 9 kcal per gram).</string>
+    <string name="nutrition_stats_adherence">Goal adherence</string>
+    <string name="nutrition_stats_adherence_info">Share of the logged days whose energy was within ±10 % of the kcal goal (for 2000 kcal: from 1800 to 2200).</string>
+    <string name="nutrition_stats_adherence_no_goal">Set a kcal goal to see how many days stay close to it.</string>
+    <string name="nutrition_stats_adherence_value">%1$s of %2$s logged days within ±10 %</string>
+    <string name="nutrition_stats_protein_kg">Protein per kg</string>
+    <string name="nutrition_stats_protein_kg_info">Average daily protein divided by your latest body weight. Common references for people who train are about 1.6 to 2.2 g/kg.</string>
+    <string name="nutrition_stats_protein_kg_no_weight">Log your body weight in Progress to see protein per kg.</string>
+    <string name="nutrition_stats_protein_kg_value">%1$s a day at %2$s kg</string>
+    <string name="nutrition_stats_trend">Intake vs body weight</string>
+    <string name="nutrition_stats_trend_info">7-day moving averages of the energy eaten (left axis, kcal) and of your body weight (right axis, kg), each over the logged days of the last 7 calendar days. Comparing them over weeks shows how eating relates to weight change; daily weight swings with water and food in the gut.</string>
+    <string name="nutrition_stats_trend_kcal">kcal (7-day average)</string>
+    <string name="nutrition_stats_trend_weight">Weight, kg (7-day average)</string>
+    <string name="nutrition_stats_weekly">Weekly averages</string>
+    <string name="nutrition_stats_weekly_info">Mean energy and macros (g) per logged day of each Monday-to-Sunday week, newest first.</string>
+    <string name="nutrition_stats_week_of">Week of %1$s</string>
+</resources>

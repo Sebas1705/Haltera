@@ -185,7 +185,12 @@ class NutritionSyncTest {
         val old = cloud.doc("uid-1", SETTINGS, SETTINGS_ID)!!
         val withoutGoals = SyncJson.decodeFromString(SettingsPayload.serializer(), old.payload)
             .let { it.copy(prefs = it.prefs.copy(nutrition = null)) }
-        d2.store.apply(old.copy(updatedAt = old.updatedAt + 1, payload = SyncJson.encodeToString(SettingsPayload.serializer(), withoutGoals)))
+        d2.store.apply(
+            old.copy(
+                updatedAt = old.updatedAt + 1,
+                payload = SyncJson.encodeToString(SettingsPayload.serializer(), withoutGoals)
+            )
+        )
         assertEquals(goals, d2.settings.settings.value.nutrition)
     }
 }

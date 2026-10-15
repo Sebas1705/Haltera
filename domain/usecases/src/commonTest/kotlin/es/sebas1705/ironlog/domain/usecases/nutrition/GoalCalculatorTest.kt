@@ -46,7 +46,13 @@ class GoalCalculatorTest {
 
     @Test
     fun `a profile without the data gives no suggestion`() {
-        val full = NutritionProfile(Sex.FEMALE, birthYear = 2000, heightCm = 165, ActivityLevel.LIGHT, Objective.MAINTAIN)
+        val full = NutritionProfile(
+            Sex.FEMALE,
+            birthYear = 2000,
+            heightCm = 165,
+            ActivityLevel.LIGHT,
+            Objective.MAINTAIN
+        )
         assertEquals(1_340.25, GoalCalculator.suggest(full, 60.0, currentYear = 2026)!!.bmr, 1e-9)
         assertNull(GoalCalculator.suggest(full.copy(sex = null), 60.0, 2026))
         assertNull(GoalCalculator.suggest(full.copy(heightCm = null), 60.0, 2026))

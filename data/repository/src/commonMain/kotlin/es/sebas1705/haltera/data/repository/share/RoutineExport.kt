@@ -155,7 +155,8 @@ object RoutineExport {
         } catch (_: IllegalArgumentException) {
             return RoutineDecodeResult.Invalid("not a JSON object")
         }
-        if ((root["format"] as? JsonPrimitive)?.content !in setOf(FORMAT, LEGACY_FORMAT)) return RoutineDecodeResult.Invalid("unknown format")
+        val format = (root["format"] as? JsonPrimitive)?.content
+        if (format != FORMAT && format != LEGACY_FORMAT) return RoutineDecodeResult.Invalid("unknown format")
         val version = (root["version"] as? JsonPrimitive)?.intOrNull
             ?: return RoutineDecodeResult.Invalid("missing version")
         if (version > VERSION) return RoutineDecodeResult.UnsupportedVersion(version)

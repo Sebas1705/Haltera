@@ -54,6 +54,10 @@ kotlin {
             implementation(project(":feature:session"))
             implementation(project(":feature:nutrition"))
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+            implementation(libs.kotlinx.coroutines.test)
+        }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)

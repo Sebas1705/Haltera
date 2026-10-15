@@ -14,6 +14,9 @@ interface LoadStepStore {
 
     /** Remembers [step] for [variantId]; null or a non-positive value goes back to the default. */
     fun setStep(variantId: String, plates: Boolean = false, step: Long?)
+
+    /** Forgets every remembered step ("Also erase data on this device"). */
+    fun clear() = Unit
 }
 
 /** [LoadStepStore] on multiplatform-settings under `loadStep.<variantId>` (and `loadStep.<variantId>.plates`). */
@@ -24,6 +27,10 @@ class SettingsLoadStepStore(private val store: Settings) : LoadStepStore {
     override fun setStep(variantId: String, plates: Boolean, step: Long?) {
         val key = key(variantId, plates)
         if (step == null || step <= 0) store.remove(key) else store.putLong(key, step)
+    }
+
+    override fun clear() {
+        store.keys.filter { it.startsWith(PREFIX) }.forEach(store::remove)
     }
 
     private fun key(variantId: String, plates: Boolean) = "$PREFIX$variantId${if (plates) PLATES_SUFFIX else ""}"

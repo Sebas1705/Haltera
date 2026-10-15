@@ -1,0 +1,44 @@
+-- "Also erase data on this device" (account deletion): wipes everything the user created or logged and
+-- keeps the bundled catalogue (CATALOG exercises and variants, GENERIC foods). Run in one transaction by
+-- eraseUserData(), children before parents. Queries only: no schema change.
+eraseSetLogs:
+DELETE FROM SetLogEntity;
+
+eraseSessionExercises:
+DELETE FROM SessionExerciseEntity;
+
+eraseSessions:
+DELETE FROM WorkoutSessionEntity;
+
+eraseRoutineSlots:
+DELETE FROM RoutineSlotEntity;
+
+eraseRoutineDays:
+DELETE FROM RoutineDayEntity;
+
+eraseRoutines:
+DELETE FROM RoutineEntity;
+
+eraseUserVariants:
+DELETE FROM ExerciseVariantEntity WHERE source = 'USER';
+
+eraseUserExercises:
+DELETE FROM ExerciseEntity WHERE source = 'USER';
+
+eraseBodyWeight:
+DELETE FROM BodyWeightEntity;
+
+eraseMealEntries:
+DELETE FROM MealEntryEntity;
+
+eraseRecipeItems:
+DELETE FROM RecipeItemEntity;
+
+eraseNonCatalogFoods:
+DELETE FROM FoodEntity WHERE source != 'GENERIC';
+
+eraseSyncState:
+DELETE FROM SyncState;
+
+eraseSyncCursors:
+DELETE FROM SyncCursor;

@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.session.ui
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,7 +46,7 @@ import org.jetbrains.compose.resources.stringResource
 @Composable
 internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () -> Unit, modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+        modifier = modifier.fillMaxSize().centeredContent().verticalScroll(rememberScrollState()).padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(stringResource(Res.string.session_summary_title), style = MaterialTheme.typography.headlineMedium)

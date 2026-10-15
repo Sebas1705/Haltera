@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.session.ui
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -220,7 +221,7 @@ private fun ExerciseList(state: SessionState, onEvent: (SessionIntent) -> Unit, 
     }
     val current = state.currentCardId
     LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(padding),
+        modifier = Modifier.fillMaxSize().padding(padding).centeredContent(),
         contentPadding = PaddingValues(12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

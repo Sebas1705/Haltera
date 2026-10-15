@@ -32,6 +32,10 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.LocalContentColor
 import es.sebas1705.ironlog.core.ui.theme.tabularFigures
 import es.sebas1705.ironlog.domain.usecases.stats.Comparison
 import es.sebas1705.ironlog.domain.usecases.stats.Metric
@@ -171,11 +175,16 @@ internal fun ComparisonTile(
                 )
                 InfoButton(metric, label = title)
             }
-            Text(
+            // Long values ("−0.17 kg/week") shrink to fit the tile instead of being cut.
+            BasicText(
                 value,
-                style = MaterialTheme.typography.headlineSmall.tabularFigures(),
+                style = MaterialTheme.typography.headlineSmall.tabularFigures().copy(color = LocalContentColor.current),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                autoSize = TextAutoSize.StepBased(
+                    minFontSize = 14.sp,
+                    maxFontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                ),
                 modifier = Modifier.padding(end = 12.dp).clearAndSetSemantics { },
             )
             Text(

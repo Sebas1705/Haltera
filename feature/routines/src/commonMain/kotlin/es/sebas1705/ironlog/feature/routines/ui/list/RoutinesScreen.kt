@@ -10,10 +10,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -24,6 +27,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -44,9 +48,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.adaptive.ContentMaxWidth
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
+import es.sebas1705.ironlog.feature.routines.ui.share.QrCodeIcon
 import es.sebas1705.ironlog.data.models.Routine
 import es.sebas1705.ironlog.domain.usecases.routinescore.RoutineScore
 import es.sebas1705.ironlog.feature.routines.ui.components.ScoreBadge
@@ -137,11 +146,14 @@ internal fun RoutinesScreen(
                 onImport = onImport,
                 modifier = Modifier.padding(padding),
             )
-            else -> LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                // Room for the two stacked buttons.
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 160.dp),
+            // One column on phones, a grid of cards on wide windows (F3).
+            else -> LazyVerticalGrid(
+                columns = GridCells.Adaptive(CARD_MIN_WIDTH),
+                modifier = Modifier.fillMaxSize().padding(padding).centeredContent(gridMaxWidth()),
+                // Room for the add button.
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(state.routines, key = { it.id }) { routine ->
                     RoutineCard(
@@ -228,23 +240,46 @@ private fun RoutineCard(
     }
 }
 
-/** "From catalogue" and "New routine", stacked. */
+/** Cards narrower than this share a row: one column on phones, a grid on tablets. */
+internal val CARD_MIN_WIDTH = 340.dp
+
+/** Max width of a card grid: the reading width on phones, wider when there is room for columns. */
+@Composable
+internal fun gridMaxWidth(): Dp = if (LocalWindowSize.current.isExpanded) 1200.dp else ContentMaxWidth
+
+/**
+ * One "New routine" button that opens the ways to add a routine (F11): empty, from the catalogue,
+ * from a file or from a QR code. Three stacked FABs covered a third of a small phone.
+ */
 @Composable
 private fun AddButtons(onCreate: () -> Unit, onOpenCatalogue: () -> Unit, onImport: (ImportSource) -> Unit) {
-    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        ImportMenuButton(onImport)
+    var menu by remember { mutableStateOf(false) }
+    Box {
         ExtendedFloatingActionButton(
-            onClick = onOpenCatalogue,
-            icon = { Icon(Icons.Filled.Search, contentDescription = null) },
-            text = { Text(stringResource(Res.string.routines_from_catalogue)) },
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-        ExtendedFloatingActionButton(
-            onClick = onCreate,
+            onClick = { menu = true },
             icon = { Icon(Icons.Filled.Add, contentDescription = null) },
             text = { Text(stringResource(Res.string.routines_new_routine)) },
         )
+        DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.routines_new_routine)) },
+                leadingIcon = { Icon(Icons.Filled.Add, contentDescription = null) },
+                onClick = {
+                    menu = false
+                    onCreate()
+                },
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(Res.string.routines_from_catalogue)) },
+                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                onClick = {
+                    menu = false
+                    onOpenCatalogue()
+                },
+            )
+            HorizontalDivider()
+            ImportMenuItems(onImport) { menu = false }
+        }
     }
 }
 
@@ -281,6 +316,7 @@ private fun RoutineMenu(
             ExportMenuItems(routine.id, export) { menu = false }
             DropdownMenuItem(
                 text = { Text(stringResource(Res.string.routines_delete)) },
+                leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = null) },
                 onClick = {
                     menu = false
                     onDelete()
@@ -353,20 +389,27 @@ private fun ImportMenuButton(onImport: (ImportSource) -> Unit) {
             contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
         )
         DropdownMenu(expanded = menu, onDismissRequest = { menu = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.routines_import_file)) },
-                onClick = {
-                    menu = false
-                    onImport(ImportSource.FILE)
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.routines_import_scan)) },
-                onClick = {
-                    menu = false
-                    onImport(ImportSource.SCAN)
-                },
-            )
+            ImportMenuItems(onImport) { menu = false }
         }
     }
+}
+
+@Composable
+private fun ImportMenuItems(onImport: (ImportSource) -> Unit, closeMenu: () -> Unit) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.routines_import_file)) },
+        leadingIcon = { Icon(Icons.Filled.Share, contentDescription = null) },
+        onClick = {
+            closeMenu()
+            onImport(ImportSource.FILE)
+        },
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.routines_import_scan)) },
+        leadingIcon = { Icon(QrCodeIcon, contentDescription = null) },
+        onClick = {
+            closeMenu()
+            onImport(ImportSource.SCAN)
+        },
+    )
 }

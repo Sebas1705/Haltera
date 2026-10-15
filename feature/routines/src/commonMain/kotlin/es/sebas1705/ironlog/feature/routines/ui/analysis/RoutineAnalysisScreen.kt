@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.routines.ui.analysis
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -116,7 +117,7 @@ private fun AnalysisContent(
     val planCriteria = score.criteria.filter { it.id !in SESSION_CRITERIA }
     val sessionCriteria = score.criteria.filter { it.id in SESSION_CRITERIA }
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().centeredContent(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

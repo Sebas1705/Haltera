@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.exercises.ui.create
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -115,7 +116,7 @@ private fun NewExerciseForm(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.centeredContent()
             .imePadding()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),

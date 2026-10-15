@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.routines.ui.editor
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -176,7 +177,7 @@ private fun EditorContent(
     val nextDayName = stringResource(Res.string.routines_day_default_name, days.size + 1)
     val restName = stringResource(Res.string.routines_rest_day_default_name)
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().centeredContent(),
         state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -238,7 +239,7 @@ private fun Header(state: RoutineEditorState, send: (RoutineEditorIntent) -> Uni
                 send(RoutineEditorIntent.SetName(it))
             },
             label = { Text(stringResource(Res.string.routines_name)) },
-            singleLine = true,
+            maxLines = 2,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -250,6 +251,7 @@ private fun Header(state: RoutineEditorState, send: (RoutineEditorIntent) -> Uni
             },
             label = { Text(stringResource(Res.string.routines_description)) },
             minLines = 2,
+            maxLines = 4,
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth(),
         )

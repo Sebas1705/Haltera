@@ -14,12 +14,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.AssistChip
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,11 +60,16 @@ fun ExerciseFilterBar(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // "Clear" comes first: at the end of the scrolling row it was cut off on narrow phones.
+        if (filters.any { it.selected != null }) {
+            AssistChip(
+                onClick = onClear,
+                label = { Text(clearLabel, maxLines = 1) },
+                leadingIcon = { Icon(Icons.Filled.Close, contentDescription = null) },
+            )
+        }
         @Suppress("UNCHECKED_CAST") // Each spec is only used with its own option type.
         filters.forEach { FilterMenuChip(it as FilterChipSpec<Any>, anyLabel) }
-        if (filters.any { it.selected != null }) {
-            TextButton(onClick = onClear) { Text(clearLabel) }
-        }
     }
 }
 

@@ -172,11 +172,14 @@ internal data class LineSeries(
 
 /** Maps times to x positions inside a plot. */
 private class TimeAxis(val minX: Long, val maxX: Long) {
+    /** Horizontal room kept at both ends so the first and last dots are not cut. */
+    var inset = 0f
+
     fun x(value: Long, area: PlotArea): Float =
         if (maxX == minX) {
             area.left + area.width / 2
         } else {
-            area.left + ((value - minX).toFloat() / (maxX - minX)) * area.width
+            area.left + inset + ((value - minX).toFloat() / (maxX - minX)) * (area.width - 2 * inset)
         }
 }
 
@@ -220,6 +223,7 @@ internal fun LineChart(
             },
     ) {
         val area = drawYAxis(scale, format, unit, measurer, style)
+        time.inset = LINE_INSET_DP.dp.toPx()
         plot.area = area
         series.forEach { line -> drawSeries(line, line.points.map { Offset(time.x(it.x, area), area.y(scale, it.y)) }) }
         listOf(time.minX, (time.minX + time.maxX) / 2, time.maxX).distinct()
@@ -270,6 +274,7 @@ private const val GHOST_DASH_OFF = 4f
 private const val LINE_DASH_ON_DP = 8
 private const val LINE_DASH_OFF_DP = 6
 private const val SELECTED_DOT_FACTOR = 2.2f
+private const val LINE_INSET_DP = 8
 
 /** Colour keys of a chart's series. */
 @Composable

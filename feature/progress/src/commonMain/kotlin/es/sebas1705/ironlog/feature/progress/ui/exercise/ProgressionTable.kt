@@ -117,7 +117,7 @@ private fun TableRow(row: ProgressionRow, units: UnitFormat, dates: DateFormat) 
     val style = MaterialTheme.typography.bodySmall.tabularFigures()
     val date = dates.short(row.at)
     val best = bestSetText(row.bestSet, units)
-    val oneRm = if (row.oneRm > 0) ChartScale.trim(units.toUnit(row.oneRm.toDouble()), 1) else "—"
+    val oneRm = if (row.oneRm > 0) formatNumber(units.toUnit(row.oneRm.toDouble()), 1) else "—"
     val volume = if (row.volume > 0) formatNumber(units.toUnit(row.volume.toDouble()), 0) else "—"
     val delta = row.oneRmDelta?.let { d ->
         val arrow = when {
@@ -125,7 +125,7 @@ private fun TableRow(row: ProgressionRow, units: UnitFormat, dates: DateFormat) 
             d < 0 -> "▼ "
             else -> "= "
         }
-        arrow + signed(units.toUnit(d.toDouble())) { ChartScale.trim(it, 1) }
+        arrow + signed(units.toUnit(d.toDouble())) { formatNumber(it, 1) }
     } ?: "—"
     val pr = row.prs.isNotEmpty()
     val description = stringResource(Res.string.progress_table_row_description, date, best, oneRm, volume, delta) +

@@ -104,7 +104,8 @@ private fun MuscleVolumeCard(state: MusclesState, units: UnitFormat) {
     MuscleListCard(
         title = stringResource(Res.string.progress_chart_muscle_volume),
         metric = Metric.MUSCLE_VOLUME,
-        rows = state.muscles.filter { it.volumePerWeek.current > 0 || (it.volumePerWeek.previous ?: 0.0) > 0 },
+        rows = state.muscles.filter { it.volumePerWeek.current > 0 || (it.volumePerWeek.previous ?: 0.0) > 0 }
+            .sortedByDescending { it.volumePerWeek.current },
         value = { it.volumePerWeek },
         max = state.maxVolume,
         format = units::volume,

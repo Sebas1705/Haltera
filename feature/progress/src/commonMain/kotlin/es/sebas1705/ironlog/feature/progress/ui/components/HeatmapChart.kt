@@ -60,7 +60,7 @@ private val LEVEL_ALPHAS = floatArrayOf(0f, 0.3f, 0.5f, 0.75f, 1f)
 @Composable
 internal fun heatColors(): List<Color> {
     val primary = MaterialTheme.colorScheme.primary
-    val empty = MaterialTheme.colorScheme.surfaceVariant
+    val empty = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f)
     return remember(
         primary,
         empty

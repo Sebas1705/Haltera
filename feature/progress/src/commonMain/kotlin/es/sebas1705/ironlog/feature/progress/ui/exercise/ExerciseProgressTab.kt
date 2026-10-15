@@ -34,6 +34,7 @@ import es.sebas1705.ironlog.domain.usecases.stats.Metric
 import es.sebas1705.ironlog.feature.progress.model.VariantInfo
 import es.sebas1705.ironlog.feature.progress.resources.*
 import es.sebas1705.ironlog.feature.progress.ui.components.ComparisonTile
+import es.sebas1705.ironlog.feature.progress.ui.components.DateFormat
 import es.sebas1705.ironlog.feature.progress.ui.components.StatsGrid
 import es.sebas1705.ironlog.feature.progress.ui.components.TileGrid
 import es.sebas1705.ironlog.feature.progress.ui.components.UnitFormat
@@ -85,7 +86,7 @@ private fun ExerciseProgressContent(state: ExerciseProgressState, onEvent: (Exer
                 }
             }
         }
-        fullWidth("tiles") { ExerciseTiles(state, units) }
+        fullWidth("tiles") { ExerciseTiles(state, units, dates) }
         item("one-rm") { OneRmCard(state, units, dates, onCompare = { onEvent(ExerciseProgressIntent.Compare(it)) }) }
         item("top-set") { TopSetCard(state, units, dates) }
         item("volume") { SessionVolumeCard(state, units, dates) }
@@ -96,7 +97,7 @@ private fun ExerciseProgressContent(state: ExerciseProgressState, onEvent: (Exer
 }
 
 @Composable
-private fun ExerciseTiles(state: ExerciseProgressState, units: UnitFormat) {
+private fun ExerciseTiles(state: ExerciseProgressState, units: UnitFormat, dates: DateFormat) {
     val trend = state.trend
     val best = state.records?.bestOneRm
     val tiles = listOf<@Composable (Modifier) -> Unit>(
@@ -108,6 +109,7 @@ private fun ExerciseTiles(state: ExerciseProgressState, units: UnitFormat) {
                 units::volume,
                 Metric.ESTIMATED_ONE_RM,
                 m,
+                footnote = best?.let { dates.full(it.at) },
             )
         },
         { m ->

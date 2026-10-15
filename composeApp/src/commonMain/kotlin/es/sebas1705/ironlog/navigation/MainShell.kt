@@ -152,7 +152,11 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
 private fun ShellNavHost(navController: NavHostController, modifier: Modifier) {
     NavHost(navController = navController, startDestination = TodayRoute, modifier = modifier) {
         val openSession: (String) -> Unit = { id -> navController.navigate(SessionRoute(id)) }
-        todayGraph(navController, onOpenSession = openSession)
+        todayGraph(
+            navController,
+            onOpenSession = openSession,
+            onOpenNutrition = { navController.navigateToTab(Tab.NUTRITION) },
+        )
         routinesGraph(navController)
         exercisesGraph(navController)
         nutritionGraph(navController)

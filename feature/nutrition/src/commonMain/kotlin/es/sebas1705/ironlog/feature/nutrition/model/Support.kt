@@ -1,11 +1,11 @@
 package es.sebas1705.ironlog.feature.nutrition.model
 
+import es.sebas1705.ironlog.core.units.Numbers
+import es.sebas1705.ironlog.core.units.appLanguage
 import kotlinx.coroutines.CancellationException
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
-import kotlin.math.abs
-import kotlin.math.roundToLong
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -29,18 +29,17 @@ internal enum class AmountMode { GRAMS, SERVINGS }
 
 internal object Amounts {
     private const val MAX_AMOUNT = 100_000.0
-    private const val DECIMAL_BASE = 10
 
     /** Parses a positive amount typed as "150", "1.5" or "1,5"; null when it is not one. */
     fun parse(text: String): Double? {
-        val value = text.trim().replace(',', '.').toDoubleOrNull() ?: return null
+        val value = Numbers.parse(text) ?: return null
         return value.takeIf { it > 0 && it < MAX_AMOUNT && it.isFinite() }
     }
 
     /** Parses an optional non-negative value (nutrients): blank is null, invalid is [Invalid]. */
     fun parseOptional(text: String): ParsedValue {
         if (text.isBlank()) return ParsedValue.Blank
-        val value = text.trim().replace(',', '.').toDoubleOrNull() ?: return ParsedValue.Invalid
+        val value = Numbers.parse(text) ?: return ParsedValue.Invalid
         return if (value < 0 || !value.isFinite() || value >= MAX_AMOUNT) {
             ParsedValue.Invalid
         } else {
@@ -56,17 +55,19 @@ internal object Amounts {
         AmountMode.SERVINGS -> servingGrams?.takeIf { it > 0 }?.let { amount * it }
     }
 
-    /** "1.5", "150", "0.25" — at most [decimals] decimals, trailing zeros removed, comma for Spanish. */
-    fun format(value: Double, decimals: Int = 1, language: String = "en"): String {
-        var factor = 1L
-        repeat(decimals) { factor *= DECIMAL_BASE }
-        val scaled = (value * factor).roundToLong()
-        val sign = if (scaled < 0) "-" else ""
-        val whole = abs(scaled) / factor
-        val fraction = if (decimals == 0) "" else (abs(scaled) % factor).toString().padStart(decimals, '0').trimEnd('0')
-        val separator = if (language == "es") "," else "."
-        return if (fraction.isEmpty()) "$sign$whole" else "$sign$whole$separator$fraction"
-    }
+    /**
+     * A number for display through core:units [Numbers] (decimal comma and grouping in Spanish): at most
+     * [decimals] decimals, trailing zeros removed.
+     */
+    fun format(value: Double, decimals: Int = 1, language: String = appLanguage()): String =
+        Numbers.format(value, maxDecimals = decimals, language = language)
+
+    /** A number to put back into an input field: like [format] but without thousands grouping. */
+    fun input(value: Double, decimals: Int = 2): String =
+        Numbers.format(value, maxDecimals = decimals, grouping = false)
+
+    /** A percentage ("31 %" / "31%"); [value] is already in percent. */
+    fun percent(value: Double, decimals: Int = 0): String = Numbers.percent(value, decimals)
 }
 
 internal sealed interface ParsedValue {

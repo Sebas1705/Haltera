@@ -36,7 +36,7 @@ Every `feature:<name>` module:
 
 | Feature | Route(s) | Graph entry point | Koin module |
 |---|---|---|---|
-| today | `TodayRoute` (object, tab root) | `NavGraphBuilder.todayGraph(navController, onOpenSession: (sessionId: String) -> Unit)` | `todayModule` |
+| today | `TodayRoute` (object, tab root) | `NavGraphBuilder.todayGraph(navController, onOpenSession: (sessionId: String) -> Unit, onOpenNutrition: () -> Unit = {})` | `todayModule` |
 | routines | `RoutinesRoute` (object, tab root) | `NavGraphBuilder.routinesGraph(navController)` | `routinesModule` |
 | exercises | `ExercisesRoute` (object, tab root) | `NavGraphBuilder.exercisesGraph(navController)` | `exercisesModule` |
 | progress | `ProgressRoute` (object, tab root) | `NavGraphBuilder.progressGraph(navController, onOpenSession: (sessionId: String) -> Unit)` | `progressModule` |

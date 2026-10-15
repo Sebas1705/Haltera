@@ -102,4 +102,12 @@
         <item>Nov</item>
         <item>Dec</item>
     </string-array>
+    <!-- Today's nutrition card (feature:nutrition data) -->
+    <string name="today_nutrition_title">Today’s nutrition</string>
+    <string name="today_nutrition_kcal">%1$s kcal</string>
+    <string name="today_nutrition_kcal_of">%1$s of %2$s kcal</string>
+    <string name="today_nutrition_grams">%1$s g</string>
+    <string name="today_nutrition_protein">Protein</string>
+    <string name="today_nutrition_carbs">Carbs</string>
+    <string name="today_nutrition_fat">Fat</string>
 </resources>

@@ -89,7 +89,7 @@ internal class FoodDetailViewModel(
                 food = food,
                 meal = entry?.meal ?: it.meal,
                 mode = mode,
-                amountText = Amounts.format(amount ?: Food.PER, 2),
+                amountText = Amounts.input(amount ?: Food.PER),
             )
         }
     }
@@ -124,8 +124,8 @@ internal class FoodDetailViewModel(
             val grams = state.grams
             val text = when {
                 grams == null || serving == null || serving <= 0 -> state.amountText
-                mode == AmountMode.SERVINGS -> Amounts.format(grams / serving, 2)
-                else -> Amounts.format(grams, 1)
+                mode == AmountMode.SERVINGS -> Amounts.input(grams / serving)
+                else -> Amounts.input(grams, 1)
             }
             state.copy(mode = mode, amountText = text)
         }

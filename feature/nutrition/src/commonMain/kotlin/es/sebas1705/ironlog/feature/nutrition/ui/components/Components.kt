@@ -1,5 +1,8 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.components
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.ironlog.core.ui.adaptive.ContentMaxWidth
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -86,6 +89,18 @@ import kotlinx.datetime.number
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringArrayResource
 import org.jetbrains.compose.resources.stringResource
+
+/** Max width of the two-column layouts (day, food detail, goals, statistics) on expanded windows. */
+internal val TwoColumnMaxWidth = 1200.dp
+
+/** Two columns of cards: only on expanded windows (core:ui window size classes). */
+@Composable
+internal fun isTwoColumn(): Boolean = LocalWindowSize.current.isExpanded
+
+/** The scrolling content column of a nutrition screen: centred, readable width, two-column width when wide. */
+@Composable
+internal fun Modifier.nutritionContent(): Modifier =
+    centeredContent(if (isTwoColumn()) TwoColumnMaxWidth else ContentMaxWidth).padding(16.dp)
 
 /** The UI language code for food names and number formatting. */
 @Composable

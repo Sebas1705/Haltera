@@ -86,7 +86,7 @@ internal class FoodEditorViewModel(
     }
 
     private fun fill(state: FoodEditorState, food: Food): FoodEditorState {
-        fun f(v: Double?) = v?.let { Amounts.format(it, 2) }.orEmpty()
+        fun f(v: Double?) = v?.let { Amounts.input(it) }.orEmpty()
         val n = food.per100
         return state.copy(
             loading = false,

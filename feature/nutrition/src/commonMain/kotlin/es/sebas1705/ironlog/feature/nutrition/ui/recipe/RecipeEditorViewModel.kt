@@ -97,9 +97,9 @@ internal class RecipeEditorViewModel(
                     loading = false,
                     name = recipe.food.nameEn,
                     servingName = (recipe.food.servingNameEn ?: recipe.food.servingNameEs).orEmpty(),
-                    servingGramsText = recipe.food.servingGrams?.let { Amounts.format(it, 1) }.orEmpty(),
-                    yieldText = recipe.food.yieldGrams?.let { Amounts.format(it, 1) }.orEmpty(),
-                    rows = recipe.items.map { RecipeRow(it.foodId, it.food, Amounts.format(it.grams, 1)) },
+                    servingGramsText = recipe.food.servingGrams?.let { Amounts.input(it, 1) }.orEmpty(),
+                    yieldText = recipe.food.yieldGrams?.let { Amounts.input(it, 1) }.orEmpty(),
+                    rows = recipe.items.map { RecipeRow(it.foodId, it.food, Amounts.input(it.grams, 1)) },
                 )
             }
         }
@@ -115,7 +115,7 @@ internal class RecipeEditorViewModel(
                 val food = attempt { repository.getFood(intent.foodId) }.getOrNull()
                 updateState {
                     it.copy(
-                        rows = it.rows + RecipeRow(intent.foodId, food, Amounts.format(intent.grams, 1))
+                        rows = it.rows + RecipeRow(intent.foodId, food, Amounts.input(intent.grams, 1))
                     )
                 }
             }

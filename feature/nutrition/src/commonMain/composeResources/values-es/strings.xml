@@ -68,7 +68,7 @@
     <string name="nutrition_copy_day">Copiar día</string>
     <string name="nutrition_day_summary">Totales del día</string>
     <string name="nutrition_day_info">El anillo muestra la energía consumida frente a tu objetivo de kcal, y las barras cada macronutriente frente a su objetivo. Los valores salen de los alimentos tal como están ahora: si editas uno de tus alimentos, también cambian los días pasados. Los objetivos son solo una guía: nada se bloquea si te pasas o no llegas.</string>
-    <string name="nutrition_goal_of">de %1$s kcal</string>
+    <string name="nutrition_goal_of">de %1$s</string>
     <string name="nutrition_no_goal">sin objetivo</string>
     <string name="nutrition_remaining">Quedan</string>
     <string name="nutrition_over">Por encima del objetivo</string>
@@ -79,7 +79,6 @@
     <string name="nutrition_copy_meal">Copiar de otro día</string>
     <string name="nutrition_copy_from_title">Copiar todas las comidas de</string>
     <string name="nutrition_copy_meal_title">Copiar %1$s de</string>
-    <string name="nutrition_copied">%1$s entradas copiadas</string>
 
     <!-- Search -->
     <string name="nutrition_add_to">Añadir a %1$s</string>
@@ -171,7 +170,7 @@
     <string name="nutrition_mode_grams">Gramos</string>
     <string name="nutrition_mode_percent">% de kcal</string>
     <string name="nutrition_macros_kcal">Estos macros suman %1$s</string>
-    <string name="nutrition_macros_percent_sum">Total: %1$s %</string>
+    <string name="nutrition_macros_percent_sum">Total: %1$s</string>
     <string name="nutrition_clear_goals">Borrar objetivos</string>
     <string name="nutrition_calculator">Calculadora de objetivos</string>
     <string name="nutrition_calc_info">1. Gasto en reposo (Mifflin–St Jeor): 10 × peso (kg) + 6,25 × altura (cm) − 5 × edad, más 5 en hombres o menos 161 en mujeres.\n2. Mantenimiento = gasto en reposo × factor de actividad: sedentaria 1,2, ligera 1,375, moderada 1,55, activa 1,725, muy activa 1,9.\n3. Objetivo = mantenimiento − 20 % para perder, igual para mantener, + 10 % para ganar, redondeado a 10 kcal.\n4. Proteína según el peso (2,0 g/kg perdiendo, 1,6 manteniendo, 1,8 ganando), grasa el 25 % de las kcal e hidratos el resto.\nEs una estimación: ajústala viendo la tendencia de tu peso durante unas semanas.</string>
@@ -205,13 +204,12 @@
     <string name="nutrition_range_quarter">90 días</string>
     <string name="nutrition_stats_empty">Aún no hay comida apuntada en este periodo.</string>
     <string name="nutrition_stats_not_enough">Todavía no hay suficientes días apuntados.</string>
-    <string name="nutrition_stats_days_logged">%1$s de %2$s días apuntados</string>
     <string name="nutrition_stats_average">Media diaria</string>
     <string name="nutrition_stats_average_info">Media de los días con comida apuntada. Los días sin entradas no cuentan como 0 kcal, porque un día sin apuntar es un dato que falta, no un ayuno.</string>
     <string name="nutrition_stats_kcal">Energía por día</string>
     <string name="nutrition_stats_kcal_info">Una barra por día apuntado; los huecos son días sin entradas. La línea discontinua es tu objetivo de kcal y las barras verdes están a ±10 % de él.</string>
     <string name="nutrition_stats_within">A ±10 % del objetivo</string>
-    <string name="nutrition_stats_goal_line">Objetivo: %1$s kcal</string>
+    <string name="nutrition_stats_goal_line">Objetivo: %1$s</string>
     <string name="nutrition_stats_macros">Macros por día</string>
     <string name="nutrition_stats_macros_info">Energía de cada macronutriente por día, apilada: proteínas e hidratos × 4 kcal/g, grasas × 9 kcal/g. El total puede diferir un poco de las kcal de los alimentos (fibra, alcohol y redondeos).</string>
     <string name="nutrition_stats_donut">Reparto medio de macros</string>
@@ -219,7 +217,6 @@
     <string name="nutrition_stats_adherence">Cumplimiento del objetivo</string>
     <string name="nutrition_stats_adherence_info">Porcentaje de días apuntados cuya energía estuvo a ±10 % del objetivo de kcal (con 2000 kcal: de 1800 a 2200).</string>
     <string name="nutrition_stats_adherence_no_goal">Fija un objetivo de kcal para ver cuántos días te quedas cerca.</string>
-    <string name="nutrition_stats_adherence_value">%1$s de %2$s días apuntados a ±10 %</string>
     <string name="nutrition_stats_protein_kg">Proteína por kg</string>
     <string name="nutrition_stats_protein_kg_info">Proteína media diaria dividida entre tu último peso corporal. Para quien entrena, las referencias habituales rondan 1,6 a 2,2 g/kg.</string>
     <string name="nutrition_stats_protein_kg_no_weight">Apunta tu peso corporal en Progreso para ver la proteína por kg.</string>
@@ -231,4 +228,26 @@
     <string name="nutrition_stats_weekly">Medias semanales</string>
     <string name="nutrition_stats_weekly_info">Energía y macros (g) medios por día apuntado de cada semana de lunes a domingo, de la más reciente a la más antigua.</string>
     <string name="nutrition_stats_week_of">Semana del %1$s</string>
+    <string name="nutrition_unit_kcal">kcal</string>
+    <string name="nutrition_unit_kg">kg</string>
+    <string name="nutrition_g_per_kg">%1$s g/kg</string>
+    <string name="nutrition_chart_donut_description">%1$s: proteínas %2$s, hidratos %3$s y grasas %4$s de la energía</string>
+    <string name="nutrition_chart_trend_description">%1$s: media de ingesta de %2$s a %3$s y media de peso corporal de %4$s a %5$s kg</string>
+    <string name="nutrition_stats_trend_no_weight">Apunta tu peso corporal en Progreso para verlo junto a la ingesta.</string>
+    <plurals name="nutrition_stats_days_logged">
+        <item quantity="one">%1$d de %2$d día apuntado</item>
+        <item quantity="other">%1$d de %2$d días apuntados</item>
+    </plurals>
+    <plurals name="nutrition_stats_adherence_value">
+        <item quantity="one">%1$d de %2$d día apuntado a ±10 %</item>
+        <item quantity="other">%1$d de %2$d días apuntados a ±10 %</item>
+    </plurals>
+    <plurals name="nutrition_copied">
+        <item quantity="one">%1$d entrada copiada</item>
+        <item quantity="other">%1$d entradas copiadas</item>
+    </plurals>
+    <plurals name="nutrition_chart_bars_description">
+        <item quantity="one">%1$s: %2$d día apuntado del %3$s al %4$s; máximo %5$s el %6$s; media %7$s</item>
+        <item quantity="other">%1$s: %2$d días apuntados del %3$s al %4$s; máximo %5$s el %6$s; media %7$s</item>
+    </plurals>
 </resources>

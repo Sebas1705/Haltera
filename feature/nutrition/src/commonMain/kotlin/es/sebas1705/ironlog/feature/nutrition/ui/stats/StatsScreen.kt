@@ -1,7 +1,20 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.stats
 
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_no_weight
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_chart_trend_description
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_chart_donut_description
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_chart_bars_description
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_g_per_kg
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_unit_kg
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_unit_kcal
+import es.sebas1705.ironlog.domain.usecases.nutrition.NutritionStats
+import es.sebas1705.ironlog.domain.usecases.nutrition.GoalCalculator
+import es.sebas1705.ironlog.data.models.Nutrients
+import org.jetbrains.compose.resources.pluralStringResource
+import es.sebas1705.ironlog.feature.nutrition.ui.components.nutritionContent
+import es.sebas1705.ironlog.feature.nutrition.ui.components.isTwoColumn
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -58,8 +71,6 @@ import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_protein_
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_protein_kg_value
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_info
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_kcal
-import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_trend_weight
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_week_of
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_weekly
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_stats_weekly_info
@@ -84,10 +95,10 @@ internal fun StatsScreen(viewModel: StatsViewModel, onBack: () -> Unit) {
             LoadingScreen(modifier)
             return@NutritionScaffold
         }
-        BoxWithConstraints(modifier.fillMaxSize()) {
-            val wide = maxWidth >= 720.dp
+        Box(modifier.fillMaxSize()) {
+            val wide = isTwoColumn()
             Column(
-                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+                Modifier.fillMaxSize().verticalScroll(rememberScrollState()).nutritionContent(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 RangeSelector(state.range) { viewModel.onEvent(StatsIntent.SetRange(it)) }
@@ -168,7 +179,12 @@ private fun AverageCard(state: StatsState) {
             color = MaterialTheme.colorScheme.primary
         )
         Text(
-            stringResource(Res.string.nutrition_stats_days_logged, state.daily.size, state.range.days),
+            pluralStringResource(
+                Res.plurals.nutrition_stats_days_logged,
+                state.range.days,
+                state.daily.size,
+                state.range.days
+            ),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
@@ -195,17 +211,29 @@ private fun MacroFigure(label: String, value: String, modifier: Modifier) {
 @Composable
 private fun KcalCard(state: StatsState) {
     val title = stringResource(Res.string.nutrition_stats_kcal)
+    val unit = stringResource(Res.string.nutrition_unit_kcal)
+    val dates = state.dates()
+    val byDate = state.daily.associate { it.date to it.nutrients.kcal }
+    val labels = dates.map { shortDate(it) }
+    val goal = state.goals.kcal
     SectionCard(title, info = stringResource(Res.string.nutrition_stats_kcal_info)) {
-        KcalBarsChart(state.dates(), state.daily.associate { it.date to it.nutrients.kcal }, state.goals.kcal, title)
+        val tooltips = dates.map { d -> byDate[d]?.let { "${shortDate(d)} · ${kcalText(it)}" }.orEmpty() }
+        DailyBarsChart(
+            slots = dates.mapIndexed { i, d -> BarSlot(labels[i], byDate[d]?.let(::listOf)) },
+            colors = listOf(MacroColors.kcal),
+            unit = unit,
+            tooltip = { tooltips[it] },
+            description = barsDescription(title, state, state.daily.map { it.nutrients.kcal }) { kcalText(it) },
+            goal = goal?.toDouble(),
+            withinGoal = goal?.let { g -> { v: Double -> NutritionStats.withinGoal(v, g) } },
+        )
         LegendRow(
             buildList {
                 add(MacroColors.kcal to stringResource(Res.string.nutrition_kcal))
-                val goal = state.goals.kcal
                 if (goal != null) {
                     add(MacroColors.withinGoal to stringResource(Res.string.nutrition_stats_within))
-                    add(
-                        MaterialTheme.colorScheme.onSurface to stringResource(Res.string.nutrition_stats_goal_line, goal)
-                    )
+                    val goalLabel = stringResource(Res.string.nutrition_stats_goal_line, kcalText(goal.toDouble()))
+                    add(MaterialTheme.colorScheme.onSurface to goalLabel)
                 }
             },
         )
@@ -215,8 +243,37 @@ private fun KcalCard(state: StatsState) {
 @Composable
 private fun MacrosCard(state: StatsState) {
     val title = stringResource(Res.string.nutrition_stats_macros)
+    val unit = stringResource(Res.string.nutrition_unit_kcal)
+    val dates = state.dates()
+    val byDate = state.daily.associate { it.date to it.nutrients }
+    val protein = stringResource(Res.string.nutrition_abbr_protein)
+    val carbs = stringResource(Res.string.nutrition_abbr_carbs)
+    val fat = stringResource(Res.string.nutrition_abbr_fat)
     SectionCard(title, info = stringResource(Res.string.nutrition_stats_macros_info)) {
-        StackedMacroChart(state.dates(), state.daily.associate { it.date to it.nutrients }, title)
+        val energy = dates.map { d -> byDate[d]?.let { macroEnergy(it) } }
+        val tooltips = dates.mapIndexed { i, d ->
+            val n = byDate[d]
+            val e = energy[i]
+            if (n == null || e == null) {
+                ""
+            } else {
+                "${shortDate(d)} · $protein ${gramsText(n.protein, 0)} · $carbs ${gramsText(n.carbs, 0)} · " +
+                    "$fat ${gramsText(n.fat, 0)} (${kcalText(e.first + e.second + e.third)})"
+            }
+        }
+        DailyBarsChart(
+            slots = dates.mapIndexed { i, d -> BarSlot(shortDate(d), energy[i]?.toList()) },
+            colors = listOf(MacroColors.protein, MacroColors.carbs, MacroColors.fat),
+            unit = unit,
+            tooltip = { tooltips[it] },
+            description = barsDescription(
+                title,
+                state,
+                energy.filterNotNull().map { it.first + it.second + it.third }
+            ) {
+                kcalText(it)
+            },
+        )
         LegendRow(
             listOf(
                 MacroColors.protein to stringResource(Res.string.nutrition_protein),
@@ -227,19 +284,56 @@ private fun MacrosCard(state: StatsState) {
     }
 }
 
+/** Energy from protein, carbohydrates and fat (4/4/9 kcal per gram). */
+private fun macroEnergy(n: Nutrients) = Triple(
+    n.protein * GoalCalculator.KCAL_PER_G_PROTEIN,
+    n.carbs * GoalCalculator.KCAL_PER_G_CARBS,
+    n.fat * GoalCalculator.KCAL_PER_G_FAT,
+)
+
+/** Screen-reader summary of a daily bar chart: logged days, range, highest and average. */
+@Composable
+private fun barsDescription(
+    title: String,
+    state: StatsState,
+    values: List<Double>,
+    format: @Composable (Double) -> String
+): String {
+    if (values.isEmpty()) return title
+    val highest = state.daily.zip(values).maxBy { it.second }
+    return pluralStringResource(
+        Res.plurals.nutrition_chart_bars_description,
+        values.size,
+        title,
+        values.size,
+        shortDate(state.from),
+        shortDate(state.to),
+        format(highest.second),
+        shortDate(highest.first.date),
+        format(values.average()),
+    )
+}
+
 @Composable
 private fun DonutCard(state: StatsState) {
     val split = state.split ?: return
     val title = stringResource(Res.string.nutrition_stats_donut)
+    val names = listOf(
+        stringResource(Res.string.nutrition_protein),
+        stringResource(Res.string.nutrition_carbs),
+        stringResource(Res.string.nutrition_fat),
+    )
     SectionCard(title, info = stringResource(Res.string.nutrition_stats_donut_info)) {
         MacroDonut(
             split,
-            listOf(
-                stringResource(Res.string.nutrition_protein),
-                stringResource(Res.string.nutrition_carbs),
-                stringResource(Res.string.nutrition_fat)
+            names,
+            stringResource(
+                Res.string.nutrition_chart_donut_description,
+                title,
+                Amounts.percent(split.proteinPct),
+                Amounts.percent(split.carbsPct),
+                Amounts.percent(split.fatPct),
             ),
-            title,
         )
     }
 }
@@ -258,12 +352,17 @@ private fun AdherenceCard(state: StatsState) {
             )
         } else {
             Text(
-                Amounts.format(adherence.fraction * 100, 0) + " %",
+                Amounts.percent(adherence.fraction * 100),
                 style = MaterialTheme.typography.headlineMedium.tabularFigures(),
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                stringResource(Res.string.nutrition_stats_adherence_value, adherence.daysWithin, adherence.daysLogged),
+                pluralStringResource(
+                    Res.plurals.nutrition_stats_adherence_value,
+                    adherence.daysLogged,
+                    adherence.daysWithin,
+                    adherence.daysLogged
+                ),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -287,7 +386,7 @@ private fun ProteinCard(state: StatsState) {
         } else {
             val lang = language()
             Text(
-                Amounts.format(perKg, 2, lang) + " g/kg",
+                stringResource(Res.string.nutrition_g_per_kg, Amounts.format(perKg, 2)),
                 style = MaterialTheme.typography.headlineMedium.tabularFigures(),
                 color = MaterialTheme.colorScheme.primary,
             )
@@ -308,17 +407,40 @@ private fun ProteinCard(state: StatsState) {
 private fun TrendCard(state: StatsState) {
     val title = stringResource(Res.string.nutrition_stats_trend)
     SectionCard(title, info = stringResource(Res.string.nutrition_stats_trend_info)) {
-        if (state.trend.kcal.size < 2) {
-            Text(stringResource(Res.string.nutrition_stats_not_enough), style = MaterialTheme.typography.bodyMedium)
-        } else {
-            DualAxisChart(
-                kcal = state.trend.kcal,
-                weight = state.trend.weightKg,
-                kcalLabel = stringResource(Res.string.nutrition_stats_trend_kcal),
-                weightLabel = stringResource(Res.string.nutrition_stats_trend_weight),
-                description = title,
-            )
+        val trend = state.trend
+        if (trend.kcal.size < 2) {
+            ChartEmpty(stringResource(Res.string.nutrition_stats_not_enough))
+            return@SectionCard
         }
+        val kcalByDate = trend.kcal.associate { it.date to it.value }
+        val kgByDate = trend.weightKg.associate { it.date to it.value }
+        val kg = stringResource(Res.string.nutrition_unit_kg)
+        val dates = (trend.kcal + trend.weightKg).map { it.date }.distinct()
+        val tooltips = dates.associateWith { d ->
+            listOfNotNull(
+                shortDate(d),
+                kcalByDate[d]?.let { kcalText(it) },
+                kgByDate[d]?.let { "${Amounts.format(it, 1)} $kg" },
+            ).joinToString(" · ")
+        }
+        val shortLabels = dates.associateWith { shortDate(it) }
+        DualAxisChart(
+            kcal = trend.kcal,
+            weight = trend.weightKg,
+            kcalUnit = stringResource(Res.string.nutrition_unit_kcal),
+            weightUnit = kg,
+            dateLabel = { shortLabels.getValue(it) },
+            tooltip = { tooltips.getValue(it) },
+            description = stringResource(
+                Res.string.nutrition_chart_trend_description,
+                title,
+                kcalText(trend.kcal.first().value),
+                kcalText(trend.kcal.last().value),
+                trend.weightKg.firstOrNull()?.let { Amounts.format(it.value, 1) } ?: "—",
+                trend.weightKg.lastOrNull()?.let { Amounts.format(it.value, 1) } ?: "—",
+            ),
+        )
+        if (trend.weightKg.isEmpty()) ChartEmpty(stringResource(Res.string.nutrition_stats_trend_no_weight))
     }
 }
 
@@ -370,7 +492,12 @@ private fun WeeklyCard(state: StatsState) {
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        stringResource(Res.string.nutrition_stats_days_logged, week.daysLogged, 7),
+                        pluralStringResource(
+                            Res.plurals.nutrition_stats_days_logged,
+                            DAYS_PER_WEEK,
+                            week.daysLogged,
+                            DAYS_PER_WEEK
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -403,3 +530,5 @@ private fun WeeklyCard(state: StatsState) {
         }
     }
 }
+
+private const val DAYS_PER_WEEK = 7

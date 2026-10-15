@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.search
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -145,7 +146,7 @@ internal fun FoodSearchScreen(
         },
     ) { modifier ->
         Box(modifier.fillMaxSize()) {
-            Column(Modifier.fillMaxSize()) {
+            Column(Modifier.fillMaxSize().centeredContent()) {
                 SearchField(state.query, onEvent)
                 if (state.scanning || state.searching) LinearProgressIndicator(Modifier.fillMaxWidth())
                 if (state.query.isBlank()) {
@@ -348,7 +349,7 @@ internal fun AmountDialog(
     initialGrams: Double? = null
 ) {
     var mode by remember { mutableStateOf(AmountMode.GRAMS) }
-    var text by remember { mutableStateOf(initialGrams?.let { Amounts.format(it, 1) } ?: "") }
+    var text by remember { mutableStateOf(initialGrams?.let { Amounts.input(it, 1) } ?: "") }
     val grams = Amounts.parse(text)?.let { Amounts.grams(it, mode, food.servingGrams) }
     AlertDialog(
         onDismissRequest = onDismiss,

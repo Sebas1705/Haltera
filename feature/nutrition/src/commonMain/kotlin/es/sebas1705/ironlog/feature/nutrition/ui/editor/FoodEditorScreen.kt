@@ -1,12 +1,12 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.editor
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -78,11 +78,11 @@ internal fun FoodEditorScreen(
             return@NutritionScaffold
         }
         Column(
-            modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp),
+            modifier.fillMaxSize().verticalScroll(rememberScrollState()).centeredContent().padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(Modifier.widthIn(max = 640.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Field(state, FoodField.NAME, Res.string.nutrition_food_name, onEvent, number = false)
                 OutlinedTextField(
                     value = state.brand,

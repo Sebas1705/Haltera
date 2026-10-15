@@ -1,6 +1,7 @@
 package es.sebas1705.ironlog.feature.today.di
 
 import es.sebas1705.ironlog.feature.today.ui.TodayClock
+import es.sebas1705.ironlog.feature.today.ui.TodayNutritionViewModel
 import es.sebas1705.ironlog.feature.today.ui.TodayViewModel
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.viewModelOf
@@ -18,4 +19,5 @@ val todayModule = module {
         )
     }
     viewModelOf(::TodayViewModel)
+    viewModelOf(::TodayNutritionViewModel)
 }

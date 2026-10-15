@@ -1,9 +1,11 @@
 package es.sebas1705.ironlog.feature.nutrition.ui.day
 
+import org.jetbrains.compose.resources.pluralStringResource
+import es.sebas1705.ironlog.feature.nutrition.ui.components.nutritionContent
+import es.sebas1705.ironlog.feature.nutrition.ui.components.isTwoColumn
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -101,9 +103,6 @@ import kotlin.math.abs
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-/** Width from which the day shows its summary and its meals side by side. */
-private val TWO_COLUMNS = 720.dp
-
 /** Nutrition tab root: date switcher, totals against the goals and the four meals. The shell draws the top bar. */
 @Composable
 internal fun DayScreen(
@@ -117,7 +116,7 @@ internal fun DayScreen(
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val onEvent: (DayIntent) -> Unit = { viewModel.onEvent(it) }
     val snackbar = remember { SnackbarHostState() }
-    val copiedText = state.copiedCount?.let { stringResource(Res.string.nutrition_copied, it) }
+    val copiedText = state.copiedCount?.let { pluralStringResource(Res.plurals.nutrition_copied, it, it) }
     val errorText = stringResource(Res.string.nutrition_error)
     LaunchedEffect(copiedText) {
         if (copiedText != null) {
@@ -133,9 +132,9 @@ internal fun DayScreen(
     }
 
     Box(modifier.fillMaxSize()) {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            val wide = maxWidth >= TWO_COLUMNS
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(16.dp)) {
+        Box(Modifier.fillMaxSize()) {
+            val wide = isTwoColumn()
+            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).nutritionContent()) {
                 DateBar(state, onEvent)
                 Spacer(Modifier.padding(4.dp))
                 ActionsRow(onOpenGoals, onOpenStats, onCopyDay = { onEvent(DayIntent.StartCopy(CopyTarget.WholeDay)) })
@@ -279,7 +278,7 @@ private fun SummaryCard(state: DayState, onOpenGoals: () -> Unit) {
                         style = MaterialTheme.typography.headlineMedium.tabularFigures()
                     )
                     Text(
-                        goals.kcal?.let { stringResource(Res.string.nutrition_goal_of, it) }
+                        goals.kcal?.let { stringResource(Res.string.nutrition_goal_of, kcalText(it.toDouble())) }
                             ?: stringResource(Res.string.nutrition_no_goal),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,

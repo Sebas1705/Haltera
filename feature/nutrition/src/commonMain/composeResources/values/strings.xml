@@ -16,6 +16,7 @@
     <string name="nutrition_kcal_value">%1$s kcal</string>
     <string name="nutrition_grams_value">%1$s g</string>
     <string name="nutrition_ml_value">%1$s ml</string>
+    <string name="nutrition_energy">Energy</string>
     <string name="nutrition_protein">Protein</string>
     <string name="nutrition_carbs">Carbs</string>
     <string name="nutrition_fat">Fat</string>

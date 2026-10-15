@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -63,6 +64,7 @@ import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_back
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_carbs
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_close
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_date_full
+import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_energy
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_fat
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_fiber
 import es.sebas1705.ironlog.feature.nutrition.resources.nutrition_grams_value
@@ -173,7 +175,7 @@ internal fun NutritionScaffold(
             )
         },
         floatingActionButton = floatingActionButton,
-    ) { padding -> content(Modifier.padding(padding)) }
+    ) { padding -> content(Modifier.padding(padding).imePadding()) }
 }
 
 /** ⓘ button that explains a figure in a dialog. */
@@ -306,7 +308,7 @@ internal fun MacroBar(label: String, grams: Double, goal: Int?, color: Color, mo
 internal fun NutrientRows(n: Nutrients, modifier: Modifier = Modifier) {
     val unknown = stringResource(Res.string.nutrition_unknown)
     Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        NutrientRow(stringResource(Res.string.nutrition_kcal), kcalText(n.kcal), bold = true)
+        NutrientRow(stringResource(Res.string.nutrition_energy), kcalText(n.kcal), bold = true)
         NutrientRow(stringResource(Res.string.nutrition_protein), gramsText(n.protein), dot = MacroColors.protein)
         NutrientRow(stringResource(Res.string.nutrition_carbs), gramsText(n.carbs), dot = MacroColors.carbs)
         NutrientRow(

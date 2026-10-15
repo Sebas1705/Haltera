@@ -15,6 +15,9 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -27,6 +30,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.sebas1705.ironlog.core.datastore.UserSettings
 import es.sebas1705.ironlog.core.units.PlateCalculator
 import es.sebas1705.ironlog.core.units.Weights
@@ -151,7 +155,20 @@ private fun KindSelector(kind: SetKind, onSelect: (SetKind) -> Unit) {
                 selected = kind == value,
                 onClick = { onSelect(value) },
                 shape = SegmentedButtonDefaults.itemShape(index, kinds.size),
-            ) { Text(stringResource(label), maxLines = 1, style = MaterialTheme.typography.labelSmall) }
+                // No check mark: four segments share a phone's width, and long labels
+                // ("Calentamiento") shrink to fit instead of being cut.
+                icon = {},
+            ) {
+                BasicText(
+                    stringResource(label),
+                    maxLines = 1,
+                    style = MaterialTheme.typography.labelSmall.copy(color = LocalContentColor.current),
+                    autoSize = TextAutoSize.StepBased(
+                        minFontSize = 8.sp,
+                        maxFontSize = MaterialTheme.typography.labelSmall.fontSize
+                    ),
+                )
+            }
         }
     }
 }

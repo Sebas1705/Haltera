@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.progress.ui.session
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -186,7 +187,7 @@ private fun DetailDialogs(dialog: DetailDialog?, onIntent: (SessionDetailIntent)
 @Composable
 private fun SessionDetailContent(state: SessionDetailState, summary: SessionSummary, modifier: Modifier) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().centeredContent(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {

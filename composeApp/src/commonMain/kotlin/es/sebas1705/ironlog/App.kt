@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.adaptive.ProvideWindowSize
 import es.sebas1705.ironlog.core.ui.theme.AppTheme
 import es.sebas1705.ironlog.navigation.MainShell
 import es.sebas1705.ironlog.startup.StartupIntent
@@ -21,7 +22,9 @@ fun App(modifier: Modifier = Modifier) {
             val startup: StartupViewModel = koinViewModel()
             val state by startup.uiState.collectAsStateWithLifecycle()
             if (state.ready) {
-                MainShell()
+                ProvideWindowSize {
+                    MainShell()
+                }
             } else {
                 StartupScreen(state, onRetry = { startup.onEvent(StartupIntent.Start) })
             }

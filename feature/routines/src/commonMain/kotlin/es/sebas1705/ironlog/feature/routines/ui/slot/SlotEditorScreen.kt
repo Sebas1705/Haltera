@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.routines.ui.slot
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -137,7 +138,7 @@ private fun SlotForm(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        modifier.fillMaxSize().imePadding().verticalScroll(
+        modifier.fillMaxSize().centeredContent().imePadding().verticalScroll(
             rememberScrollState()
         ).padding(horizontal = 16.dp, vertical = 8.dp),
     ) {

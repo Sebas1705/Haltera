@@ -2,6 +2,11 @@ package es.sebas1705.ironlog.feature.today.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import es.sebas1705.ironlog.feature.today.resources.Res
 import es.sebas1705.ironlog.feature.today.resources.today_error_save
 import es.sebas1705.ironlog.feature.today.resources.today_error_start
@@ -64,46 +71,77 @@ internal fun TodayScreen(state: TodayState, onIntent: (TodayIntent) -> Unit, mod
     }
 
     Box(modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            state.inProgress?.let { session ->
-                item(key = "resume") { ResumeCard(session, onResume = { onIntent(TodayIntent.ResumeSession) }) }
+        if (LocalWindowSize.current.isExpanded) {
+            // Expanded width: today's plan on the left, the week and body weight on the right (F3).
+            Row(
+                Modifier.fillMaxSize().centeredContent(TWO_COLUMN_MAX_WIDTH).padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                TodayColumn(Modifier.weight(1f)) { PlanItems(state, onIntent) }
+                TodayColumn(Modifier.weight(1f)) { SummaryItems(state, onIntent) }
             }
-            item(key = "plan") {
-                val plan = state.plan
-                when {
-                    !state.planLoaded -> Box(Modifier.fillMaxWidth().padding(24.dp), Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                    plan == null -> NoRoutineCard(
-                        startEnabled = !state.starting && state.inProgress == null,
-                        onFreeSession = { onIntent(TodayIntent.StartFree) },
-                    )
-                    else -> PlanCard(
-                        plan = plan,
-                        startEnabled = !state.starting && state.inProgress == null,
-                        onIntent = onIntent,
-                    )
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().centeredContent(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                item(
+                    key = "plan"
+                ) { Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { PlanItems(state, onIntent) } }
+                item(key = "summary") {
+                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { SummaryItems(state, onIntent) }
                 }
-            }
-            item(key = "log-past") {
-                LogPastButton(enabled = !state.starting, onClick = { onIntent(TodayIntent.OpenLogPast) })
-            }
-            item(key = "week") { WeekCard(state.week, state.unit) }
-            item(key = "weight") {
-                BodyWeightCard(
-                    latest = state.latestWeight,
-                    unit = state.unit,
-                    onLog = { onIntent(TodayIntent.OpenWeightDialog) },
-                )
             }
         }
         SnackbarHost(snackbar, Modifier.align(Alignment.BottomCenter).padding(16.dp))
     }
     TodayDialogs(state, onIntent)
+}
+
+private val TWO_COLUMN_MAX_WIDTH = 1200.dp
+
+@Composable
+private fun TodayColumn(modifier: Modifier, content: @Composable () -> Unit) {
+    Column(
+        modifier.fillMaxHeight().verticalScroll(rememberScrollState()).padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) { content() }
+}
+
+/** Resume card, today's plan and the log-past button. */
+@Composable
+private fun PlanItems(state: TodayState, onIntent: (TodayIntent) -> Unit) {
+    state.inProgress?.let { session ->
+        ResumeCard(session, onResume = { onIntent(TodayIntent.ResumeSession) })
+    }
+    val plan = state.plan
+    when {
+        !state.planLoaded -> Box(Modifier.fillMaxWidth().padding(24.dp), Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        plan == null -> NoRoutineCard(
+            startEnabled = !state.starting && state.inProgress == null,
+            onFreeSession = { onIntent(TodayIntent.StartFree) },
+        )
+        else -> PlanCard(
+            plan = plan,
+            startEnabled = !state.starting && state.inProgress == null,
+            onIntent = onIntent,
+        )
+    }
+    LogPastButton(enabled = !state.starting, onClick = { onIntent(TodayIntent.OpenLogPast) })
+}
+
+/** This week's summary and body weight. */
+@Composable
+private fun SummaryItems(state: TodayState, onIntent: (TodayIntent) -> Unit) {
+    WeekCard(state.week, state.unit)
+    BodyWeightCard(
+        latest = state.latestWeight,
+        unit = state.unit,
+        onLog = { onIntent(TodayIntent.OpenWeightDialog) },
+    )
 }
 
 @Composable

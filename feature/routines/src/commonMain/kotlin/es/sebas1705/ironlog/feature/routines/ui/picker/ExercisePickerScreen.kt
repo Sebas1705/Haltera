@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.routines.ui.picker
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -124,7 +125,7 @@ internal fun ExercisePickerScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(24.dp),
                 )
-                else -> LazyColumn(Modifier.fillMaxSize()) {
+                else -> LazyColumn(Modifier.fillMaxSize().centeredContent()) {
                     items(state.results, key = { it.id }) { exercise ->
                         ExerciseRow(
                             exercise = exercise,

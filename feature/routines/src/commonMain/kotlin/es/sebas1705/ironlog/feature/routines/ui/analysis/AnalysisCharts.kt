@@ -150,7 +150,9 @@ private fun AxisTicks(axisMax: Double) {
             while (value <= axisMax) {
                 val layout = measurer.measure(value.toInt().toString(), style)
                 val x = (size.width * (value / axisMax)).toFloat()
-                val left = (x - layout.size.width / 2f).coerceIn(0f, size.width - layout.size.width)
+                // Centred on its tick. The last label may run into the value column on the right (the
+                // canvas does not clip) rather than being pushed left onto the previous one.
+                val left = (x - layout.size.width / 2f).coerceAtLeast(0f)
                 drawText(layout, topLeft = Offset(left, 0f))
                 value += AXIS_STEP
             }

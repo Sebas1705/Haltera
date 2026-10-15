@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.feature.exercises.ui
 
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -170,7 +171,7 @@ private fun ExerciseList(items: List<ExerciseRow>, onOpenExercise: (String) -> U
     val listState = rememberLazyListState()
     LazyColumn(
         state = listState,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().centeredContent(),
         // Room for the floating action button over the last row.
         contentPadding = PaddingValues(bottom = 88.dp),
     ) {

@@ -1,5 +1,12 @@
 package es.sebas1705.ironlog.feature.routines.ui.catalogue
 
+import es.sebas1705.ironlog.core.ui.adaptive.LocalWindowSize
+import es.sebas1705.ironlog.core.ui.adaptive.centeredContent
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items as gridItems
+import es.sebas1705.ironlog.feature.routines.ui.list.CARD_MIN_WIDTH
+import es.sebas1705.ironlog.feature.routines.ui.list.gridMaxWidth
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,7 +18,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -82,12 +88,14 @@ internal fun CatalogueScreen(
             )
         },
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier.fillMaxSize().padding(padding),
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(CARD_MIN_WIDTH),
+            modifier = Modifier.fillMaxSize().padding(padding).centeredContent(gridMaxWidth()),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            items(state.templates, key = { it.id }) { template ->
+            gridItems(state.templates, key = { it.id }) { template ->
                 TemplateCard(
                     template,
                     state.language,
@@ -163,7 +171,7 @@ internal fun TemplatePreviewScreen(
                 title = {
                     Text(
                         template?.name?.get(state.language).orEmpty(),
-                        maxLines = 1,
+                        maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
@@ -202,7 +210,7 @@ private fun TemplateContent(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().centeredContent(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
@@ -264,23 +272,38 @@ private fun TemplateDayItem(index: Int, day: TemplateDay, exercises: ExerciseInd
 
 @Composable
 private fun AddBar(makeActive: Boolean, copying: Boolean, onMakeActive: (Boolean) -> Unit, onAdd: () -> Unit) {
-    Surface(tonalElevation = 3.dp) {
-        Column(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 16.dp, vertical = 8.dp)) {
-            Row(
-                Modifier.fillMaxWidth()
-                    .toggleable(value = makeActive, role = Role.Checkbox, onValueChange = onMakeActive)
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Checkbox(checked = makeActive, onCheckedChange = null)
-                Text(stringResource(Res.string.routines_make_active), Modifier.padding(start = 8.dp))
+    val toggle = @Composable { modifier: Modifier ->
+        Row(
+            modifier
+                .toggleable(value = makeActive, role = Role.Checkbox, onValueChange = onMakeActive)
+                .padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Checkbox(checked = makeActive, onCheckedChange = null)
+            Text(stringResource(Res.string.routines_make_active), Modifier.padding(start = 8.dp))
+        }
+    }
+    val button = @Composable { modifier: Modifier ->
+        Button(onClick = onAdd, enabled = !copying, modifier = modifier) {
+            if (copying) {
+                CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
+            } else {
+                Text(stringResource(Res.string.routines_add_to_mine))
             }
-            Button(onClick = onAdd, enabled = !copying, modifier = Modifier.fillMaxWidth()) {
-                if (copying) {
-                    CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp)
-                } else {
-                    Text(stringResource(Res.string.routines_add_to_mine))
-                }
+        }
+    }
+    Surface(tonalElevation = 3.dp) {
+        val inner = Modifier.navigationBarsPadding().centeredContent().padding(horizontal = 16.dp, vertical = 8.dp)
+        if (LocalWindowSize.current.useNavigationRail) {
+            // Wide or short windows: one row, so the panel does not eat the height (F9).
+            Row(inner, verticalAlignment = Alignment.CenterVertically) {
+                toggle(Modifier.weight(1f))
+                button(Modifier)
+            }
+        } else {
+            Column(inner) {
+                toggle(Modifier.fillMaxWidth())
+                button(Modifier.fillMaxWidth())
             }
         }
     }

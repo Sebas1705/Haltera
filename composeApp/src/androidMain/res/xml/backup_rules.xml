@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 6 to 11 Auto Backup: same content as data_extraction_rules.xml (database and own settings only). -->
+<full-backup-content>
+    <include domain="database" path="ironlog.db" />
+    <include domain="database" path="ironlog.db-wal" />
+    <include domain="database" path="ironlog.db-journal" />
+    <include domain="sharedpref" path="es.sebas1705.ironlog_preferences.xml" />
+</full-backup-content>

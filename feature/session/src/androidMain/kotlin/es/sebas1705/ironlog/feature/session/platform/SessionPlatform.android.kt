@@ -2,6 +2,11 @@ package es.sebas1705.ironlog.feature.session.platform
 
 import android.Manifest
 import android.app.Activity
+import android.app.AlarmManager
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
@@ -19,6 +24,36 @@ import org.koin.dsl.module
 actual val sessionPlatformModule: Module = module {
     single<RestAlert> { AndroidRestAlert(get<Context>()) }
     single<LiveSessionIndicator> { AndroidLiveSessionIndicator(get<Context>()) }
+    single { ExactAlarmPrompt(AndroidExactAlarmAccess(get<Context>()), PrefsExactAlarmPromptStore(get<Context>())) }
+}
+
+/** Android 12+: SCHEDULE_EXACT_ALARM is a special access the user grants in system settings. */
+internal class AndroidExactAlarmAccess(private val context: Context) : ExactAlarmAccess {
+    override fun isMissing(): Boolean {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return false
+        val alarms = context.getSystemService(AlarmManager::class.java) ?: return false
+        return !alarms.canScheduleExactAlarms()
+    }
+
+    override fun openSettings() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        val intent = Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:" + context.packageName))
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        try {
+            context.startActivity(intent)
+        } catch (_: ActivityNotFoundException) {
+            // No settings screen to open: the prompt was still the one time.
+        }
+    }
+}
+
+/** The "answered" flag lives next to the notification one in the session preferences. */
+internal class PrefsExactAlarmPromptStore(context: Context) : ExactAlarmPromptStore {
+    private val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+
+    override var handled: Boolean
+        get() = prefs.getBoolean(KEY_EXACT_HANDLED, false)
+        set(value) = prefs.edit().putBoolean(KEY_EXACT_HANDLED, value).apply()
 }
 
 @Composable
@@ -58,4 +93,5 @@ private tailrec fun Context.findActivity(): Activity? = when (this) {
 
 private const val PREFS = "ironlog_session"
 private const val KEY_ASKED = "notificationsAsked"
+private const val KEY_EXACT_HANDLED = "exactAlarmPromptHandled"
 private const val REQUEST_CODE = 1705

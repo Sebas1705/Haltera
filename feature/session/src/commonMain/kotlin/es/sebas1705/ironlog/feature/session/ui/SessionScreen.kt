@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.feature.session.platform.KeepScreenOn
+import es.sebas1705.ironlog.feature.session.platform.ExactAlarmExplanation
 import es.sebas1705.ironlog.feature.session.platform.RequestSessionPermissions
 import es.sebas1705.ironlog.feature.session.resources.Res
 import es.sebas1705.ironlog.feature.session.resources.session_add_exercise
@@ -81,7 +82,10 @@ fun SessionScreen(
         if (state.discarded) if (state.logMode) onBack() else onFinished()
     }
     KeepScreenOn(enabled = state.live && state.settings.keepScreenOn)
-    if (state.live) RequestSessionPermissions()
+    if (state.live) {
+        RequestSessionPermissions()
+        ExactAlarmExplanation()
+    }
 
     SessionContent(state, viewModel::onEvent, onBack, onFinished, modifier)
 }

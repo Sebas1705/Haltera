@@ -143,4 +143,8 @@
         <item>Nov</item>
         <item>Dec</item>
     </string-array>
+    <string name="session_exact_alarm_title">Exact rest alerts</string>
+    <string name="session_exact_alarm_text">Android lets this app ring the rest alert on the exact second only if you allow alarms and reminders. Without it the alert can arrive a little late when the phone is asleep. The timer on screen is always exact, and you can leave this off.</string>
+    <string name="session_exact_alarm_open">Open settings</string>
+    <string name="session_exact_alarm_not_now">Not now</string>
 </resources>

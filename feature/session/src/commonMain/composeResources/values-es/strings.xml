@@ -143,4 +143,8 @@
         <item>nov</item>
         <item>dic</item>
     </string-array>
+    <string name="session_exact_alarm_title">Avisos de descanso exactos</string>
+    <string name="session_exact_alarm_text">Android deja que esta app suene el aviso de descanso en el segundo exacto solo si permites las alarmas y recordatorios. Sin ello, el aviso puede llegar con algo de retraso con el móvil dormido. El temporizador en pantalla siempre es exacto, y puedes dejarlo desactivado.</string>
+    <string name="session_exact_alarm_open">Abrir ajustes</string>
+    <string name="session_exact_alarm_not_now">Ahora no</string>
 </resources>

@@ -1,6 +1,7 @@
 package es.sebas1705.ironlog
 
 import android.app.Application
+import android.os.Build
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.initialize
 import es.sebas1705.ironlog.account.AndroidGoogleSignInLauncher
@@ -15,6 +16,7 @@ import es.sebas1705.ironlog.di.appModules
 import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
 import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
 import es.sebas1705.ironlog.share.AndroidBarcodeScanner
+import es.sebas1705.ironlog.settings.AppInfo
 import es.sebas1705.ironlog.share.AndroidRoutineShareBridge
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -40,6 +42,7 @@ class IronlogApplication : Application() {
                     single<RoutineShareBridge> { AndroidRoutineShareBridge(androidContext(), get()) }
                     single<BarcodeScanner> { AndroidBarcodeScanner() }
                     single { AppVersionName(versionName()) }
+                    single { appInfo() }
                 },
             )
         }
@@ -48,4 +51,14 @@ class IronlogApplication : Application() {
     @Suppress("DEPRECATION") // getPackageInfo(String, PackageInfoFlags) needs API 33.
     private fun versionName(): String =
         runCatching { packageManager.getPackageInfo(packageName, 0).versionName }.getOrNull() ?: "dev"
+
+    /** Version name and code shown in About, read from the installed package. */
+    @Suppress("DEPRECATION")
+    private fun appInfo(): AppInfo {
+        val info = runCatching { packageManager.getPackageInfo(packageName, 0) }.getOrNull()
+        val code = info?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) it.longVersionCode else it.versionCode.toLong()
+        }
+        return AppInfo(versionName = info?.versionName ?: "dev", versionCode = code?.toString() ?: "?")
+    }
 }

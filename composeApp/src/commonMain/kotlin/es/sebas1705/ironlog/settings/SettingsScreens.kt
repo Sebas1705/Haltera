@@ -54,6 +54,7 @@ import es.sebas1705.ironlog.resources.credits_foods
 import es.sebas1705.ironlog.resources.credits_foods_text
 import es.sebas1705.ironlog.resources.credits_license
 import es.sebas1705.ironlog.resources.credits_title
+import es.sebas1705.ironlog.resources.settings_about
 import es.sebas1705.ironlog.resources.settings_account
 import es.sebas1705.ironlog.resources.settings_bar_weight
 import es.sebas1705.ironlog.resources.settings_credits
@@ -76,16 +77,26 @@ data object SettingsRoute
 @Serializable
 data object CreditsRoute
 
+@Serializable
+data object AboutRoute
+
 fun NavGraphBuilder.settingsGraph(navController: NavController) {
     composable<SettingsRoute> {
-        SettingsScreen(onBack = { navController.popBackStack() }, onCredits = { navController.navigate(CreditsRoute) })
+        SettingsScreen(
+            onBack = { navController.popBackStack() },
+            onCredits = { navController.navigate(CreditsRoute) },
+            onAbout = { navController.navigate(AboutRoute) },
+        )
     }
     composable<CreditsRoute> { CreditsScreen(onBack = { navController.popBackStack() }) }
+    composable<AboutRoute> {
+        AboutScreen(onBack = { navController.popBackStack() }, onCredits = { navController.navigate(CreditsRoute) })
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BackScaffold(title: StringResource, onBack: () -> Unit, content: @Composable (Modifier) -> Unit) {
+internal fun BackScaffold(title: StringResource, onBack: () -> Unit, content: @Composable (Modifier) -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -101,7 +112,12 @@ private fun BackScaffold(title: StringResource, onBack: () -> Unit, content: @Co
 }
 
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onCredits: () -> Unit, viewModel: SettingsViewModel = koinViewModel()) {
+fun SettingsScreen(
+    onBack: () -> Unit,
+    onCredits: () -> Unit,
+    onAbout: () -> Unit,
+    viewModel: SettingsViewModel = koinViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val settings = state.settings
     BackScaffold(Res.string.settings_title, onBack) { modifier ->
@@ -149,6 +165,9 @@ fun SettingsScreen(onBack: () -> Unit, onCredits: () -> Unit, viewModel: Setting
                 viewModel.onEvent(SettingsIntent.SetRestVibration(it))
             }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            TextButton(onClick = onAbout, modifier = Modifier.padding(horizontal = 8.dp)) {
+                Text(stringResource(Res.string.settings_about))
+            }
             TextButton(onClick = onCredits, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(stringResource(Res.string.settings_credits))
             }

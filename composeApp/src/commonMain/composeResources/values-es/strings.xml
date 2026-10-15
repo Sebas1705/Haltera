@@ -36,7 +36,10 @@
     <string name="account_sign_out">Cerrar sesión</string>
     <string name="account_delete">Eliminar cuenta</string>
     <string name="account_delete_title">¿Eliminar tu cuenta?</string>
-    <string name="account_delete_text">Tu copia en la nube y tu cuenta se eliminan para siempre. Los datos de este dispositivo se conservan.</string>
+    <string name="account_delete_text">Se eliminan para siempre tu copia en la nube y tu cuenta. Los datos de este móvil se conservan salvo que también elijas borrarlos abajo. Por seguridad, Google puede pedirte que inicies sesión de nuevo para confirmarlo.</string>
+    <string name="account_delete_erase_local">Borrar también los datos de este dispositivo</string>
+    <string name="account_delete_erase_local_hint">Elimina de este móvil tus rutinas, sesiones, peso corporal, alimentos y ajustes. El catálogo de ejercicios se mantiene.</string>
+    <string name="account_reauth_cancelled">La cuenta no se ha eliminado porque no se confirmó el inicio de sesión. Tu copia en la nube ya se ha eliminado: inténtalo de nuevo para terminar.</string>
     <string name="account_delete_confirm">Eliminar</string>
     <string name="account_cancel">Cancelar</string>
     <string name="account_linked">Google vinculado. Tus datos se guardan en tu cuenta de Google.</string>
@@ -50,4 +53,12 @@
     <string name="sync_syncing">Sincronizando… %1$d pendientes</string>
     <string name="sync_offline">Sin conexión. %1$d cambios en espera.</string>
     <string name="sync_error">Error de sincronización (%1$d pendientes): %2$s</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="about_title">Acerca de</string>
+    <string name="about_version">Versión %1$s (%2$s)</string>
+    <string name="about_license">Software libre y de código abierto, con licencia MIT.</string>
+    <string name="about_privacy">Política de privacidad</string>
+    <string name="about_delete_account">Eliminar mi cuenta y mis datos</string>
+    <string name="about_legal">Legal</string>
+    <string name="about_health">Información de salud</string>
 </resources>

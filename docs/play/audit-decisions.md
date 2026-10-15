@@ -19,15 +19,18 @@ Auto Backup, a new phone (or a reinstall) starts empty for them. Therefore the m
 - Before the first production release, restore-test once on an emulator pair:
   `adb shell bmgr backupnow es.sebas1705.ironlog` then reinstall and `adb shell bmgr restore`.
 
-### Exact alarms
+### Exact alarms (decided: keep declared for now)
 
-`SCHEDULE_EXACT_ALARM` is declared for the rest timer; the code already falls back to an inexact alarm when the
-user has not granted it (`RestAlarms`). On Android 14+ the permission is denied by default for new installs,
-and Google Play restricts it to apps whose core function is alarms or calendar events. A rest timer notification
-is not a core alarm-clock function, so expect the Console declaration to be questioned. The safest policy
-position is not to declare `SCHEDULE_EXACT_ALARM` at all and to use an inexact `setAndAllowWhileIdle` alarm (or the foreground
-service while the workout is open). Re-run the script after the exact-alarm compliance change lands: this report is regenerated from the
-real merged manifest, and the flag disappears when the permission does.
+`SCHEDULE_EXACT_ALARM` is declared so the rest-timer alert fires on time with the screen off. The code already
+falls back to an inexact alarm (`setAndAllowWhileIdle`) when the user has not granted it (`RestAlarms`), and the
+parallel `play-compliance` work adds a polite one-time prompt that explains why the permission helps and never
+blocks the app.
+
+Trade-off: on Android 14+ the permission is denied by default for new installs, and Google Play restricts it to
+apps whose core function is alarms or calendar events. A rest timer is arguably not that, so the Console
+declaration may be questioned. Decision: keep it declared for now (timers are accurate for users who allow it) and
+revisit if Play review pushes back; dropping the permission is a one-line manifest change and the inexact fallback
+already works. Re-run `scripts/verify-release.mjs` after any change: this report comes from the real merged manifest.
 
 ### Foreground service `specialUse`
 

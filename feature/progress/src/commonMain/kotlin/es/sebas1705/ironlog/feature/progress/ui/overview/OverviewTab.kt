@@ -13,6 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.ironlog.core.ui.components.HealthDisclaimer
+import es.sebas1705.ironlog.core.ui.components.HealthDisclaimerKind
 import es.sebas1705.ironlog.core.ui.components.LoadingScreen
 import es.sebas1705.ironlog.core.units.Numbers
 import es.sebas1705.ironlog.domain.usecases.stats.Adherence
@@ -82,6 +84,7 @@ internal fun OverviewTab(viewModel: OverviewViewModel = koinViewModel()) {
         item("sets") { WeeklyCountCard(stats, dates, sessions = false) }
         item("duration") { DurationCard(stats, dates) }
         item("adherence") { AdherenceCard(stats.adherence, state.hasActiveRoutine) }
+        fullWidth("disclaimer") { HealthDisclaimer(HealthDisclaimerKind.STATISTICS) }
     }
 }
 

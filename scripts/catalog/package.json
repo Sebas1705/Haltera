@@ -1,5 +1,5 @@
 {
-  "name": "ironlog-catalog",
+  "name": "haltera-catalog",
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },

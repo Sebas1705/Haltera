@@ -1,4 +1,4 @@
-# Ironlog — account and sync design (F8)
+# Haltera — account and sync design (F8)
 
 - **Date:** 2026-10-14
 - **Status:** approved by the owner ("sync completa"). Built in parallel by two workstreams that meet at the contract in §4.
@@ -30,7 +30,7 @@ Every document: `{ payload: <json string>, updatedAt: <epoch ms>, deleted: <bool
 
 ## 4. Contract between the workstreams (fixed)
 
-Package `es.sebas1705.ironlog.data.sync` in module **`data:sync`** (new; depends on `data:local`, `data:models`; the `data:repository` implementations stay unaware of sync):
+Package `es.sebas1705.haltera.data.sync` in module **`data:sync`** (new; depends on `data:local`, `data:models`; the `data:repository` implementations stay unaware of sync):
 
 ```kotlin
 /** A synced aggregate as stored remotely. `payload` is "" when deleted. */

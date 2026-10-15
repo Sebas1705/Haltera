@@ -2,13 +2,13 @@ Un diario de gimnasio gratuito y de código abierto. Registra lo que levantas de
 
 REGISTRA A TU MANERA
 • Rutinas de cualquier ciclo: 3 días, 5 días, 6 de entreno y 1 de descanso, o el ciclo de N días que quieras.
-• Registra cualquier fecha y edita todo después. Ironlog sigue tu entrenamiento real, nunca te impone un calendario.
+• Registra cualquier fecha y edita todo después. Haltera sigue tu entrenamiento real, nunca te impone un calendario.
 • Registro según el material: barra, mancuernas, máquinas, poleas, peso corporal, asistidos y con lastre, cada uno con la forma correcta de anotar la carga.
 • Temporizadores de descanso automáticos entre series.
 • Tus récords personales se marcan al registrarlos.
 
 PROGRESA CON UN PLAN
-• Doble progresión: define un rango de repeticiones y un salto de carga, y Ironlog te sugiere cuándo subir.
+• Doble progresión: define un rango de repeticiones y un salto de carga, y Haltera te sugiere cuándo subir.
 • Gráficas de progreso por ejercicio y por grupo muscular, con una explicación breve de cada dato.
 • Análisis de rutina: una puntuación y sugerencias claras y opcionales sobre volumen, equilibrio y frecuencia, con referencias. Es solo orientación: nunca bloquea ni cambia tu rutina.
 
@@ -26,4 +26,4 @@ TUS DATOS
 • La cuenta es opcional: inicia sesión solo si quieres sincronizar tu diario entre dispositivos.
 • Gratuita y de código abierto con licencia MIT. El código está en GitHub.
 
-Ironlog es un diario y una herramienta de planificación, no consejo médico. Consulta con un profesional antes de cambiar tu entrenamiento o tu dieta si tienes algún problema de salud.
+Haltera es un diario y una herramienta de planificación, no consejo médico. Consulta con un profesional antes de cambiar tu entrenamiento o tu dieta si tienes algún problema de salud.

@@ -195,7 +195,7 @@
     <string name="routines_show_qr">Show QR</string>
     <string name="routines_share_more">More options</string>
     <string name="routines_share_error">Could not share the routine.</string>
-    <string name="routines_qr_hint">In Ironlog on another phone, open Routines, tap Add routine › Scan QR and scan this code.</string>
+    <string name="routines_qr_hint">In Haltera on another phone, open Routines, tap Add routine › Scan QR and scan this code.</string>
     <string name="routines_qr_image">QR code of the routine %1$s</string>
     <string name="routines_qr_too_large">This routine is too large for a QR code. Share it as a file instead.</string>
     <string name="routines_close">Close</string>
@@ -213,8 +213,8 @@
     <string name="routines_import_missing_title">Exercises not on this device</string>
     <string name="routines_import_missing_keep">Add them as custom exercises</string>
     <string name="routines_import_missing_drop">Leave them out</string>
-    <string name="routines_import_invalid">This is not a valid Ironlog routine.</string>
-    <string name="routines_import_unsupported">This routine was made with a newer version of Ironlog. Update the app to import it.</string>
+    <string name="routines_import_invalid">This is not a valid Haltera routine.</string>
+    <string name="routines_import_unsupported">This routine was made with a newer version of Haltera. Update the app to import it.</string>
     <string name="routines_import_scan_unsupported">QR scanning is not available on this device yet. Import the file instead.</string>
     <string name="routines_import_rest_day">Rest day</string>
     <!-- Duplicate day -->

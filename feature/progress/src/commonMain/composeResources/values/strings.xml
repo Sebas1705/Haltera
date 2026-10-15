@@ -357,7 +357,7 @@
     <string name="progress_metric_sets_summary">The number of sets that did real work.</string>
     <string name="progress_metric_sets_formula">Count of completed sets that are not warm-ups and have at least one rep, a duration or a distance.</string>
     <string name="progress_metric_sets_counts">Working, drop and to-failure sets of any exercise, including bodyweight, timed and cardio sets.</string>
-    <string name="progress_metric_sets_limits">Ironlog cannot know how hard a set was: an easy set counts the same as a set to failure. RPE, when you log it, is not used to filter sets.</string>
+    <string name="progress_metric_sets_limits">Haltera cannot know how hard a set was: an easy set counts the same as a set to failure. RPE, when you log it, is not used to filter sets.</string>
 
     <string name="progress_metric_prs_title">Personal records</string>
     <string name="progress_metric_prs_summary">Your bests for one exercise variant, and when you set them.</string>

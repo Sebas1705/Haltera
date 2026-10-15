@@ -8,7 +8,7 @@
 //   node scripts/brand.mjs --png      also render the PNG icons (Android density folders, iOS, Play)
 //                                     with a headless Edge or Chrome
 //
-// The app's own colours live in core/ui BrandColors.kt and the logo in IronlogLogo.kt;
+// The app's own colours live in core/ui BrandColors.kt and the logo in HalteraLogo.kt;
 // BrandTokensTest checks they match this file.
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -53,8 +53,8 @@ const svgShapes = (mono) =>
   layers.map(({ shapes: list, color }) => list.map((s) => `<path d="${roundRect(s)}" fill="${mono ?? color}"/>`).join("")).join("");
 const svg = (body, title) =>
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${L.grid} ${L.grid}"${title ? ` role="img" aria-label="${title}"` : ""}>${body}</svg>\n`;
-/** The logo as IronlogLogo draws it: graphite rounded square. */
-const logoSvg = svg(`<rect width="${L.grid}" height="${L.grid}" rx="${L.corner}" fill="${L.background}"/>` + svgShapes(), "Ironlog");
+/** The logo as HalteraLogo draws it: graphite rounded square. */
+const logoSvg = svg(`<rect width="${L.grid}" height="${L.grid}" rx="${L.corner}" fill="${L.background}"/>` + svgShapes(), "Haltera");
 /** Full-bleed square for the stores and iOS, which round the corners themselves. */
 const iconSvg = svg(`<rect width="${L.grid}" height="${L.grid}" fill="${L.background}"/>` + svgShapes());
 /** Round variant for launchers that ask for ic_launcher_round. */
@@ -99,7 +99,7 @@ ${header("<!-- % -->")}
 const theme = (splash) => `<?xml version="1.0" encoding="utf-8"?>
 ${header("<!-- % -->")}
 <resources>
-    <style name="Theme.Ironlog" parent="@android:style/Theme.Material.NoActionBar">${splash ? `
+    <style name="Theme.Haltera" parent="@android:style/Theme.Material.NoActionBar">${splash ? `
         <!-- Android 12+ splash screen: the adaptive foreground on graphite. -->
         <item name="android:windowSplashScreenBackground">@color/ic_launcher_background</item>
         <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>` : ""}
@@ -184,7 +184,7 @@ if (process.argv.includes("--png")) {
   const browser = browsers.find(existsSync);
   if (!browser) throw new Error("No Edge or Chrome found to render the PNG icons");
   for (const { source, size, path, transparent } of pngs) {
-    const page = join(tmpdir(), "ironlog-icon.html");
+    const page = join(tmpdir(), "haltera-icon.html");
     writeFileSync(page, `<!doctype html><html><body style="margin:0">${source.replace("<svg ", `<svg width="${size}" height="${size}" style="display:block" `)}</body></html>`);
     const out = join(root, path);
     mkdirSync(dirname(out), { recursive: true });

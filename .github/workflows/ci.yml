@@ -44,7 +44,7 @@ jobs:
         run: xcodegen generate
       - working-directory: iosApp
         run: |
-          xcodebuild build -project Ironlog.xcodeproj -scheme Ironlog -configuration Debug \
+          xcodebuild build -project Haltera.xcodeproj -scheme Haltera -configuration Debug \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' ARCHS=arm64 \
             CODE_SIGNING_ALLOWED=NO -quiet
 
@@ -62,7 +62,7 @@ jobs:
           cache-dependency-path: firebase/rules-test/package-lock.json
       - run: npm ci --prefix firebase/rules-test
       - working-directory: firebase
-        run: npx --yes firebase-tools@15.32.1 emulators:exec --only firestore --project demo-ironlog "npm --prefix rules-test test"
+        run: npx --yes firebase-tools@15.32.1 emulators:exec --only firestore --project demo-haltera "npm --prefix rules-test test"
 
   catalog:
     name: Exercise catalogue and brand files (tests, up to date)
@@ -84,3 +84,6 @@ jobs:
       # App icons, splash theme and logo are generated from brand/tokens.json (docs/BRAND.md).
       - name: Brand files up to date
         run: node scripts/brand.mjs --check
+      # The former app name must not come back outside the allow-list in docs/NAMING.md.
+      - name: No stray former app name
+        run: node scripts/check-name.mjs

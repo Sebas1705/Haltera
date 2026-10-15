@@ -8,6 +8,6 @@ import org.gradle.kotlin.dsl.apply
  */
 class KmpDataConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        apply(plugin = "ironlog.kmp.library")
+        apply(plugin = "haltera.kmp.library")
     }
 }

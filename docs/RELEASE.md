@@ -1,13 +1,20 @@
 # Release and distribution
 
-Ironlog is distributed to testers through **Firebase App Distribution** (Firebase project
+Haltera is distributed to testers through **Firebase App Distribution** (Firebase project
 `ironlog-sebas1705`, group `testers`). Google Play is wired up but waits for the owner (see [Google Play](#google-play)).
 The same Firebase project backs the account and sync feature (Authentication + Firestore, see
 [Firebase in the app](#firebase-in-the-app) and docs/designs/2026-10-14-sync-design.md).
 
-The app testers get is always the same: `es.sebas1705.ironlog`, signed with the release (upload) key.
-Debug builds (`es.sebas1705.ironlog.debug`, `./gradlew :composeApp:installDebug`) are for local
+The app testers get is always the same: `es.sebas1705.haltera`, signed with the release (upload) key.
+Debug builds (`es.sebas1705.haltera.debug`, `./gradlew :composeApp:installDebug`) are for local
 development only and install alongside it.
+
+## Legacy package
+
+The app was called Ironlog (`es.sebas1705.ironlog`) until 2026-10. The rename created a new package, so the new app
+installs as a fresh app (new database, new anonymous account). Link Google in the old app first to keep the cloud
+data; the runbook is in [FIRESTORE-DATA.md](FIRESTORE-DATA.md). Internal identifiers that keep the old name on
+purpose (Firebase project, Doppler project, keystore, service account) are listed in [NAMING.md](NAMING.md).
 
 ## Secrets: Doppler only
 
@@ -63,8 +70,8 @@ rm -f "$TEMP/ironlog-release.jks"
 
 ## Setup state
 
-- Firebase project `ironlog-sebas1705` (display name Ironlog; the ids `ironlog` and `ironlog-app`
-  were taken). Android app `es.sebas1705.ironlog`: `1:695669078657:android:4ae26e75a4756aff962b80`.
+- Firebase project `ironlog-sebas1705` (the project id predates the rename and stays; see [NAMING.md](NAMING.md)).
+  Android app `es.sebas1705.haltera`: `1:695669078657:android:de14739670cfc7ad962b80`.
 - Release key `Documents\ironlog-release.jks`:
   SHA-1 `27:D8:91:F6:CB:E7:87:78:8D:DD:18:FC:02:70:EF:5B:8A:93:7E:24`,
   SHA-256 `45:53:E7:BB:C2:DB:B1:14:23:A1:06:37:B1:8C:45:63:C9:75:B1:21:95:A8:4D:14:4F:77:EE:27:F2:13:C9:7B`.
@@ -87,9 +94,12 @@ Without them the app builds and runs with sync off (`AccountSession.NotConfigure
 checks build. The google-services Gradle plugin is applied only when `composeApp/google-services.json`
 exists; iOS calls `FirebaseApp.configure()` only when the plist is bundled.
 
-- Firebase apps: Android `es.sebas1705.ironlog` (release key SHA-1/256), Android
-  `es.sebas1705.ironlog.debug` (`1:695669078657:android:9fbc91c513c691f3962b80`, debug keystore SHA-1/256
-  of the owner's PC), iOS `es.sebas1705.ironlog` (`1:695669078657:ios:3fea52ea88df0696962b80`).
+- Firebase apps: Android `es.sebas1705.haltera` (release key SHA-1/256, `1:695669078657:android:de14739670cfc7ad962b80`),
+  Android `es.sebas1705.haltera.debug` (`1:695669078657:android:057c7cc74462586d962b80`, debug keystore SHA-1/256
+  of the owner's PC), iOS `es.sebas1705.haltera` (`1:695669078657:ios:cbf79e573b04bdfe962b80`).
+  Legacy apps of the old package `es.sebas1705.ironlog` (Android `1:695669078657:android:4ae26e75a4756aff962b80`,
+  debug `1:695669078657:android:9fbc91c513c691f3962b80`, iOS `1:695669078657:ios:3fea52ea88df0696962b80`) stay
+  registered and must not be deleted: their users and Firestore data are still reachable.
   A new developer machine needs its debug SHA-1 added (`firebase apps:android:sha:create`) for Google sign-in.
 - Providers (enabled on 2026-10-14 through the Firebase provisioning API, no console step needed). To check or
   redo by hand: Console → Authentication → Sign-in method → Anonymous / Google → Enable.
@@ -123,7 +133,7 @@ SDK levels, mapping) and read the diff of [docs/play/RELEASE-AUDIT.md](play/RELE
 
 ## Google Play
 
-Package `es.sebas1705.ironlog`. The pipeline is complete; what is missing is Console setup (owner only). The step by
+Package `es.sebas1705.haltera`. The pipeline is complete; what is missing is Console setup (owner only). The step by
 step Console guide is coming as [docs/play/PLAY-CONSOLE-GUIDE.md](play/PLAY-CONSOLE-GUIDE.md).
 
 | Piece | What it does |
@@ -135,9 +145,9 @@ step Console guide is coming as [docs/play/PLAY-CONSOLE-GUIDE.md](play/PLAY-CONS
 
 The listing lives in `fastlane/metadata/android/{en-US,es-ES}`: `title.txt`, `short_description.txt` (80 characters),
 `full_description.txt` (4000) and `images/` (`icon.png`, `featureGraphic.png`, `phoneScreenshots`,
-`sevenInchScreenshots`, `tenInchScreenshots`). `title.txt` currently holds the placeholder `Ironlog`; the display name is read
+`sevenInchScreenshots`, `tenInchScreenshots`). `title.txt` currently holds the store title (`Haltera: Workout & Meal Log`, `Haltera: registro de entrenos`, at most 30 characters); the display name is read
 from one place (`app_name` in `composeApp/src/commonMain/composeResources/values/strings.xml`, via
-`scripts/lib/app-name.mjs`) and the feature graphic is not generated until the name is final. The screenshots are real
+`scripts/lib/app-name.mjs`) and the feature graphic is generated from it. The screenshots are real
 captures from an emulator with seeded data: `node scripts/play-screenshots.mjs` (see its header).
 
 ### Owner-only steps

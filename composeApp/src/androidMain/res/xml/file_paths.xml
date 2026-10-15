@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Routines exported as .ironlog files for the share sheet. -->
+<!-- Routines exported as .haltera files for the share sheet. -->
 <paths>
     <cache-path name="shared" path="shared/" />
 </paths>

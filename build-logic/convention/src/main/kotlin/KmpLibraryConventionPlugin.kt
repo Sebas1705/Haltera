@@ -17,9 +17,9 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
         apply(plugin = "org.jetbrains.kotlin.multiplatform")
         apply(plugin = "com.android.library")
         apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
-        apply(plugin = "ironlog.detekt")
+        apply(plugin = "haltera.detekt")
 
-        val namespace = "es.sebas1705.ironlog" +
+        val namespace = "es.sebas1705.haltera" +
             project.path.replace(":", ".").let { if (it.startsWith(".")) it else ".$it" }
         configureAndroidLibrary(namespace)
         configureKmp()

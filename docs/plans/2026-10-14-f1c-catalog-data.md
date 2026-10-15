@@ -18,7 +18,7 @@
 - Environment, identity and commit rules as in F1a. **Everything committed is in English**; Spanish only in `values-es/strings.xml`.
 - The schema is unreleased: `.sq` files are edited in place and there are no migrations until F5, but the snapshot `data/local/src/commonMain/sqldelight/databases/1.db` must be regenerated after every `.sq` change by running `./gradlew :data:local:generateCommonMainAppDatabaseSchema` **on its own** (AGENTS.md); `verifySqlDelightMigration` runs in CI.
 - Foreign keys are enabled on device (F1a): `ExerciseVariantEntity.exerciseId` references `ExerciseEntity`, so the importer writes each exercise before its variants (it does).
-- Work in a worktree: `git worktree add ../.worktrees/Ironlog/f1c -b f1c-catalog-data main` (from `~/Documents/Repos/Ironlog`), and run every command there instead of switching branches in the main checkout.
+- Work in a worktree: `git worktree add ../.worktrees/Haltera/f1c -b f1c-catalog-data main` (from `~/Documents/Repos/Haltera`), and run every command there instead of switching branches in the main checkout.
 - SQLite on Android 7 is 3.9: no `UPSERT`, booleans are `INTEGER` 0/1.
 - Column encodings: muscles are comma-separated enum names (`CHEST,TRICEPS`); instructions and frames are JSON arrays of strings.
 - Run Gradle with the F1a environment (`JAVA_HOME`, `ANDROID_HOME`).
@@ -28,15 +28,15 @@
 | Action | Path |
 |---|---|
 | Modify | `settings.gradle.kts`, `data/local/build.gradle.kts`, `composeApp/build.gradle.kts`, `MODULE_MAP.md` |
-| Create | `data/models/build.gradle.kts`, `data/models/src/commonMain/kotlin/es/sebas1705/ironlog/data/models/Catalog.kt` |
-| Create | `data/local/src/commonMain/sqldelight/es/sebas1705/ironlog/data/local/db/ExerciseEntity.sq`, `.../ExerciseVariantEntity.sq` |
-| Create | `data/local/src/commonMain/kotlin/es/sebas1705/ironlog/data/local/catalog/CatalogDto.kt`, `.../catalog/CatalogImporter.kt` |
-| Create | `data/local/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/local/catalog/CatalogImporterTest.kt`, `.../catalog/BundledCatalogTest.kt` |
-| Create | `data/repository/build.gradle.kts`, `data/repository/src/commonMain/kotlin/es/sebas1705/ironlog/data/repository/CatalogRepository.kt`, `.../SqlCatalogRepository.kt` |
-| Create | `data/repository/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/repository/SqlCatalogRepositoryTest.kt` |
-| Create | `composeApp/src/commonMain/kotlin/es/sebas1705/ironlog/startup/StartupViewModel.kt`, `.../startup/StartupScreen.kt`, `.../startup/BundledCatalog.kt` |
+| Create | `data/models/build.gradle.kts`, `data/models/src/commonMain/kotlin/es/sebas1705/haltera/data/models/Catalog.kt` |
+| Create | `data/local/src/commonMain/sqldelight/es/sebas1705/haltera/data/local/db/ExerciseEntity.sq`, `.../ExerciseVariantEntity.sq` |
+| Create | `data/local/src/commonMain/kotlin/es/sebas1705/haltera/data/local/catalog/CatalogDto.kt`, `.../catalog/CatalogImporter.kt` |
+| Create | `data/local/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/local/catalog/CatalogImporterTest.kt`, `.../catalog/BundledCatalogTest.kt` |
+| Create | `data/repository/build.gradle.kts`, `data/repository/src/commonMain/kotlin/es/sebas1705/haltera/data/repository/CatalogRepository.kt`, `.../SqlCatalogRepository.kt` |
+| Create | `data/repository/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/repository/SqlCatalogRepositoryTest.kt` |
+| Create | `composeApp/src/commonMain/kotlin/es/sebas1705/haltera/startup/StartupViewModel.kt`, `.../startup/StartupScreen.kt`, `.../startup/BundledCatalog.kt` |
 | Create | `composeApp/src/commonMain/composeResources/values/strings.xml`, `.../values-es/strings.xml` |
-| Modify | `composeApp/src/commonMain/kotlin/es/sebas1705/ironlog/App.kt`, `.../di/AppModule.kt` |
+| Modify | `composeApp/src/commonMain/kotlin/es/sebas1705/haltera/App.kt`, `.../di/AppModule.kt` |
 
 ---
 
@@ -44,12 +44,12 @@
 
 **Files:**
 - Modify: `settings.gradle.kts`
-- Create: `data/models/build.gradle.kts`, `data/models/src/commonMain/kotlin/es/sebas1705/ironlog/data/models/Catalog.kt`
+- Create: `data/models/build.gradle.kts`, `data/models/src/commonMain/kotlin/es/sebas1705/haltera/data/models/Catalog.kt`
 
 - [ ] **Step 1: Branch and register the new modules**
 
 ```bash
-cd ~/Documents/Repos/Ironlog && git pull && git worktree add ../.worktrees/Ironlog/f1c -b f1c-catalog-data main && cd ../.worktrees/Ironlog/f1c
+cd ~/Documents/Repos/Haltera && git pull && git worktree add ../.worktrees/Haltera/f1c -b f1c-catalog-data main && cd ../.worktrees/Haltera/f1c
 ```
 In `settings.gradle.kts`, replace `include(":data:local")` with:
 ```kotlin
@@ -65,7 +65,7 @@ plugins { alias(libs.plugins.kmp.data) }
 - [ ] **Step 3: `Catalog.kt`**
 
 ```kotlin
-package es.sebas1705.ironlog.data.models
+package es.sebas1705.haltera.data.models
 
 /** What the database holds of the bundled exercise catalogue. `version` is null before the first import. */
 data class CatalogSummary(
@@ -94,7 +94,7 @@ git commit -m "feat(data): models module with catalogue summary and import resul
 ### Task 2: Catalogue schema
 
 **Files:**
-- Create: `data/local/src/commonMain/sqldelight/es/sebas1705/ironlog/data/local/db/ExerciseEntity.sq`, `ExerciseVariantEntity.sq`
+- Create: `data/local/src/commonMain/sqldelight/es/sebas1705/haltera/data/local/db/ExerciseEntity.sq`, `ExerciseVariantEntity.sq`
 - Modify: `data/local/build.gradle.kts`
 
 - [ ] **Step 1: Make `data:local` depend on `data:models` and serialization**
@@ -242,17 +242,17 @@ git commit -m "feat(data): exercise and variant tables for the catalogue"
 ### Task 3: Catalogue DTOs and importer
 
 **Files:**
-- Create: `data/local/src/commonMain/kotlin/es/sebas1705/ironlog/data/local/catalog/CatalogDto.kt`, `CatalogImporter.kt`
-- Test: `data/local/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/local/catalog/CatalogImporterTest.kt`
+- Create: `data/local/src/commonMain/kotlin/es/sebas1705/haltera/data/local/catalog/CatalogDto.kt`, `CatalogImporter.kt`
+- Test: `data/local/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/local/catalog/CatalogImporterTest.kt`
 
 - [ ] **Step 1: Write the failing tests**
 
 ```kotlin
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.models.CatalogImportResult
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -361,7 +361,7 @@ Expected: compilation FAIL — `Unresolved reference 'CatalogImporter'`.
 
 `CatalogDto.kt`:
 ```kotlin
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
 import kotlinx.serialization.Serializable
 
@@ -409,10 +409,10 @@ internal data class VariantDto(
 
 `CatalogImporter.kt`:
 ```kotlin
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.models.CatalogImportResult
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
@@ -519,18 +519,18 @@ git commit -m "feat(data): idempotent catalogue importer that never touches user
 ### Task 4: The real catalogue imports cleanly
 
 **Files:**
-- Test: `data/local/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/local/catalog/BundledCatalogTest.kt`
+- Test: `data/local/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/local/catalog/BundledCatalogTest.kt`
 
 Guards against drift between the pipeline output (F1b) and the DTOs: the committed `catalog.json` must decode and import.
 
 - [ ] **Step 1: Write the test**
 
 ```kotlin
-package es.sebas1705.ironlog.data.local.catalog
+package es.sebas1705.haltera.data.local.catalog
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.models.CatalogImportResult
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -577,7 +577,7 @@ git commit -m "test(data): the bundled catalogue decodes and imports"
 
 **Files:**
 - Create: `data/repository/build.gradle.kts`, `.../CatalogRepository.kt`, `.../SqlCatalogRepository.kt`
-- Test: `data/repository/src/androidUnitTest/kotlin/es/sebas1705/ironlog/data/repository/SqlCatalogRepositoryTest.kt`
+- Test: `data/repository/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/repository/SqlCatalogRepositoryTest.kt`
 
 - [ ] **Step 1: `data/repository/build.gradle.kts`**
 
@@ -605,13 +605,13 @@ kotlin {
 - [ ] **Step 2: Write the failing test**
 
 ```kotlin
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import app.cash.turbine.test
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.models.CatalogSummary
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.models.CatalogSummary
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -651,10 +651,10 @@ Expected: compilation FAIL — `Unresolved reference 'SqlCatalogRepository'`.
 
 `CatalogRepository.kt`:
 ```kotlin
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
-import es.sebas1705.ironlog.data.models.CatalogImportResult
-import es.sebas1705.ironlog.data.models.CatalogSummary
+import es.sebas1705.haltera.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.models.CatalogSummary
 import kotlinx.coroutines.flow.Flow
 
 interface CatalogRepository {
@@ -667,16 +667,16 @@ interface CatalogRepository {
 
 `SqlCatalogRepository.kt`:
 ```kotlin
-package es.sebas1705.ironlog.data.repository
+package es.sebas1705.haltera.data.repository
 
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
-import es.sebas1705.ironlog.data.local.catalog.CATALOG_VERSION_KEY
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
-import es.sebas1705.ironlog.data.local.db.AppDatabase
-import es.sebas1705.ironlog.data.models.CatalogImportResult
-import es.sebas1705.ironlog.data.models.CatalogSummary
+import es.sebas1705.haltera.data.local.catalog.CATALOG_VERSION_KEY
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.models.CatalogImportResult
+import es.sebas1705.haltera.data.models.CatalogSummary
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -719,7 +719,7 @@ git commit -m "feat(data): catalogue repository with import and observable summa
 ### Task 6: Startup screen with the imported catalogue
 
 **Files:**
-- Create: `composeApp/src/commonMain/kotlin/es/sebas1705/ironlog/startup/BundledCatalog.kt`, `StartupViewModel.kt`, `StartupScreen.kt`
+- Create: `composeApp/src/commonMain/kotlin/es/sebas1705/haltera/startup/BundledCatalog.kt`, `StartupViewModel.kt`, `StartupScreen.kt`
 - Create: `composeApp/src/commonMain/composeResources/values/strings.xml`, `values-es/strings.xml`
 - Modify: `composeApp/build.gradle.kts`, `App.kt`, `di/AppModule.kt`
 
@@ -735,7 +735,7 @@ In `composeApp/build.gradle.kts` `commonMain.dependencies`, add next to `:data:l
 `composeApp/src/commonMain/composeResources/values/strings.xml`:
 ```xml
 <resources>
-    <string name="startup_title">Ironlog</string>
+    <string name="startup_title">Haltera</string>
     <string name="startup_loading">Preparing the exercise catalogue…</string>
     <string name="startup_catalog_version">Exercise catalogue v%1$d</string>
     <string name="startup_catalog_counts">%1$d exercises · %2$d variants</string>
@@ -746,7 +746,7 @@ In `composeApp/build.gradle.kts` `commonMain.dependencies`, add next to `:data:l
 `composeApp/src/commonMain/composeResources/values-es/strings.xml`:
 ```xml
 <resources>
-    <string name="startup_title">Ironlog</string>
+    <string name="startup_title">Haltera</string>
     <string name="startup_loading">Preparando el catálogo de ejercicios…</string>
     <string name="startup_catalog_version">Catálogo de ejercicios v%1$d</string>
     <string name="startup_catalog_counts">%1$d ejercicios · %2$d variantes</string>
@@ -758,9 +758,9 @@ In `composeApp/build.gradle.kts` `commonMain.dependencies`, add next to `:data:l
 
 `startup/BundledCatalog.kt`:
 ```kotlin
-package es.sebas1705.ironlog.startup
+package es.sebas1705.haltera.startup
 
-import es.sebas1705.ironlog.resources.Res
+import es.sebas1705.haltera.resources.Res
 
 /** The catalogue generated by scripts/catalog and bundled as a Compose resource. */
 suspend fun readBundledCatalog(): String = Res.readBytes("files/catalog.json").decodeToString()
@@ -770,14 +770,14 @@ suspend fun readBundledCatalog(): String = Res.readBytes("files/catalog.json").d
 
 `startup/StartupViewModel.kt`:
 ```kotlin
-package es.sebas1705.ironlog.startup
+package es.sebas1705.haltera.startup
 
 import co.touchlab.kermit.Logger
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseIntent
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseState
-import es.sebas1705.ironlog.core.common.mvi.MVIBaseViewModel
-import es.sebas1705.ironlog.data.models.CatalogSummary
-import es.sebas1705.ironlog.data.repository.CatalogRepository
+import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
+import es.sebas1705.haltera.core.common.mvi.MVIBaseState
+import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.data.models.CatalogSummary
+import es.sebas1705.haltera.data.repository.CatalogRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 
@@ -821,7 +821,7 @@ Add `import kotlin.coroutines.cancellation.CancellationException`. `MVIBaseViewM
 
 `startup/StartupScreen.kt`:
 ```kotlin
-package es.sebas1705.ironlog.startup
+package es.sebas1705.haltera.startup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -834,12 +834,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import es.sebas1705.ironlog.resources.Res
-import es.sebas1705.ironlog.resources.startup_catalog_counts
-import es.sebas1705.ironlog.resources.startup_catalog_error
-import es.sebas1705.ironlog.resources.startup_catalog_version
-import es.sebas1705.ironlog.resources.startup_loading
-import es.sebas1705.ironlog.resources.startup_title
+import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.startup_catalog_counts
+import es.sebas1705.haltera.resources.startup_catalog_error
+import es.sebas1705.haltera.resources.startup_catalog_version
+import es.sebas1705.haltera.resources.startup_loading
+import es.sebas1705.haltera.resources.startup_title
 import org.jetbrains.compose.resources.stringResource
 
 @Composable
@@ -870,14 +870,14 @@ fun StartupScreen(state: StartupState, modifier: Modifier = Modifier) {
 
 `di/AppModule.kt`:
 ```kotlin
-package es.sebas1705.ironlog.di
+package es.sebas1705.haltera.di
 
-import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
-import es.sebas1705.ironlog.data.local.catalog.CatalogImporter
-import es.sebas1705.ironlog.data.local.createDatabase
-import es.sebas1705.ironlog.data.repository.CatalogRepository
-import es.sebas1705.ironlog.data.repository.SqlCatalogRepository
-import es.sebas1705.ironlog.startup.StartupViewModel
+import es.sebas1705.haltera.data.local.DatabaseDriverFactory
+import es.sebas1705.haltera.data.local.catalog.CatalogImporter
+import es.sebas1705.haltera.data.local.createDatabase
+import es.sebas1705.haltera.data.repository.CatalogRepository
+import es.sebas1705.haltera.data.repository.SqlCatalogRepository
+import es.sebas1705.haltera.startup.StartupViewModel
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import kotlin.time.Clock
@@ -894,7 +894,7 @@ val appModule = module {
 
 `App.kt`:
 ```kotlin
-package es.sebas1705.ironlog
+package es.sebas1705.haltera
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
@@ -902,9 +902,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import es.sebas1705.ironlog.core.ui.theme.AppTheme
-import es.sebas1705.ironlog.startup.StartupScreen
-import es.sebas1705.ironlog.startup.StartupViewModel
+import es.sebas1705.haltera.core.ui.theme.AppTheme
+import es.sebas1705.haltera.startup.StartupScreen
+import es.sebas1705.haltera.startup.StartupViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
 /** Root composable. F2 replaces the startup screen with the tabs. */
@@ -924,11 +924,11 @@ fun App(modifier: Modifier = Modifier) {
 
 ```bash
 ./gradlew detekt testDebugUnitTest :composeApp:installDebug 2>&1 | tail -5
-MSYS_NO_PATHCONV=1 "$ANDROID_HOME/platform-tools/adb" shell pm clear es.sebas1705.ironlog.debug
-MSYS_NO_PATHCONV=1 "$ANDROID_HOME/platform-tools/adb" shell am start -n es.sebas1705.ironlog.debug/es.sebas1705.ironlog.MainActivity
-"$ANDROID_HOME/platform-tools/adb" exec-out screencap -p > "$TMP/ironlog-f1c.png"
+MSYS_NO_PATHCONV=1 "$ANDROID_HOME/platform-tools/adb" shell pm clear es.sebas1705.haltera.debug
+MSYS_NO_PATHCONV=1 "$ANDROID_HOME/platform-tools/adb" shell am start -n es.sebas1705.haltera.debug/es.sebas1705.haltera.MainActivity
+"$ANDROID_HOME/platform-tools/adb" exec-out screencap -p > "$TMP/haltera-f1c.png"
 ```
-Expected: `BUILD SUCCESSFUL`; the screenshot shows "Ironlog", "Exercise catalogue v1" and the exercise/variant counts (Spanish strings if the emulator is in Spanish). Restart the app: the counts appear immediately (`UpToDate`, no re-import). Check logcat has no `Catalogue import failed`:
+Expected: `BUILD SUCCESSFUL`; the screenshot shows "Haltera", "Exercise catalogue v1" and the exercise/variant counts (Spanish strings if the emulator is in Spanish). Restart the app: the counts appear immediately (`UpToDate`, no re-import). Check logcat has no `Catalogue import failed`:
 ```bash
 "$ANDROID_HOME/platform-tools/adb" logcat -d | grep -i "catalogue import failed"; echo "exit=$?"
 ```

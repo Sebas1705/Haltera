@@ -144,10 +144,10 @@ detekt                = { id = "io.gitlab.arturbosch.detekt",                 ve
 roborazzi             = { id = "io.github.takahirom.roborazzi",               version.ref = "roborazzi" }
 google-services       = { id = "com.google.gms.google-services",              version.ref = "google-services" }
 
-kmp-library     = { id = "ironlog.kmp.library" }
-kmp-feature     = { id = "ironlog.kmp.feature" }
-kmp-data        = { id = "ironlog.kmp.data" }
-kmp-domain      = { id = "ironlog.kmp.domain" }
-kmp-core        = { id = "ironlog.kmp.core" }
-kmp-app         = { id = "ironlog.kmp.app" }
-ironlog-detekt = { id = "ironlog.detekt" }
+kmp-library     = { id = "haltera.kmp.library" }
+kmp-feature     = { id = "haltera.kmp.feature" }
+kmp-data        = { id = "haltera.kmp.data" }
+kmp-domain      = { id = "haltera.kmp.domain" }
+kmp-core        = { id = "haltera.kmp.core" }
+kmp-app         = { id = "haltera.kmp.app" }
+haltera-detekt = { id = "haltera.detekt" }

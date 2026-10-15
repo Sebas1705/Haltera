@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "es.sebas1705.ironlog.buildlogic"
+group = "es.sebas1705.haltera.buildlogic"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17
@@ -27,31 +27,31 @@ fun Provider<PluginDependency>.toDep() = map {
 gradlePlugin {
     plugins {
         register("kmpLibrary") {
-            id = "ironlog.kmp.library"
+            id = "haltera.kmp.library"
             implementationClass = "KmpLibraryConventionPlugin"
         }
         register("kmpFeature") {
-            id = "ironlog.kmp.feature"
+            id = "haltera.kmp.feature"
             implementationClass = "KmpFeatureConventionPlugin"
         }
         register("kmpData") {
-            id = "ironlog.kmp.data"
+            id = "haltera.kmp.data"
             implementationClass = "KmpDataConventionPlugin"
         }
         register("kmpDomain") {
-            id = "ironlog.kmp.domain"
+            id = "haltera.kmp.domain"
             implementationClass = "KmpDomainConventionPlugin"
         }
         register("kmpCore") {
-            id = "ironlog.kmp.core"
+            id = "haltera.kmp.core"
             implementationClass = "KmpCoreConventionPlugin"
         }
         register("kmpApp") {
-            id = "ironlog.kmp.app"
+            id = "haltera.kmp.app"
             implementationClass = "KmpAppConventionPlugin"
         }
-        register("ironlogDetekt") {
-            id = "ironlog.detekt"
+        register("halteraDetekt") {
+            id = "haltera.detekt"
             implementationClass = "DetektConventionPlugin"
         }
     }

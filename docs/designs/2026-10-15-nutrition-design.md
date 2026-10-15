@@ -1,4 +1,4 @@
-# Ironlog — nutrition design (F7)
+# Haltera — nutrition design (F7)
 
 - **Date:** 2026-10-15
 - **Status:** approved scope from the core spec (§1 "body weight, meals, calories and macros with statistics over time", §10.2 sources); details decided here.
@@ -21,7 +21,7 @@ New tables (SQLDelight, **migration `3.sqm` v3→v4**, snapshot `4.db`, migratio
 - `MealEntryEntity`: id, date (local `yyyy-MM-dd`), meal (`BREAKFAST`|`LUNCH`|`DINNER`|`SNACK`), foodId, grams, position, createdAt. Nutrients are computed from the food at read time (a later edit of a user food updates past days — documented).
 - `NutritionGoal` lives in settings (local + synced via the existing settings payload): kcal, protein, carbs, fat, mode; profile (sex, birth year, height cm, activity, objective).
 
-Generic foods are bundled like the exercise catalogue: `scripts/nutrition/` builds `composeApp/.../files/foods.json` from a pinned USDA FoodData Central (CC0) subset (Foundation + SR Legacy, ~600–900 common foods), with Spanish names written in `nutrition/i18n/es.yaml` (same rules as the exercise catalogue: never machine-invented by the pipeline, reviewed), versioned, imported with the same idempotent upsert/deprecate pattern. Open Food Facts results are cached as `source = OFF` foods (ODbL attribution in Credits; User-Agent `Ironlog/<ver> (+https://github.com/Sebas1705/Ironlog)`; respect 15 reads/min).
+Generic foods are bundled like the exercise catalogue: `scripts/nutrition/` builds `composeApp/.../files/foods.json` from a pinned USDA FoodData Central (CC0) subset (Foundation + SR Legacy, ~600–900 common foods), with Spanish names written in `nutrition/i18n/es.yaml` (same rules as the exercise catalogue: never machine-invented by the pipeline, reviewed), versioned, imported with the same idempotent upsert/deprecate pattern. Open Food Facts results are cached as `source = OFF` foods (ODbL attribution in Credits; User-Agent `Haltera/<ver> (+https://github.com/Sebas1705/Haltera)`; respect 15 reads/min).
 
 ## 3. Sync
 

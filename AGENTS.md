@@ -19,7 +19,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 ## Design documents
 
 - Specs: `docs/designs/YYYY-MM-DD-<topic>-design.md`
-- Core spec: `docs/designs/2026-10-14-ironlog-core-design.md`
+- Core spec: `docs/designs/2026-10-14-haltera-core-design.md`
 
 ## Must-read before any change
 
@@ -39,7 +39,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Health content is a logbook, not advice** — anything that interprets logged data (scores, statistics, calorie goals) shows the shared `HealthDisclaimer` from `core:ui`; do not write new medical-sounding claims. Privacy and account-deletion page URLs live only in `composeApp/.../settings/LegalLinks.kt`
 - **Permission prompts are one-time and dismissible** — explain once, remember "Not now", never block logging on a permission
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
-- **The brand has one source, `brand/tokens.json`** — never hand-edit generated icons, the splash theme or `brand/*.svg`; change the tokens and run `node scripts/brand.mjs --png` (see [docs/BRAND.md](docs/BRAND.md)). Features use `IronlogTheme.colors` (accent, PR gold) and `PrBadge` from `core:ui` instead of new colours
+- **The brand has one source, `brand/tokens.json`** — never hand-edit generated icons, the splash theme or `brand/*.svg`; change the tokens and run `node scripts/brand.mjs --png` (see [docs/BRAND.md](docs/BRAND.md)). Features use `HalteraTheme.colors` (accent, PR gold) and `PrBadge` from `core:ui` instead of new colours
 
 ## Firebase (account and sync)
 
@@ -47,7 +47,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
   (`scripts/doppler-sync-local.sh`) and are git-ignored: never commit them. The app must build and run
   without them (sync off); run the required checks both ways when touching Firebase wiring.
 - After changing `firebase/firestore.rules`, run the rules tests
-  (`cd firebase && firebase emulators:exec --only firestore --project demo-ironlog "npm --prefix rules-test test"`)
+  (`cd firebase && firebase emulators:exec --only firestore --project demo-haltera "npm --prefix rules-test test"`)
   and deploy them by hand (docs/RELEASE.md, "Firebase in the app").
 - The sync contract (`data:sync`, `SyncContract.kt`) is fixed by docs/designs/2026-10-14-sync-design.md §4.
 

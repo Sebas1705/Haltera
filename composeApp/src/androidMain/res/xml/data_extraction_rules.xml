@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android 12+ (docs/play/RELEASE-AUDIT.md, "Decisions"). Ironlog is local-first: the logbook lives in the
+<!-- Android 12+ (docs/play/RELEASE-AUDIT.md, "Decisions"). Haltera is local-first: the logbook lives in the
      SQLite database, and Auto Backup / device transfer keep it so a new phone starts with the user's history
      even without an account. Included: the database (its sync state is inside it, so it stays consistent) and
      the app's own settings. Everything else is excluded: Firebase and Google Play services keep their own
      sign-in state and caches in other files, which must not be restored onto another device. -->
 <data-extraction-rules>
     <cloud-backup>
-        <include domain="database" path="ironlog.db" />
-        <include domain="database" path="ironlog.db-wal" />
-        <include domain="database" path="ironlog.db-journal" />
-        <include domain="sharedpref" path="es.sebas1705.ironlog_preferences.xml" />
+        <include domain="database" path="haltera.db" />
+        <include domain="database" path="haltera.db-wal" />
+        <include domain="database" path="haltera.db-journal" />
+        <include domain="sharedpref" path="es.sebas1705.haltera_preferences.xml" />
     </cloud-backup>
     <device-transfer>
-        <include domain="database" path="ironlog.db" />
-        <include domain="database" path="ironlog.db-wal" />
-        <include domain="database" path="ironlog.db-journal" />
-        <include domain="sharedpref" path="es.sebas1705.ironlog_preferences.xml" />
+        <include domain="database" path="haltera.db" />
+        <include domain="database" path="haltera.db-wal" />
+        <include domain="database" path="haltera.db-journal" />
+        <include domain="sharedpref" path="es.sebas1705.haltera_preferences.xml" />
     </device-transfer>
 </data-extraction-rules>

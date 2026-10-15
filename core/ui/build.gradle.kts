@@ -19,6 +19,6 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "es.sebas1705.ironlog.core.ui.resources"
+    packageOfResClass = "es.sebas1705.haltera.core.ui.resources"
     publicResClass = false
 }

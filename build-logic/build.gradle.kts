@@ -2,7 +2,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "es.sebas1705.ironlog.buildlogic"
+group = "es.sebas1705.haltera.buildlogic"
 
 dependencies {
     compileOnly(libs.plugins.kotlin.multiplatform.toDep())

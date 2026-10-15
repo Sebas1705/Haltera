@@ -2,13 +2,13 @@ A free, open source gym logbook. Log what you actually lift, on the days you act
 
 LOG YOUR WAY
 • Routines of any cycle length: 3 days, 5 days, 6 on and 1 off, or any N-day cycle you like.
-• Log any date and edit everything afterwards. Ironlog follows your real training, it never forces a schedule.
+• Log any date and edit everything afterwards. Haltera follows your real training, it never forces a schedule.
 • Equipment-aware logging: barbell, dumbbells, machines, cables, bodyweight, assisted and weighted movements, each with the right way to enter load.
 • Automatic rest timers between sets.
 • Personal records are flagged as you log them.
 
 PROGRESS WITH A PLAN
-• Double progression: set a rep range and a load step, and Ironlog suggests when to go up.
+• Double progression: set a rep range and a load step, and Haltera suggests when to go up.
 • Progress charts per exercise and per muscle group, with a short explanation of what each number means.
 • Routine analysis: a score and clear, optional suggestions about volume, balance and frequency, with references. It is advice only and never blocks or changes your routine.
 
@@ -26,4 +26,4 @@ YOUR DATA
 • An account is optional: sign in only if you want to sync your logbook between devices.
 • Free and open source under the MIT license. The code is on GitHub.
 
-Ironlog is a logbook and a planning tool, not medical advice. Ask a professional before changing your training or diet if you have a health condition.
+Haltera is a logbook and a planning tool, not medical advice. Ask a professional before changing your training or diet if you have a health condition.

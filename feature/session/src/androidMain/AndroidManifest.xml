@@ -11,7 +11,7 @@
 
     <application>
         <service
-            android:name="es.sebas1705.ironlog.feature.session.platform.SessionService"
+            android:name="es.sebas1705.haltera.feature.session.platform.SessionService"
             android:exported="false"
             android:foregroundServiceType="specialUse"
             tools:targetApi="34">
@@ -21,7 +21,7 @@
         </service>
 
         <receiver
-            android:name="es.sebas1705.ironlog.feature.session.platform.RestAlarmReceiver"
+            android:name="es.sebas1705.haltera.feature.session.platform.RestAlarmReceiver"
             android:exported="false" />
     </application>
 </manifest>

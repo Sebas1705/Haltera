@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
-        android:name=".IronlogApplication"
+        android:name=".HalteraApplication"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:theme="@style/Theme.Ironlog"
+        android:theme="@style/Theme.Haltera"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -20,7 +20,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Shared routines (.ironlog, spec §10.1): opened from a file manager or a chat app. The
+            <!-- Shared routines (.haltera, or the former .ironlog, spec §10.1): opened from a file manager or a chat app. The
                  content is validated by the import preview, so a non-routine file only shows an error. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -38,9 +38,9 @@
                 <data android:scheme="content" />
                 <data android:host="*" />
                 <data android:mimeType="*/*" />
-                <data android:pathPattern=".*\\.ironlog" />
-                <data android:pathPattern=".*\\..*\\.ironlog" />
-                <data android:pathPattern=".*\\..*\\..*\\.ironlog" />
+                <data android:pathPattern=".*\\.haltera" />
+                <data android:pathPattern=".*\\..*\\.haltera" />
+                <data android:pathPattern=".*\\..*\\..*\\.haltera" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

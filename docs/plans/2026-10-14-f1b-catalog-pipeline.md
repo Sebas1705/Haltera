@@ -14,12 +14,12 @@
 
 ## Context for the executor
 
-- Repo: `~/Documents/Repos/Ironlog`. Work on branch `f1b-catalog-pipeline` from `main`. F1a may be running in parallel: this plan only touches `scripts/catalog/`, `catalog/`, `composeApp/src/commonMain/composeResources/files/catalog.json` and adds one job to `.github/workflows/ci.yml` (if F1a has not merged yet, create the file with only this job; rebase resolves it).
+- Repo: `~/Documents/Repos/Haltera`. Work on branch `f1b-catalog-pipeline` from `main`. F1a may be running in parallel: this plan only touches `scripts/catalog/`, `catalog/`, `composeApp/src/commonMain/composeResources/files/catalog.json` and adds one job to `.github/workflows/ci.yml` (if F1a has not merged yet, create the file with only this job; rebase resolves it).
 - **Everything committed is in English** except the `es` fields and `catalog/i18n/es.yaml` values (Spanish UI data, allowed by AGENTS.md).
 - Commits: configured identity, no co-author trailers.
 - Sources and licences (spec §6.1): free-exercise-db is Unlicense (public domain); wger data is CC-BY-SA — every Spanish name taken from wger must be listed in `ATTRIBUTION.md` with its licence and author.
 - free-exercise-db pinned commit: `f00c92c7dcf1216a928a52c3706c7ce8e2f71ed5` (2026-09-27, 876 exercises).
-- wger API: `https://wger.de/api/v2/exerciseinfo/?limit=100&offset=N`, no key. Language ids: English `2`, Spanish `4`. Send `User-Agent: Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)`.
+- wger API: `https://wger.de/api/v2/exerciseinfo/?limit=100&offset=N`, no key. Language ids: English `2`, Spanish `4`. Send `User-Agent: Haltera-catalog/1.0 (+https://github.com/Sebas1705/Haltera)`.
 - Spanish style: Spain gym vocabulary (see the glossary in Task 8).
 
 ## Output format (`catalog.json`)
@@ -79,7 +79,7 @@ The spec's equipment list (§3.1) gains `TRAP_BAR`, `MEDICINE_BALL`, `SWISS_BALL
 | Create | `catalog/sources/sources.json`, `catalog/sources/free-exercise-db.json`, `catalog/sources/wger-es.json` |
 | Create | `catalog/overrides.yaml`, `catalog/custom.yaml`, `catalog/i18n/es.yaml`, `catalog/ids.lock.json`, `catalog/ATTRIBUTION.md`, `catalog/README.md` |
 | Create | `composeApp/src/commonMain/composeResources/files/catalog.json` |
-| Modify | `.github/workflows/ci.yml` (job `catalog`), `docs/designs/2026-10-14-ironlog-core-design.md` (§3.1 equipment list) |
+| Modify | `.github/workflows/ci.yml` (job `catalog`), `docs/designs/2026-10-14-haltera-core-design.md` (§3.1 equipment list) |
 
 ---
 
@@ -92,7 +92,7 @@ The spec's equipment list (§3.1) gains `TRAP_BAR`, `MEDICINE_BALL`, `SWISS_BALL
 - [ ] **Step 1: Branch and package**
 
 ```bash
-cd ~/Documents/Repos/Ironlog
+cd ~/Documents/Repos/Haltera
 git switch -c f1b-catalog-pipeline
 mkdir -p scripts/catalog/lib scripts/catalog/test catalog/sources catalog/i18n
 ```
@@ -100,7 +100,7 @@ mkdir -p scripts/catalog/lib scripts/catalog/test catalog/sources catalog/i18n
 `scripts/catalog/package.json`:
 ```json
 {
-  "name": "ironlog-catalog",
+  "name": "haltera-catalog",
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },
@@ -202,7 +202,7 @@ export function slug(text) {
 
 `scripts/catalog/lib/mapping.mjs`:
 ```js
-// Mapping from free-exercise-db values to Ironlog enums (spec §3.1).
+// Mapping from free-exercise-db values to Haltera enums (spec §3.1).
 
 export const CATEGORIES = ['STRENGTH', 'CARDIO', 'MOBILITY', 'PLYOMETRICS', 'CALISTHENICS', 'SPORT'];
 export const TRACKING_TYPES = ['WEIGHT_REPS', 'BODYWEIGHT_REPS', 'REPS', 'TIME', 'WEIGHT_TIME', 'DISTANCE_TIME'];
@@ -396,7 +396,7 @@ import { fileURLToPath } from 'node:url';
 import { reduceWger } from './lib/wger.mjs';
 
 const root = fileURLToPath(new URL('../../catalog/sources/', import.meta.url));
-const userAgent = 'Ironlog-catalog/1.0 (+https://github.com/Sebas1705/Ironlog)';
+const userAgent = 'Haltera-catalog/1.0 (+https://github.com/Sebas1705/Haltera)';
 
 async function getJson(url) {
   const response = await fetch(url, { headers: { 'User-Agent': userAgent, Accept: 'application/json' } });
@@ -888,9 +888,9 @@ export function renderAttribution({ sources, usedWger }) {
     '|---|---|---|---|---|',
     ...usedWger.map((w) => `| [${w.wgerId}](https://wger.de/exercise/${w.wgerId}/view/) | ${w.en} | ${w.es} | ${w.license} | ${w.author} |`),
     '',
-    '## Ironlog',
+    '## Haltera',
     '',
-    'Grouping into exercises and variants, Spanish translations not listed above and the additional exercises are by the Ironlog authors.',
+    'Grouping into exercises and variants, Spanish translations not listed above and the additional exercises are by the Haltera authors.',
     '',
   ];
   return lines.join('\n');
@@ -1620,7 +1620,7 @@ git commit -m "ci: run the catalogue tests and check the generated catalogue"
 
 ### Task 10: Spec update, PR and plan status
 
-- [ ] **Step 1: Update the spec's equipment list** in `docs/designs/2026-10-14-ironlog-core-design.md` §3.1 (`ExerciseVariant.equipment` row) to: `BARBELL`, `EZ_BAR`, `TRAP_BAR`, `DUMBBELL`, `KETTLEBELL`, `SMITH`, `MACHINE`, `CABLE`, `BAND`, `BODYWEIGHT`, `MEDICINE_BALL`, `SWISS_BALL`, `FOAM_ROLLER`, `CARDIO_MACHINE`, `OTHER`, `NONE`; and in the `loadType` table, note that `DUMBBELL` covers any single implement (dumbbell, kettlebell, medicine ball). Add `level` (`BEGINNER`, `INTERMEDIATE`, `EXPERT`) to the `Exercise` table and `FULL_BODY` to the muscles. Commit: `docs: equipment, level and muscles as built in the catalogue`.
+- [ ] **Step 1: Update the spec's equipment list** in `docs/designs/2026-10-14-haltera-core-design.md` §3.1 (`ExerciseVariant.equipment` row) to: `BARBELL`, `EZ_BAR`, `TRAP_BAR`, `DUMBBELL`, `KETTLEBELL`, `SMITH`, `MACHINE`, `CABLE`, `BAND`, `BODYWEIGHT`, `MEDICINE_BALL`, `SWISS_BALL`, `FOAM_ROLLER`, `CARDIO_MACHINE`, `OTHER`, `NONE`; and in the `loadType` table, note that `DUMBBELL` covers any single implement (dumbbell, kettlebell, medicine ball). Add `level` (`BEGINNER`, `INTERMEDIATE`, `EXPERT`) to the `Exercise` table and `FULL_BODY` to the muscles. Commit: `docs: equipment, level and muscles as built in the catalogue`.
 
 - [ ] **Step 2: Mark F1b as done** in `docs/plans/README.md`, note deviations at the end of this plan, commit `docs: mark F1b as done`.
 

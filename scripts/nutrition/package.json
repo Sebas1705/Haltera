@@ -1,5 +1,5 @@
 {
-  "name": "ironlog-nutrition",
+  "name": "haltera-nutrition",
   "private": true,
   "type": "module",
   "engines": { "node": ">=22" },

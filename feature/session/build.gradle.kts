@@ -33,6 +33,6 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "es.sebas1705.ironlog.feature.session.resources"
+    packageOfResClass = "es.sebas1705.haltera.feature.session.resources"
     publicResClass = false
 }

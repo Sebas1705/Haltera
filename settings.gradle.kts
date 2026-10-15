@@ -1,4 +1,4 @@
-rootProject.name = "Ironlog"
+rootProject.name = "Haltera"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 

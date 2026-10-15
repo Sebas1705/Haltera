@@ -11,7 +11,7 @@ import org.gradle.kotlin.dsl.apply
  */
 class KmpFeatureConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        apply(plugin = "ironlog.kmp.library")
+        apply(plugin = "haltera.kmp.library")
         apply(plugin = "org.jetbrains.compose")
         apply(plugin = "org.jetbrains.kotlin.plugin.compose")
     }

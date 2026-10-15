@@ -1,6 +1,6 @@
 name: Google Play (fastlane supply)
 description: >
-  Runs `fastlane supply` against es.sebas1705.ironlog with the PLAY_SERVICE_ACCOUNT_JSON of Doppler
+  Runs `fastlane supply` against es.sebas1705.haltera with the PLAY_SERVICE_ACCOUNT_JSON of Doppler
   (docs/play/PLAY-CONSOLE-GUIDE.md). Until the owner has stored that secret it does nothing and says so, so the
   workflows that use it never fail for lack of it. Needs DOPPLER_TOKEN in the environment.
 inputs:
@@ -42,5 +42,5 @@ runs:
         doppler run -- bash -c 'umask 077; printf "%s" "$PLAY_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/play-sa.json"'
         trap 'rm -f "$RUNNER_TEMP/play-sa.json"' EXIT
         # shellcheck disable=SC2086
-        fastlane supply --package_name es.sebas1705.ironlog --json_key "$RUNNER_TEMP/play-sa.json" $SUPPLY_ARGS
+        fastlane supply --package_name es.sebas1705.haltera --json_key "$RUNNER_TEMP/play-sa.json" $SUPPLY_ARGS
         echo "ran=true" >> "$GITHUB_OUTPUT"

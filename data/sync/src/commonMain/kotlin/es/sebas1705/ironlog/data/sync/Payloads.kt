@@ -3,6 +3,9 @@ package es.sebas1705.ironlog.data.sync
 import es.sebas1705.ironlog.data.local.db.BodyWeightEntity
 import es.sebas1705.ironlog.data.local.db.ExerciseEntity
 import es.sebas1705.ironlog.data.local.db.ExerciseVariantEntity
+import es.sebas1705.ironlog.data.local.db.FoodEntity
+import es.sebas1705.ironlog.data.local.db.MealEntryEntity
+import es.sebas1705.ironlog.data.local.db.RecipeItemEntity
 import es.sebas1705.ironlog.data.local.db.RoutineDayEntity
 import es.sebas1705.ironlog.data.local.db.RoutineEntity
 import es.sebas1705.ironlog.data.local.db.RoutineSlotEntity
@@ -154,6 +157,77 @@ internal data class SettingsPrefs(
     val keepScreenOn: Boolean,
     val restSound: Boolean,
     val restVibration: Boolean,
+    /** Nutrition goals (schema 4); null in documents written by older app versions. */
+    val nutrition: NutritionPrefs? = null,
+)
+
+/** Nutrition goals of [SettingsPrefs], mirroring core:datastore NutritionSettings. */
+@Serializable
+internal data class NutritionPrefs(
+    val kcal: Int? = null,
+    val proteinG: Int? = null,
+    val carbsG: Int? = null,
+    val fatG: Int? = null,
+    val macroMode: String = "GRAMS",
+    val sex: String? = null,
+    val birthYear: Int? = null,
+    val heightCm: Int? = null,
+    val activity: String = "MODERATE",
+    val objective: String = "MAINTAIN",
+)
+
+/** foods/{id}: a USER, RECIPE or logged OFF food, with the items of a recipe. */
+@Serializable
+internal data class FoodPayload(
+    val id: String,
+    val source: String,
+    val nameEn: String,
+    val nameEs: String,
+    val nameSearch: String = "",
+    val brand: String? = null,
+    val barcode: String? = null,
+    val kcal: Double,
+    val protein: Double,
+    val carbs: Double,
+    val fat: Double,
+    val fiber: Double? = null,
+    val sugar: Double? = null,
+    val salt: Double? = null,
+    val unit: String = "G",
+    val servingNameEn: String? = null,
+    val servingNameEs: String? = null,
+    val servingGrams: Double? = null,
+    val yieldGrams: Double? = null,
+    val favourite: Long = 0,
+    val deprecated: Long = 0,
+    val updatedAt: Long,
+    val items: List<RecipeItemPayload> = emptyList(),
+)
+
+@Serializable
+internal data class RecipeItemPayload(
+    val id: String,
+    val foodId: String,
+    val grams: Double,
+    val position: Long,
+)
+
+/** mealDays/{yyyy-MM-dd}: every entry logged on the date. */
+@Serializable
+internal data class MealDayPayload(
+    val date: String,
+    val entries: List<MealEntryPayload> = emptyList(),
+)
+
+@Serializable
+internal data class MealEntryPayload(
+    val id: String,
+    val meal: String,
+    val foodId: String,
+    val grams: Double,
+    val servings: Double? = null,
+    val position: Long,
+    val createdAt: Long,
 )
 
 internal fun RoutineEntity.toPayload(days: List<DayPayload>) = RoutinePayload(
@@ -204,4 +278,29 @@ internal fun ExerciseVariantEntity.toPayload() = VariantPayload(
     id = id, position = position, equipment = equipment, loadType = loadType, nameEn = nameEn, nameEs = nameEs,
     instructionsEn = instructionsEn, instructionsEs = instructionsEs, frames = frames, deprecated = deprecated,
     updatedAt = updatedAt,
+)
+
+internal fun FoodEntity.toPayload(items: List<RecipeItemPayload>) = FoodPayload(
+    id = id, source = source, nameEn = nameEn, nameEs = nameEs, nameSearch = nameSearch, brand = brand,
+    barcode = barcode, kcal = kcal, protein = protein, carbs = carbs, fat = fat, fiber = fiber, sugar = sugar,
+    salt = salt, unit = unit, servingNameEn = servingNameEn, servingNameEs = servingNameEs,
+    servingGrams = servingGrams, yieldGrams = yieldGrams, favourite = favourite, deprecated = deprecated,
+    updatedAt = updatedAt, items = items,
+)
+
+internal fun RecipeItemEntity.toPayload() = RecipeItemPayload(
+    id = id,
+    foodId = foodId,
+    grams = grams,
+    position = position
+)
+
+internal fun MealEntryEntity.toPayload() = MealEntryPayload(
+    id = id,
+    meal = meal,
+    foodId = foodId,
+    grams = grams,
+    servings = servings,
+    position = position,
+    createdAt = createdAt,
 )

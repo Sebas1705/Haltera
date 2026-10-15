@@ -1,0 +1,129 @@
+-- Foods (nutrition design §2). GENERIC rows are owned by the importer (bundled foods.json); OFF rows are
+-- Open Food Facts products cached by barcode; USER and RECIPE rows belong to the user. Nutrients are per
+-- 100 g (or 100 ml for unit ML). A recipe stores the per-100 g values computed from its items and yield
+-- when it is saved (RecipeItemEntity).
+CREATE TABLE FoodEntity (
+    id            TEXT NOT NULL PRIMARY KEY,
+    source        TEXT NOT NULL,               -- GENERIC | OFF | USER | RECIPE
+    nameEn        TEXT NOT NULL,
+    nameEs        TEXT NOT NULL,
+    nameSearch    TEXT NOT NULL DEFAULT '',    -- SearchText.normalize of both names and the brand
+    brand         TEXT,
+    barcode       TEXT,
+    kcal          REAL NOT NULL,
+    protein       REAL NOT NULL,
+    carbs         REAL NOT NULL,
+    fat           REAL NOT NULL,
+    fiber         REAL,
+    sugar         REAL,
+    salt          REAL,
+    unit          TEXT NOT NULL DEFAULT 'G',   -- G | ML
+    servingNameEn TEXT,
+    servingNameEs TEXT,
+    servingGrams  REAL,
+    yieldGrams    REAL,                        -- RECIPE: cooked weight of the whole recipe; null = sum of items
+    favourite     INTEGER NOT NULL DEFAULT 0,  -- 0/1
+    deprecated    INTEGER NOT NULL DEFAULT 0,  -- 0/1: hidden from search, kept for logged days
+    updatedAt     INTEGER NOT NULL             -- epoch millis
+);
+
+CREATE INDEX FoodEntity_barcode ON FoodEntity(barcode);
+
+-- OR IGNORE is meant only for primary-key conflicts (row already present: the importer then runs updateGeneric).
+insertGenericIfMissing:
+INSERT OR IGNORE INTO FoodEntity(
+    id, source, nameEn, nameEs, nameSearch, kcal, protein, carbs, fat, fiber, sugar, salt, unit,
+    servingNameEn, servingNameEs, servingGrams, favourite, deprecated, updatedAt
+) VALUES (
+    :id, 'GENERIC', :nameEn, :nameEs, :nameSearch, :kcal, :protein, :carbs, :fat, :fiber, :sugar, :salt, :unit,
+    :servingNameEn, :servingNameEs, :servingGrams, 0, 0, :updatedAt
+);
+
+-- Keeps the user's favourite flag.
+updateGeneric:
+UPDATE FoodEntity
+SET nameEn = :nameEn, nameEs = :nameEs, nameSearch = :nameSearch, kcal = :kcal, protein = :protein,
+    carbs = :carbs, fat = :fat, fiber = :fiber, sugar = :sugar, salt = :salt, unit = :unit,
+    servingNameEn = :servingNameEn, servingNameEs = :servingNameEs, servingGrams = :servingGrams,
+    deprecated = 0, updatedAt = :updatedAt
+WHERE id = :id AND source = 'GENERIC';
+
+deprecateGeneric:
+UPDATE FoodEntity SET deprecated = 1, updatedAt = :updatedAt WHERE id = :id AND source = 'GENERIC';
+
+insert:
+INSERT INTO FoodEntity(
+    id, source, nameEn, nameEs, nameSearch, brand, barcode, kcal, protein, carbs, fat, fiber, sugar, salt, unit,
+    servingNameEn, servingNameEs, servingGrams, yieldGrams, favourite, deprecated, updatedAt
+) VALUES (
+    :id, :source, :nameEn, :nameEs, :nameSearch, :brand, :barcode, :kcal, :protein, :carbs, :fat, :fiber, :sugar,
+    :salt, :unit, :servingNameEn, :servingNameEs, :servingGrams, :yieldGrams, :favourite, 0, :updatedAt
+);
+
+-- Edits a user food or recipe (or refreshes a cached Open Food Facts product). GENERIC rows are never edited.
+updateOwned:
+UPDATE FoodEntity
+SET nameEn = :nameEn, nameEs = :nameEs, nameSearch = :nameSearch, brand = :brand, barcode = :barcode,
+    kcal = :kcal, protein = :protein, carbs = :carbs, fat = :fat, fiber = :fiber, sugar = :sugar, salt = :salt,
+    unit = :unit, servingNameEn = :servingNameEn, servingNameEs = :servingNameEs, servingGrams = :servingGrams,
+    yieldGrams = :yieldGrams, updatedAt = :updatedAt
+WHERE id = :id AND source != 'GENERIC';
+
+-- Per-100 g values of a recipe, recomputed from its items.
+updateNutrients:
+UPDATE FoodEntity
+SET kcal = :kcal, protein = :protein, carbs = :carbs, fat = :fat, fiber = :fiber, sugar = :sugar, salt = :salt,
+    updatedAt = :updatedAt
+WHERE id = :id;
+
+setFavourite:
+UPDATE FoodEntity SET favourite = :favourite WHERE id = :id;
+
+-- Soft delete of a user food still used by logged days or recipes.
+deprecate:
+UPDATE FoodEntity SET deprecated = 1, updatedAt = :updatedAt WHERE id = :id AND source != 'GENERIC';
+
+delete:
+DELETE FROM FoodEntity WHERE id = ? AND source != 'GENERIC';
+
+selectById:
+SELECT * FROM FoodEntity WHERE id = ?;
+
+selectByIds:
+SELECT * FROM FoodEntity WHERE id IN ?;
+
+selectByBarcode:
+SELECT * FROM FoodEntity WHERE barcode = ? ORDER BY CASE source WHEN 'USER' THEN 0 WHEN 'OFF' THEN 1 ELSE 2 END LIMIT 1;
+
+-- Candidates for a search: rows matching one word of the query (the repository checks the others).
+-- Prefix matches first, then favourites, then shorter (more generic) names.
+search:
+SELECT * FROM FoodEntity
+WHERE deprecated = 0 AND nameSearch LIKE '%' || :word || '%'
+ORDER BY CASE WHEN nameSearch LIKE :word || '%' OR nameSearch LIKE '% ' || :word || '%' THEN 0 ELSE 1 END,
+         favourite DESC, length(nameEn)
+LIMIT :limit;
+
+selectFavourites:
+SELECT * FROM FoodEntity WHERE favourite = 1 AND deprecated = 0 ORDER BY nameEn;
+
+-- Foods by the time they were last logged, newest first.
+selectRecents:
+SELECT f.* FROM FoodEntity f
+JOIN (SELECT foodId, MAX(createdAt) AS lastLogged FROM MealEntryEntity GROUP BY foodId) r ON r.foodId = f.id
+WHERE f.deprecated = 0
+ORDER BY r.lastLogged DESC
+LIMIT :limit;
+
+selectOwned:
+SELECT * FROM FoodEntity WHERE source IN ('USER', 'RECIPE') AND deprecated = 0 ORDER BY nameEn;
+
+-- Logged days and recipes that use a food.
+countReferences:
+SELECT (SELECT COUNT(*) FROM MealEntryEntity WHERE foodId = :id) + (SELECT COUNT(*) FROM RecipeItemEntity WHERE foodId = :id);
+
+selectRecipeIdsUsing:
+SELECT DISTINCT recipeId FROM RecipeItemEntity WHERE foodId = ?;
+
+countActiveGeneric:
+SELECT COUNT(*) FROM FoodEntity WHERE source = 'GENERIC' AND deprecated = 0;

@@ -6,7 +6,11 @@ import es.sebas1705.ironlog.account.IosGoogleSignInLauncher
 import es.sebas1705.ironlog.data.local.DatabaseDriverFactory
 import es.sebas1705.ironlog.data.remote.FirebaseConfig
 import es.sebas1705.ironlog.data.remote.isFirebaseConfigured
+import es.sebas1705.ironlog.data.repository.di.AppVersionName
 import es.sebas1705.ironlog.di.appModules
+import es.sebas1705.ironlog.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.ironlog.feature.nutrition.scan.NoBarcodeScanner
+import platform.Foundation.NSBundle
 import es.sebas1705.ironlog.feature.routines.share.RoutineShareBridge
 import es.sebas1705.ironlog.share.IosRoutineShareBridge
 import org.koin.core.context.startKoin
@@ -27,6 +31,11 @@ fun startIronlogKoin(googleSignIn: GoogleSignInBridge?) {
                 single { firebase }
                 single<GoogleSignInLauncher> { IosGoogleSignInLauncher(googleSignIn.takeIf { firebase.configured }) }
                 single<RoutineShareBridge> { IosRoutineShareBridge(get()) }
+                // Product barcode scanning is not available on iOS yet (an AVFoundation scanner is future work).
+                single<BarcodeScanner> { NoBarcodeScanner }
+                single {
+                    AppVersionName(NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: "dev")
+                }
             },
         )
     }

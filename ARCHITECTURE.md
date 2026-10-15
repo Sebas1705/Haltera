@@ -9,7 +9,7 @@ It follows **Clean Architecture** with a layered module graph. Network-backed da
 ┌──────────────────────────────────────────────────────────────────┐
 │                composeApp / iosApp                               │  ← Entry points, shell, DI
 ├──────────────────────────────────────────────────────────────────┤
-│  feature:today │ routines │ exercises │ session │ progress        │  ← UI + MVI
+│  feature:today │ routines │ exercises │ nutrition │ progress │ session │  ← UI + MVI
 ├──────────────────────────────────────────────────────────────────┤
 │                domain:usecases                                   │  ← Business logic
 ├──────────────────────────────────────────────────────────────────┤

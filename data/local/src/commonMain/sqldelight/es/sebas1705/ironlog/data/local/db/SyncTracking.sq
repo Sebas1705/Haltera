@@ -1,5 +1,6 @@
 -- Sync change tracking (docs/designs/2026-10-14-sync-design.md §5). One SyncState row per aggregate root:
--- routines/{routineId}, sessions/{sessionId}, bodyWeight/{id}, exercises/{USER exerciseId}, settings/user.
+-- routines/{routineId}, sessions/{sessionId}, bodyWeight/{id}, exercises/{USER exerciseId}, settings/user,
+-- foods/{USER, RECIPE or logged OFF foodId} and mealDays/{yyyy-MM-dd} (schema 4, nutrition).
 -- The triggers at the end keep it up to date; they are skipped while remote changes are applied
 -- (Meta syncApplying = '1'). Catalogue rows (source = 'CATALOG') are never tracked.
 CREATE TABLE SyncState (
@@ -66,6 +67,18 @@ FROM ExerciseEntity WHERE source = 'USER';
 backfillSettings:
 INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
 VALUES ('settings', 'user', CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0);
+
+-- Nutrition (schema 4): user foods and recipes, Open Food Facts products that were logged, and logged days.
+backfillFoods:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT 'foods', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+FROM FoodEntity
+WHERE source IN ('USER', 'RECIPE')
+   OR (source = 'OFF' AND (id IN (SELECT foodId FROM MealEntryEntity) OR id IN (SELECT foodId FROM RecipeItemEntity)));
+
+backfillMealDays:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT DISTINCT 'mealDays', date, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0 FROM MealEntryEntity;
 
 -- Re-uploads everything (merge into another account); updatedAt is kept so the last writer still wins.
 markAllDirty:
@@ -196,6 +209,41 @@ WHERE id = :id AND source = 'USER';
 
 deleteUserExercise:
 DELETE FROM ExerciseEntity WHERE id = ? AND source = 'USER';
+
+-- Foods: generic rows are bundled, never synced, so a document never overwrites one.
+insertFoodIfMissing:
+INSERT OR IGNORE INTO FoodEntity(
+    id, source, nameEn, nameEs, nameSearch, brand, barcode, kcal, protein, carbs, fat, fiber, sugar, salt, unit,
+    servingNameEn, servingNameEs, servingGrams, yieldGrams, favourite, deprecated, updatedAt
+) VALUES (:id, :source, :nameEn, :nameEs, :nameSearch, :brand, :barcode, :kcal, :protein, :carbs, :fat, :fiber,
+    :sugar, :salt, :unit, :servingNameEn, :servingNameEs, :servingGrams, :yieldGrams, :favourite, :deprecated, :updatedAt);
+
+updateSyncedFood:
+UPDATE FoodEntity
+SET source = :source, nameEn = :nameEn, nameEs = :nameEs, nameSearch = :nameSearch, brand = :brand,
+    barcode = :barcode, kcal = :kcal, protein = :protein, carbs = :carbs, fat = :fat, fiber = :fiber,
+    sugar = :sugar, salt = :salt, unit = :unit, servingNameEn = :servingNameEn, servingNameEs = :servingNameEs,
+    servingGrams = :servingGrams, yieldGrams = :yieldGrams, favourite = :favourite, deprecated = :deprecated,
+    updatedAt = :updatedAt
+WHERE id = :id AND source != 'GENERIC';
+
+deleteSyncedFood:
+DELETE FROM FoodEntity WHERE id = ? AND source != 'GENERIC';
+
+deleteRecipeItemsNotIn:
+DELETE FROM RecipeItemEntity WHERE recipeId = :recipeId AND id NOT IN :keep;
+
+-- RecipeItemEntity and MealEntryEntity have no children: REPLACE is safe.
+replaceRecipeItem:
+INSERT OR REPLACE INTO RecipeItemEntity(id, recipeId, foodId, grams, position) VALUES (?, ?, ?, ?, ?);
+
+-- Logged days: the document holds every entry of the date.
+deleteMealEntriesNotIn:
+DELETE FROM MealEntryEntity WHERE date = :date AND id NOT IN :keep;
+
+replaceMealEntry:
+INSERT OR REPLACE INTO MealEntryEntity(id, date, meal, foodId, grams, servings, position, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 -- Change-tracking triggers: each upserts the owning root's SyncState row with dirty = 1.
 -- updatedAt is "now", but always past the previous value, so an edit right after a read is never mistaken
@@ -524,3 +572,154 @@ BEGIN
     WHERE 'user' IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'settings' AND s.id = 'user');
 END;
 
+
+-- Nutrition (schema 4). A food document holds a recipe with its items; a day document all the entries of
+-- the date (deleted when its last entry goes). OFF foods are tracked from their first use in a day or recipe.
+
+CREATE TRIGGER FoodEntity_syncInsert
+AFTER INSERT ON FoodEntity
+WHEN (new.source IN ('USER', 'RECIPE') OR (new.source = 'OFF' AND EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.id))) AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'foods' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.id);
+END;
+
+CREATE TRIGGER FoodEntity_syncUpdate
+AFTER UPDATE ON FoodEntity
+WHEN (new.source IN ('USER', 'RECIPE') OR (new.source = 'OFF' AND EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.id))) AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'foods' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.id);
+END;
+
+CREATE TRIGGER FoodEntity_syncDelete
+AFTER DELETE ON FoodEntity
+WHEN (old.source IN ('USER', 'RECIPE') OR (old.source = 'OFF' AND EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = old.id))) AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'foods' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = old.id);
+END;
+
+CREATE TRIGGER RecipeItemEntity_syncInsert
+AFTER INSERT ON RecipeItemEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM FoodEntity p WHERE p.id = new.recipeId) THEN 0 ELSE 1 END
+    WHERE collection = 'foods' AND id = new.recipeId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.recipeId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM FoodEntity p WHERE p.id = new.recipeId) THEN 0 ELSE 1 END
+    WHERE new.recipeId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.recipeId);
+END;
+
+CREATE TRIGGER RecipeItemEntity_syncUpdate
+AFTER UPDATE ON RecipeItemEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM FoodEntity p WHERE p.id = new.recipeId) THEN 0 ELSE 1 END
+    WHERE collection = 'foods' AND id = new.recipeId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.recipeId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM FoodEntity p WHERE p.id = new.recipeId) THEN 0 ELSE 1 END
+    WHERE new.recipeId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.recipeId);
+END;
+
+CREATE TRIGGER RecipeItemEntity_syncDelete
+AFTER DELETE ON RecipeItemEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM FoodEntity p WHERE p.id = old.recipeId) THEN 0 ELSE 1 END
+    WHERE collection = 'foods' AND id = old.recipeId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', old.recipeId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM FoodEntity p WHERE p.id = old.recipeId) THEN 0 ELSE 1 END
+    WHERE old.recipeId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = old.recipeId);
+END;
+
+CREATE TRIGGER MealEntryEntity_syncInsert
+AFTER INSERT ON MealEntryEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = new.date) THEN 0 ELSE 1 END
+    WHERE collection = 'mealDays' AND id = new.date;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'mealDays', new.date, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = new.date) THEN 0 ELSE 1 END
+    WHERE new.date IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'mealDays' AND s.id = new.date);
+END;
+
+CREATE TRIGGER MealEntryEntity_syncUpdate
+AFTER UPDATE ON MealEntryEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = new.date) THEN 0 ELSE 1 END
+    WHERE collection = 'mealDays' AND id = new.date;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'mealDays', new.date, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = new.date) THEN 0 ELSE 1 END
+    WHERE new.date IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'mealDays' AND s.id = new.date);
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = old.date) THEN 0 ELSE 1 END
+    WHERE collection = 'mealDays' AND id = old.date;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'mealDays', old.date, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = old.date) THEN 0 ELSE 1 END
+    WHERE old.date IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'mealDays' AND s.id = old.date);
+END;
+
+CREATE TRIGGER MealEntryEntity_syncDelete
+AFTER DELETE ON MealEntryEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = old.date) THEN 0 ELSE 1 END
+    WHERE collection = 'mealDays' AND id = old.date;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'mealDays', old.date, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, CASE WHEN EXISTS (SELECT 1 FROM MealEntryEntity m WHERE m.date = old.date) THEN 0 ELSE 1 END
+    WHERE old.date IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'mealDays' AND s.id = old.date);
+END;
+
+CREATE TRIGGER MealEntryEntity_syncOffFood
+AFTER INSERT ON MealEntryEntity
+WHEN (SELECT f.source FROM FoodEntity f WHERE f.id = new.foodId) = 'OFF' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'foods' AND id = new.foodId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.foodId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.foodId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.foodId);
+END;
+
+CREATE TRIGGER MealEntryEntity_syncOffFoodUpdate
+AFTER UPDATE OF foodId ON MealEntryEntity
+WHEN (SELECT f.source FROM FoodEntity f WHERE f.id = new.foodId) = 'OFF' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'foods' AND id = new.foodId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.foodId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.foodId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.foodId);
+END;
+
+CREATE TRIGGER RecipeItemEntity_syncOffFood
+AFTER INSERT ON RecipeItemEntity
+WHEN (SELECT f.source FROM FoodEntity f WHERE f.id = new.foodId) = 'OFF' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'foods' AND id = new.foodId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.foodId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.foodId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.foodId);
+END;
+
+CREATE TRIGGER RecipeItemEntity_syncOffFoodUpdate
+AFTER UPDATE OF foodId ON RecipeItemEntity
+WHEN (SELECT f.source FROM FoodEntity f WHERE f.id = new.foodId) = 'OFF' AND (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'foods' AND id = new.foodId;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'foods', new.foodId, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.foodId IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'foods' AND s.id = new.foodId);
+END;

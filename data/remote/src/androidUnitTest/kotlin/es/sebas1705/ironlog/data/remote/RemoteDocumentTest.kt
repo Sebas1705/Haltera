@@ -30,7 +30,10 @@ class RemoteDocumentTest {
 
     @Test
     fun syncedCollectionsMatchTheDesign() {
-        assertEquals(listOf("routines", "sessions", "bodyWeight", "exercises", "settings"), SYNCED_COLLECTIONS)
+        assertEquals(
+            listOf("routines", "sessions", "bodyWeight", "exercises", "foods", "mealDays", "settings"),
+            SYNCED_COLLECTIONS,
+        )
     }
 
     @Test

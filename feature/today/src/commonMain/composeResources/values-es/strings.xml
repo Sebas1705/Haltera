@@ -102,4 +102,12 @@
         <item>nov</item>
         <item>dic</item>
     </string-array>
+    <!-- Today's nutrition card (feature:nutrition data) -->
+    <string name="today_nutrition_title">Nutrición de hoy</string>
+    <string name="today_nutrition_kcal">%1$s kcal</string>
+    <string name="today_nutrition_kcal_of">%1$s de %2$s kcal</string>
+    <string name="today_nutrition_grams">%1$s g</string>
+    <string name="today_nutrition_protein">Proteína</string>
+    <string name="today_nutrition_carbs">Hidratos</string>
+    <string name="today_nutrition_fat">Grasa</string>
 </resources>

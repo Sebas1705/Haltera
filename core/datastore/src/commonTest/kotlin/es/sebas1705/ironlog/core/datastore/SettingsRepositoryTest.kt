@@ -55,4 +55,24 @@ class SettingsRepositoryTest {
         assertEquals(WeightUnit.KG, settings.unit)
         assertEquals(PlateCalculator.KG_PLATES, settings.availablePlatesGrams)
     }
+
+    @Test
+    fun `nutrition goals persist, clear back to null and survive a unit switch`() {
+        val repo = KeyValueSettingsRepository(store)
+        val goals = NutritionSettings(
+            kcal = 2_400, proteinG = 160, carbsG = 250, fatG = 80, macroMode = "PERCENT", sex = "FEMALE",
+            birthYear = 1995, heightCm = 168, activity = "ACTIVE", objective = "LOSE",
+        )
+        repo.setNutrition(goals)
+        assertEquals(goals, KeyValueSettingsRepository(store).settings.value.nutrition)
+
+        repo.setUnit(WeightUnit.LB)
+        assertEquals(goals, repo.settings.value.nutrition)
+
+        repo.setNutrition(goals.copy(kcal = null, sex = null))
+        val reloaded = KeyValueSettingsRepository(store).settings.value.nutrition
+        assertEquals(null, reloaded.kcal)
+        assertEquals(null, reloaded.sex)
+        assertEquals(160, reloaded.proteinG)
+    }
 }

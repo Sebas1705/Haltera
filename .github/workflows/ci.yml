@@ -77,6 +77,10 @@ jobs:
       - run: npm ci --prefix scripts/catalog
       - run: npm test --prefix scripts/catalog
       - run: node scripts/catalog/build.mjs --check
+      # Generic foods database (nutrition/README.md).
+      - run: npm ci --prefix scripts/nutrition
+      - run: npm test --prefix scripts/nutrition
+      - run: node scripts/nutrition/build.mjs --check
       # App icons, splash theme and logo are generated from brand/tokens.json (docs/BRAND.md).
       - name: Brand files up to date
         run: node scripts/brand.mjs --check

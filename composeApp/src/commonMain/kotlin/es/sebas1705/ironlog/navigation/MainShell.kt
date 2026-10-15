@@ -42,6 +42,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import es.sebas1705.ironlog.feature.exercises.navigation.ExercisesRoute
 import es.sebas1705.ironlog.feature.exercises.navigation.exercisesGraph
+import es.sebas1705.ironlog.feature.nutrition.navigation.NutritionRoute
+import es.sebas1705.ironlog.feature.nutrition.navigation.nutritionGraph
 import es.sebas1705.ironlog.feature.progress.navigation.ProgressRoute
 import es.sebas1705.ironlog.feature.progress.navigation.progressGraph
 import es.sebas1705.ironlog.feature.routines.navigation.RoutinesRoute
@@ -53,6 +55,7 @@ import es.sebas1705.ironlog.feature.today.navigation.todayGraph
 import es.sebas1705.ironlog.resources.Res
 import es.sebas1705.ironlog.resources.settings_title
 import es.sebas1705.ironlog.resources.tab_exercises
+import es.sebas1705.ironlog.resources.tab_nutrition
 import es.sebas1705.ironlog.resources.tab_progress
 import es.sebas1705.ironlog.resources.tab_routines
 import es.sebas1705.ironlog.resources.tab_today
@@ -62,11 +65,12 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.reflect.KClass
 
-/** The four tabs (spec §7). Their routes are the features' top-level route objects. */
+/** The five tabs (spec §7, nutrition design §4). Their routes are the features' top-level route objects. */
 enum class Tab(val route: Any, val routeClass: KClass<*>, val label: StringResource, val icon: ImageVector) {
     TODAY(TodayRoute, TodayRoute::class, Res.string.tab_today, Icons.Filled.Home),
     ROUTINES(RoutinesRoute, RoutinesRoute::class, Res.string.tab_routines, Icons.AutoMirrored.Filled.List),
     EXERCISES(ExercisesRoute, ExercisesRoute::class, Res.string.tab_exercises, Icons.Filled.Search),
+    NUTRITION(NutritionRoute, NutritionRoute::class, Res.string.tab_nutrition, NutritionIcon),
     PROGRESS(ProgressRoute, ProgressRoute::class, Res.string.tab_progress, Icons.Filled.DateRange),
 }
 
@@ -74,7 +78,7 @@ private fun NavDestination?.currentTab(): Tab? =
     Tab.entries.firstOrNull { tab -> this?.hierarchy?.any { it.hasRoute(tab.routeClass) } == true }
 
 /**
- * App shell: top bar with Settings and tab navigation on the four tab roots; nested feature
+ * App shell: top bar with Settings and tab navigation on the five tab roots; nested feature
  * screens and the live session draw their own chrome. The tabs are a bottom bar on compact windows
  * and a navigation rail on medium/expanded widths and on landscape phones.
  */
@@ -148,9 +152,14 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
 private fun ShellNavHost(navController: NavHostController, modifier: Modifier) {
     NavHost(navController = navController, startDestination = TodayRoute, modifier = modifier) {
         val openSession: (String) -> Unit = { id -> navController.navigate(SessionRoute(id)) }
-        todayGraph(navController, onOpenSession = openSession)
+        todayGraph(
+            navController,
+            onOpenSession = openSession,
+            onOpenNutrition = { navController.navigateToTab(Tab.NUTRITION) },
+        )
         routinesGraph(navController)
         exercisesGraph(navController)
+        nutritionGraph(navController)
         progressGraph(navController, onOpenSession = openSession)
         sessionGraph(navController, onFinished = { navController.popBackStack(TodayRoute, inclusive = false) })
         settingsGraph(navController)

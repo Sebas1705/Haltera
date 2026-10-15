@@ -6,6 +6,7 @@
     <string name="tab_today">Today</string>
     <string name="tab_routines">Routines</string>
     <string name="tab_exercises">Exercises</string>
+    <string name="tab_nutrition">Nutrition</string>
     <string name="tab_progress">Progress</string>
     <string name="settings_title">Settings</string>
     <string name="settings_units">Units</string>
@@ -20,6 +21,8 @@
     <string name="credits_title">Credits</string>
     <string name="credits_catalog">Exercise catalogue</string>
     <string name="credits_catalog_text">Exercise data and images come from free-exercise-db by yuhonas (github.com/yuhonas/free-exercise-db), released into the public domain under the Unlicense. The grouping into exercises and variants, the Spanish translations and the additional exercises are by the Ironlog authors.</string>
+    <string name="credits_foods">Food database</string>
+    <string name="credits_foods_text">Nutrient values of the bundled generic foods come from USDA FoodData Central (fdc.nal.usda.gov: Foundation Foods and SR Legacy), released into the public domain under CC0 1.0. Barcode lookups use Open Food Facts (world.openfoodfacts.org), available under the Open Database License (ODbL 1.0) with contents under the Database Contents License (DbCL 1.0); products found are cached on the device. The selection of foods, their names in English and Spanish and the serving sizes are by the Ironlog authors.</string>
     <string name="credits_license">Ironlog licence</string>
     <string name="credits_fonts">Fonts (SIL Open Font License 1.1)</string>
     <string name="settings_account">Account</string>

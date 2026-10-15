@@ -43,7 +43,11 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** The Today tab root: wires the ViewModel and forwards session openings to the shell. */
 @Composable
-internal fun TodayTab(onOpenSession: (sessionId: String) -> Unit, modifier: Modifier = Modifier) {
+internal fun TodayTab(
+    onOpenSession: (sessionId: String) -> Unit,
+    modifier: Modifier = Modifier,
+    onOpenNutrition: () -> Unit = {},
+) {
     val viewModel = koinViewModel<TodayViewModel>()
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val openSession by rememberUpdatedState(onOpenSession)
@@ -54,11 +58,21 @@ internal fun TodayTab(onOpenSession: (sessionId: String) -> Unit, modifier: Modi
             }
         }
     }
-    TodayScreen(state = state, onIntent = { viewModel.onEvent(it) }, modifier = modifier)
+    TodayScreen(
+        state = state,
+        onIntent = { viewModel.onEvent(it) },
+        modifier = modifier,
+        nutrition = { TodayNutritionCard(onOpen = onOpenNutrition) },
+    )
 }
 
 @Composable
-internal fun TodayScreen(state: TodayState, onIntent: (TodayIntent) -> Unit, modifier: Modifier = Modifier) {
+internal fun TodayScreen(
+    state: TodayState,
+    onIntent: (TodayIntent) -> Unit,
+    modifier: Modifier = Modifier,
+    nutrition: @Composable () -> Unit = {},
+) {
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(state.error) {
         val error = state.error ?: return@LaunchedEffect
@@ -78,7 +92,7 @@ internal fun TodayScreen(state: TodayState, onIntent: (TodayIntent) -> Unit, mod
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 TodayColumn(Modifier.weight(1f)) { PlanItems(state, onIntent) }
-                TodayColumn(Modifier.weight(1f)) { SummaryItems(state, onIntent) }
+                TodayColumn(Modifier.weight(1f)) { SummaryItems(state, onIntent, nutrition) }
             }
         } else {
             LazyColumn(
@@ -90,7 +104,9 @@ internal fun TodayScreen(state: TodayState, onIntent: (TodayIntent) -> Unit, mod
                     key = "plan"
                 ) { Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { PlanItems(state, onIntent) } }
                 item(key = "summary") {
-                    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) { SummaryItems(state, onIntent) }
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) { SummaryItems(state, onIntent, nutrition) }
                 }
             }
         }
@@ -133,10 +149,11 @@ private fun PlanItems(state: TodayState, onIntent: (TodayIntent) -> Unit) {
     LogPastButton(enabled = !state.starting, onClick = { onIntent(TodayIntent.OpenLogPast) })
 }
 
-/** This week's summary and body weight. */
+/** This week's summary, today's nutrition (when used) and body weight. */
 @Composable
-private fun SummaryItems(state: TodayState, onIntent: (TodayIntent) -> Unit) {
+private fun SummaryItems(state: TodayState, onIntent: (TodayIntent) -> Unit, nutrition: @Composable () -> Unit) {
     WeekCard(state.week, state.unit)
+    nutrition()
     BodyWeightCard(
         latest = state.latestWeight,
         unit = state.unit,

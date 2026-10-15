@@ -65,8 +65,41 @@ class MigrationTest {
     }
 
     @Test
+    fun `migrating from version 1 to 4 keeps the data and adds the nutrition tables`() {
+        File("src/commonMain/sqldelight/databases/1.db").copyTo(file, overwrite = true)
+        driver().use { v1 ->
+            v1.execute(
+                null,
+                "INSERT INTO BodyWeightEntity(id, measuredAt, weightGrams, notes) VALUES ('bw1', 5, 80000, 'am')",
+                0,
+            )
+            v1.execute(null, "INSERT INTO Meta(key, value) VALUES ('catalogVersion', '3')", 0)
+            AppDatabase.Schema.migrate(v1, 1, AppDatabase.Schema.version)
+        }
+
+        val db = AppDatabase(driver())
+        assertEquals(80_000L, db.bodyWeightEntityQueries.selectLatest().executeAsOne().weightGrams)
+        assertEquals("3", db.metaQueries.get("catalogVersion").executeAsOne())
+
+        // The new tables work, with the recipe items cascading from their recipe.
+        db.foodEntityQueries.insert(
+            id = "f1", source = "RECIPE", nameEn = "Porridge", nameEs = "Gachas", nameSearch = "porridge gachas",
+            brand = null, barcode = null, kcal = 100.0, protein = 4.0, carbs = 15.0, fat = 2.0, fiber = null,
+            sugar = null, salt = null, unit = "G", servingNameEn = null, servingNameEs = null, servingGrams = null,
+            yieldGrams = 300.0, favourite = 0, updatedAt = 1,
+        )
+        db.recipeItemEntityQueries.insert("i1", "f1", "usda-1", 50.0, 0)
+        db.mealEntryEntityQueries.insert("m1", "2026-10-15", "BREAKFAST", "f1", 250.0, null, 0, 10)
+        assertEquals(250.0, db.mealEntryEntityQueries.selectByDate("2026-10-15").executeAsOne().grams)
+        assertEquals(1L, db.syncTrackingQueries.selectState("mealDays", "2026-10-15").executeAsOne().dirty)
+        assertEquals(1L, db.syncTrackingQueries.selectState("foods", "f1").executeAsOne().dirty)
+        db.foodEntityQueries.delete("f1")
+        assertEquals(emptyList(), db.recipeItemEntityQueries.selectByRecipe("f1").executeAsList())
+    }
+
+    @Test
     fun `the schema version is the shipped one plus the migrations`() {
-        // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking (SyncMigrationTest in data:sync covers 1 -> 3).
-        assertEquals(3L, AppDatabase.Schema.version)
+        // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync covers 1 -> 4).
+        assertEquals(4L, AppDatabase.Schema.version)
     }
 }

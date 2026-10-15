@@ -50,6 +50,8 @@ import es.sebas1705.ironlog.resources.back
 import es.sebas1705.ironlog.resources.credits_catalog
 import es.sebas1705.ironlog.resources.credits_catalog_text
 import es.sebas1705.ironlog.resources.credits_fonts
+import es.sebas1705.ironlog.resources.credits_foods
+import es.sebas1705.ironlog.resources.credits_foods_text
 import es.sebas1705.ironlog.resources.credits_license
 import es.sebas1705.ironlog.resources.credits_title
 import es.sebas1705.ironlog.resources.settings_account
@@ -195,7 +197,8 @@ private fun SwitchRow(label: StringResource, checked: Boolean, onChange: (Boolea
 }
 
 /**
- * Credits: the exercise catalogue attribution (a translated summary of the bundled ATTRIBUTION.md), the app
+ * Credits: the exercise catalogue and food database attributions (translated summaries of the bundled
+ * ATTRIBUTION.md and FOODS_ATTRIBUTION.md), the app
  * licence and the font licences, read from the bundled files. Licence texts stay in English (their legal form).
  */
 @Composable
@@ -215,6 +218,9 @@ fun CreditsScreen(onBack: () -> Unit) {
             IronlogLogo(size = 72.dp, modifier = Modifier.align(Alignment.CenterHorizontally))
             Text(stringResource(Res.string.credits_catalog), style = MaterialTheme.typography.titleMedium)
             Text(stringResource(Res.string.credits_catalog_text), style = MaterialTheme.typography.bodyMedium)
+            HorizontalDivider()
+            Text(stringResource(Res.string.credits_foods), style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(Res.string.credits_foods_text), style = MaterialTheme.typography.bodyMedium)
             HorizontalDivider()
             Text(stringResource(Res.string.credits_license), style = MaterialTheme.typography.titleMedium)
             Text(license, style = MaterialTheme.typography.bodySmall)

@@ -1,0 +1,744 @@
+# Spanish names of the bundled foods, by USDA FoodData Central id (nutrition/foods.yaml).
+# Written and reviewed by hand (Spain vocabulary); the pipeline never invents Spanish.
+# Every food in foods.yaml needs a name here: `node scripts/nutrition/build.mjs --missing-es` lists the gaps.
+
+# Dairy and eggs
+171265: Leche entera
+171267: Leche semidesnatada (2 %)
+170872: Leche semidesnatada (1 %)
+171269: Leche desnatada
+171278: Leche de cabra
+170882: Leche de oveja
+170874: Suero de mantequilla (buttermilk)
+171275: Leche condensada
+171276: Leche evaporada
+170876: Leche en polvo entera
+172195: Leche en polvo desnatada
+170879: Batido de cacao
+171284: Yogur natural
+170886: Yogur natural bajo en grasa
+170887: Yogur natural desnatado
+171304: Yogur griego natural
+170903: Yogur griego natural bajo en grasa
+330137: Yogur griego natural 0 %
+170889: Yogur de frutas bajo en grasa
+170888: Yogur de vainilla bajo en grasa
+170845: Mozzarella fresca
+171244: Mozzarella rallada (para pizza)
+170848: Queso parmesano
+171247: Parmesano rallado
+171249: Queso pecorino romano
+171251: Queso emmental
+171242: Queso gruyer
+171241: Queso gouda
+173419: Queso edam
+172177: Queso brie
+172178: Queso camembert
+172175: Queso azul
+171250: Queso roquefort
+173420: Queso feta
+328637: Queso cheddar
+170850: Queso provolone
+170851: Queso ricotta
+172179: Queso cottage
+172182: Queso cottage bajo en grasa
+173418: Queso crema
+169079: Queso crema light
+173435: Queso de cabra tierno
+173433: Queso de cabra semicurado
+172197: Queso de cabra curado
+172223: Queso fresco
+170853: Queso fundido en lonchas
+171254: Queso fundido para untar
+170859: Nata para montar
+170857: Nata ligera para cocinar
+170860: Nata montada en spray
+171257: Nata agria
+173430: Mantequilla sin sal
+173410: Mantequilla con sal
+171314: Mantequilla clarificada (ghee)
+171287: Huevo entero, crudo
+172183: Clara de huevo, cruda
+172184: Yema de huevo, cruda
+173424: Huevo cocido
+173423: Huevo frito
+172187: Huevos revueltos
+172185: Tortilla francesa
+172186: Huevo escalfado
+172191: Huevo de codorniz
+173461: Dulce de leche
+167575: Helado de vainilla
+168809: Helado de chocolate
+168810: Helado de fresa
+167577: Sorbete de naranja
+168105: Yogur helado
+167574: Flan de huevo
+169608: Natillas de vainilla
+168778: Postre de chocolate (tipo pudin)
+168782: Arroz con leche
+173177: Proteína de suero aislada (whey isolate)
+173180: Proteína de suero en polvo (whey)
+173181: Proteína de soja en polvo
+
+# Fats and oils
+171413: Aceite de oliva
+171025: Aceite de girasol
+172338: Aceite de girasol alto oleico
+172336: Aceite de colza
+171411: Aceite de soja
+171029: Aceite de maíz
+171410: Aceite de cacahuete
+171412: Aceite de coco
+171016: Aceite de sésamo
+167702: Aceite de linaza
+171401: Manteca de cerdo
+173587: Margarina
+171009: Mayonesa
+173594: Mayonesa light
+169055: Salsa césar
+171402: Salsa mil islas
+171043: Salsa de miel y mostaza
+173592: Salsa ranch
+
+# Fish and seafood
+171955: Bacalao fresco, crudo
+171956: Bacalao fresco, cocinado
+174190: Bacalao salado seco
+173725: Abadejo de Alaska (colín), crudo
+171964: Eglefino, crudo
+173713: Pescadilla, cruda
+174196: Lenguado, crudo
+174200: Fletán, crudo
+173710: Rodaballo, crudo
+175142: Lubina, cruda
+173676: Rape, crudo
+173697: Cazón, crudo
+173703: Pez espada (emperador), crudo
+175159: Atún fresco, crudo
+173709: Atún al natural en lata, escurrido
+173708: Atún en aceite, escurrido
+175167: Salmón, crudo
+175168: Salmón, cocinado
+173686: Salmón salvaje, crudo
+173687: Salmón ahumado
+173717: Trucha, cruda
+175119: Caballa, cruda
+175116: Arenque, crudo
+175139: Sardinas en aceite, escurridas
+175140: Sardinas en tomate, escurridas
+174182: Boquerón, crudo
+174183: Anchoas en aceite
+174195: Palitos de pescado
+174203: Palitos de cangrejo (surimi)
+175179: Gambas y langostinos, crudos
+175180: Gambas y langostinos, cocidos
+174208: Bogavante, crudo
+174211: Langosta, cruda
+174204: Cangrejo, crudo
+174214: Almejas, crudas
+171975: Almejas, cocidas
+174216: Mejillones, crudos
+174217: Mejillones, cocidos
+171978: Ostras, crudas
+174218: Pulpo, crudo
+174249: Pulpo, cocido
+174223: Calamar, crudo
+171982: Calamares fritos
+167742: Vieiras, cocinadas
+167744: Caracoles, crudos
+
+# Poultry and rabbit
+171077: Pechuga de pollo, cruda
+171534: Pechuga de pollo a la plancha
+171477: Pechuga de pollo asada
+2646171: Contramuslo de pollo sin piel, crudo
+172385: Contramuslo de pollo con piel, crudo
+172388: Contramuslo de pollo asado (sin piel)
+172373: Jamoncito de pollo con piel, crudo
+173617: Muslo de pollo con piel, asado
+172390: Alitas de pollo, crudas
+173630: Alitas de pollo asadas
+171447: Pollo con piel, crudo
+171450: Pollo asado con piel
+171054: Pollo asado sin piel
+171116: Carne picada de pollo, cruda
+171060: Hígado de pollo, crudo
+174515: Pechuga de pavo, cruda
+174516: Pechuga de pavo asada
+172941: Pechuga de pavo en lonchas
+173874: Pechuga de pollo en lonchas
+171505: Carne picada de pavo, cruda
+171531: Contramuslo de pavo, crudo
+172410: Pato sin piel, crudo
+171510: Magret de pato asado
+172521: Conejo, crudo
+172522: Conejo asado
+
+# Pork and cold cuts
+168230: Lomo de cerdo, crudo
+168233: Lomo de cerdo asado
+168249: Solomillo de cerdo, crudo
+168250: Solomillo de cerdo asado
+2727575: Chuleta de cerdo, cruda
+168260: Aguja de cerdo, cruda
+167902: Carne picada de cerdo, cruda
+167853: Costillas de cerdo, crudas
+169178: Costillas de cerdo asadas
+2727576: Panceta de cerdo, cruda
+168277: Beicon, crudo
+167914: Beicon, cocinado
+173864: Jamón cocido en lonchas
+173859: Chorizo fresco, crudo
+172938: Salchichón (salami curado)
+174575: Pepperoni
+174573: Mortadela
+172968: Salchicha tipo Frankfurt
+171624: Salchicha de pollo
+171620: Salchicha bratwurst, cocinada
+174579: Salchicha fresca de cerdo y ternera, cocinada
+171618: Morcilla
+173870: Paté de hígado
+174570: Rosbif en lonchas
+170604: Cecina de vacuno
+167536: Carne seca (beef jerky)
+167961: Cortezas de cerdo
+
+# Beef, veal, lamb and game
+171790: Carne picada de ternera extra magra (5 % grasa), cruda
+174030: Carne picada de ternera (10 % grasa), cruda
+171796: Carne picada de ternera (15 % grasa), cruda
+174036: Carne picada de vacuno (20 % grasa), cruda
+174031: Hamburguesa de ternera (10 % grasa), a la parrilla
+171797: Hamburguesa de vacuno (20 % grasa), a la parrilla
+171768: Solomillo de ternera, crudo
+170642: Solomillo de ternera a la plancha
+173380: Entrecot de ternera, crudo
+172144: Entrecot de ternera a la parrilla
+2727572: Lomo bajo de ternera, crudo
+2727574: Filete de cadera de ternera, crudo
+168635: Filete de cadera de ternera a la plancha
+171758: Filete de tapa de ternera, crudo
+169471: Filete de tapa de ternera a la plancha
+171763: Redondo de ternera, crudo
+168609: Falda de ternera (vacío), cruda
+168657: Pecho de ternera, crudo
+169445: Aguja de ternera, cruda
+169451: Hígado de ternera, crudo
+168627: Hígado de ternera a la plancha
+175269: Filete de ternera blanca, crudo
+175272: Filete de ternera blanca a la plancha
+175271: Filete de ternera empanado
+175290: Carne picada de ternera blanca, cruda
+172491: Lomo de cordero, crudo
+172493: Costillar de cordero, crudo
+172494: Chuletas de cordero a la parrilla
+172486: Pierna de cordero, cruda
+172487: Pierna de cordero asada
+172496: Paletilla de cordero, cruda
+174370: Carne picada de cordero, cruda
+172508: Cordero troceado para guisar, crudo
+173855: Ciervo, crudo
+175297: Jabalí, crudo
+175303: Cabrito, crudo
+
+# Legumes and soy
+172420: Lentejas secas
+172421: Lentejas cocidas
+173756: Garbanzos secos
+173757: Garbanzos cocidos
+173801: Garbanzos cocidos en conserva, escurridos
+173734: Alubias negras secas
+173735: Alubias negras cocidas
+175193: Alubias rojas secas
+173740: Alubias rojas cocidas
+173741: Alubias rojas en conserva
+175190: Alubias blancas secas
+175191: Alubias blancas cocidas
+175192: Alubias blancas en conserva
+175199: Alubias pintas secas
+175200: Alubias pintas cocidas
+173758: Alubias carillas secas
+173759: Alubias carillas cocidas
+175205: Habas secas
+173753: Habas secas cocidas
+172428: Guisantes secos partidos
+172429: Guisantes secos partidos, cocidos
+174270: Soja en grano seca
+174271: Soja en grano cocida
+174252: Judiones secos
+174253: Judiones cocidos
+174256: Judías mungo secas
+172430: Cacahuetes crudos
+173806: Cacahuetes tostados sin sal
+174262: Cacahuetes tostados con sal
+174294: Crema de cacahuete
+172470: Crema de cacahuete sin sal
+172469: Crema de cacahuete crujiente sin sal
+172475: Tofu firme
+172476: Tofu normal
+174272: Tempeh
+168147: Gluten de trigo (para seitán)
+174289: Hummus
+172455: Faláfel
+174288: Harina de garbanzo
+174277: Salsa de soja
+172473: Salsa de soja baja en sal
+172446: Bebida de soja
+175215: Bebida de soja sin azúcar, con calcio
+
+# Nuts and seeds
+170567: Almendras crudas
+170568: Almendras repeladas
+170158: Almendras tostadas sin sal
+323294: Almendras tostadas con sal
+170187: Nueces
+170581: Avellanas
+170583: Avellanas tostadas
+170162: Anacardos crudos
+170571: Anacardos tostados
+170184: Pistachos crudos
+170185: Pistachos tostados sin sal
+169426: Pistachos tostados con sal
+170591: Piñones
+170182: Nueces pecanas
+170178: Nueces de macadamia
+170569: Nueces de Brasil
+170585: Frutos secos variados tostados sin sal
+167561: Mezcla de frutos secos y pasas
+170575: Castañas crudas
+170190: Castañas asadas
+170169: Coco fresco
+170170: Coco rallado
+170562: Pipas de girasol peladas
+325524: Pipas de girasol peladas tostadas con sal
+170556: Pipas de calabaza peladas
+170150: Semillas de sésamo
+169414: Semillas de lino
+170554: Semillas de chía
+170148: Semillas de cáñamo peladas
+170189: Tahini (pasta de sésamo)
+168588: Crema de almendras
+170160: Pasta de almendra
+170173: Leche de coco en lata
+170174: Agua de coco
+
+# Grains, pasta and flours
+168877: Arroz blanco de grano largo, crudo
+168878: Arroz blanco de grano largo, cocido
+168879: Arroz blanco de grano medio, crudo
+168880: Arroz blanco de grano medio, cocido
+168881: Arroz blanco redondo, crudo
+168882: Arroz blanco redondo, cocido
+169703: Arroz integral, crudo
+169704: Arroz integral, cocido
+169707: Arroz vaporizado, crudo
+169708: Arroz vaporizado, cocido
+169736: Pasta seca, cruda
+169737: Pasta cocida
+169738: Pasta integral, cruda
+168910: Pasta integral cocida
+169727: Pasta fresca, cruda
+169728: Pasta fresca cocida
+169731: Tallarines al huevo, crudos
+169732: Tallarines al huevo, cocidos
+168899: Pasta sin gluten (de maíz), cruda
+174258: Fideos de soja (de judía mungo), crudos
+169699: Cuscús, crudo
+169700: Cuscús cocido
+168874: Quinoa, cruda
+168917: Quinoa cocida
+170688: Bulgur, crudo
+170287: Bulgur cocido
+170284: Cebada perlada, cruda
+170285: Cebada perlada cocida
+170286: Trigo sarraceno, crudo
+169702: Mijo, crudo
+173904: Copos de avena
+173905: Gachas de avena con agua
+168872: Salvado de avena
+169722: Salvado de trigo
+173896: Germen de trigo tostado
+168894: Harina de trigo
+168893: Harina de trigo integral
+2003587: Harina de espelta integral
+168886: Harina de centeno
+2261421: Harina de avena
+170290: Harina de maíz integral
+169698: Maicena (almidón de maíz)
+169715: Sémola de trigo
+171654: Polenta (sémola de maíz), cruda
+169717: Tapioca en perlas
+
+# Breakfast cereals
+174648: Copos de maíz (corn flakes)
+172990: Copos de maíz azucarados
+173888: Copos de salvado
+173887: Arroz inflado crujiente
+173912: Arroz inflado
+173913: Trigo inflado
+171646: Granola casera
+172973: Cereales de maíz inflado con chocolate
+169077: Cereales de trigo con frutos secos y fruta (tipo muesli)
+
+# Bread and bakery
+174924: Pan de molde blanco
+172688: Pan de molde integral
+168013: Pan multicereales
+172675: Pan blanco (barra)
+174091: Pan integral (barra)
+172684: Pan de centeno
+172795: Panecillo
+172796: Pan de hamburguesa
+174915: Pan de pita
+174916: Pan de pita integral
+171845: Pan naan
+175036: Tortilla de maíz
+175037: Tortilla de trigo (wrap)
+174081: Tortilla de trigo integral
+174100: Pan sin gluten
+174928: Pan rallado
+172751: Picatostes
+172746: Galletas saladas
+172749: Crackers integrales
+172744: Tostas crujientes de centeno
+171867: Galletas María
+174950: Galletas de mantequilla
+172716: Galletas con pepitas de chocolate
+172725: Galletas de avena
+174987: Cruasán de mantequilla
+172765: Muffin de arándanos
+172706: Bizcocho
+174940: Bizcocho de mantequilla (tipo plum cake)
+174934: Tarta de chocolate
+172711: Tarta de queso
+175011: Tarta de manzana
+174990: Rosquilla (dónut) normal
+172757: Berlina rellena de crema
+167534: Lionesa (petisú) de crema
+172738: Hojaldre horneado
+172791: Masa filo
+175009: Tortitas (pancakes)
+175039: Gofres
+170317: Pizza de queso
+170373: Pizza de queso de masa fina
+167945: Focaccia
+
+# Snacks and sweets
+169677: Patatas fritas de bolsa
+167558: Totopos de maíz
+170247: Palomitas de maíz con aceite y sal
+167959: Palomitas de maíz sin aceite
+167555: Pretzels
+170250: Tortitas de arroz integral
+167537: Gusanitos de maíz
+168849: Chips de plátano
+174796: Chips de verduras
+167542: Barrita de cereales crujiente
+167954: Barrita de cereales blanda
+167587: Chocolate con leche
+170271: Chocolate negro (45-59 % cacao)
+170272: Chocolate negro (60-69 % cacao)
+170273: Chocolate negro (70-85 % cacao)
+167571: Chocolate blanco
+168000: Crema de cacao y avellanas
+169593: Cacao puro en polvo sin azúcar
+174122: Cacao soluble en polvo
+169655: Azúcar blanco
+168833: Azúcar moreno
+169656: Azúcar glas
+169640: Miel
+169641: Mermelada
+168819: Mermelada de naranja
+167706: Mermelada baja en azúcar
+169661: Sirope de arce
+170277: Sirope de agave
+170679: Edulcorante de estevia en polvo
+167990: Caramelos duros
+167989: Gominolas
+167995: Nubes (malvaviscos)
+167974: Caramelos de tofe
+169596: Gelatina de sabores preparada
+
+# Sauces, soups and condiments
+171192: Salsa de tomate para pasta
+2685579: Salsa de tomate natural en lata
+2685581: Tomate triturado en lata
+2685578: Tomate entero pelado en lata
+2685580: Concentrado de tomate
+746777: Salsa mexicana de tomate
+168556: Kétchup
+172234: Mostaza
+171579: Pesto
+174523: Salsa barbacoa
+171610: Salsa Worcestershire
+171186: Salsa sriracha
+174527: Salsa picante
+171167: Salsa teriyaki
+174066: Salsa agridulce
+174542: Bechamel
+171191: Salsa de queso
+172240: Vinagre de vino tinto
+172241: Vinagre balsámico
+173469: Vinagre de manzana
+172238: Alcaparras
+173468: Sal de mesa
+172884: Caldo de pollo casero
+172883: Caldo de carne casero
+172885: Caldo de pescado casero
+171583: Caldo de verduras
+171563: Pastilla de caldo de pollo
+171176: Sopa de tomate preparada
+172909: Sopa de pollo con fideos preparada
+172913: Sopa minestrone preparada
+
+# Herbs and spices
+171329: Pimentón
+170931: Pimienta negra
+170923: Comino
+171320: Canela molida
+171328: Orégano seco
+171333: Romero seco
+170938: Tomillo seco
+170934: Azafrán
+172231: Cúrcuma molida
+170924: Curry en polvo
+171325: Ajo en polvo
+170926: Jengibre molido
+170917: Laurel
+171326: Nuez moscada molida
+170932: Cayena molida
+171317: Albahaca seca
+172232: Albahaca fresca
+170416: Perejil fresco
+169997: Cilantro fresco
+169994: Cebollino fresco
+173471: Extracto de vainilla
+
+# Fruit
+171688: Manzana
+171689: Manzana pelada
+168202: Manzana golden
+168203: Manzana Granny Smith
+168204: Manzana gala
+167793: Manzana fuji
+168201: Manzana roja (Red Delicious)
+169118: Pera
+167776: Pera Williams
+173944: Plátano
+169097: Naranja
+169105: Mandarina
+168195: Clementina
+173033: Pomelo
+167746: Limón
+168155: Lima
+167747: Zumo de limón
+168156: Zumo de lima
+167762: Fresas
+167755: Frambuesas
+171711: Arándanos
+173946: Moras
+171722: Arándanos rojos
+171719: Cerezas
+173954: Guindas
+174683: Uvas
+169928: Melocotón
+169914: Nectarina
+171697: Albaricoque
+169949: Ciruela
+173021: Higo
+169910: Mango
+169926: Papaya
+169124: Piña
+168153: Kiwi
+171705: Aguacate
+169092: Melón cantalupo
+169911: Melón
+167765: Sandía
+169134: Granada
+169941: Caqui
+169086: Lichi
+169108: Maracuyá
+173953: Chirimoya
+173044: Guayaba
+167758: Ruibarbo
+171726: Dátiles
+168191: Dátiles medjool
+168165: Pasas
+168162: Ciruelas pasas
+173941: Orejones de albaricoque
+174665: Higos secos
+171723: Arándanos rojos deshidratados
+169094: Aceitunas negras
+169096: Aceitunas verdes
+332791: Aceitunas manzanilla rellenas de pimiento
+169098: Zumo de naranja natural
+169100: Zumo de naranja envasado
+173933: Zumo de manzana
+168187: Zumo de piña
+2003592: Zumo de uva
+173039: Zumo de pomelo
+167787: Zumo de granada
+169930: Melocotón en su jugo
+169112: Melocotón en almíbar
+169126: Piña en su jugo
+169944: Piña en almíbar
+174668: Macedonia de frutas en su jugo
+2346414: Compota de manzana sin azúcar
+
+# Vegetables
+170457: Tomate
+321360: Tomates cherry
+1999634: Tomate pera
+168567: Tomates secos
+169384: Tomates secos en aceite, escurridos
+170000: Cebolla
+790577: Cebolla morada
+170005: Cebolleta
+170499: Chalota
+169246: Puerro
+169230: Ajo
+170393: Zanahoria
+170394: Zanahoria cocida
+170108: Pimiento rojo
+170427: Pimiento verde
+169383: Pimiento amarillo
+169394: Pimiento italiano
+168546: Pimiento rojo asado en conserva
+170106: Guindilla roja
+168576: Jalapeño
+169291: Calabacín
+169228: Berenjena
+168409: Pepino
+169225: Pepino pelado
+169247: Lechuga romana
+169248: Lechuga iceberg
+169249: Lechuga de hoja verde
+168429: Lechuga trocadero
+169387: Rúcula
+169219: Canónigos
+170068: Berros
+168412: Escarola
+168564: Radicchio
+168462: Espinacas crudas
+168463: Espinacas cocidas
+169991: Acelgas crudas
+170401: Acelgas cocidas
+168421: Kale (col rizada)
+170379: Brócoli crudo
+169967: Brócoli cocido
+169986: Coliflor cruda
+170397: Coliflor cocida
+170383: Coles de Bruselas crudas
+169971: Coles de Bruselas cocidas
+169975: Repollo crudo
+169976: Repollo cocido
+169977: Lombarda
+170388: Col de Milán
+169279: Chucrut
+2685572: Pak choi
+169961: Judías verdes crudas
+169141: Judías verdes cocidas
+169143: Judías verdes en conserva, escurridas
+170010: Tirabeques
+170419: Guisantes crudos
+170420: Guisantes cocidos
+170017: Guisantes congelados, cocidos
+170015: Guisantes en conserva, escurridos
+170377: Habas tiernas
+168389: Espárragos verdes crudos
+168390: Espárragos verdes cocidos
+169207: Espárragos en conserva
+169205: Alcachofa cruda
+168386: Alcachofa cocida
+169251: Champiñones crudos
+169252: Champiñones cocidos
+169253: Champiñones salteados
+169254: Champiñones en conserva, escurridos
+168434: Champiñón marrón
+169255: Portobello
+169242: Setas shiitake
+1999627: Setas de ostra
+170026: Patata cruda
+170440: Patata cocida pelada
+170438: Patata cocida con piel
+170093: Patata asada
+168555: Puré de patatas casero
+169264: Patatas fritas congeladas al horno
+170698: Patatas fritas (tipo comida rápida)
+168482: Boniato crudo
+168483: Boniato asado
+168484: Boniato cocido
+169998: Maíz dulce crudo
+169214: Maíz dulce en conserva, escurrido
+168448: Calabaza cruda
+169295: Calabaza violín, cruda
+169296: Calabaza violín asada
+169145: Remolacha cruda
+169146: Remolacha cocida
+169988: Apio
+170400: Apionabo
+169385: Hinojo
+169276: Rábanos
+170465: Nabo
+2747659: Chirivía
+169231: Jengibre fresco
+170071: Ñame
+167714: Palmitos
+169261: Quimbombó cocido
+170472: Menestra de verduras congelada, cocida
+170064: Macedonia de verduras en conserva
+168558: Pepinillos en vinagre
+169378: Pepinillos dulces
+168458: Alga nori
+170496: Alga wakame
+170495: Espirulina deshidratada
+
+# Drinks
+173647: Agua del grifo
+174158: Agua mineral
+174842: Agua con gas
+171890: Café de filtro
+171891: Café expreso
+171889: Café descafeinado
+171893: Café soluble en polvo
+173227: Té negro
+171917: Té verde
+173232: Infusión de hierbas
+174156: Manzanilla
+174160: Cacao soluble con leche entera
+174852: Refresco de cola
+171876: Refresco de cola sin azúcar
+173205: Refresco de lima-limón
+174854: Refresco de naranja
+174846: Ginger ale
+171869: Tónica
+174859: Limonada
+174821: Bebida energética
+174822: Bebida energética sin azúcar
+171914: Bebida de frutas
+171942: Bebida de arroz
+174832: Bebida de almendras sin azúcar
+168751: Bebida de almendras
+2257046: Bebida de avena sin azúcar
+171941: Horchata de arroz (estilo mexicano)
+168746: Cerveza
+168749: Cerveza light
+171906: Cerveza fuerte
+174863: Cerveza sin alcohol
+173190: Vino tinto
+174837: Vino blanco
+171908: Vino rosado
+173176: Vino dulce
+171919: Destilados de 40 % (ginebra, ron, vodka, whisky)
+
+# Dishes and fast food
+170694: Hamburguesa con pan
+170691: Hamburguesa con queso y pan
+170718: Nuggets de pollo
+170756: Pechuga de pollo rebozada y frita
+172039: Burrito de alubias y queso
+170291: Nachos con queso
+172114: Lasaña de carne
+169770: Macarrones con queso
+169269: Ensalada de patata con mayonesa
+175160: Ensalada de atún con mayonesa

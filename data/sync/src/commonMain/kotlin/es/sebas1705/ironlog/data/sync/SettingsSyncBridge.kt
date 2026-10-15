@@ -1,5 +1,6 @@
 package es.sebas1705.ironlog.data.sync
 
+import es.sebas1705.ironlog.core.datastore.NutritionSettings
 import es.sebas1705.ironlog.core.datastore.SettingsRepository
 import es.sebas1705.ironlog.core.datastore.UserSettings
 import es.sebas1705.ironlog.core.units.WeightUnit
@@ -61,6 +62,8 @@ class SettingsSyncBridge(
         repository.setKeepScreenOn(prefs.keepScreenOn)
         repository.setRestSound(prefs.restSound)
         repository.setRestVibration(prefs.restVibration)
+        // Documents from app versions before nutrition carry no goals: keep the local ones.
+        prefs.nutrition?.let { repository.setNutrition(it.toSettings()) }
     }
 
     private fun encode(settings: UserSettings) = SyncJson.encodeToString(SettingsPrefs.serializer(), settings.toPrefs())
@@ -72,6 +75,15 @@ class SettingsSyncBridge(
         keepScreenOn = keepScreenOn,
         restSound = restSound,
         restVibration = restVibration,
+        nutrition = nutrition.toPrefs(),
+    )
+
+    private fun NutritionSettings.toPrefs() = NutritionPrefs(
+        kcal, proteinG, carbsG, fatG, macroMode, sex, birthYear, heightCm, activity, objective,
+    )
+
+    private fun NutritionPrefs.toSettings() = NutritionSettings(
+        kcal, proteinG, carbsG, fatG, macroMode, sex, birthYear, heightCm, activity, objective,
     )
 
     private companion object {

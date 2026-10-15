@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -152,8 +153,10 @@ internal fun NutritionScaffold(
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (Modifier) -> Unit,
 ) {
+    // The shell Scaffold already pads for the system bars.
     Scaffold(
         modifier = modifier,
+        contentWindowInsets = WindowInsets(0),
         topBar = {
             TopAppBar(
                 title = { Text(title, maxLines = 1) },
@@ -166,6 +169,7 @@ internal fun NutritionScaffold(
                     }
                 },
                 actions = { actions() },
+                windowInsets = WindowInsets(0),
             )
         },
         floatingActionButton = floatingActionButton,

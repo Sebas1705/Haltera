@@ -5,16 +5,18 @@ import es.sebas1705.haltera.data.models.ExerciseFilter
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
 import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.RoutineSlot
-import es.sebas1705.haltera.data.models.SessionExercise
-import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
-import es.sebas1705.haltera.domain.usecases.progression.ProgressionEngine
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.session.LastPerformance
 import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 /**
  * Read side of the session screen: exercises, variants, routine slots, suggestions and last loads, cached
@@ -26,12 +28,14 @@ class SessionCatalog(
     private val routines: RoutineRepository,
     private val sessions: SessionRepository,
     private val suggestNextLoad: SuggestNextLoad,
+    /** The user's time zone, which decides what "the same day" is. */
+    private val timeZone: () -> TimeZone = { TimeZone.currentSystemDefault() },
 ) {
     private val variantCache = mutableMapOf<String, ExerciseVariant?>()
     private val exerciseCache = mutableMapOf<String, Exercise?>()
     private val slotCache = mutableMapOf<String, Map<String, RoutineSlot>>()
     private val suggestionCache = mutableMapOf<Pair<String, String>, Suggestion>()
-    private val lastCache = mutableMapOf<Pair<String?, String>, SessionExercise?>()
+    private val lastCache = mutableMapOf<String, LastPerformance?>()
 
     /** Start of the session shown: the upper bound (exclusive) of every history read. */
     var sessionStartedAt: Long? = null
@@ -60,27 +64,22 @@ class SessionCatalog(
     suspend fun suggestion(slot: RoutineSlot, variantId: String): Suggestion =
         suggestionCache.getOrPut(slot.id to variantId) { suggestNextLoad(slot, variantId, sessionStartedAt) }
 
-    /** Last finished performance (before this session) of the slot with this variant, else of the variant. */
-    suspend fun lastPerformance(slotId: String?, variantId: String): SessionExercise? {
-        val key = slotId to variantId
-        if (key in lastCache) return lastCache[key]
-        val before = sessionStartedAt
-        val fromSlot = slotId?.let {
-            sessions.lastForSlotAndVariant(it, variantId, limit = LAST_LIMIT, before = before).latestWithWork()
-        }
-        val last = fromSlot
-            ?: sessions.lastForVariant(variantId, limit = LAST_LIMIT, before = before).latestWithWork()
-        lastCache[key] = last
+    /**
+     * The variant's last performance before this session, in any context (routine slot, free session, a session
+     * logged afterwards): its best set over the most recent local calendar day it was done ([LastPerformance]).
+     * The slot does not matter: the same exercise with the same equipment shares one history.
+     */
+    suspend fun lastPerformance(variantId: String): LastPerformance? {
+        if (variantId in lastCache) return lastCache[variantId]
+        val history = sessions.lastForVariant(variantId, limit = LAST_LIMIT, before = sessionStartedAt)
+        val zone = timeZone()
+        val last = LastPerformance.from(history) { millis -> localDay(millis, zone) }
+        lastCache[variantId] = last
         return last
     }
 
-    /** The latest performance with a completed working set (an exercise left empty says nothing). */
-    private fun List<ExerciseHistoryEntry>.latestWithWork(): SessionExercise? =
-        firstOrNull { entry -> entry.exercise.sets.any { it.kind == SetKind.WORKING && it.completed } }?.exercise
-
-    /** Last working load of a variant in any context, for the flexible-slot picker. */
-    suspend fun lastLoad(variantId: String): Long? =
-        lastPerformance(null, variantId)?.let { ProgressionEngine.workingLoad(it) }
+    /** Best load of a variant's last performance day, for the flexible-slot picker. */
+    suspend fun lastLoad(variantId: String): Long? = lastPerformance(variantId)?.best?.loadGrams
 
     /** The variants a flexible slot allows, in catalogue order. */
     suspend fun allowedVariants(target: SlotTarget.Flexible): List<ExerciseVariant> {
@@ -109,6 +108,12 @@ class SessionCatalog(
     private companion object {
         const val SEARCH_LIMIT = 60
         const val HISTORY_LIMIT = 500
-        const val LAST_LIMIT = 5
+
+        /** Performances read for the last day: enough for several sessions (or repeats) on one day. */
+        const val LAST_LIMIT = 20
+
+        @OptIn(ExperimentalTime::class)
+        fun localDay(millis: Long, zone: TimeZone): Int =
+            Instant.fromEpochMilliseconds(millis).toLocalDateTime(zone).date.toEpochDays().toInt()
     }
 }

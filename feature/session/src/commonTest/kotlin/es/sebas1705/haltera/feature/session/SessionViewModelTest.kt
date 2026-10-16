@@ -39,6 +39,7 @@ import es.sebas1705.haltera.feature.session.ui.SessionDialog
 import es.sebas1705.haltera.feature.session.ui.SessionIntent
 import es.sebas1705.haltera.feature.session.ui.SessionViewModel
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -73,6 +74,7 @@ class SessionViewModelTest {
             routines = FakeRoutineRepository(listOf(ROUTINE)),
             sessions = sessions,
             suggestNextLoad = SuggestNextLoad(sessions),
+            timeZone = { TimeZone.UTC },
         )
         return SessionViewModel(SESSION_ID, sessions, catalog, settings, timer, indicator, loadSteps) { clock.now }
             .also { it.onEvent(SessionIntent.SetLanguage("en")) }
@@ -163,14 +165,14 @@ class SessionViewModelTest {
 
     @Test
     fun firstWorkingSetStartsAtTheHeaviestSetOfTheLastSessionOfTheSlot() = runTest {
-        sessions.history += pastSets(listOf(100_000L to 5), sessionId = "older", at = 1L)
+        sessions.history += pastSets(listOf(100_000L to 5), sessionId = "older", at = 1L - 24 * 60 * 60_000L)
         sessions.history += pastSets(listOf(60_000L to 10, 70_000L to 8, 65_000L to 9), sessionId = "last", at = 2L)
         val vm = viewModel()
         val working = working(vm)
         assertEquals(
             List(3) { 70_000L },
             working.map { it.loadGrams },
-            "the latest session's max, not the all-time max"
+            "the latest day's max, not the all-time max"
         )
         assertEquals(List(3) { 8 }, working.map { it.reps })
         assertTrue(working.none { it.completed })

@@ -277,6 +277,49 @@ class SessionRepositoryTest {
     }
 
     /** A completed set on the flexible bench slot of [sessionId] (only performed exercises are history). */
+    @Test
+    fun `variant history mixes routine, free and past-logged sessions and skips the rest`() = runTest {
+        // The first-set default reads lastForVariant: every finished context of the same variant counts,
+        // other variants, unfinished sessions and sessions started at or after the bound do not.
+        val r = repos()
+        val routineId = r.routine()
+        val day = 24 * 60 * 60_000L
+        val routine = r.sessions.startFromRoutineDay(routineId, 0, startedAt = 10 * day)
+        val bench = r.sessions.getSession(routine)!!.exercises[1]
+        assertEquals("bench-press.dumbbell", bench.variantId)
+        r.sessions.logSet(bench.id, SetInput(reps = 10, loadGrams = 12_000, completed = true))
+        r.sessions.finish(routine, 10 * day + 3_600_000)
+        // Logged afterwards ("Log past session") for day 12, with a failure set and a warm-up.
+        val past = r.sessions.startFree(startedAt = 12 * day)
+        r.sessions.finish(past, 12 * day + 3_600_000)
+        val pastBench = r.sessions.addExercise(past, "bench-press.dumbbell")
+        r.sessions.logSet(pastBench, SetInput(kind = SetKind.WARMUP, reps = 10, loadGrams = 20_000, completed = true))
+        r.sessions.logSet(pastBench, SetInput(kind = SetKind.FAILURE, reps = 7, loadGrams = 14_000, completed = true))
+        // Same variant on another equipment: another history.
+        r.freeSession("bench-press.barbell", at = 13 * day)
+        // Left unfinished on day 13: not history.
+        val open = r.sessions.startFree(startedAt = 13 * day + 1)
+        r.sessions.logSet(
+            r.sessions.addExercise(open, "bench-press.dumbbell"),
+            SetInput(reps = 10, loadGrams = 40_000, completed = true),
+        )
+
+        val history = r.sessions.lastForVariant("bench-press.dumbbell", before = 14 * day)
+        assertEquals(listOf(12 * day, 10 * day), history.map { it.sessionStartedAt })
+        assertEquals(
+            listOf(SetKind.WARMUP, SetKind.FAILURE),
+            history.first().exercise.sets.map { it.kind },
+            "every set is returned; choosing the best is the caller's job",
+        )
+        assertEquals(
+            listOf(10 * day),
+            r.sessions.lastForVariant("bench-press.dumbbell", before = 12 * day).map {
+                it.sessionStartedAt
+            },
+            "a session started at the bound is not before it"
+        )
+    }
+
     private suspend fun Repos.logBench(sessionId: String) {
         val bench = sessions.getSession(sessionId)!!.exercises[1]
         sessions.logSet(bench.id, SetInput(reps = 8, loadGrams = 30_000, completed = true))

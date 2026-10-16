@@ -219,7 +219,7 @@ class SessionViewModel(
             trackingType = tracking,
             loadType = loadType,
             suggestion = catalog.suggestion(slot, variantId),
-            last = catalog.lastPerformance(slot.id, variantId),
+            last = catalog.lastPerformance(variantId),
             warmupRounding = warmupRounding(variantId, loadType),
         )
         rows.forEach { sessions.logSet(cardId, it) }
@@ -343,7 +343,7 @@ class SessionViewModel(
 
     private suspend fun addSet(cardId: String) {
         val card = currentState.cards.firstOrNull { it.id == cardId } ?: return
-        val last = catalog.lastPerformance(card.slotId, card.variantId)
+        val last = catalog.lastPerformance(card.variantId)
         sessions.logSet(card.id, Prefill.extraRow(card.sets, card.prescription, card.trackingType, card.loadType, last))
     }
 
@@ -397,7 +397,7 @@ class SessionViewModel(
         val variant = catalog.variant(variantId)
         val tracking = variant?.let { catalog.exercise(it.exerciseId) }?.trackingType ?: TrackingType.WEIGHT_REPS
         val loadType = variant?.loadType ?: LoadType.NONE
-        val last = catalog.lastPerformance(null, variantId)
+        val last = catalog.lastPerformance(variantId)
         val rows = mutableListOf<SetLog>()
         repeat(AD_HOC_SETS) {
             val input = Prefill.extraRow(rows, null, tracking, loadType, last)

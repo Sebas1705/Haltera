@@ -6,6 +6,7 @@ A free gym app for Android and iOS (Kotlin Multiplatform): flexible N-day routin
 
 - Design: [docs/designs/2026-10-14-haltera-core-design.md](docs/designs/2026-10-14-haltera-core-design.md)
 - Your data is yours: Settings → Data → Export my data writes CSV and JSON ([format](docs/EXPORT-FORMAT.md)).
+- Switching apps? Settings → Data → Import workouts brings in your history from Hevy, Strong, FitNotes or a Haltera export, with a preview before anything is saved ([formats](docs/IMPORT-FORMATS.md)).
 - Contributing rules: [AGENTS.md](AGENTS.md) — all documentation is in English.
 
 ## Development

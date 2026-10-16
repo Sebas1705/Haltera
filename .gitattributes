@@ -13,3 +13,6 @@
 
 # Export golden files: CRLF line ends and the BOM are part of the format
 data/repository/src/androidUnitTest/resources/export/* -text
+
+# Import fixtures: BOM, CRLF and Latin-1 bytes are what the parsers are tested on
+data/repository/src/androidUnitTest/resources/import/* -text

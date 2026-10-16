@@ -80,3 +80,7 @@ WHERE se.variantId IN :variantIds AND s.endedAt IS NOT NULL AND s.startedAt < :b
   )
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT 1;
+
+-- History import: an exercise of an imported session, with its notes.
+insertImported:
+INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes) VALUES (?, ?, ?, ?, NULL, ?);

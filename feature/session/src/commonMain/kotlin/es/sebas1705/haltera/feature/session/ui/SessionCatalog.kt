@@ -12,7 +12,9 @@ import es.sebas1705.haltera.data.repository.SessionRepository
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 import es.sebas1705.haltera.domain.usecases.session.LastPerformance
 import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
+import es.sebas1705.haltera.domain.usecases.stats.TrainingMath
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.ExperimentalTime
@@ -88,6 +90,9 @@ class SessionCatalog(
         val all = exercise(target.exerciseId)?.variants.orEmpty().filterNot { it.deprecated }
         return if (target.allowedVariantIds.isEmpty()) all else all.filter { it.id in target.allowedVariantIds }
     }
+
+    /** Slots of every routine whose dumbbell volume counts both hands (the one volume rule, TrainingMath.volume). */
+    suspend fun bilateralSlots(): Set<String> = TrainingMath.bilateralSlots(routines.observeRoutines().first())
 
     /** Finished history of a variant before this session (and without it), for PR comparison. */
     suspend fun previousHistory(variantId: String, excludeSessionId: String): List<ExerciseHistoryEntry> =

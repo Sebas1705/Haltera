@@ -47,8 +47,8 @@ class StatsTest {
             set(10, null),
             set(5, -20_000),
         )
-        assertEquals(1_560_000L, Stats.volume(sets))
-        assertEquals(3_120_000L, Stats.volume(sets, bilateral = true))
+        assertEquals(1_560_000L, sets.sumOf { TrainingMath.setVolume(it) })
+        assertEquals(3_120_000L, sets.sumOf { TrainingMath.setVolume(it, bilateral = true) })
     }
 
     @Test

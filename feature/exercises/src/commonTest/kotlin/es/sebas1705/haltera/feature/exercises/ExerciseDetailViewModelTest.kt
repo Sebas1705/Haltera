@@ -3,6 +3,7 @@ package es.sebas1705.haltera.feature.exercises
 import app.cash.turbine.test
 import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.core.units.Weights
+import es.sebas1705.haltera.core.units.formatVolume
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.ExerciseSource
 import es.sebas1705.haltera.data.models.LoadType
@@ -16,6 +17,7 @@ import es.sebas1705.haltera.feature.exercises.ui.detail.RecordRowKind
 import es.sebas1705.haltera.feature.exercises.ui.detail.TopSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -184,6 +186,27 @@ class ExerciseDetailViewModelTest {
         vm.onEvent(ExerciseDetailIntent.SelectVariant("bench-press.dumbbell"))
         advanceUntilIdle()
         assertEquals(listOf("s3"), vm.uiState.value.history.map { it.sessionId })
+    }
+
+    @Test
+    fun `the session volume record counts both dumbbells of a bilateral slot, like Progress`() = runTest {
+        val logged = entry("s1", 1_000, "bench-press.dumbbell", 30_000L to 10, 30_000L to 8)
+        repository.history.value = mapOf(
+            "bench-press.dumbbell" to listOf(logged.copy(exercise = logged.exercise.copy(slotId = "slot-db"))),
+        )
+        val slots = MutableStateFlow(setOf("slot-db"))
+        val vm = ExerciseDetailViewModel("bench-press", repository, settings, dispatcher, slots).also {
+            it.onEvent(ExerciseDetailIntent.SetLanguage("en"))
+            it.onEvent(ExerciseDetailIntent.SelectVariant("bench-press.dumbbell"))
+        }
+        advanceUntilIdle()
+        fun sessionVolume() = vm.uiState.value.records.first { it.kind == RecordRowKind.SESSION_VOLUME }.load
+        // (30 × 10 + 30 × 8) × 2 = 1,080 kg.
+        assertEquals(LoadText(Weights.formatVolume(1_080_000L, WeightUnit.KG), isLevel = false), sessionVolume())
+
+        slots.value = emptySet()
+        advanceUntilIdle()
+        assertEquals(LoadText(Weights.formatVolume(540_000L, WeightUnit.KG), isLevel = false), sessionVolume())
     }
 
     @Test

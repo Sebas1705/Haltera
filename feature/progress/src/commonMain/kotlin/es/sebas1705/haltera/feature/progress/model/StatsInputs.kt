@@ -6,6 +6,7 @@ import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.WorkoutSession
 import es.sebas1705.haltera.domain.usecases.stats.DatedSession
 import es.sebas1705.haltera.domain.usecases.stats.StatsPeriod
+import es.sebas1705.haltera.domain.usecases.stats.TrainingMath
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,6 +32,5 @@ internal fun LocalDate.toEpochDay(): Int = toEpochDays().toInt()
 internal fun List<WorkoutSession>.dated(timeZone: TimeZone): List<DatedSession> =
     map { DatedSession(it.startedAt.toEpochDay(timeZone), it) }
 
-/** Slots whose dumbbell volume counts both hands, from every routine. */
-internal fun List<Routine>.bilateralSlots(): Set<String> =
-    flatMap { routine -> routine.days.flatMap { day -> day.slots.filter { it.bilateral }.map { it.id } } }.toSet()
+/** Slots whose dumbbell volume counts both hands, from every routine (the one volume rule, TrainingMath.volume). */
+internal fun List<Routine>.bilateralSlots(): Set<String> = TrainingMath.bilateralSlots(this)

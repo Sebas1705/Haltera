@@ -2,6 +2,7 @@ package es.sebas1705.haltera.feature.progress.di
 
 import es.sebas1705.haltera.feature.progress.model.ProgressClock
 import es.sebas1705.haltera.feature.progress.model.StatsPeriodSelection
+import es.sebas1705.haltera.feature.progress.ui.activity.ActivityViewModel
 import es.sebas1705.haltera.feature.progress.ui.bodyweight.BodyWeightViewModel
 import es.sebas1705.haltera.feature.progress.ui.calendar.CalendarViewModel
 import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseProgressViewModel
@@ -22,5 +23,6 @@ val progressModule = module {
     viewModel { params -> ExerciseProgressViewModel(get(), get(), get(), get(), params.getOrNull()) }
     viewModelOf(::MusclesViewModel)
     viewModelOf(::BodyWeightViewModel)
+    viewModelOf(::ActivityViewModel)
     viewModel { params -> SessionDetailViewModel(params.get(), get(), get(), get(), get(), get()) }
 }

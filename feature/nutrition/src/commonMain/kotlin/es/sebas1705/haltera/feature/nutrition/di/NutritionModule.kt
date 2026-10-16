@@ -31,5 +31,5 @@ val nutritionModule = module {
     viewModel { (args: FoodEditorArgs) -> FoodEditorViewModel(args.foodId, args.barcode, get()) }
     viewModel { (args: RecipeArgs) -> RecipeEditorViewModel(args.recipeId, get()) }
     viewModel { GoalsViewModel(get(), get(), get()) }
-    viewModel { StatsViewModel(get(), get(), get()) }
+    viewModel { StatsViewModel(get(), get(), get(), get()) }
 }

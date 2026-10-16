@@ -10,4 +10,6 @@ val datastoreModule = module {
     single<LoadStepStore> { SettingsLoadStepStore(Settings()) }
     // The optional cloud copy choice: device-local, never synced, kept by "Also erase data on this device".
     single<CloudBackupStore> { SettingsCloudBackupStore(Settings()) }
+    // Health Connect / HealthKit switches and bookkeeping: device-local, never synced.
+    single<HealthSettingsStore> { SettingsHealthSettingsStore(Settings()) }
 }

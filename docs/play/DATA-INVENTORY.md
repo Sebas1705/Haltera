@@ -25,6 +25,10 @@ behaviour that cannot be read from this repository.
 | "Your name for shared routines" (user-entered, optional; filled once with the Google display name when a Google account is linked and the user never set it) | DataStore preferences (`settings.shareName`) | Device-local: never synced; cleared by "Also erase data on this device" |
 | Nutrition profile used for calorie goals: **sex, birth year, height, activity level, objective**, macro goals | DataStore preferences | `NutritionPrefs`; all optional (null by default) |
 | Live workout state (current session) | `ironlog_session.xml` | Excluded from Android backup |
+| **Health Connect daily totals** (P4): steps, active and total calories burned, resting heart rate, sleep minutes per local day | SQLite table `HealthDayEntity` | Only for the types the user switched on and Health Connect allows; last 30 days at connect, then new days. **Device-only: no sync triggers, never uploaded.** Deleted on Disconnect, when a type is switched off or its permission is revoked, and by "Also erase data on this device" |
+| **Health Connect export ledger**: which workouts and body-weight entries Haltera wrote to Health Connect (local id, fingerprint of start/end/title or time/weight, write time) | SQLite table `HealthExportEntity` | Device-only, never uploaded; deleted on Disconnect and by "Also erase data on this device" |
+| **Body weight imported from Health Connect** | `BodyWeightEntity` (id `hc-<Health Connect record id>`) | Becomes an ordinary body-weight entry: editable, deletable, exported, and **synced like any other entry while the cloud copy is on** |
+| Health Connect choices: connected, switched-on types, steps goal (default 8 000), last read time, import watermark, export start | Settings file, keys `health.*` (`HealthSettingsStore`) | Device-only, never synced (like the cloud-copy choice) |
 
 Android Auto Backup is on (`allowBackup="true"` with `data_extraction_rules.xml` and `backup_rules.xml`): the database
 and the preferences file are included in Google's own device backup, which is the user's Google account backup, not
@@ -107,6 +111,36 @@ The images are not bundled and are not cached by the developer. Cache behaviour 
   control it and sends no image to the developer.
 - **Google Play** (store, updates, optional Auto Backup): Google's own processing.
 
+### 2.4b Health Connect (Android's on-device health platform, P4)
+
+**Verified in code** (`data/health`, `data/repository/.../health`, `composeApp/.../health`, the merged debug manifest).
+
+- **Off until the user connects.** Settings → Integrations → Health Connect lists each data type with a switch and
+  explains what is read and written. Nothing is requested before the user taps **Connect Health Connect**; only the
+  switched-on types are requested (Health Connect's own permission screen). Defaults: steps, calories burned, body
+  weight from other apps and workouts on; resting heart rate, sleep and body-weight export off.
+- **Read (only while the app is in the foreground; no background or history permission):** daily steps, active and
+  total calories burned, resting heart rate (daily average) and sleep duration, as daily totals that Health Connect
+  aggregates; body-weight records written by other apps (imported into the log, de-duplicated). Read on app resume
+  (at most every 2 minutes), when the Activity tab or Today opens, and with "Read now".
+- **Written (optional):** finished workouts as strength-training exercise sessions (start, end, title "Haltera" or
+  "Haltera · <routine day>") and body weight logged in Haltera. Each record carries a client id
+  (`haltera-workout-<id>`, `haltera-weight-<id>`): editing or deleting the item in Haltera updates or deletes the same
+  record. Writes happen a few seconds after the change while the app is open, or at the next foreground read.
+- **No loops:** records Haltera wrote (client id `haltera-…` or a Haltera package as origin) are never imported, and
+  imported weights are never written back.
+- **Where it goes:** Health Connect is a store on the phone managed by Android; data exchanged with it does not reach
+  the developer. The daily totals stay in a device-only table (section 1) and are **not synced** (they can always be
+  read again from Health Connect). The one exception is an imported body-weight entry, which becomes part of the log
+  and is uploaded with it **only if the cloud copy is on** (section 2.1).
+- **Not shared, not used for ads or analytics, not sold, not used to make any decision about the user.**
+- **Disconnect** (Settings → Integrations → Disconnect) revokes every Health Connect permission (Health Connect applies
+  it when the app restarts), deletes the copied totals and the export ledger. Imported weights stay in the log;
+  workouts and weights already written stay in Health Connect, where the user can delete them. Revoking a read
+  permission in system settings deletes that type's copied totals at the next read.
+- **Rationale screen** required by Health Connect: `HealthPermissionsRationaleActivity` opens the privacy policy.
+- **iOS:** no Apple Health (HealthKit) integration yet; the section says it is not available.
+
 ### 2.5 The developer
 
 No server of the developer's own. The developer can read Firestore through the Firebase console and tools in the
@@ -135,7 +169,7 @@ share**, to whoever they give them to; the receiver's app stores it as the creat
 | No contacts, SMS, calendar, microphone, storage permission | Not in the merged manifest (permissions: ACCESS_NETWORK_STATE, FOREGROUND_SERVICE, FOREGROUND_SERVICE_SPECIAL_USE, INTERNET, POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM, USE_BIOMETRIC, USE_FINGERPRINT, VIBRATE, READ_GSERVICES, the app's own dynamic receiver permission). |
 | No camera permission | Not in the manifest; scanning uses the Google code scanner. |
 | No in-app purchases, no billing, no subscriptions | No billing library in the catalogue. |
-| No health platform integration | No Health Connect, Google Fit or Samsung Health dependency or permission. |
+| No Google Fit or Samsung Health; Health Connect only as in section 2.4b | Health Connect (`androidx.health.connect:connect-client`) is the only health platform dependency. No Google Fit or Samsung Health SDK. No background health reads (`READ_HEALTH_DATA_IN_BACKGROUND`) and no history permission (`READ_HEALTH_DATA_HISTORY`) in the merged manifest. |
 | Biometrics not used by the app | `USE_BIOMETRIC` and `USE_FINGERPRINT` come from Firebase Auth / Credential Manager (audit-decisions.md); there is no app code calling BiometricPrompt. |
 | No third-party tracking of users by the developer | No SDK other than the ones listed in section 2. |
 
@@ -149,6 +183,8 @@ share**, to whoever they give them to; the receiver's app stores it as the creat
 | `SCHEDULE_EXACT_ALARM` | The rest-timer alert on time with the screen off; falls back to an inexact alarm |
 | `VIBRATE` | Optional rest-timer vibration |
 | `USE_BIOMETRIC`, `USE_FINGERPRINT`, `READ_GSERVICES` | Library-provided (Firebase Auth, Credential Manager, Play services) |
+| `health.READ_STEPS`, `health.READ_ACTIVE_CALORIES_BURNED`, `health.READ_TOTAL_CALORIES_BURNED`, `health.READ_WEIGHT`, `health.READ_RESTING_HEART_RATE`, `health.READ_SLEEP` | Health Connect reads (section 2.4b); each requested only for its switched-on type |
+| `health.WRITE_EXERCISE`, `health.WRITE_WEIGHT` | Health Connect writes of finished workouts and body weight (section 2.4b) |
 
 ## 5. Findings the owner should know
 
@@ -168,3 +204,7 @@ share**, to whoever they give them to; the receiver's app stores it as the creat
    anonymous uid or an email posted in a GitHub issue. The deletion page describes what is actually possible.
 5. **Manual backups of Firestore** exist outside the repo during the migration (section 2.5).
 6. **Uncertain: ML Kit / Play services telemetry** (section 2.4).
+7. **Health Connect (P4).** New sensitive reads (steps, calories, weight, resting heart rate, sleep), all optional and
+   device-only. Play requires the Health Connect permissions declaration (PLAY-CONSOLE-GUIDE.md 3.8.1) before a
+   release with these permissions can go out; the privacy pages have a Health Connect section. Imported body weight is
+   the only Health Connect data that can reach the cloud, and only with the cloud copy on.

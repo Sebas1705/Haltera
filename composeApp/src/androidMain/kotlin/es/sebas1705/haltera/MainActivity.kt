@@ -9,7 +9,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import es.sebas1705.haltera.data.repository.health.HealthRepository
 import es.sebas1705.haltera.share.AndroidRoutineShareBridge
 import es.sebas1705.haltera.share.CurrentActivity
 import es.sebas1705.haltera.share.IncomingRoutineChannel
@@ -18,6 +21,7 @@ import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     private val incoming: IncomingRoutineChannel by inject()
+    private val health: HealthRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +29,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent { App(modifier = Modifier.fillMaxSize()) }
         if (savedInstanceState == null) handleRoutineIntent(intent)
+        // Workouts and weights logged while the app is open are written to Health Connect a few seconds later;
+        // nothing runs once the app is in the background.
+        lifecycleScope.launch { repeatOnLifecycle(Lifecycle.State.STARTED) { health.watchLocalChanges() } }
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -35,6 +42,11 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         CurrentActivity.activity = this
+        // Health Connect is read only in the foreground: on every resume (throttled, and only once connected).
+        lifecycleScope.launch {
+            health.checkStatus()
+            health.refresh()
+        }
     }
 
     override fun onDestroy() {

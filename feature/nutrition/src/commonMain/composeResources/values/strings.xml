@@ -250,4 +250,15 @@
         <item quantity="one">%1$s: %2$d logged day from %3$s to %4$s; highest %5$s on %6$s; average %7$s</item>
         <item quantity="other">%1$s: %2$d logged days from %3$s to %4$s; highest %5$s on %6$s; average %7$s</item>
     </plurals>
+    <string name="nutrition_stats_energy">Eaten vs burned</string>
+    <string name="nutrition_stats_energy_info">Calories you logged here against the total calories burned that Health Connect reports (from your watch or other apps), for the days that have both. Difference = eaten − burned: negative means more was burned than eaten. Burned calories are estimates by those devices and can be off by 20 % or more, so look at the trend over weeks, not single days.</string>
+    <plurals name="nutrition_stats_energy_summary">
+        <item quantity="one">%1$d day with both · %2$s kcal eaten and %3$s kcal burned (%4$s kcal)</item>
+        <item quantity="other">%1$d days with both · on average %2$s kcal eaten and %3$s kcal burned (%4$s kcal)</item>
+    </plurals>
+    <string name="nutrition_stats_energy_day">Day</string>
+    <string name="nutrition_stats_energy_eaten">Eaten</string>
+    <string name="nutrition_stats_energy_burned">Burned</string>
+    <string name="nutrition_stats_energy_balance">Difference</string>
+    <string name="nutrition_stats_energy_average">Average</string>
 </resources>

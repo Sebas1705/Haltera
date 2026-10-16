@@ -1,0 +1,43 @@
+-- What Haltera wrote to the health platform: one row per workout or body-weight entry, with a fingerprint of
+-- what was written, so an edit is written again, a deletion is deleted there and nothing is written twice.
+-- Device-only, never synced; cleared when the integration is disconnected.
+CREATE TABLE HealthExportEntity (
+    kind        TEXT NOT NULL,                     -- WORKOUT | WEIGHT
+    localId     TEXT NOT NULL,                     -- WorkoutSessionEntity.id or BodyWeightEntity.id
+    fingerprint TEXT NOT NULL,
+    writtenAt   INTEGER NOT NULL,                  -- epoch millis, also the platform record version
+    PRIMARY KEY (kind, localId)
+);
+
+upsert:
+INSERT OR REPLACE INTO HealthExportEntity(kind, localId, fingerprint, writtenAt) VALUES (?, ?, ?, ?);
+
+selectByKind:
+SELECT * FROM HealthExportEntity WHERE kind = ?;
+
+delete:
+DELETE FROM HealthExportEntity WHERE kind = ? AND localId = ?;
+
+deleteAll:
+DELETE FROM HealthExportEntity;
+
+-- Finished workouts started at or after :since (the ones written as exercise sessions).
+selectFinishedSessionsSince:
+SELECT id, startedAt, endedAt, dayName FROM WorkoutSessionEntity
+WHERE endedAt IS NOT NULL AND startedAt >= :since;
+
+-- Body weight logged in Haltera at or after :since; entries imported from the platform (id 'hc-…') never go back.
+selectOwnWeightsSince:
+SELECT id, measuredAt, weightGrams FROM BodyWeightEntity
+WHERE measuredAt >= :since AND substr(id, 1, 3) != 'hc-';
+
+-- An entry imported from the platform, under its deterministic id: importing it twice keeps one row.
+insertImportedWeight:
+INSERT OR IGNORE INTO BodyWeightEntity(id, measuredAt, weightGrams, notes) VALUES (?, ?, ?, '');
+
+bodyWeightExists:
+SELECT COUNT(*) FROM BodyWeightEntity WHERE id = ?;
+
+-- Entries close to a measurement time, to skip a scale reading the user also typed in by hand.
+weightsAround:
+SELECT id, measuredAt, weightGrams FROM BodyWeightEntity WHERE measuredAt >= :from AND measuredAt <= :to;

@@ -10,6 +10,10 @@ import es.sebas1705.haltera.data.repository.export.DataExporter
 import es.sebas1705.haltera.data.repository.export.SqlDataExporter
 import es.sebas1705.haltera.data.repository.importer.HistoryImporter
 import es.sebas1705.haltera.data.repository.importer.SqlHistoryImporter
+import es.sebas1705.haltera.data.repository.health.HealthGateway
+import es.sebas1705.haltera.data.repository.health.HealthRepository
+import es.sebas1705.haltera.data.repository.health.SqlHealthRepository
+import es.sebas1705.haltera.data.repository.health.UnavailableHealthGateway
 import es.sebas1705.haltera.data.repository.NutritionRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
@@ -64,4 +68,14 @@ val repositoryModule = module {
     }
     single<DataExporter> { SqlDataExporter(get(), get(), get(), get(), get(), get(), get(), get(IoDispatcher)) }
     single<HistoryImporter> { SqlHistoryImporter(get(), get(), get(IoDispatcher)) }
+    // The platform binds its HealthGateway (Health Connect on Android); without one the integration is unsupported.
+    single<HealthRepository> {
+        SqlHealthRepository(
+            get(),
+            getOrNull<HealthGateway>() ?: UnavailableHealthGateway,
+            get(),
+            get(IoDispatcher),
+            get(named("now")),
+        )
+    }
 }

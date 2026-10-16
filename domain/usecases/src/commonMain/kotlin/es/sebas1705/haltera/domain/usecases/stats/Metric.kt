@@ -77,4 +77,28 @@ enum class Metric {
 
     /** Two variants or exercises on one chart. */
     COMPARE,
+
+    /** Steps per local day read from the health platform, with the goal line: [ActivityStats.dailySteps]. */
+    STEPS_DAILY,
+
+    /** Mean steps of the 7 complete days before today: [ActivityStats.sevenDayAverage]. */
+    STEPS_AVERAGE,
+
+    /** Most steps in one day of the period: [ActivityStats.best]. */
+    STEPS_BEST,
+
+    /** Consecutive days at or above the steps goal: [ActivityStats.currentStreak], [ActivityStats.longestStreak]. */
+    STEPS_STREAK,
+
+    /** Steps per Monday-to-Sunday week: [ActivityStats.weeklyTotals]. */
+    STEPS_WEEKLY,
+
+    /** Active and total calories burned per day, as the health platform reports them: [ActivityStats.series]. */
+    CALORIES_BURNED,
+
+    /** Daily resting heart rate from the health platform (trend only): [ActivityStats.series]. */
+    RESTING_HEART_RATE,
+
+    /** Sleep per night from the health platform (trend only): [ActivityStats.series]. */
+    SLEEP_DURATION,
 }

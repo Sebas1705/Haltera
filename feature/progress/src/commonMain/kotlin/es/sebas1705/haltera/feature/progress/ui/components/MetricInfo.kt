@@ -207,6 +207,62 @@ internal fun Metric.text(): MetricText = when (this) {
         Res.string.progress_metric_compare_counts,
         Res.string.progress_metric_compare_limits,
     )
+    Metric.STEPS_DAILY -> MetricText(
+        Res.string.progress_metric_steps_daily_title,
+        Res.string.progress_metric_steps_daily_summary,
+        Res.string.progress_metric_steps_daily_formula,
+        Res.string.progress_metric_steps_daily_counts,
+        Res.string.progress_metric_steps_daily_limits,
+    )
+    Metric.STEPS_AVERAGE -> MetricText(
+        Res.string.progress_metric_steps_average_title,
+        Res.string.progress_metric_steps_average_summary,
+        Res.string.progress_metric_steps_average_formula,
+        Res.string.progress_metric_steps_average_counts,
+        Res.string.progress_metric_steps_average_limits,
+    )
+    Metric.STEPS_BEST -> MetricText(
+        Res.string.progress_metric_steps_best_title,
+        Res.string.progress_metric_steps_best_summary,
+        Res.string.progress_metric_steps_best_formula,
+        Res.string.progress_metric_steps_best_counts,
+        Res.string.progress_metric_steps_best_limits,
+    )
+    Metric.STEPS_STREAK -> MetricText(
+        Res.string.progress_metric_steps_streak_title,
+        Res.string.progress_metric_steps_streak_summary,
+        Res.string.progress_metric_steps_streak_formula,
+        Res.string.progress_metric_steps_streak_counts,
+        Res.string.progress_metric_steps_streak_limits,
+    )
+    Metric.STEPS_WEEKLY -> MetricText(
+        Res.string.progress_metric_steps_weekly_title,
+        Res.string.progress_metric_steps_weekly_summary,
+        Res.string.progress_metric_steps_weekly_formula,
+        Res.string.progress_metric_steps_weekly_counts,
+        Res.string.progress_metric_steps_weekly_limits,
+    )
+    Metric.CALORIES_BURNED -> MetricText(
+        Res.string.progress_metric_calories_title,
+        Res.string.progress_metric_calories_summary,
+        Res.string.progress_metric_calories_formula,
+        Res.string.progress_metric_calories_counts,
+        Res.string.progress_metric_calories_limits,
+    )
+    Metric.RESTING_HEART_RATE -> MetricText(
+        Res.string.progress_metric_heart_title,
+        Res.string.progress_metric_heart_summary,
+        Res.string.progress_metric_heart_formula,
+        Res.string.progress_metric_heart_counts,
+        Res.string.progress_metric_heart_limits,
+    )
+    Metric.SLEEP_DURATION -> MetricText(
+        Res.string.progress_metric_sleep_title,
+        Res.string.progress_metric_sleep_summary,
+        Res.string.progress_metric_sleep_formula,
+        Res.string.progress_metric_sleep_counts,
+        Res.string.progress_metric_sleep_limits,
+    )
 }
 
 /**

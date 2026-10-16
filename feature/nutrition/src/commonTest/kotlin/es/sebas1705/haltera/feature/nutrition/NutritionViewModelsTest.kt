@@ -3,6 +3,7 @@ package es.sebas1705.haltera.feature.nutrition
 import es.sebas1705.haltera.data.models.ActivityLevel
 import es.sebas1705.haltera.data.models.BarcodeLookup
 import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.HealthDay
 import es.sebas1705.haltera.data.models.MacroMode
 import es.sebas1705.haltera.data.models.Meal
 import es.sebas1705.haltera.data.models.Objective
@@ -25,6 +26,8 @@ import es.sebas1705.haltera.feature.nutrition.ui.goals.Macro
 import es.sebas1705.haltera.feature.nutrition.ui.search.FoodSearchIntent
 import es.sebas1705.haltera.feature.nutrition.ui.search.FoodSearchViewModel
 import es.sebas1705.haltera.feature.nutrition.ui.search.ScanProblem
+import es.sebas1705.haltera.feature.nutrition.ui.stats.StatsIntent
+import es.sebas1705.haltera.feature.nutrition.ui.stats.StatsRange
 import es.sebas1705.haltera.feature.nutrition.ui.stats.StatsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -205,6 +208,7 @@ class NutritionViewModelsTest {
         val vm = StatsViewModel(
             repo,
             FakeBodyWeightRepository(listOf(BodyWeightEntry("w", 1, 80_000, ""))),
+            FakeHealthRepository(),
             FixedToday,
             TimeZone.UTC
         )
@@ -214,5 +218,33 @@ class NutritionViewModelsTest {
         assertEquals(1, state.adherence?.daysWithin)
         assertEquals((1_900.0 + 380.0) / 2, state.average!!.kcal, 1e-9)
         assertEquals((65.0 + 13.0) / 2 / 80.0, state.proteinPerKg!!, 1e-9)
+        // Not connected to Health Connect: no eaten vs burned.
+        assertEquals(emptyList(), state.energy)
+        assertNull(state.energySummary)
+    }
+
+    @Test
+    fun `eaten vs burned compares the logged days that Health Connect has calories for`() = runTest {
+        repo.addEntry(DAY, Meal.LUNCH, "oats", 500.0) // 1900 kcal
+        repo.addEntry(LocalDate(2026, 10, 14), Meal.LUNCH, "oats", 100.0) // 380 kcal, no Health Connect data
+        val health = FakeHealthRepository(
+            listOf(
+                HealthDay(DAY, totalKcal = 2_400.0, activeKcal = 400.0),
+                HealthDay(LocalDate(2026, 10, 13), totalKcal = 2_200.0), // Nothing logged.
+                HealthDay(LocalDate(2026, 10, 14), steps = 5_000),
+            ),
+        )
+        val vm = StatsViewModel(repo, FakeBodyWeightRepository(), health, FixedToday, TimeZone.UTC)
+        advanceUntilIdle()
+        val state = vm.uiState.value
+        assertEquals(listOf(DAY), state.energy.map { it.date })
+        assertEquals(-500.0, state.energy.single().balance, 1e-9)
+        assertEquals(1, state.energySummary!!.days)
+
+        // Days that leave the range leave the comparison.
+        vm.onEvent(StatsIntent.SetRange(StatsRange.WEEK))
+        health.days.value = health.days.value + HealthDay(LocalDate(2026, 10, 1), totalKcal = 2_000.0)
+        advanceUntilIdle()
+        assertEquals(listOf(DAY), vm.uiState.value.energy.map { it.date })
     }
 }

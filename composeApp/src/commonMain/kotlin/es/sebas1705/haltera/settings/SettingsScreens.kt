@@ -52,6 +52,7 @@ import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.core.units.Weights
 import es.sebas1705.haltera.dataimport.DataImportSection
 import es.sebas1705.haltera.export.DataExportSection
+import es.sebas1705.haltera.health.IntegrationsSection
 import es.sebas1705.haltera.resources.Res
 import es.sebas1705.haltera.resources.back
 import es.sebas1705.haltera.resources.credits_catalog
@@ -65,6 +66,7 @@ import es.sebas1705.haltera.resources.settings_about
 import es.sebas1705.haltera.resources.settings_account
 import es.sebas1705.haltera.resources.settings_bar_weight
 import es.sebas1705.haltera.resources.settings_credits
+import es.sebas1705.haltera.resources.settings_integrations
 import es.sebas1705.haltera.resources.settings_keep_screen_on
 import es.sebas1705.haltera.resources.settings_plates
 import es.sebas1705.haltera.resources.settings_rest_sound
@@ -121,6 +123,7 @@ internal fun BackScaffold(title: StringResource, onBack: () -> Unit, content: @C
     ) { padding -> content(Modifier.padding(padding)) }
 }
 
+@Suppress("LongMethod") // One block per settings section.
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
@@ -176,6 +179,9 @@ fun SettingsScreen(
             }
             SharingSection(settings.shareName.orEmpty()) { viewModel.onEvent(SettingsIntent.SetShareName(it)) }
             DataSections()
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SectionTitle(Res.string.settings_integrations)
+            IntegrationsSection()
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             TextButton(onClick = onAbout, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(stringResource(Res.string.settings_about))

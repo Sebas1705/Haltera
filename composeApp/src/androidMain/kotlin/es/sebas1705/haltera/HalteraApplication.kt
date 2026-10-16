@@ -18,6 +18,10 @@ import es.sebas1705.haltera.dataimport.AndroidImportFileBridge
 import es.sebas1705.haltera.dataimport.ImportFileBridge
 import es.sebas1705.haltera.export.AndroidExportFileBridge
 import es.sebas1705.haltera.export.ExportFileBridge
+import es.sebas1705.haltera.data.health.HealthConnectGateway
+import es.sebas1705.haltera.data.repository.health.HealthGateway
+import es.sebas1705.haltera.health.AndroidHealthConnectBridge
+import es.sebas1705.haltera.health.HealthConnectBridge
 import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import es.sebas1705.haltera.share.AndroidBarcodeScanner
 import es.sebas1705.haltera.settings.AppInfo
@@ -46,6 +50,9 @@ class HalteraApplication : Application() {
                     single<RoutineShareBridge> { AndroidRoutineShareBridge(androidContext(), get()) }
                     single<ExportFileBridge> { AndroidExportFileBridge(androidContext()) }
                     single<ImportFileBridge> { AndroidImportFileBridge(androidContext()) }
+                    // Health Connect (read only in the foreground, after the user connects in Settings → Integrations).
+                    single<HealthGateway> { HealthConnectGateway(androidContext()) }
+                    single<HealthConnectBridge> { AndroidHealthConnectBridge(androidContext()) }
                     single<BarcodeScanner> { AndroidBarcodeScanner() }
                     single { AppVersionName(versionName()) }
                     single { appInfo() }

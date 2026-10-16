@@ -1,0 +1,38 @@
+-- Daily totals read from the phone's health platform (Health Connect on Android), docs/play/DATA-INVENTORY.md.
+-- A local cache for the Activity statistics: device-only, never synced (no SyncTracking triggers), cleared when
+-- the integration is disconnected. A null column means "no data" or "type not read".
+CREATE TABLE HealthDayEntity (
+    date             TEXT NOT NULL PRIMARY KEY,   -- local date yyyy-MM-dd
+    steps            INTEGER,
+    activeKcal       REAL,
+    totalKcal        REAL,
+    restingHeartRate INTEGER,                     -- beats per minute, average of the day
+    sleepMinutes     INTEGER,                     -- sleep of the night that ended on this date
+    updatedAt        INTEGER NOT NULL             -- epoch millis of the read
+);
+
+upsert:
+INSERT OR REPLACE INTO HealthDayEntity(date, steps, activeKcal, totalKcal, restingHeartRate, sleepMinutes, updatedAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- [from, to] inclusive, ISO dates compare as text.
+selectBetween:
+SELECT * FROM HealthDayEntity WHERE date >= :from AND date <= :to ORDER BY date;
+
+countAll:
+SELECT COUNT(*) FROM HealthDayEntity;
+
+clearSteps:
+UPDATE HealthDayEntity SET steps = NULL;
+
+clearCalories:
+UPDATE HealthDayEntity SET activeKcal = NULL, totalKcal = NULL;
+
+clearRestingHeartRate:
+UPDATE HealthDayEntity SET restingHeartRate = NULL;
+
+clearSleep:
+UPDATE HealthDayEntity SET sleepMinutes = NULL;
+
+deleteAll:
+DELETE FROM HealthDayEntity;

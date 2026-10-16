@@ -122,6 +122,7 @@ internal fun StatsScreen(viewModel: StatsViewModel, onBack: () -> Unit) {
                     { AdherenceCard(state) },
                     { ProteinCard(state) },
                     { TrendCard(state) },
+                    { EnergyCard(state) },
                     { WeeklyCard(state) },
                 )
                 if (wide) {

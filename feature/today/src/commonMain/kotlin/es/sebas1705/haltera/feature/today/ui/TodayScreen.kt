@@ -63,6 +63,7 @@ internal fun TodayTab(
         onIntent = { viewModel.onEvent(it) },
         modifier = modifier,
         nutrition = { TodayNutritionCard(onOpen = onOpenNutrition) },
+        steps = { TodayStepsCard() },
     )
 }
 
@@ -72,6 +73,7 @@ internal fun TodayScreen(
     onIntent: (TodayIntent) -> Unit,
     modifier: Modifier = Modifier,
     nutrition: @Composable () -> Unit = {},
+    steps: @Composable () -> Unit = {},
 ) {
     val snackbar = remember { SnackbarHostState() }
     LaunchedEffect(state.error) {
@@ -92,7 +94,7 @@ internal fun TodayScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 TodayColumn(Modifier.weight(1f)) { PlanItems(state, onIntent) }
-                TodayColumn(Modifier.weight(1f)) { SummaryItems(state, onIntent, nutrition) }
+                TodayColumn(Modifier.weight(1f)) { SummaryItems(state, onIntent, nutrition, steps) }
             }
         } else {
             LazyColumn(
@@ -106,7 +108,7 @@ internal fun TodayScreen(
                 item(key = "summary") {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) { SummaryItems(state, onIntent, nutrition) }
+                    ) { SummaryItems(state, onIntent, nutrition, steps) }
                 }
             }
         }
@@ -149,10 +151,16 @@ private fun PlanItems(state: TodayState, onIntent: (TodayIntent) -> Unit) {
     LogPastButton(enabled = !state.starting, onClick = { onIntent(TodayIntent.OpenLogPast) })
 }
 
-/** This week's summary, today's nutrition (when used) and body weight. */
+/** This week's summary, today's steps and nutrition (when used) and body weight. */
 @Composable
-private fun SummaryItems(state: TodayState, onIntent: (TodayIntent) -> Unit, nutrition: @Composable () -> Unit) {
+private fun SummaryItems(
+    state: TodayState,
+    onIntent: (TodayIntent) -> Unit,
+    nutrition: @Composable () -> Unit,
+    steps: @Composable () -> Unit,
+) {
     WeekCard(state.week)
+    steps()
     nutrition()
     BodyWeightCard(
         latest = state.latestWeight,

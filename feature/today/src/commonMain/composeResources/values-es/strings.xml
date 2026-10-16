@@ -125,4 +125,9 @@
     </plurals>
     <string name="today_rest_week_none">Sin días de descanso previstos esta semana</string>
     <string name="today_rest_week_info">Solo informativo: una rutina flexible nunca se salta un entreno. El día siguiente es siempre el que va después de tu última sesión.</string>
+    <string name="today_steps_title">Pasos</string>
+    <string name="today_steps_value">%1$s / %2$s</string>
+    <string name="today_steps_none">Todavía no hay pasos hoy</string>
+    <string name="today_steps_source">De Health Connect</string>
+    <string name="today_steps_reached">Objetivo diario alcanzado</string>
 </resources>

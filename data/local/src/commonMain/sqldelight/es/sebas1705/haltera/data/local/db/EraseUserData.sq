@@ -42,3 +42,9 @@ DELETE FROM SyncState;
 
 eraseSyncCursors:
 DELETE FROM SyncCursor;
+
+eraseHealthDays:
+DELETE FROM HealthDayEntity;
+
+eraseHealthExports:
+DELETE FROM HealthExportEntity;

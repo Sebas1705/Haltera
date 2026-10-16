@@ -196,9 +196,58 @@ class MigrationTest {
     }
 
     @Test
+    fun `migrating from version 6 keeps the data and adds the health tables without sync tracking`() {
+        File("src/commonMain/sqldelight/databases/6.db").copyTo(file, overwrite = true)
+        driver().use { v6 ->
+            v6.execute(
+                null,
+                "INSERT INTO BodyWeightEntity(id, measuredAt, weightGrams, notes) VALUES ('bw1', 5, 80000, '')",
+                0,
+            )
+            v6.execute(
+                null,
+                "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, dayName) VALUES ('s1', 1000, 2000, 'Push')",
+                0,
+            )
+            v6.execute(
+                null,
+                "INSERT INTO MealEntryEntity(id, date, meal, foodId, grams, position, createdAt) " +
+                    "VALUES ('m1', '2026-10-15', 'LUNCH', 'usda-1', 100, 0, 1)",
+                0,
+            )
+            AppDatabase.Schema.migrate(v6, 6, AppDatabase.Schema.version)
+        }
+
+        val db = AppDatabase(driver())
+        assertEquals(80_000L, db.bodyWeightEntityQueries.selectLatest().executeAsOne().weightGrams)
+        assertEquals(2000L, db.workoutSessionEntityQueries.selectById("s1").executeAsOne().endedAt)
+        assertEquals(100.0, db.mealEntryEntityQueries.selectByDate("2026-10-15").executeAsOne().grams)
+
+        val dirtyBefore = db.syncTrackingQueries.countDirty().executeAsOne()
+        db.healthDayEntityQueries.upsert("2026-10-16", 8_500, 320.5, 2_300.0, 57, 445, 9)
+        db.healthExportEntityQueries.upsert("WORKOUT", "s1", "1000|2000|Push", 9)
+        val day = db.healthDayEntityQueries.selectBetween("2026-10-01", "2026-10-31").executeAsOne()
+        assertEquals(8_500L, day.steps)
+        assertEquals(445L, day.sleepMinutes)
+        assertEquals("s1", db.healthExportEntityQueries.selectFinishedSessionsSince(0).executeAsOne().id)
+        // Health tables are device-only: writing them queues nothing for the cloud.
+        assertEquals(dirtyBefore, db.syncTrackingQueries.countDirty().executeAsOne())
+    }
+
+    @Test
+    fun `migrating from version 1 to the latest also creates the health tables`() {
+        File("src/commonMain/sqldelight/databases/1.db").copyTo(file, overwrite = true)
+        driver().use { v1 -> AppDatabase.Schema.migrate(v1, 1, AppDatabase.Schema.version) }
+        val db = AppDatabase(driver())
+        assertEquals(0L, db.healthDayEntityQueries.countAll().executeAsOne())
+        assertEquals(emptyList(), db.healthExportEntityQueries.selectByKind("WORKOUT").executeAsList())
+    }
+
+    @Test
     fun `the schema version is the shipped one plus the migrations`() {
         // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync
-        // covers 1 -> 4); 4 -> 5: flexible rest days; 5 -> 6: author and origin of custom exercises.
-        assertEquals(6L, AppDatabase.Schema.version)
+        // covers 1 -> 4); 4 -> 5: flexible rest days; 5 -> 6: author and origin of custom exercises;
+        // 6 -> 7: Health Connect cache and export ledger.
+        assertEquals(7L, AppDatabase.Schema.version)
     }
 }

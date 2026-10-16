@@ -30,7 +30,7 @@ include(
     ":core:search",
 )
 
-include(":data:models", ":data:local", ":data:repository", ":data:routines", ":data:sync", ":data:remote")
+include(":data:models", ":data:local", ":data:repository", ":data:routines", ":data:sync", ":data:remote", ":data:health")
 
 include(":domain:usecases")
 

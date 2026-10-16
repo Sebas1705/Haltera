@@ -85,6 +85,40 @@ Same proven stack as Owlsplit, started fresh from the Templetry `kmp/modular-fea
 
 Users can create their own exercises and variants (`source = USER`); they behave exactly like catalogue ones.
 
+#### 3.1.1 Custom exercise lifecycle (edit, delete, share)
+
+A logbook never loses history (§1 principle), so every change to a custom exercise keeps the rows sessions and
+routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `restoreCustom`):
+
+- **Edit at any time** (Exercises → detail → Edit): names in both languages (the editor shows the app language and
+  an optional name in the other one), category, level, primary and secondary muscles, instructions, equipment
+  variants and their load type. Ids never change, so history, PRs, progression and routine slots follow the edit.
+  The load step stays per variant in `LoadStepStore` (set from the session keypad) and survives the edit.
+- **What history depends on is fixed**: once the exercise is in a session, its tracking type cannot change; once a
+  variant is in a session, its equipment and load type cannot change (the editor locks them and explains why; the
+  repository rejects it). To log it differently, add another equipment: that is a new variant.
+- **Removing a variant**: deleted when nothing references it; **deprecated** (hidden from pickers and the list's
+  equipment filter, still resolvable by id) while a session or a routine slot references it. Selecting that
+  equipment again restores the same variant. Every exercise keeps at least one active variant.
+- **Delete** (detail → Delete) first shows where it is used: the routines (by name) and the sessions and completed
+  sets. Policy:
+  1. Used in routines: confirming ("Remove from routines and delete") removes those slots (positions stay
+     contiguous, the routines' `updatedAt` moves so they sync); cancelling changes nothing. The repository returns
+     `USED_IN_ROUTINES` and does nothing when the caller did not allow that removal.
+  2. Then, with history (any session references a variant, even an in-progress one): **soft delete**: the exercise
+     is `deprecated`, hidden from the list and every picker, while history, PRs and the progress screens keep showing
+     it by name. The detail shows a banner with **Restore**. It syncs as an update (the payload carries
+     `deprecated`).
+  3. Without history: the rows are deleted and the `exercises` document becomes a **tombstone**.
+- **Sync safety**: a tombstone or a remote edit never deletes a variant this phone logged (possible when the other
+  phone deleted it before this one uploaded a session): the variant, or the whole exercise, is deprecated instead, so
+  the foreign keys of `SessionExerciseEntity` and the other synced data stay valid (`AggregateStore`).
+- **Shared exercises** (§10.1): an exercise imported from a shared routine stores its creator (`author`, shown as
+  "by <name>" in the detail) and `originId` (the exercise id on the creator's phone). Importing it again, from any
+  later share, reuses that copy instead of duplicating it, restoring it if it was soft-deleted, mapping each shared
+  variant by equipment and load type and adding a missing one. The copy is the receiver's own: they may edit or
+  delete it; editing keeps the creator. Importing a routine you shared yourself reuses your own exercise.
+
 ### 3.2 Routines
 
 **`Routine`**: name, description, `cycle: List<RoutineDay>` (ordered, length N ≥ 1), origin (`USER` or copied from a catalogue routine id + version), `isActive`. Exactly one routine can be active; it drives the "Today" tab.
@@ -274,7 +308,29 @@ Percentage-based programmes (5/3/1, nSuns, PHAT) arrive in F9.
 
 ### 10.1 Sharing format (built in F8, fixed now)
 
-`haltera-routine v1`: JSON referencing catalogue exercises by stable id, embedding any user exercises. Without an account: `.haltera` file, QR code (deflate + base64url) or link with data in the fragment (`haltera.web.app/r#<data>`). With an account: short link `haltera.web.app/r/{code}` backed by Firestore. Import always shows a preview and creates a copy. Import still reads the formats written under the former name Ironlog: format key `ironlog-routine`, `.ironlog` files, `ironlog:r1:`, `IRONLOG:R2:` and `IRONLOG:T1:` codes.
+`haltera-routine`: JSON referencing catalogue exercises by stable id, embedding any user exercises. Without an account: `.haltera` file, QR code (deflate + base64url) or link with data in the fragment (`haltera.web.app/r#<data>`). With an account: short link `haltera.web.app/r/{code}` backed by Firestore. Import always shows a preview and creates a copy. Import still reads the formats written under the former name Ironlog: format key `ironlog-routine`, `.ironlog` files, `ironlog:r1:`, `IRONLOG:R2:` and `IRONLOG:T1:` codes.
+
+**Version 2** (custom exercise lifecycle, §3.1.1). Each embedded custom exercise may carry `instructions`
+(`{en, es}` step lists), `author` (the creator's name) and `originId` (its id on the creator's phone). The three
+fields are omitted when unset, so the rest of the JSON is unchanged.
+
+- **Which version is written**: `version: 2` only when the file embeds custom exercises; a routine of catalogue
+  exercises is still written as `version: 1`, byte-compatible, so app versions from before this change import it.
+  They report a version 2 file as "made by a newer version" (update the app), as they did before for any newer file.
+- **The QR envelope does not change**: `HALTERA:R2:` + base45(deflate(JSON)) carries either version; the version
+  lives in the JSON, so a new QR prefix would only turn the clear "update the app" message on older apps into "not
+  a Haltera code". Template codes `HALTERA:T1:` are unchanged.
+- **Reading**: versions 1 and 2, the legacy `ironlog-routine` key, `ironlog:r1:` / `IRONLOG:R2:` / `IRONLOG:T1:`
+  codes, unknown fields ignored. A version 1 exercise has no `originId`; its `id` (`user-<uuid>`, unique) is used as
+  the origin, so re-importing an old file is deduplicated too. A creator name longer than 60 characters is cut.
+- **Creator name**: Settings → Sharing → "Your name for shared routines" (device-local, at most 40 characters). It
+  starts unset and is filled once with the Google display name when a Google account is linked; whatever the user
+  types (or clears) is kept. Blank means the share carries no `author`. The sharer's name goes only on the
+  exercises they created; an imported exercise keeps its original creator when it is shared again.
+- **QR size**: the QR code holds at most `RoutineShareCode.MAX_QR_LENGTH` (2,000) characters. When the full code is
+  longer and custom exercises have instructions, the QR code leaves the instructions out (names, muscles, variants,
+  author and origin stay); the `.haltera` file always keeps everything. If it is still too long, the export screen
+  says the routine is too large for a QR code (custom exercises make it bigger) and to share it as a file.
 
 ### 10.2 Nutrition sources (F7, decided now)
 

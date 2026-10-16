@@ -4,6 +4,7 @@ import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.Level
+import es.sebas1705.haltera.data.models.LoadType
 import es.sebas1705.haltera.data.models.Muscle
 import es.sebas1705.haltera.data.models.TrackingType
 import es.sebas1705.haltera.feature.exercises.resources.Res
@@ -58,6 +59,12 @@ import es.sebas1705.haltera.feature.exercises.resources.exercises_tracking_weigh
 import es.sebas1705.haltera.feature.exercises.resources.exercises_tracking_weight_time
 import es.sebas1705.haltera.feature.exercises.resources.exercises_unit_kg
 import es.sebas1705.haltera.feature.exercises.resources.exercises_unit_lb
+import es.sebas1705.haltera.feature.exercises.resources.exercises_load_type_band
+import es.sebas1705.haltera.feature.exercises.resources.exercises_load_type_barbell
+import es.sebas1705.haltera.feature.exercises.resources.exercises_load_type_bodyweight
+import es.sebas1705.haltera.feature.exercises.resources.exercises_load_type_dumbbell
+import es.sebas1705.haltera.feature.exercises.resources.exercises_load_type_machine
+import es.sebas1705.haltera.feature.exercises.resources.exercises_load_type_none
 import org.jetbrains.compose.resources.StringResource
 
 // Display names of the catalogue enums.
@@ -135,4 +142,14 @@ internal val WeightUnit.label: StringResource
     get() = when (this) {
         WeightUnit.KG -> Res.string.exercises_unit_kg
         WeightUnit.LB -> Res.string.exercises_unit_lb
+    }
+
+internal val LoadType.label: StringResource
+    get() = when (this) {
+        LoadType.BARBELL -> Res.string.exercises_load_type_barbell
+        LoadType.DUMBBELL -> Res.string.exercises_load_type_dumbbell
+        LoadType.MACHINE -> Res.string.exercises_load_type_machine
+        LoadType.BODYWEIGHT -> Res.string.exercises_load_type_bodyweight
+        LoadType.BAND -> Res.string.exercises_load_type_band
+        LoadType.NONE -> Res.string.exercises_load_type_none
     }

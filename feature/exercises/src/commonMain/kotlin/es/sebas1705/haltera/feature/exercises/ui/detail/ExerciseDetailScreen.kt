@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -48,7 +49,9 @@ import es.sebas1705.haltera.feature.exercises.model.localDate
 import es.sebas1705.haltera.feature.exercises.resources.Res
 import es.sebas1705.haltera.feature.exercises.resources.exercises_back
 import es.sebas1705.haltera.feature.exercises.resources.exercises_date_full
+import es.sebas1705.haltera.feature.exercises.resources.exercises_delete_failed
 import es.sebas1705.haltera.feature.exercises.resources.exercises_detail_category
+import es.sebas1705.haltera.feature.exercises.resources.exercises_detail_by
 import es.sebas1705.haltera.feature.exercises.resources.exercises_detail_history
 import es.sebas1705.haltera.feature.exercises.resources.exercises_detail_instructions
 import es.sebas1705.haltera.feature.exercises.resources.exercises_detail_level
@@ -89,11 +92,22 @@ internal fun ExerciseDetailScreen(
     exerciseId: String,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    onEdit: () -> Unit = {},
     viewModel: ExerciseDetailViewModel = koinViewModel { parametersOf(exerciseId) },
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val language = Locale.current.language
     LaunchedEffect(language) { viewModel.onEvent(ExerciseDetailIntent.SetLanguage(language)) }
+    LaunchedEffect(state.closed) { if (state.closed) onBack() }
+    state.deleteUsage?.let { usage ->
+        DeleteDialog(
+            name = state.detail?.name.orEmpty(),
+            usage = usage,
+            deleting = state.deleting,
+            onConfirm = { viewModel.onEvent(ExerciseDetailIntent.ConfirmDelete) },
+            onDismiss = { viewModel.onEvent(ExerciseDetailIntent.DismissDelete) },
+        )
+    }
 
     Scaffold(
         modifier = modifier,
@@ -110,6 +124,12 @@ internal fun ExerciseDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    val detail = state.detail
+                    if (detail != null && detail.custom && !detail.deleted) {
+                        CustomActions(onEdit) { viewModel.onEvent(ExerciseDetailIntent.RequestDelete) }
+                    }
+                },
                 windowInsets = WindowInsets(0),
             )
         },
@@ -124,6 +144,7 @@ internal fun ExerciseDetailScreen(
                 detail = detail,
                 state = state,
                 onSelectVariant = { viewModel.onEvent(ExerciseDetailIntent.SelectVariant(it)) },
+                onRestore = { viewModel.onEvent(ExerciseDetailIntent.Restore) },
                 modifier = content,
             )
         }
@@ -136,16 +157,27 @@ private fun DetailContent(
     detail: ExerciseDetail,
     state: ExerciseDetailState,
     onSelectVariant: (String) -> Unit,
+    onRestore: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
+    // The deleted banner is the first item: show it when the exercise becomes deleted.
+    val listState = rememberLazyListState()
+    LaunchedEffect(detail.deleted) { if (detail.deleted) listState.animateScrollToItem(0) }
     // The window height caps the photo (landscape), so the variants and facts stay in the first screen.
     BoxWithConstraints(modifier) {
         val mediaMaxHeight = maxHeight * MEDIA_MAX_HEIGHT_FRACTION
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize().centeredContent(),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            if (detail.deleted) item(key = "deleted") { DeletedBanner(onRestore) }
+            if (state.deleteFailed) {
+                item(
+                    key = "delete-failed"
+                ) { ErrorText(stringResource(Res.string.exercises_delete_failed)) }
+            }
             item(key = "media") {
                 ExerciseMedia(
                     exerciseName = detail.name,
@@ -192,6 +224,9 @@ private fun Facts(detail: ExerciseDetail) {
         itemVerticalAlignment = Alignment.CenterVertically,
     ) {
         if (detail.custom) CustomBadge()
+        detail.author?.let {
+            Text(stringResource(Res.string.exercises_detail_by, it), style = MaterialTheme.typography.bodyMedium)
+        }
         Fact(stringResource(Res.string.exercises_detail_category), stringResource(detail.category.label))
         Fact(stringResource(Res.string.exercises_detail_level), stringResource(detail.level.label))
         Fact(stringResource(Res.string.exercises_detail_tracking), stringResource(detail.trackingType.label))

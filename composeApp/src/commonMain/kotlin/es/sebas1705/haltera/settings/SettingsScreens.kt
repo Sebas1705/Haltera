@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,12 +34,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import es.sebas1705.haltera.account.AccountSection
+import es.sebas1705.haltera.core.datastore.MAX_SHARE_NAME
 import es.sebas1705.haltera.core.ui.adaptive.centeredContent
 import es.sebas1705.haltera.core.ui.components.HalteraLogo
 import es.sebas1705.haltera.core.ui.theme.FontLicence
@@ -64,6 +69,9 @@ import es.sebas1705.haltera.resources.settings_keep_screen_on
 import es.sebas1705.haltera.resources.settings_plates
 import es.sebas1705.haltera.resources.settings_rest_sound
 import es.sebas1705.haltera.resources.settings_rest_vibration
+import es.sebas1705.haltera.resources.settings_share_name
+import es.sebas1705.haltera.resources.settings_share_name_hint
+import es.sebas1705.haltera.resources.settings_sharing
 import es.sebas1705.haltera.resources.settings_title
 import es.sebas1705.haltera.resources.settings_units
 import es.sebas1705.haltera.resources.unit_kg
@@ -166,7 +174,7 @@ fun SettingsScreen(
             SwitchRow(Res.string.settings_rest_vibration, settings.restVibration) {
                 viewModel.onEvent(SettingsIntent.SetRestVibration(it))
             }
-            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            SharingSection(settings.shareName.orEmpty()) { viewModel.onEvent(SettingsIntent.SetShareName(it)) }
             DataSections()
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             TextButton(onClick = onAbout, modifier = Modifier.padding(horizontal = 8.dp)) {
@@ -273,3 +281,20 @@ internal fun String.reflowed(): String = replace("\r\n", "\n")
     .split(Regex("\n\\s*\n"))
     .joinToString("\n\n") { paragraph -> paragraph.lines().joinToString(" ") { it.trim() }.trim() }
     .trim()
+
+/** "Your name for shared routines" (core design §10.1): stored as typed; blank shares no name. */
+@Composable
+private fun SharingSection(name: String, onChange: (String) -> Unit) {
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    SectionTitle(Res.string.settings_sharing)
+    OutlinedTextField(
+        value = name,
+        onValueChange = { onChange(it.take(MAX_SHARE_NAME)) },
+        label = { Text(stringResource(Res.string.settings_share_name)) },
+        supportingText = { Text(stringResource(Res.string.settings_share_name_hint)) },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words, imeAction = ImeAction.Done),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+    )
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+}

@@ -75,4 +75,21 @@ class SettingsRepositoryTest {
         assertEquals(null, reloaded.sex)
         assertEquals(160, reloaded.proteinG)
     }
+
+    @Test
+    fun `the name for shared routines starts unset, persists as typed, survives a unit switch and resets`() {
+        val repo = KeyValueSettingsRepository(store)
+        assertEquals(null, repo.settings.value.shareName)
+        repo.setShareName("Ana ")
+        assertEquals("Ana ", KeyValueSettingsRepository(store).settings.value.shareName)
+        repo.setShareName("x".repeat(100))
+        assertEquals(MAX_SHARE_NAME, repo.settings.value.shareName?.length)
+        repo.setShareName("")
+        assertEquals("", KeyValueSettingsRepository(store).settings.value.shareName)
+        repo.setShareName("Ana")
+        repo.setUnit(WeightUnit.LB)
+        assertEquals("Ana", repo.settings.value.shareName)
+        repo.reset()
+        assertEquals(null, KeyValueSettingsRepository(store).settings.value.shareName)
+    }
 }

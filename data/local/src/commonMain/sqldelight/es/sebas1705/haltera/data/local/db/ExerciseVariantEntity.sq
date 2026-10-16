@@ -61,3 +61,14 @@ SELECT * FROM ExerciseVariantEntity WHERE id IN ?;
 
 countActive:
 SELECT COUNT(*) FROM ExerciseVariantEntity WHERE deprecated = 0;
+
+-- Custom exercise editor: a USER variant's position, equipment, load type and name; deprecated = removed while
+-- history or routines still reference it.
+updateUser:
+UPDATE ExerciseVariantEntity
+SET position = :position, equipment = :equipment, loadType = :loadType, nameEn = :nameEn, nameEs = :nameEs,
+    deprecated = :deprecated, updatedAt = :updatedAt
+WHERE id = :id AND source = 'USER';
+
+deleteUser:
+DELETE FROM ExerciseVariantEntity WHERE id = ? AND source = 'USER';

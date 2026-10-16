@@ -3,6 +3,7 @@ package es.sebas1705.haltera.feature.routines.ui.share
 import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
 import es.sebas1705.haltera.core.common.mvi.MVIBaseState
 import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.core.datastore.SettingsRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.share.RoutineShareCode
 import es.sebas1705.haltera.data.repository.share.RoutineSharing
@@ -31,19 +32,20 @@ internal class RoutineExportViewModel(
     private val routines: RoutineRepository,
     private val sharing: RoutineSharing,
     private val bridge: RoutineShareBridge,
+    private val settings: SettingsRepository,
 ) : MVIBaseViewModel<RoutineExportState, RoutineExportIntent>(RoutineExportState()) {
 
     override fun intentHandler(intent: RoutineExportIntent): Job = execute {
         when (intent) {
             is RoutineExportIntent.ShareFile -> guarded {
                 val name = routines.getRoutine(intent.routineId)?.name.orEmpty()
-                val json = checkNotNull(sharing.export(intent.routineId)) { "missing routine" }
+                val json = checkNotNull(sharing.export(intent.routineId, author())) { "missing routine" }
                 bridge.shareFile(fileName(name), json)
             }
             is RoutineExportIntent.ShowQr -> guarded {
                 val name = routines.getRoutine(intent.routineId)?.name.orEmpty()
                 // A template code for an unmodified catalogue copy, else base45 (QR alphanumeric mode).
-                val code = checkNotNull(sharing.shareCode(intent.routineId)) { "missing routine" }
+                val code = checkNotNull(sharing.shareCode(intent.routineId, author())) { "missing routine" }
                     .takeIf { it.length <= RoutineShareCode.MAX_QR_LENGTH }
                 updateState { it.copy(qr = QrState(name, code)) }
             }
@@ -51,6 +53,9 @@ internal class RoutineExportViewModel(
             RoutineExportIntent.ErrorShown -> updateState { it.copy(error = false) }
         }
     }
+
+    /** "Your name for shared routines", or null when the user left it empty. */
+    private fun author(): String? = settings.settings.value.shareName?.trim()?.takeIf { it.isNotEmpty() }
 
     private suspend fun guarded(block: suspend () -> Unit) {
         if (currentState.busy) return

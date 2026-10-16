@@ -130,4 +130,46 @@
         <item>Nov</item>
         <item>Dec</item>
     </string-array>
+    <!-- Custom exercises: edit, delete, share origin (core design §3.1.1) -->
+    <string name="exercises_edit">Edit exercise</string>
+    <string name="exercises_edit_action">Edit</string>
+    <string name="exercises_delete_action">Delete</string>
+    <string name="exercises_create_name_es_optional">Name in Spanish (optional)</string>
+    <string name="exercises_create_name_en_optional">Name in English (optional)</string>
+    <string name="exercises_create_other_name_hint">Empty: the same name in both languages.</string>
+    <string name="exercises_create_level">Level</string>
+    <string name="exercises_create_secondary">Secondary muscles</string>
+    <string name="exercises_create_load_types">Load type of each variant</string>
+    <string name="exercises_create_variant_locked">Has history: its equipment and load type are fixed. Pick another equipment to add a new variant.</string>
+    <string name="exercises_create_tracking_locked">This exercise has history, so what each set records is fixed.</string>
+    <string name="exercises_create_removed_logged">Equipment you removed that has history is hidden, not deleted: its history stays.</string>
+    <string name="exercises_create_instructions">Instructions (one step per line)</string>
+    <string name="exercises_load_type_barbell">Bar + plates</string>
+    <string name="exercises_load_type_dumbbell">Weight per hand</string>
+    <string name="exercises_load_type_machine">Machine (kg or stack)</string>
+    <string name="exercises_load_type_bodyweight">Bodyweight ±</string>
+    <string name="exercises_load_type_band">Band level</string>
+    <string name="exercises_load_type_none">No load</string>
+    <string name="exercises_detail_by">by %1$s</string>
+    <string name="exercises_detail_deleted">You deleted this exercise. It is hidden from the list and pickers but stays here so your history keeps its name.</string>
+    <string name="exercises_restore">Restore</string>
+    <string name="exercises_delete_title">Delete %1$s?</string>
+    <string name="exercises_delete_unused">Nothing uses it: it will be removed for good.</string>
+    <plurals name="exercises_delete_routines">
+        <item quantity="one">Used in %1$d routine: %2$s. Deleting removes it from that routine.</item>
+        <item quantity="other">Used in %1$d routines: %2$s. Deleting removes it from those routines.</item>
+    </plurals>
+    <plurals name="exercises_delete_sessions">
+        <item quantity="one">Logged in %1$d session.</item>
+        <item quantity="other">Logged in %1$d sessions.</item>
+    </plurals>
+    <plurals name="exercises_delete_sets">
+        <item quantity="one">%1$d completed set.</item>
+        <item quantity="other">%1$d completed sets.</item>
+    </plurals>
+    <string name="exercises_delete_hidden">Your history keeps it: the exercise is only hidden from the list and pickers.</string>
+    <string name="exercises_delete_confirm">Delete</string>
+    <string name="exercises_delete_confirm_routines">Remove from routines and delete</string>
+    <string name="exercises_cancel">Cancel</string>
+    <string name="exercises_delete_failed">Could not delete the exercise.</string>
 </resources>

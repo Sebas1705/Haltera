@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.data.repository
 
+import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.models.DayKind
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.ExerciseCategory
@@ -49,10 +50,13 @@ class RoutineSharingTest {
         val sharing: DefaultRoutineSharing,
     )
 
-    private fun TestScope.env(): Env {
+    /** The receiver of a shared routine: another phone, with its own database. */
+    private val otherDb = inMemoryDatabase().withTestCatalog()
+
+    private fun TestScope.env(database: AppDatabase = db): Env {
         val dispatcher = UnconfinedTestDispatcher(testScheduler)
-        val routines = SqlRoutineRepository(db, FamousRoutines.all, dispatcher, clock)
-        val exercises = SqlExerciseRepository(db, HistoryLoader(db), dispatcher, clock)
+        val routines = SqlRoutineRepository(database, FamousRoutines.all, dispatcher, clock)
+        val exercises = SqlExerciseRepository(database, HistoryLoader(database), dispatcher, clock)
         return Env(routines, exercises, DefaultRoutineSharing(routines, exercises, clock))
     }
 
@@ -109,7 +113,7 @@ class RoutineSharingTest {
     }
 
     @Test
-    fun `custom exercises are embedded and recreated with fresh ids`() = runTest {
+    fun `custom exercises are embedded and recreated with fresh ids on another phone`() = runTest {
         val env = env()
         val id = env.seedRoutine()
         val json = env.sharing.export(id)!!
@@ -117,11 +121,12 @@ class RoutineSharingTest {
         val embedded = file.customExercises.single()
         assertEquals("Sled push", embedded.name.en)
 
-        val copyId = env.sharing.import(ready(env.sharing.preview(json)), dropMissing = false)
-        val target = env.routines.getRoutine(copyId)!!.days[0].slots[2].target as SlotTarget.Fixed
+        val receiver = env(otherDb)
+        val copyId = receiver.sharing.import(ready(receiver.sharing.preview(json)), dropMissing = false)
+        val target = receiver.routines.getRoutine(copyId)!!.days[0].slots[2].target as SlotTarget.Fixed
         assertNotEquals(embedded.variants.single().id, target.variantId)
         assertTrue(target.variantId.startsWith("user-"))
-        val created = env.exercises.getExercise(env.exercises.getVariant(target.variantId)!!.exerciseId)!!
+        val created = receiver.exercises.getExercise(receiver.exercises.getVariant(target.variantId)!!.exerciseId)!!
         assertEquals(ExerciseSource.USER, created.source)
         assertEquals("Sled push", created.name.en)
     }
@@ -156,8 +161,8 @@ class RoutineSharingTest {
     @Test
     fun `a newer version is reported as unsupported`() = runTest {
         val env = env()
-        val result = env.sharing.preview("""{"format":"haltera-routine","version":2,"routine":{"name":"X"}}""")
-        assertEquals(2, assertIs<ImportPreviewResult.UnsupportedVersion>(result).version)
+        val result = env.sharing.preview("""{"format":"haltera-routine","version":3,"routine":{"name":"X"}}""")
+        assertEquals(3, assertIs<ImportPreviewResult.UnsupportedVersion>(result).version)
     }
 
     @Test

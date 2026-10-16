@@ -26,6 +26,10 @@ data class ExerciseDetailRoute(val exerciseId: String)
 @Serializable
 internal data object NewExerciseRoute
 
+/** Nested: the editor of an existing custom exercise. */
+@Serializable
+internal data class EditExerciseRoute(val exerciseId: String)
+
 /**
  * Registers the exercises destinations. The app shell calls this from its NavHost.
  * Nested destinations (detail, custom exercise editor) are added here and navigated with [navController].
@@ -41,7 +45,11 @@ fun NavGraphBuilder.exercisesGraph(
     }
     composable<ExerciseDetailRoute> { entry ->
         val route = entry.toRoute<ExerciseDetailRoute>()
-        ExerciseDetailScreen(exerciseId = route.exerciseId, onBack = { navController.popBackStack() })
+        ExerciseDetailScreen(
+            exerciseId = route.exerciseId,
+            onBack = { navController.popBackStack() },
+            onEdit = { navController.navigate(EditExerciseRoute(route.exerciseId)) { launchSingleTop = true } },
+        )
     }
     composable<NewExerciseRoute> {
         NewExerciseScreen(
@@ -52,6 +60,15 @@ fun NavGraphBuilder.exercisesGraph(
                     popUpTo<NewExerciseRoute> { inclusive = true }
                 }
             },
+        )
+    }
+    composable<EditExerciseRoute> { entry ->
+        val route = entry.toRoute<EditExerciseRoute>()
+        // Saving returns to the detail, which shows the edited exercise.
+        NewExerciseScreen(
+            onBack = { navController.popBackStack() },
+            onSaved = { navController.popBackStack() },
+            exerciseId = route.exerciseId,
         )
     }
 }

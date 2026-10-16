@@ -1,0 +1,7 @@
+-- Version 5 -> 6: custom exercises shared inside a routine keep their creator's name and a stable origin id
+-- (routine share format v2, core design §3.1.1 and §10.1), so the receiver sees "by <creator>" and importing the
+-- same exercise again reuses it. Existing rows keep NULL in both: they were created on this device.
+ALTER TABLE ExerciseEntity ADD COLUMN author TEXT;
+ALTER TABLE ExerciseEntity ADD COLUMN originId TEXT;
+
+CREATE INDEX ExerciseEntity_originId ON ExerciseEntity(originId);

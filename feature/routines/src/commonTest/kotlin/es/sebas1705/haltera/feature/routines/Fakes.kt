@@ -297,6 +297,8 @@ class FakeSettingsRepository(unit: WeightUnit = WeightUnit.KG) : SettingsReposit
     override fun setRestSound(enabled: Boolean) = Unit
 
     override fun setRestVibration(enabled: Boolean) = Unit
+
+    override fun setShareName(name: String) = state.update { it.copy(shareName = name) }
 }
 
 internal val english = AppLanguage { "en" }

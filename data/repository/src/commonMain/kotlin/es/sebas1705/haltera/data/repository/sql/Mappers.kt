@@ -75,6 +75,8 @@ internal fun ExerciseEntity.toModel(variants: List<ExerciseVariant> = emptyList(
     source = ExerciseSource.fromDb(source),
     deprecated = deprecated != 0L,
     variants = variants,
+    author = author,
+    originId = originId,
 )
 
 internal fun ExerciseVariantEntity.toModel() = ExerciseVariant(

@@ -13,6 +13,7 @@ The core spec ([2026-10-14-haltera-core-design.md](../designs/2026-10-14-haltera
 | F3 | Routines | Routine editor and famous routines catalogue | F2 | MVP (first cut, 2026-10-14) |
 | F4 | Live session | Today tab, session, timers, foreground service, progression engine | F3 | MVP (first cut, 2026-10-14) |
 | F5 | Progress + release | Calendar, history, PRs, charts, settings; Doppler, signing and Play Alpha | F4 | MVP (first cut, 2026-10-14) |
+| P1–P11 | [Post-launch roadmap](2026-10-16-post-launch-roadmap.md) | Export, import (Hevy/Strong/FitNotes), opt-in cloud copy, Health Connect, widgets, measurements, iOS scanners, watch decision, routine links | F5 (launched) | Planned |
 
 Changes against the spec's phase table (§10), agreed when planning F1:
 

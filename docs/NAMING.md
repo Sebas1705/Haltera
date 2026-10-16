@@ -39,3 +39,8 @@ tracked file outside this list. The list lives in the script.
   `docs/designs/2026-10-14-haltera-core-design.md` (share format),
   `composeApp/src/androidMain/AndroidManifest.xml` (`.ironlog` intent filter), and the share decoders with their test:
   `RoutineExport.kt`, `RoutineShareCode.kt`, `RoutineSharingTest.kt`.
+- The four public pages under `firebase/hosting` (privacy and account deletion, English and Spanish) and
+  `scripts/hosting-pages.test.mjs`, which caps how often they mention it: users of the earlier Ironlog test builds
+  must be able to find their data and the deletion route.
+- `docs/play/PLAY-CONSOLE-GUIDE.md` and `docs/play/DATA-INVENTORY.md` (migration of the Ironlog testers and cloud data,
+  legacy package and Firebase apps).

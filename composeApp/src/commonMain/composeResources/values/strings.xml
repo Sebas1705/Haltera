@@ -61,4 +61,12 @@
     <string name="about_delete_account">Delete my account and data</string>
     <string name="about_legal">Legal</string>
     <string name="about_health">Health information</string>
+
+    <!-- Settings: Data, Export my data -->
+    <string name="export_section">Data</string>
+    <string name="export_text">Save everything you logged (sessions, body weight, meals, routines) as CSV and JSON files in one zip, to keep or to open in a spreadsheet. Loads are always in kilograms. The exercise catalogue is not included.</string>
+    <string name="export_action">Export my data</string>
+    <string name="export_done">Export saved. Sets: %1$d, body weight entries: %2$d, meal entries: %3$d.</string>
+    <string name="export_failed">The export could not be written. Try another location.</string>
+    <string name="export_dismiss">OK</string>
 </resources>

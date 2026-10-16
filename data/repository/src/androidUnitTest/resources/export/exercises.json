@@ -1,0 +1,30 @@
+{
+    "format": "haltera-exercises",
+    "version": 1,
+    "exercises": [
+        {
+            "id": "user-ex1",
+            "name": {
+                "en": "Leg press, 45°",
+                "es": "Prensa 45°"
+            },
+            "category": "STRENGTH",
+            "level": "BEGINNER",
+            "primaryMuscles": [
+                "QUADRICEPS"
+            ],
+            "secondaryMuscles": [
+                "GLUTES"
+            ],
+            "trackingType": "WEIGHT_REPS",
+            "variants": [
+                {
+                    "id": "user-ex1.machine",
+                    "equipment": "MACHINE",
+                    "loadType": "MACHINE",
+                    "name": null
+                }
+            ]
+        }
+    ]
+}

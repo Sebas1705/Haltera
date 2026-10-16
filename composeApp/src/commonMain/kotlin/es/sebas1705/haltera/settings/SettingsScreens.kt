@@ -45,6 +45,7 @@ import es.sebas1705.haltera.core.ui.theme.readFontLicences
 import es.sebas1705.haltera.core.units.PlateCalculator
 import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.core.units.Weights
+import es.sebas1705.haltera.export.DataExportSection
 import es.sebas1705.haltera.resources.Res
 import es.sebas1705.haltera.resources.back
 import es.sebas1705.haltera.resources.credits_catalog
@@ -164,6 +165,8 @@ fun SettingsScreen(
             SwitchRow(Res.string.settings_rest_vibration, settings.restVibration) {
                 viewModel.onEvent(SettingsIntent.SetRestVibration(it))
             }
+            HorizontalDivider(Modifier.padding(vertical = 8.dp))
+            DataExportSection()
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             TextButton(onClick = onAbout, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(stringResource(Res.string.settings_about))

@@ -66,11 +66,11 @@ internal data class SlotUi(
 
 internal data class DayOptionUi(val index: Int, val name: String, val isRest: Boolean)
 
-/** The current week (Monday first) and its totals. [volumeGrams] is in gram-reps. */
+/** The current week (Monday first) and its totals: sessions and counted sets (completed, not warm-up). */
 internal data class WeekUi(
     val days: List<WeekDayUi> = emptyList(),
     val sessionCount: Int = 0,
-    val volumeGrams: Long = 0,
+    val setCount: Int = 0,
 )
 
 /** [isoDayOfWeek] is 1 (Monday) to 7 (Sunday). */

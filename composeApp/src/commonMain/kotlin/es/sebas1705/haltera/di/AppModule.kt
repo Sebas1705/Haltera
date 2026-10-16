@@ -1,6 +1,7 @@
 package es.sebas1705.haltera.di
 
 import es.sebas1705.haltera.account.AccountViewModel
+import es.sebas1705.haltera.account.CloudPromptViewModel
 import es.sebas1705.haltera.account.DatabaseLocalDataEraser
 import es.sebas1705.haltera.account.LocalDataEraser
 import es.sebas1705.haltera.account.SyncStarter
@@ -27,12 +28,13 @@ import org.koin.dsl.module
 
 val appModule = module {
     single { createDatabase(get<DatabaseDriverFactory>()) }
-    // Anonymous sign-in, then the sync engine, once the catalogue is imported (the only start).
-    single { SyncStarter(get(), get()) }
+    // The sync engine (and the anonymous sign-in once the cloud copy is on), after the catalogue import (the only start).
+    single { SyncStarter(get(), get(), get()) }
     viewModel { StartupViewModel(get(), get(), onImported = { get<SyncStarter>().start() }) }
     viewModelOf(::SettingsViewModel)
     single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get()) }
-    viewModel { AccountViewModel(get(), get(), get(), get(), get()) }
+    viewModel { AccountViewModel(get(), get(), get(), get(), get(), get()) }
+    viewModel { CloudPromptViewModel(get(), get(), get()) }
     single { IncomingRoutineChannel() }
     viewModel { DataExportViewModel(get(), get(), get()) }
 }

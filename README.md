@@ -2,7 +2,7 @@
 
 Haltera was formerly called Ironlog (see [docs/NAMING.md](docs/NAMING.md)).
 
-A free gym app for Android and iOS (Kotlin Multiplatform): flexible N-day routines, equipment-aware load logging, automatic rest timers, double progression, an exercise catalogue covering every kind of training and a catalogue of well-known routines. Body weight, nutrition and sync come later.
+A free gym app for Android and iOS (Kotlin Multiplatform): flexible N-day routines, equipment-aware load logging, automatic rest timers, double progression, an exercise catalogue covering every kind of training and a catalogue of well-known routines. Body weight and nutrition logging are included. An optional cloud copy of your logbook (off until you turn it on, deletable any time) can be switched on in Settings → Account.
 
 - Design: [docs/designs/2026-10-14-haltera-core-design.md](docs/designs/2026-10-14-haltera-core-design.md)
 - Your data is yours: Settings → Data → Export my data writes CSV and JSON ([format](docs/EXPORT-FORMAT.md)).

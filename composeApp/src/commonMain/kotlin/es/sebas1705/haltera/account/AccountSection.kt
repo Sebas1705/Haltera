@@ -3,6 +3,8 @@ package es.sebas1705.haltera.account
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.Switch
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.material3.Checkbox
 import androidx.compose.ui.Alignment
@@ -28,6 +30,17 @@ import es.sebas1705.haltera.data.sync.SyncStatus
 import es.sebas1705.haltera.resources.Res
 import es.sebas1705.haltera.resources.account_anonymous
 import es.sebas1705.haltera.resources.account_cancel
+import es.sebas1705.haltera.resources.account_cloud_off
+import es.sebas1705.haltera.resources.account_cloud_off_confirm
+import es.sebas1705.haltera.resources.account_cloud_off_delete
+import es.sebas1705.haltera.resources.account_cloud_off_delete_hint
+import es.sebas1705.haltera.resources.account_cloud_off_kept
+import es.sebas1705.haltera.resources.account_cloud_off_text
+import es.sebas1705.haltera.resources.account_cloud_off_title
+import es.sebas1705.haltera.resources.account_cloud_switch
+import es.sebas1705.haltera.resources.account_cloud_turned_off
+import es.sebas1705.haltera.resources.account_cloud_turned_off_deleted
+import es.sebas1705.haltera.resources.account_cloud_what
 import es.sebas1705.haltera.resources.account_delete
 import es.sebas1705.haltera.resources.account_delete_confirm
 import es.sebas1705.haltera.resources.account_delete_erase_local
@@ -60,7 +73,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
-/** Settings → Account: who is signed in, sync status, Google link/sign-in, sign out, delete. */
+/** Settings → Account: the cloud copy switch, who is signed in, sync status, Google, sign out, delete. */
 @Composable
 fun AccountSection(viewModel: AccountViewModel = koinViewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
@@ -68,8 +81,11 @@ fun AccountSection(viewModel: AccountViewModel = koinViewModel()) {
         Modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        Text(sessionLine(state.session), style = MaterialTheme.typography.bodyLarge)
-        state.syncStatus?.let { Text(syncLine(it), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        if (state.session != AccountSession.NotConfigured) CloudSwitch(state, viewModel::onEvent)
+        Text(sessionLine(state.session, state.cloudBackup), style = MaterialTheme.typography.bodyLarge)
+        if (state.cloudBackup) {
+            state.syncStatus?.let { Text(syncLine(it), color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
         AccountActions(state, viewModel::onEvent)
         state.message?.let { message ->
             Text(
@@ -83,6 +99,7 @@ fun AccountSection(viewModel: AccountViewModel = koinViewModel()) {
             )
         }
     }
+    if (state.confirmTurnOff) TurnOffDialog(state.deleteCloud, viewModel::onEvent)
     if (state.confirmDelete) {
         AlertDialog(
             onDismissRequest = { viewModel.onEvent(AccountIntent.DismissDelete) },
@@ -99,6 +116,72 @@ fun AccountSection(viewModel: AccountViewModel = koinViewModel()) {
                 }
             },
         )
+    }
+}
+
+/** The "Back up to the cloud" switch with a plain line about what is stored. */
+@Composable
+private fun CloudSwitch(state: AccountState, onEvent: (AccountIntent) -> Unit) {
+    Row(
+        Modifier.fillMaxWidth().toggleable(
+            value = state.cloudBackup,
+            enabled = !state.busy,
+            role = Role.Switch,
+            onValueChange = { onEvent(AccountIntent.SetCloudBackup(it)) },
+        ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f).padding(end = 12.dp)) {
+            Text(stringResource(Res.string.account_cloud_switch), style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(Res.string.account_cloud_what),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(checked = state.cloudBackup, onCheckedChange = null, enabled = !state.busy)
+    }
+}
+
+/** Asked when the "Back up to the cloud" switch is turned off. */
+@Composable
+private fun TurnOffDialog(deleteCloud: Boolean, onEvent: (AccountIntent) -> Unit) {
+    AlertDialog(
+        onDismissRequest = { onEvent(AccountIntent.DismissTurnOff) },
+        title = { Text(stringResource(Res.string.account_cloud_off_title)) },
+        text = { TurnOffDialogBody(deleteCloud) { onEvent(AccountIntent.SetDeleteCloud(it)) } },
+        confirmButton = {
+            TextButton(onClick = { onEvent(AccountIntent.ConfirmTurnOff) }) {
+                Text(stringResource(Res.string.account_cloud_off_confirm))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = { onEvent(AccountIntent.DismissTurnOff) }) {
+                Text(stringResource(Res.string.account_cancel))
+            }
+        },
+    )
+}
+
+/** What turning off does, and the unticked-by-default box to also delete the cloud data. */
+@Composable
+private fun TurnOffDialogBody(deleteCloud: Boolean, onDeleteCloud: (Boolean) -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(stringResource(Res.string.account_cloud_off_text))
+        Row(
+            Modifier.toggleable(value = deleteCloud, role = Role.Checkbox, onValueChange = onDeleteCloud),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Checkbox(checked = deleteCloud, onCheckedChange = null)
+            Column(Modifier.padding(start = 12.dp)) {
+                Text(stringResource(Res.string.account_cloud_off_delete), style = MaterialTheme.typography.bodyLarge)
+                Text(
+                    stringResource(Res.string.account_cloud_off_delete_hint),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 
@@ -132,6 +215,8 @@ private fun AccountActions(state: AccountState, onEvent: (AccountIntent) -> Unit
     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         val enabled = !state.busy
         when {
+            // Linking or signing in with Google is part of the cloud copy: nothing is offered while it is off.
+            !state.cloudBackup -> Unit
             session is AccountSession.SignedIn && session.isAnonymous && state.googleAvailable ->
                 Button(onClick = { onEvent(AccountIntent.LinkGoogle) }, enabled = enabled) {
                     Text(stringResource(Res.string.account_link_google))
@@ -142,7 +227,7 @@ private fun AccountActions(state: AccountState, onEvent: (AccountIntent) -> Unit
                 }
         }
         if (session is AccountSession.SignedIn) {
-            if (!session.isAnonymous) {
+            if (!session.isAnonymous && state.cloudBackup) {
                 OutlinedButton(onClick = { onEvent(AccountIntent.SignOut) }, enabled = enabled) {
                     Text(stringResource(Res.string.account_sign_out))
                 }
@@ -156,7 +241,15 @@ private fun AccountActions(state: AccountState, onEvent: (AccountIntent) -> Unit
 }
 
 @Composable
-private fun sessionLine(session: AccountSession): String = when (session) {
+private fun sessionLine(session: AccountSession, cloudBackup: Boolean): String = when {
+    session == AccountSession.NotConfigured -> stringResource(Res.string.account_not_configured)
+    !cloudBackup && session is AccountSession.SignedIn -> stringResource(Res.string.account_cloud_off_kept)
+    !cloudBackup -> stringResource(Res.string.account_cloud_off)
+    else -> signedLine(session)
+}
+
+@Composable
+private fun signedLine(session: AccountSession): String = when (session) {
     AccountSession.NotConfigured -> stringResource(Res.string.account_not_configured)
     AccountSession.SignedOut -> stringResource(Res.string.account_signed_out)
     is AccountSession.SignedIn -> when {
@@ -184,6 +277,8 @@ private fun messageLine(message: AccountMessage, error: String?): String = when 
     AccountMessage.MERGED -> stringResource(Res.string.account_merged)
     AccountMessage.SIGNED_IN -> stringResource(Res.string.account_signing_in)
     AccountMessage.DELETED -> stringResource(Res.string.account_deleted)
+    AccountMessage.CLOUD_OFF -> stringResource(Res.string.account_cloud_turned_off)
+    AccountMessage.CLOUD_OFF_DELETED -> stringResource(Res.string.account_cloud_turned_off_deleted)
     AccountMessage.REAUTH_CANCELLED -> stringResource(Res.string.account_reauth_cancelled)
     AccountMessage.FAILED -> stringResource(Res.string.account_failed, error.orEmpty())
 }

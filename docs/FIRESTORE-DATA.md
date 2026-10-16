@@ -1,6 +1,9 @@
 # Firestore data: layout, backup and migration
 
 Firebase project: `ironlog-sebas1705`. Cloud sync stores one document per entity under the signed-in user.
+The cloud copy is **optional**: an install writes nothing here until its user turns on Settings → Account → "Back up
+to the cloud" (installs that were already syncing before that option keep syncing). A user who turns it off keeps
+their documents here until they choose "Also delete my cloud data" or Delete account.
 
 ## Layout
 
@@ -16,7 +19,7 @@ The `users/{uid}` parent documents usually do not exist (only their subcollectio
 
 ## Why the uid matters
 
-A fresh install signs in anonymously and gets a new uid, so it cannot see data written under the previous uid. The
+A fresh install that turns the cloud copy on signs in anonymously and gets a new uid, so it cannot see data written under the previous uid. The
 data is only reachable again by signing in with the Google account that was linked to that uid (linking keeps the
 uid). Nothing is lost as long as the old users and the Firestore data are left alone.
 

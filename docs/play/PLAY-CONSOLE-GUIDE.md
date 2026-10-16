@@ -118,8 +118,8 @@ Does it contain ads? **No.**
 
 ### 3.3 App access
 **"All functionality is available without special access"** ("Todas las funciones están disponibles sin acceso
-especial"). Reason (code): the anonymous Firebase sign-in is automatic on first launch (`SyncStarter`), and linking
-Google is optional. No login screen, no test credentials needed.
+especial"). Reason (code): the cloud copy is optional and off until the user turns it on (`SyncStarter`,
+`CloudBackupStore`), and linking Google is optional. No login screen, no test credentials needed.
 
 ### 3.4 Advertising ID
 Does it use the advertising ID? **No.** The merged release manifest has no `AD_ID` permission and there is no ads or
@@ -147,7 +147,8 @@ analytics SDK (DATA-INVENTORY.md section 3).
 ### 3.7 Data safety (Seguridad de los datos)
 
 Based on the inventory (`docs/play/DATA-INVENTORY.md`), `firebase/firestore.rules`, `data/remote`, `data/sync` and
-the merged manifest. **The cloud copy is automatic and not opt-in, so data is declared as collected.**
+the merged manifest. **The cloud copy is optional (off until the user turns it on, P3), so every cloud data type is declared as collected but optional.**
+Installs that were already syncing before P3 keep their copy, which is why the data is still declared as collected.
 
 **General**
 
@@ -155,10 +156,10 @@ the merged manifest. **The cloud copy is automatic and not opt-in, so data is de
 |---|---|
 | Does it collect or share any of the required data types? | **Yes** |
 | Is all data encrypted in transit? | **Yes** (HTTPS/TLS to Firebase, Open Food Facts and GitHub) |
-| Account creation methods | **OAuth** (Google, optional) and **Other** (automatic anonymous account) **[exact labels unverified]** |
+| Account creation methods | **OAuth** (Google, optional) and **Other** (anonymous account created only if the user turns the cloud copy on) **[exact labels unverified]** |
 | Account deletion URL | `https://haltera.web.app/delete-account` |
 | Can users delete data without deleting the account? | **Yes**: individual items can be deleted in the app (and the delete is synced); full wipe is "Also erase data on this device" **[answer by what you want to claim]** |
-| Can users request deletion? | **Yes**: in the app (Settings → Account → Delete account) and at the URL above |
+| Can users request deletion? | **Yes**: in the app (Settings → Account → Delete account, or switch off "Back up to the cloud" and tick "Also delete my cloud data") and at the URL above |
 | Data shared with third parties? | **No.** Google Firebase acts as a service provider (processor). Open Food Facts and GitHub receive a barcode or an image path with the IP address on a user action only; this is not "sharing" of user data **[judgement: Google treats service providers as not sharing; the IP and barcode requests to Open Food Facts are the closest case; keep as not shared and mention in the policy, as done]** |
 | Security practices: independent security review | **No** |
 
@@ -166,11 +167,11 @@ the merged manifest. **The cloud copy is automatic and not opt-in, so data is de
 
 | Category → type | What it is in Haltera | Required / optional | Purposes |
 |---|---|---|---|
-| Personal info → **User IDs** | Firebase Auth uid | **Required** | App functionality; Account management |
+| Personal info → **User IDs** | Firebase Auth uid | **Optional** (only if the cloud copy is on) | App functionality; Account management |
 | Personal info → **Email address** | Google account email held by Firebase Auth | **Optional** (only if Google is linked) | Account management |
 | Personal info → **Name** | Google display name (read from the provider) | **Optional** | Account management |
 | Health and fitness → **Health info** | Sex, birth year, height, nutrition goals (nutrition profile) | **Optional** | App functionality |
-| Health and fitness → **Fitness info** | Routines, sessions, sets, loads, durations, RPE | **Required** (core) | App functionality |
+| Health and fitness → **Fitness info** | Routines, sessions, sets, loads, durations, RPE | **Optional** (only if the cloud copy is on) | App functionality |
 | Health and fitness → body weight | Body weight entries and the weight stored in sessions. Declare under **Health info** (Play has no separate weight type) | **Optional** | App functionality |
 | Health and fitness → nutrition | Foods, meals, calories and macros. Declare under **Fitness info** or **Health info** (no separate nutrition type) **[unverified which Play expects]** | **Optional** | App functionality |
 | App activity → **Other user-generated content** | Notes, routine and exercise names, custom foods | **Optional** | App functionality |
@@ -279,11 +280,10 @@ apps, including closed testing.
   the *Play listing* workflow publishes them on changes to `main`.
 - **Title:** `Haltera` (both languages; 30 characters max).
 - **Short description (80 max)**, from `short_description.txt`: es-ES and en-US versions in the repo.
-- **Full description (4000 max)**, from `full_description.txt`. **Check before pasting:** the current text says
-  "Everything works offline and is stored on your phone" and "an account is optional". The anonymous cloud copy is
-  automatic (DATA-INVENTORY.md finding 1); make the text say so, otherwise the listing contradicts the Data
-  safety form. Suggested: "Works offline. Your logbook is backed up to a private cloud space automatically; link a
-  Google account to keep it when you change phone."
+- **Full description (4000 max)**, from `full_description.txt`. **Check before pasting:** the text must say the cloud copy is
+  optional and off until the user turns it on (DATA-INVENTORY.md finding 1), otherwise the listing contradicts the
+  privacy pages and the Data safety form. The repo text says: "Works offline. Everything stays on your phone unless you choose otherwise" and
+  "Optional cloud backup ... off until you say yes".
 - **Category:** **Health & Fitness (Salud y bienestar)**. Tags: up to 5 (e.g. workout log, strength training, nutrition
   tracker) **[labels as the Console offers]**.
 - **Contact details:** Play requires a public email on the listing even though the website uses GitHub Issues; use an

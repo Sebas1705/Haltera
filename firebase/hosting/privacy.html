@@ -28,15 +28,15 @@
 
   <h2 id="data">2. What data the app handles</h2>
   <p><strong>On your phone</strong> the app stores what you log: routines, workout sessions (dates, exercises, sets, repetitions, loads, effort, notes), body weight entries, custom exercises, foods and recipes, meals you log, and your settings (units, bar and plates, rest timer options, nutrition goals). For nutrition goals you may also enter sex, birth year, height, activity level and objective; all optional.</p>
-  <p><strong>In the cloud</strong> the app keeps a copy of that logbook so it is not lost if you lose or change your phone. The copy is made automatically with an anonymous account created the first time you open the app; no email or password is needed. It contains:</p>
+  <p><strong>In the cloud</strong> the app can keep a copy of that logbook so it is not lost if you lose or change your phone. This cloud copy is <strong>optional and off by default</strong>. The first time you open the app it asks once (&ldquo;Yes&rdquo; or &ldquo;Not now&rdquo;), and you can change your mind at any time in <strong>Settings → Account → Back up to the cloud</strong>. Until you turn it on, the app does not create an account and sends nothing to Firebase: your logbook, including the nutrition profile (sex, birth year, height), stays on your phone. When you turn it on, the app creates an anonymous account (no email or password needed) and uploads the data below, including what you logged before. Installs that were already backing up before this option existed keep doing so, were shown a one-time notice, and can turn it off the same way. With the cloud copy on, the cloud holds:</p>
   <div class="table-wrap">
   <table>
     <thead><tr><th scope="col">Data</th><th scope="col">When</th></tr></thead>
     <tbody>
-      <tr><td>An anonymous account identifier (Firebase Authentication)</td><td>Always, from the first launch</td></tr>
-      <tr><td>Your routines, sessions with sets and loads, body weight, custom exercises, foods, meals, settings and nutrition goals (including sex, birth year and height if you entered them)</td><td>Always while you are online, and again after every change</td></tr>
+      <tr><td>An anonymous account identifier (Firebase Authentication)</td><td>Only once you turn the cloud copy on</td></tr>
+      <tr><td>Your routines, sessions with sets and loads, body weight, custom exercises, foods, meals, settings and nutrition goals (including sex, birth year and height if you entered them)</td><td>Only while the cloud copy is on: when you turn it on, while you are online, and again after every change</td></tr>
       <tr><td>Your Google account email, name and account identifier</td><td>Only if you choose to link or sign in with Google</td></tr>
-      <tr><td>Technical data of each request, such as your IP address</td><td>Handled by Google as part of providing Firebase</td></tr>
+      <tr><td>Technical data of each request, such as your IP address</td><td>Only while the cloud copy is on or you sign in; handled by Google as part of providing Firebase</td></tr>
     </tbody>
   </table>
   </div>
@@ -44,8 +44,8 @@
 
   <h2 id="purposes">3. Why, and on what legal basis</h2>
   <ul>
-    <li><strong>Provide the app and the cloud copy</strong> (store your logbook, restore it on a new phone, sync between your devices): performance of the service you ask for (GDPR art. 6.1.b).</li>
-    <li><strong>Health-related data you choose to log</strong> (weight, nutrition, training): your explicit consent by entering it (art. 9.2.a). You can withdraw it at any time by deleting the entries or your account.</li>
+    <li><strong>Provide the optional cloud copy</strong> (store your logbook, restore it on a new phone, sync between your devices): performance of the service you ask for by turning it on (GDPR art. 6.1.b). Without it, the app works fully on your phone and no personal data is sent to the developer or to Firebase.</li>
+    <li><strong>Health-related data you choose to log</strong> (weight, nutrition, training): your explicit consent by entering it (art. 9.2.a), and, if you turn on the cloud copy, by turning it on (it includes these entries and the optional nutrition profile). You can withdraw it at any time by turning the cloud copy off, deleting the entries, or deleting your account.</li>
     <li><strong>Linking a Google account</strong>: your consent, which you give by tapping the button and can revoke by signing out or deleting your account (art. 6.1.a).</li>
     <li><strong>Security and abuse prevention</strong> of the backend (Firebase rules, rate limiting): legitimate interest (art. 6.1.f).</li>
     <li>No advertising, no profiling, no automated decisions, and no analytics or crash-reporting service.</li>
@@ -53,7 +53,7 @@
 
   <h2 id="recipients">4. Who receives data</h2>
   <ul>
-    <li><strong>Google (Firebase Authentication and Cloud Firestore)</strong> acts as the processor that stores your account and cloud copy. The database is located in the European Union (eur3). Google may transfer data outside the EEA under its own data processing terms and standard contractual clauses. Data is encrypted in transit (HTTPS/TLS).</li>
+    <li><strong>Google (Firebase Authentication and Cloud Firestore)</strong> acts as the processor that stores your account and cloud copy, only if you turn the cloud copy on. The database is located in the European Union (eur3). Google may transfer data outside the EEA under its own data processing terms and standard contractual clauses. Data is encrypted in transit (HTTPS/TLS).</li>
     <li><strong>Google Play services</strong> provide Google sign-in (only if you use it) and the barcode and QR scanner, which runs on your device. The app does not receive camera permission and no image is sent to the developer.</li>
     <li><strong>Open Food Facts</strong> (openfoodfacts.org): when you scan or type a product barcode, the app asks them for the product. They receive the barcode and your IP address, not your account.</li>
     <li><strong>GitHub</strong> (raw.githubusercontent.com): exercise demonstration images are loaded from a public repository when you open an exercise. GitHub receives the image path and your IP address, not your account.</li>
@@ -65,16 +65,16 @@
   <h2 id="retention">5. How long it is kept</h2>
   <ul>
     <li>On your phone: until you delete the data in the app, erase it when deleting your account, or uninstall the app.</li>
-    <li>In the cloud: for as long as your account exists. When you delete your account in the app, all your cloud documents and your account are deleted (see <a href="/delete-account">how to delete your account</a>). While the account exists, an item you delete may remain as an empty marker in the cloud so other devices learn about the deletion; these markers go away with the account.</li>
+    <li>In the cloud (only if you turned the cloud copy on): for as long as your account exists. Turning the cloud copy off stops the sync and keeps what is already in the cloud unless you choose <strong>Also delete my cloud data</strong>; you can resume it later or delete it. When you delete your account in the app, all your cloud documents and your account are deleted (see <a href="/delete-account">how to delete your account</a>). While the account exists, an item you delete may remain as an empty marker in the cloud so other devices learn about the deletion; these markers go away with the account.</li>
     <li>Deleted data may remain for a limited time in Google's own backup systems under Google's retention terms.</li>
   </ul>
 
   <h2 id="rights">6. Your rights</h2>
-  <p>You have the right of access, rectification, erasure, restriction, objection and portability, and the right to withdraw consent. You can view and edit everything in the app, export your routines, and delete your account and cloud data in <strong>Settings → Account → Delete account</strong>. For other requests, open an issue at <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> without including personal data (it is public); I will reply there and, if I need to verify something, agree a way that does not require posting personal data publicly. I cannot identify an anonymous account from outside the app, so for those accounts the in-app deletion is the only reliable route.</p>
+  <p>You have the right of access, rectification, erasure, restriction, objection and portability, and the right to withdraw consent. You can view and edit everything in the app, export your routines, and turn the cloud copy off, and delete your account and cloud data in <strong>Settings → Account</strong> (<strong>Back up to the cloud</strong> switch with <strong>Also delete my cloud data</strong>, or <strong>Delete account</strong>). For other requests, open an issue at <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> without including personal data (it is public); I will reply there and, if I need to verify something, agree a way that does not require posting personal data publicly. I cannot identify an anonymous account from outside the app, so for those accounts the in-app deletion is the only reliable route.</p>
   <p>If you think your data is mishandled you can complain to the Spanish data protection authority, the Agencia Española de Protección de Datos (<a href="https://www.aepd.es">aepd.es</a>).</p>
 
   <h2 id="children">7. Children</h2>
-  <p>Haltera is not directed at children and is intended for people aged 18 or over. If you are a parent and believe a child has used the app and its cloud copy, ask for deletion as described above.</p>
+  <p>Haltera is not directed at children and is intended for people aged 18 or over. If you are a parent and believe a child has used the app and its cloud copy, ask for deletion as described above. The cloud copy is off unless someone turns it on.</p>
 
   <h2 id="health">8. Health disclaimer</h2>
   <p>Haltera is a logbook and planning tool. Its figures, charts, scores and suggestions are not medical advice and do not diagnose, treat or prevent any condition. Ask a qualified professional before changing your training or diet, especially if you have a health condition.</p>

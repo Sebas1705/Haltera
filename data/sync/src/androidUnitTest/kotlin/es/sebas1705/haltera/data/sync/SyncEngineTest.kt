@@ -9,6 +9,7 @@ import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS
 import es.sebas1705.haltera.data.sync.SyncCollections.SETTINGS_ID
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
@@ -223,6 +224,38 @@ class SyncEngineTest {
         assertTrue(cloud.all("uid-1").isEmpty())
         assertTrue(cloud.all("uid-new").isEmpty())
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `a signed-in engine with the cloud copy off never touches the cloud and resumes when it is turned on`() =
+        runTest {
+            val io = UnconfinedTestDispatcher(testScheduler)
+            val a = Device(cloud, io, cloudOn = MutableStateFlow(false))
+            a.bodyWeight()
+            a.engine.start(backgroundScope)
+            runCurrent()
+            a.engine.syncNow()
+            advanceTimeBy(5_000)
+            runCurrent()
+            assertEquals(SyncStatus.Disabled, a.engine.status.value)
+            assertEquals(0, cloud.pushes)
+            assertTrue(cloud.all("uid-1").isEmpty())
+
+            a.cloudOn.value = true
+            runCurrent()
+            advanceTimeBy(100)
+            runCurrent()
+            assertNotNull(cloud.doc("uid-1", BODY_WEIGHT, "bw1"))
+
+            a.cloudOn.value = false
+            runCurrent()
+            assertEquals(SyncStatus.Disabled, a.engine.status.value)
+            val pushes = cloud.pushes
+            a.bodyWeight("bw2")
+            advanceTimeBy(5_000)
+            runCurrent()
+            assertEquals(pushes, cloud.pushes)
+        }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test

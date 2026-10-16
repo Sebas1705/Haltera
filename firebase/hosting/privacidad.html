@@ -28,15 +28,15 @@
 
   <h2 id="data">2. Qué datos trata la app</h2>
   <p><strong>En tu móvil</strong> la app guarda lo que registras: rutinas, sesiones de entrenamiento (fechas, ejercicios, series, repeticiones, cargas, esfuerzo, notas), registros de peso corporal, ejercicios propios, alimentos y recetas, comidas registradas y tus ajustes (unidades, barra y discos, opciones del temporizador de descanso, objetivos de nutrición). Para los objetivos de nutrición puedes indicar también sexo, año de nacimiento, altura, nivel de actividad y objetivo; todo es opcional.</p>
-  <p><strong>En la nube</strong> la app guarda una copia de ese diario para que no se pierda si pierdes o cambias de móvil. La copia se hace automáticamente con una cuenta anónima que se crea la primera vez que abres la app; no hace falta correo ni contraseña. Contiene:</p>
+  <p><strong>En la nube</strong> la app puede guardar una copia de ese diario para que no se pierda si pierdes o cambias de móvil. Esta copia en la nube es <strong>opcional y viene desactivada</strong>. La primera vez que abres la app te lo pregunta una vez (&laquo;Sí&raquo; o &laquo;Ahora no&raquo;) y puedes cambiar de idea cuando quieras en <strong>Ajustes → Cuenta → Copia de seguridad en la nube</strong>. Mientras no la actives, la app no crea ninguna cuenta y no envía nada a Firebase: tu diario, incluido el perfil de nutrición (sexo, año de nacimiento, altura), se queda en tu móvil. Al activarla, la app crea una cuenta anónima (no hace falta correo ni contraseña) y sube los datos de la tabla, también lo que registraste antes. Las instalaciones que ya hacían copia antes de que existiera esta opción siguen haciéndola, vieron un aviso una sola vez y pueden desactivarla del mismo modo. Con la copia en la nube activada, la nube contiene:</p>
   <div class="table-wrap">
   <table>
     <thead><tr><th scope="col">Dato</th><th scope="col">Cuándo</th></tr></thead>
     <tbody>
-      <tr><td>Un identificador de cuenta anónima (Firebase Authentication)</td><td>Siempre, desde el primer arranque</td></tr>
-      <tr><td>Tus rutinas, sesiones con series y cargas, peso corporal, ejercicios propios, alimentos, comidas, ajustes y objetivos de nutrición (incluidos sexo, año de nacimiento y altura si los indicaste)</td><td>Siempre que haya conexión, y de nuevo tras cada cambio</td></tr>
+      <tr><td>Un identificador de cuenta anónima (Firebase Authentication)</td><td>Solo cuando activas la copia en la nube</td></tr>
+      <tr><td>Tus rutinas, sesiones con series y cargas, peso corporal, ejercicios propios, alimentos, comidas, ajustes y objetivos de nutrición (incluidos sexo, año de nacimiento y altura si los indicaste)</td><td>Solo mientras la copia en la nube está activada: al activarla, siempre que haya conexión, y de nuevo tras cada cambio</td></tr>
       <tr><td>El correo, el nombre y el identificador de tu cuenta de Google</td><td>Solo si eliges vincular o iniciar sesión con Google</td></tr>
-      <tr><td>Datos técnicos de cada petición, como tu dirección IP</td><td>Los trata Google al prestar Firebase</td></tr>
+      <tr><td>Datos técnicos de cada petición, como tu dirección IP</td><td>Solo mientras la copia está activada o inicias sesión; los trata Google al prestar Firebase</td></tr>
     </tbody>
   </table>
   </div>
@@ -44,8 +44,8 @@
 
   <h2 id="purposes">3. Para qué y con qué base jurídica</h2>
   <ul>
-    <li><strong>Prestar la app y la copia en la nube</strong> (guardar tu diario, recuperarlo en un móvil nuevo, sincronizar entre dispositivos): ejecución del servicio que solicitas (RGPD art. 6.1.b).</li>
-    <li><strong>Datos relacionados con la salud que decides registrar</strong> (peso, nutrición, entrenamiento): tu consentimiento explícito al introducirlos (art. 9.2.a). Puedes retirarlo en cualquier momento borrando los registros o tu cuenta.</li>
+    <li><strong>Prestar la copia opcional en la nube</strong> (guardar tu diario, recuperarlo en un móvil nuevo, sincronizar entre dispositivos): ejecución del servicio que solicitas al activarla (RGPD art. 6.1.b). Sin ella, la app funciona por completo en tu móvil y no se envían datos personales al desarrollador ni a Firebase.</li>
+    <li><strong>Datos relacionados con la salud que decides registrar</strong> (peso, nutrición, entrenamiento): tu consentimiento explícito al introducirlos (art. 9.2.a) y, si activas la copia en la nube, al activarla (incluye esos registros y el perfil opcional de nutrición). Puedes retirarlo en cualquier momento desactivando la copia en la nube, borrando los registros o tu cuenta.</li>
     <li><strong>Vincular una cuenta de Google</strong>: tu consentimiento, que das al pulsar el botón y puedes revocar cerrando sesión o borrando tu cuenta (art. 6.1.a).</li>
     <li><strong>Seguridad y prevención de abusos</strong> del servidor (reglas de Firebase, límites de uso): interés legítimo (art. 6.1.f).</li>
     <li>No hay publicidad, ni elaboración de perfiles, ni decisiones automatizadas, ni servicio de analíticas o de informes de fallos.</li>
@@ -53,7 +53,7 @@
 
   <h2 id="recipients">4. Quién recibe datos</h2>
   <ul>
-    <li><strong>Google (Firebase Authentication y Cloud Firestore)</strong> actúa como encargado que guarda tu cuenta y tu copia en la nube. La base de datos está en la Unión Europea (eur3). Google puede transferir datos fuera del EEE conforme a sus propios términos de tratamiento de datos y cláusulas contractuales tipo. Los datos viajan cifrados (HTTPS/TLS).</li>
+    <li><strong>Google (Firebase Authentication y Cloud Firestore)</strong> actúa como encargado que guarda tu cuenta y tu copia en la nube, solo si activas la copia en la nube. La base de datos está en la Unión Europea (eur3). Google puede transferir datos fuera del EEE conforme a sus propios términos de tratamiento de datos y cláusulas contractuales tipo. Los datos viajan cifrados (HTTPS/TLS).</li>
     <li><strong>Servicios de Google Play</strong> proporcionan el inicio de sesión con Google (solo si lo usas) y el escáner de códigos de barras y QR, que funciona en tu dispositivo. La app no recibe permiso de cámara y ninguna imagen llega al desarrollador.</li>
     <li><strong>Open Food Facts</strong> (openfoodfacts.org): cuando escaneas o escribes un código de barras, la app les pide el producto. Reciben el código y tu dirección IP, no tu cuenta.</li>
     <li><strong>GitHub</strong> (raw.githubusercontent.com): las imágenes de demostración de los ejercicios se cargan de un repositorio público al abrir un ejercicio. GitHub recibe la ruta de la imagen y tu dirección IP, no tu cuenta.</li>
@@ -65,16 +65,16 @@
   <h2 id="retention">5. Cuánto tiempo se conservan</h2>
   <ul>
     <li>En tu móvil: hasta que borres los datos en la app, los borres al eliminar tu cuenta o desinstales la app.</li>
-    <li>En la nube: mientras exista tu cuenta. Al borrar tu cuenta en la app se eliminan todos tus documentos en la nube y tu cuenta (consulta <a href="/borrar-cuenta">cómo borrar tu cuenta</a>). Mientras la cuenta existe, un elemento que borras puede quedar como una marca vacía en la nube para que otros dispositivos se enteren; esas marcas desaparecen con la cuenta.</li>
+    <li>En la nube (solo si activaste la copia en la nube): mientras exista tu cuenta. Desactivar la copia en la nube detiene la sincronización y conserva lo que ya está en la nube, salvo que elijas <strong>Borrar también mis datos de la nube</strong>; puedes reanudarla más tarde o borrarla. Al borrar tu cuenta en la app se eliminan todos tus documentos en la nube y tu cuenta (consulta <a href="/borrar-cuenta">cómo borrar tu cuenta</a>). Mientras la cuenta existe, un elemento que borras puede quedar como una marca vacía en la nube para que otros dispositivos se enteren; esas marcas desaparecen con la cuenta.</li>
     <li>Los datos borrados pueden permanecer un tiempo limitado en los sistemas de copia de Google según sus propios plazos.</li>
   </ul>
 
   <h2 id="rights">6. Tus derechos</h2>
-  <p>Tienes derecho de acceso, rectificación, supresión, limitación, oposición y portabilidad, y a retirar tu consentimiento. Puedes ver y editar todo en la app, exportar tus rutinas y borrar tu cuenta y tus datos en la nube en <strong>Ajustes → Cuenta → Eliminar cuenta</strong>. Para otras solicitudes, abre una incidencia en <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> sin incluir datos personales (es público); responderé allí y, si necesito verificar algo, acordaremos una vía que no exija publicar datos personales. No puedo identificar una cuenta anónima desde fuera de la app, así que para esas cuentas el borrado dentro de la app es la única vía fiable.</p>
+  <p>Tienes derecho de acceso, rectificación, supresión, limitación, oposición y portabilidad, y a retirar tu consentimiento. Puedes ver y editar todo en la app, exportar tus rutinas y desactivar la copia en la nube y borrar tu cuenta y tus datos en la nube en <strong>Ajustes → Cuenta</strong> (interruptor <strong>Copia de seguridad en la nube</strong> con <strong>Borrar también mis datos de la nube</strong>, o <strong>Eliminar cuenta</strong>). Para otras solicitudes, abre una incidencia en <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> sin incluir datos personales (es público); responderé allí y, si necesito verificar algo, acordaremos una vía que no exija publicar datos personales. No puedo identificar una cuenta anónima desde fuera de la app, así que para esas cuentas el borrado dentro de la app es la única vía fiable.</p>
   <p>Si crees que tus datos se tratan de forma indebida puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es">aepd.es</a>).</p>
 
   <h2 id="children">7. Menores</h2>
-  <p>Haltera no está dirigida a menores y está pensada para personas de 18 años o más. Si eres padre, madre o tutor y crees que un menor ha usado la app y su copia en la nube, solicita el borrado como se indica arriba.</p>
+  <p>Haltera no está dirigida a menores y está pensada para personas de 18 años o más. Si eres padre, madre o tutor y crees que un menor ha usado la app y su copia en la nube, solicita el borrado como se indica arriba. La copia en la nube está desactivada salvo que alguien la active.</p>
 
   <h2 id="health">8. Aviso de salud</h2>
   <p>Haltera es un diario y una herramienta de planificación. Sus cifras, gráficas, puntuaciones y sugerencias no son consejo médico y no diagnostican, tratan ni previenen ninguna dolencia. Consulta con un profesional cualificado antes de cambiar tu entrenamiento o tu dieta, sobre todo si tienes algún problema de salud.</p>

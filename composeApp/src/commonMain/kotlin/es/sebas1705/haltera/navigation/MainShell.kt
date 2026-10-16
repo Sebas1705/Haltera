@@ -2,6 +2,7 @@
 
 package es.sebas1705.haltera.navigation
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import es.sebas1705.haltera.account.CloudBackupCard
 import es.sebas1705.haltera.core.ui.adaptive.LocalWindowSize
 import es.sebas1705.haltera.share.IncomingRoutineChannel
 import org.koin.compose.koinInject
@@ -89,16 +91,7 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
     val tab = backStack?.destination?.currentTab()
     val onTabRoot = tab != null && backStack?.destination?.hasRoute(tab.routeClass) == true
     val useRail = LocalWindowSize.current.useNavigationRail
-    val incoming by koinInject<IncomingRoutineChannel>().value.collectAsState()
-    // A routine opened from outside the app: the Routines tab root shows its import preview.
-    LaunchedEffect(incoming) {
-        if (incoming != null) {
-            navController.navigate(RoutinesRoute) {
-                popUpTo(navController.graph.findStartDestination().id)
-                launchSingleTop = true
-            }
-        }
-    }
+    ShowIncomingRoutine(navController)
 
     Scaffold(
         topBar = {
@@ -143,7 +136,27 @@ fun MainShell(navController: NavHostController = rememberNavController()) {
                     }
                 }
             }
-            ShellNavHost(navController, Modifier.weight(1f))
+            Column(Modifier.weight(1f)) {
+                // One-time cloud copy question (or notice) on top of Today; it dismisses itself.
+                if (onTabRoot && tab == Tab.TODAY) {
+                    CloudBackupCard(onOpenSettings = { navController.navigate(SettingsRoute) })
+                }
+                ShellNavHost(navController, Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+/** A routine opened from outside the app: the Routines tab root shows its import preview. */
+@Composable
+private fun ShowIncomingRoutine(navController: NavHostController) {
+    val incoming by koinInject<IncomingRoutineChannel>().value.collectAsState()
+    LaunchedEffect(incoming) {
+        if (incoming != null) {
+            navController.navigate(RoutinesRoute) {
+                popUpTo(navController.graph.findStartDestination().id)
+                launchSingleTop = true
+            }
         }
     }
 }

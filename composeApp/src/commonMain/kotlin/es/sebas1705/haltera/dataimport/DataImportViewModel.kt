@@ -21,6 +21,7 @@ import es.sebas1705.haltera.data.repository.importer.ImportSummary
 import es.sebas1705.haltera.data.repository.importer.ImportWeightUnit
 import es.sebas1705.haltera.data.repository.importer.ParseOptions
 import es.sebas1705.haltera.data.repository.importer.ParsedImport
+import es.sebas1705.haltera.data.repository.importer.SuggestionConfidence
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -38,8 +39,13 @@ data class ImportReview(
     val preview: ImportPreview,
     val unit: ImportWeightUnit,
     val existing: ExistingPolicy,
-    /** By normalised name; a name without an entry is created as a custom exercise. */
+    /**
+     * By normalised name; a name without an entry is created as a custom exercise. High confidence suggestions start
+     * here (pre-selected, shown as suggestions), anything else only when the user picks it.
+     */
     val mapped: Map<String, MappedExercise> = emptyMap(),
+    /** Names the user set to "Create as custom exercise": a refreshed preview never pre-selects them again. */
+    val declined: Set<String> = emptySet(),
     val working: Boolean = false,
 ) {
     /** Skipping existing sessions leaves nothing to write: every session and body weight is already here. */
@@ -88,6 +94,9 @@ sealed interface DataImportIntent : MVIBaseIntent {
     data class Search(val query: String) : DataImportIntent
     data class MapTo(val exercise: MappedExercise) : DataImportIntent
     data class CreateCustom(val key: String) : DataImportIntent
+
+    /** Uses the suggestion of the unmatched name [key] (a medium one is never selected by itself). */
+    data class AcceptSuggestion(val key: String) : DataImportIntent
     data object CloseMapping : DataImportIntent
     data object Confirm : DataImportIntent
     data object Cancel : DataImportIntent
@@ -116,7 +125,10 @@ class DataImportViewModel(
         is DataImportIntent.OpenMapping -> execute { openMapping(intent.key) }
         is DataImportIntent.Search -> execute { search(intent.query) }
         is DataImportIntent.MapTo -> execute { map(intent.exercise) }
-        is DataImportIntent.CreateCustom -> execute { change { it.copy(mapped = it.mapped - intent.key) } }
+        is DataImportIntent.CreateCustom -> execute {
+            change { it.copy(mapped = it.mapped - intent.key, declined = it.declined + intent.key) }
+        }
+        is DataImportIntent.AcceptSuggestion -> execute { acceptSuggestion(intent.key) }
         DataImportIntent.CloseMapping -> execute { updateState { it.copy(search = null) } }
         DataImportIntent.Confirm -> execute { confirm() }
         DataImportIntent.Cancel -> execute { discard() }
@@ -137,7 +149,8 @@ class DataImportViewModel(
             val unit = if (settings.settings.value.unit == WeightUnit.LB) ImportWeightUnit.LB else ImportWeightUnit.KG
             val preview = importer.preview(result, ImportOptions(unit, ExistingPolicy.SKIP))
             parsed = result
-            updateState { it.copy(busy = false, review = ImportReview(file.name, preview, unit, ExistingPolicy.SKIP)) }
+            val review = ImportReview(file.name, preview, unit, ExistingPolicy.SKIP).withSuggestions()
+            updateState { it.copy(busy = false, review = review) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: ImportFormatException) {
@@ -155,7 +168,32 @@ class DataImportViewModel(
         val next = edit(review)
         val file = parsed
         val preview = if (refresh && file != null) importer.preview(file, options(next)) else next.preview
-        updateState { state -> state.copy(review = state.review?.let { edit(it).copy(preview = preview) }) }
+        updateState { state ->
+            state.copy(
+                review = state.review?.let { edit(it).copy(preview = preview).withSuggestions() }
+            )
+        }
+    }
+
+    /**
+     * Pre-selects the high confidence suggestions (docs/IMPORT-FORMATS.md, "Suggestions") of names the user has not
+     * decided yet. Medium ones only show; nothing is ever written before Import.
+     */
+    private fun ImportReview.withSuggestions(): ImportReview {
+        val language = appLanguage()
+        val defaults = preview.unmatched
+            .filter { it.key !in mapped && it.key !in declined }
+            .mapNotNull { u ->
+                u.suggestion?.takeIf { it.confidence == SuggestionConfidence.HIGH }
+                    ?.let { u.key to MappedExercise(it.exerciseId, it.name.get(language)) }
+            }
+        return if (defaults.isEmpty()) this else copy(mapped = mapped + defaults)
+    }
+
+    private suspend fun acceptSuggestion(key: String) {
+        val suggestion = currentState.review?.preview?.unmatched?.firstOrNull { it.key == key }?.suggestion ?: return
+        val exercise = MappedExercise(suggestion.exerciseId, suggestion.name.get(appLanguage()))
+        change { it.copy(mapped = it.mapped + (key to exercise), declined = it.declined - key) }
     }
 
     private fun options(review: ImportReview) = ImportOptions(
@@ -193,7 +231,7 @@ class DataImportViewModel(
 
     private suspend fun map(exercise: MappedExercise) {
         val key = currentState.search?.key ?: return
-        change { it.copy(mapped = it.mapped + (key to exercise)) }
+        change { it.copy(mapped = it.mapped + (key to exercise), declined = it.declined - key) }
         updateState { it.copy(search = null) }
     }
 

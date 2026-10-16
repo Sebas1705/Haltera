@@ -525,8 +525,11 @@ class HistoryImporterTest {
 
         val summary = e.importer.import(parse("fitnotes.csv"), ImportOptions())
 
-        // Flat Barbell Bench Press, Treadmill and Overhead Press: one each, whatever the number of sets.
-        assertEquals(3, summary.exercisesCreated)
+        // Treadmill and Overhead Press (not in the test catalogue): one each, whatever the number of sets. FitNotes'
+        // "Flat Barbell Bench Press" is an alias of the barbell bench press, so it creates nothing.
+        assertEquals(2, summary.exercisesCreated)
+        val bench = e.history().flatMap { it.exercises }.filter { it.variantId == "bench-press.barbell" }
+        assertEquals(1, bench.size, "the FitNotes default name went to the catalogue exercise")
         assertEquals(1, e.exercises.search(ExerciseFilter(query = "treadmill"), "en", 10).first().size)
     }
 

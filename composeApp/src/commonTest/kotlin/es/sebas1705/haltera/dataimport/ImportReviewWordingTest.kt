@@ -4,7 +4,13 @@ import es.sebas1705.haltera.data.repository.importer.ExistingPolicy
 import es.sebas1705.haltera.data.repository.importer.ImportPreview
 import es.sebas1705.haltera.data.repository.importer.ImportSource
 import es.sebas1705.haltera.data.repository.importer.ImportWeightUnit
+import es.sebas1705.haltera.data.repository.importer.SuggestionConfidence
 import es.sebas1705.haltera.data.repository.importer.UnmatchedExercise
+import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.import_suggestion_high
+import es.sebas1705.haltera.resources.import_suggestion_high_unselected
+import es.sebas1705.haltera.resources.import_suggestion_medium
+import es.sebas1705.haltera.resources.import_suggestion_medium_selected
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -66,5 +72,22 @@ class ImportReviewWordingTest {
         val r = review(existing = 3, policy = ExistingPolicy.REPLACE)
         assertFalse(r.nothingNew)
         assertEquals(2, r.matchedLine)
+    }
+
+    @Test
+    fun `the suggestion wording follows what is selected now`() {
+        assertEquals(Res.string.import_suggestion_high, suggestionWording(SuggestionConfidence.HIGH, chosen = true))
+        assertEquals(
+            Res.string.import_suggestion_high_unselected,
+            suggestionWording(SuggestionConfidence.HIGH, chosen = false)
+        )
+        assertEquals(
+            Res.string.import_suggestion_medium,
+            suggestionWording(SuggestionConfidence.MEDIUM, chosen = false)
+        )
+        assertEquals(
+            Res.string.import_suggestion_medium_selected,
+            suggestionWording(SuggestionConfidence.MEDIUM, chosen = true)
+        )
     }
 }

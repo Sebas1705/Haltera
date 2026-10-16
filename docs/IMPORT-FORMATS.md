@@ -4,8 +4,8 @@ Settings → Data → **Import workouts** reads a history file from another app 
 holds, and writes it only after the user confirms. Sources: **Hevy**, **Strong**, **FitNotes** (CSV) and the
 **Haltera export** ([EXPORT-FORMAT.md](EXPORT-FORMAT.md): the zip, or its `sessions.csv` / `body_weight.csv`).
 
-Code: `data/repository/.../importer/` (`HistoryFileParser` = pure parsing, `ExerciseMatcher`, `SqlHistoryImporter` =
-preview and write), UI in `composeApp/.../dataimport/`. Fixtures: `data/repository/src/androidUnitTest/resources/import/`
+Code: `data/repository/.../importer/` (`HistoryFileParser` = pure parsing, `ExerciseMatcher` + `ImportAliases`,
+`ExerciseSuggester`, `SqlHistoryImporter` = preview and write), UI in `composeApp/.../dataimport/`. Fixtures: `data/repository/src/androidUnitTest/resources/import/`
 (small, synthetic, anonymised; never commit a real export).
 
 ## Flow
@@ -15,11 +15,14 @@ preview and write), UI in `composeApp/.../dataimport/`. Fixtures: `data/reposito
    without usable rows, a damaged zip or an export from a newer format version fails with a clear message and
    writes nothing.
 3. The preview shows the source, sessions and sets, the date range, body weight entries, how many sessions are
-   already in the logbook, the exercises matched automatically and the names that match nothing. Weight unit
+   already in the logbook, how many exercises were recognised automatically (only when something will be written and
+   the count is not zero) and the names that match nothing, each with a suggestion when one is close. Weight unit
    (when the file has none) and what to do with existing sessions are chosen here. **Nothing is written before
    the user taps Import.**
-4. For each unmatched name the user chooses **Create as custom exercise** (default) or **Map to...** (search of the
-   catalogue and the user's own exercises). The choice applies to this import only.
+4. For each unmatched name the user chooses **Create as custom exercise** (the default), the **Suggested** exercise
+   (pre-selected only for a high confidence suggestion, see below) or **Map to...** (search of the catalogue and the
+   user's own exercises). The choice applies to this import only. When every session of the file is already in the
+   logbook (and existing ones are skipped), the preview says only that.
 5. Import writes everything in one database transaction: if it fails, the logbook is unchanged. The data goes into
    the same tables as logged data, so the sync change tracking fires exactly as for a session logged by hand (the
    cloud copy stays opt-in; import does not touch sync).
@@ -106,7 +109,52 @@ English and Spanish names of the catalogue and the user's own exercises (the use
   variant): the user decides in the preview.
 - A Haltera export names variants by id (`bench-press.barbell`); if the id exists on the device it is used as is,
   otherwise the name is matched like any other.
-- Catalogue names are the only aliases: there is no alias table. Matching is exact after normalisation, never fuzzy.
+- Equipment after `con` / `with` / `en` also picks the variant: `Sentadilla con barra` → `squat.barbell`,
+  `Curl de bíceps con mancuernas` → `biceps-curl.dumbbell`.
+- Then the curated **aliases** (below), with the same equipment rules. Matching is exact after normalisation, never
+  fuzzy: a fuzzy match is only ever a suggestion.
+
+Order: exact catalogue or user name, alias of the full name, then the name without its equipment (exact name, else
+alias). The user's own exercise always wins over the catalogue and the aliases.
+
+### Aliases
+
+`ImportAliases` maps default names of other apps that are not Haltera catalogue names to a catalogue exercise
+(`biceps-curl`: the equipment of the name still picks the variant) or variant (`lat-pulldown.wide-grip`). 186
+entries:
+
+| Source | Examples |
+|---|---|
+| FitNotes default exercises | `Flat Barbell Bench Press`, `Incline Dumbbell Bench Press`, `Seated Cable Row`, `Rope Push Down`, `Lying Leg Curl Machine`, `Barbell Row`, `EZ-Bar Curl` |
+| Hevy library (Strong uses the same `Name (Equipment)` style) | `Lat Pulldown (Cable)`, `Seated Cable Row - V Grip (Cable)`, `Triceps Rope Pushdown`, `Bicep Curl (Dumbbell)`, `Butterfly (Pec Deck)`, `Shoulder Press (Dumbbell)`, `Skullcrusher (Barbell)` |
+| Common gym names | `Incline Dumbbell Press`, `Tricep Pushdown`, `Back Squat`, `RDL`, `Military Press`, `Remo con barra`, `Press banca`, `Dominadas` |
+
+Names were taken from the FitNotes default list and the Hevy library collected by the open-source FitNotes2Hevy
+converter and from the Hevy names of the GymRun-to-Hevy converter (names only; no code was copied). Only clear
+equivalences are listed: a name that could be two exercises (`Dumbbell Press`, `Triceps Extension (Cable)`) or a
+lift the catalogue lacks (`Pendlay Row`, `Bulgarian Split Squat`) is left to the user. `ImportAliasesTest` checks
+against the bundled `catalog.json` that every target exists, that no alias repeats or shadows a catalogue name,
+that each alias resolves to its target, and that at least 75 % of the FitNotes defaults and common Hevy lifts match.
+To add one, add a line to `ImportAliases` and run that test.
+
+### Suggestions
+
+For a name that still matches nothing, `ExerciseSuggester` asks the fuzzy search of the app (core:search, the same
+ranking as the Exercises tab) for its best hit and rates it conservatively:
+
+- The hit's names (both languages) are compared word by word with the name, equipment words aside. Words agree when
+  they are equal after stemming, synonyms (`GymSynonyms`), or one typo apart (two from 8 letters) but never opposites
+  (`Antonyms`: incline/decline, pulldown/pushdown, abductor/adductor...).
+- A contradiction rules the hit out: incline / decline / flat, seated / standing / lying, front / rear / lateral, pull /
+  push, close / wide, curl / extension / press, row / fly / raise. A tie between two exercises gives nothing.
+- **High** (`Bench Pres`, `Benchpress`, `Hammer Curls`): every word agrees both ways and the named equipment, if
+  any, is a variant of it. It is pre-selected and shown as "Very likely the same exercise, so it is selected. Check it
+  before importing."; the user can switch back to Create or map it elsewhere.
+- **Medium** (`Seated Leg Press` → Leg Press): at least two thirds of the words agree both ways. It is shown ("Possibly
+  the same exercise. Tap the suggestion to use it.") and never selected by itself.
+- Anything else: no suggestion.
+
+Nothing is applied without the user seeing it in the preview, and only Import writes.
 
 A name that matches nothing is created once as a custom exercise (tracking type, category, muscles and equipment
 inferred from the data and, for FitNotes, the category), or mapped by the user to an existing exercise.
@@ -133,4 +181,5 @@ session (for example Strong and Hevy after a migration) are different sessions: 
 - Hevy measurements (body weight, body fat) are a separate Hevy export and are not imported.
 - Nutrition, routines and settings are not imported from any third-party source.
 - Not verified on a device: the iOS document picker (compiles; needs a runtime check) and real-world exports of
-  every app version and language.
+  every app version and language. Default exercise names change between app versions and languages: a renamed one
+  falls back to a suggestion or to Create / Map to.

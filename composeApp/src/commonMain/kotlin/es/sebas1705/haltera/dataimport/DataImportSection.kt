@@ -38,6 +38,13 @@ import es.sebas1705.haltera.data.repository.importer.ImportSource
 import es.sebas1705.haltera.data.repository.importer.ImportWeightUnit
 import es.sebas1705.haltera.data.repository.importer.UnmatchedExercise
 import es.sebas1705.haltera.resources.Res
+import es.sebas1705.haltera.resources.import_suggestion_medium
+import es.sebas1705.haltera.resources.import_suggestion_high
+import es.sebas1705.haltera.resources.import_suggestion_medium_selected
+import es.sebas1705.haltera.resources.import_suggestion_high_unselected
+import es.sebas1705.haltera.resources.import_suggested
+import es.sebas1705.haltera.data.repository.importer.SuggestionConfidence
+import es.sebas1705.haltera.core.units.appLanguage
 import es.sebas1705.haltera.resources.import_action
 import es.sebas1705.haltera.resources.import_body_weights
 import es.sebas1705.haltera.resources.import_cancel
@@ -301,18 +308,27 @@ private fun UnmatchedRow(item: UnmatchedExercise, mapped: MappedExercise?, onEve
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+        val suggestion = item.suggestion
+        val suggestedChosen = suggestion != null && mapped?.exerciseId == suggestion.exerciseId
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             FilterChip(
                 selected = mapped == null,
                 onClick = { onEvent(DataImportIntent.CreateCustom(item.key)) },
                 label = { Text(stringResource(Res.string.import_create_custom)) },
             )
+            if (suggestion != null) {
+                FilterChip(
+                    selected = suggestedChosen,
+                    onClick = { onEvent(DataImportIntent.AcceptSuggestion(item.key)) },
+                    label = { Text(stringResource(Res.string.import_suggested, suggestion.name.get(appLanguage()))) },
+                )
+            }
             FilterChip(
-                selected = mapped != null,
+                selected = mapped != null && !suggestedChosen,
                 onClick = { onEvent(DataImportIntent.OpenMapping(item.key)) },
                 label = {
                     Text(
-                        if (mapped != null) {
+                        if (mapped != null && !suggestedChosen) {
                             stringResource(Res.string.import_mapped_to, mapped.name)
                         } else {
                             stringResource(Res.string.import_map)
@@ -321,7 +337,22 @@ private fun UnmatchedRow(item: UnmatchedExercise, mapped: MappedExercise?, onEve
                 },
             )
         }
+        if (suggestion != null) {
+            Text(
+                stringResource(suggestionWording(suggestion.confidence, suggestedChosen)),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
+}
+
+/** The confidence wording follows what is selected now, so it never says "selected" after the user changed it. */
+internal fun suggestionWording(confidence: SuggestionConfidence, chosen: Boolean): StringResource = when {
+    confidence == SuggestionConfidence.HIGH && chosen -> Res.string.import_suggestion_high
+    confidence == SuggestionConfidence.HIGH -> Res.string.import_suggestion_high_unselected
+    chosen -> Res.string.import_suggestion_medium_selected
+    else -> Res.string.import_suggestion_medium
 }
 
 @Composable

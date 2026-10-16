@@ -46,6 +46,8 @@ import es.sebas1705.haltera.feature.routines.resources.routines_error
 import es.sebas1705.haltera.feature.routines.resources.routines_import_add
 import es.sebas1705.haltera.feature.routines.resources.routines_import_copy_note
 import es.sebas1705.haltera.feature.routines.resources.routines_import_custom_count
+import es.sebas1705.haltera.feature.routines.resources.routines_import_custom_by
+import es.sebas1705.haltera.feature.routines.resources.routines_import_custom_existing
 import es.sebas1705.haltera.feature.routines.resources.routines_import_invalid
 import es.sebas1705.haltera.feature.routines.resources.routines_import_missing_drop
 import es.sebas1705.haltera.feature.routines.resources.routines_import_missing_keep
@@ -143,13 +145,7 @@ private fun PreviewContent(
         }
         items(routine.days) { day -> DayPreview(day, preview, state.language) }
         if (preview.file.customExercises.isNotEmpty()) {
-            item {
-                val custom = preview.file.customExercises.size
-                Text(
-                    pluralStringResource(Res.plurals.routines_import_custom_count, custom, custom),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
+            item { CustomExercisesNote(preview) }
         }
         if (preview.missingIds.isNotEmpty()) item { MissingCard(preview.missingIds, state.dropMissing, send) }
         item {
@@ -248,4 +244,29 @@ private fun SharedSummary(routine: SharedRoutine) {
         routineSummary(if (policy.isFlexible) kinds.filter { it == DayKind.TRAINING } else kinds, policy),
         style = MaterialTheme.typography.titleSmall,
     )
+}
+
+/** How many custom exercises come with the routine, by whom, and how many are already here (reused). */
+@Composable
+private fun CustomExercisesNote(preview: ImportPreview) {
+    val custom = preview.file.customExercises.size
+    val existing = preview.existingCustomIds.size
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(
+            pluralStringResource(Res.plurals.routines_import_custom_count, custom, custom),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+        if (preview.authors.isNotEmpty()) {
+            Text(
+                stringResource(Res.string.routines_import_custom_by, preview.authors.joinToString(", ")),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+        if (existing > 0) {
+            Text(
+                pluralStringResource(Res.plurals.routines_import_custom_existing, existing, existing),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
+    }
 }

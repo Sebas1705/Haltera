@@ -130,4 +130,46 @@
         <item>nov</item>
         <item>dic</item>
     </string-array>
+    <!-- Ejercicios personalizados: editar, borrar, origen compartido -->
+    <string name="exercises_edit">Editar ejercicio</string>
+    <string name="exercises_edit_action">Editar</string>
+    <string name="exercises_delete_action">Borrar</string>
+    <string name="exercises_create_name_es_optional">Nombre en español (opcional)</string>
+    <string name="exercises_create_name_en_optional">Nombre en inglés (opcional)</string>
+    <string name="exercises_create_other_name_hint">Vacío: el mismo nombre en los dos idiomas.</string>
+    <string name="exercises_create_level">Nivel</string>
+    <string name="exercises_create_secondary">Músculos secundarios</string>
+    <string name="exercises_create_load_types">Tipo de carga de cada variante</string>
+    <string name="exercises_create_variant_locked">Tiene historial: su material y tipo de carga no cambian. Elige otro material para añadir una variante nueva.</string>
+    <string name="exercises_create_tracking_locked">Este ejercicio tiene historial, así que lo que registra cada serie no cambia.</string>
+    <string name="exercises_create_removed_logged">El material que has quitado y tiene historial se oculta, no se borra: su historial se conserva.</string>
+    <string name="exercises_create_instructions">Instrucciones (un paso por línea)</string>
+    <string name="exercises_load_type_barbell">Barra + discos</string>
+    <string name="exercises_load_type_dumbbell">Peso por mano</string>
+    <string name="exercises_load_type_machine">Máquina (kg o placa)</string>
+    <string name="exercises_load_type_bodyweight">Peso corporal ±</string>
+    <string name="exercises_load_type_band">Nivel de banda</string>
+    <string name="exercises_load_type_none">Sin carga</string>
+    <string name="exercises_detail_by">de %1$s</string>
+    <string name="exercises_detail_deleted">Has borrado este ejercicio. No aparece en la lista ni al elegir ejercicios, pero sigue aquí para que tu historial conserve su nombre.</string>
+    <string name="exercises_restore">Restaurar</string>
+    <string name="exercises_delete_title">¿Borrar %1$s?</string>
+    <string name="exercises_delete_unused">Nada lo usa: se eliminará definitivamente.</string>
+    <plurals name="exercises_delete_routines">
+        <item quantity="one">Se usa en %1$d rutina: %2$s. Al borrarlo se quita de esa rutina.</item>
+        <item quantity="other">Se usa en %1$d rutinas: %2$s. Al borrarlo se quita de esas rutinas.</item>
+    </plurals>
+    <plurals name="exercises_delete_sessions">
+        <item quantity="one">Registrado en %1$d sesión.</item>
+        <item quantity="other">Registrado en %1$d sesiones.</item>
+    </plurals>
+    <plurals name="exercises_delete_sets">
+        <item quantity="one">%1$d serie completada.</item>
+        <item quantity="other">%1$d series completadas.</item>
+    </plurals>
+    <string name="exercises_delete_hidden">Tu historial lo conserva: el ejercicio solo se oculta de la lista y al elegir ejercicios.</string>
+    <string name="exercises_delete_confirm">Borrar</string>
+    <string name="exercises_delete_confirm_routines">Quitar de las rutinas y borrar</string>
+    <string name="exercises_cancel">Cancelar</string>
+    <string name="exercises_delete_failed">No se pudo borrar el ejercicio.</string>
 </resources>

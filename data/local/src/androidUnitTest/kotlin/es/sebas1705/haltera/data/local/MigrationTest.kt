@@ -149,9 +149,56 @@ class MigrationTest {
     }
 
     @Test
+    fun `migrating from version 5 keeps custom exercises, their history and sync state, and adds author and origin`() {
+        File("src/commonMain/sqldelight/databases/5.db").copyTo(file, overwrite = true)
+        driver().use { v5 ->
+            v5.execute(
+                null,
+                "INSERT INTO ExerciseEntity(id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, " +
+                    "trackingType, level, primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, " +
+                    "updatedAt) VALUES ('user-1', 'USER', 'Sled', 'Trineo', 'sled', 'trineo', 'STRENGTH', 'WEIGHT_REPS', " +
+                    "'BEGINNER', 'QUADRICEPS', '', '[\"Push.\"]', '[]', 0, 5)",
+                0,
+            )
+            v5.execute(
+                null,
+                "INSERT INTO ExerciseVariantEntity(id, exerciseId, source, position, equipment, loadType, frames, " +
+                    "updatedAt) VALUES ('user-1.machine', 'user-1', 'USER', 0, 'MACHINE', 'MACHINE', '[]', 5)",
+                0,
+            )
+            v5.execute(
+                null,
+                "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, dayName) VALUES ('s1', 1000, 2000, '')",
+                0,
+            )
+            v5.execute(
+                null,
+                "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId) VALUES ('e1', 's1', 0, 'user-1.machine')",
+                0,
+            )
+            AppDatabase.Schema.migrate(v5, 5, AppDatabase.Schema.version)
+        }
+
+        val db = AppDatabase(driver())
+        val sled = db.exerciseEntityQueries.selectById("user-1").executeAsOne()
+        assertEquals("Sled", sled.nameEn)
+        assertEquals("[\"Push.\"]", sled.instructionsEn)
+        assertNull(sled.author)
+        assertNull(sled.originId)
+        assertEquals(listOf("user-1.machine"), db.exerciseEntityQueries.variantsInSessions("user-1").executeAsList())
+        assertEquals(1L, db.syncTrackingQueries.selectState("exercises", "user-1").executeAsOne().dirty)
+
+        // The new columns are usable, the update is tracked for sync and the origin is found.
+        db.exerciseEntityQueries.setShareOrigin(author = "Ana", originId = "user-abc", id = "user-1")
+        assertEquals("user-1", db.exerciseEntityQueries.selectUserByOrigin("user-abc").executeAsOne().id)
+        assertEquals("Ana", db.exerciseEntityQueries.selectById("user-1").executeAsOne().author)
+        assertEquals(0L, db.syncTrackingQueries.selectState("exercises", "user-1").executeAsOne().deleted)
+    }
+
+    @Test
     fun `the schema version is the shipped one plus the migrations`() {
         // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync
-        // covers 1 -> 4); 4 -> 5: flexible rest days.
-        assertEquals(5L, AppDatabase.Schema.version)
+        // covers 1 -> 4); 4 -> 5: flexible rest days; 5 -> 6: author and origin of custom exercises.
+        assertEquals(6L, AppDatabase.Schema.version)
     }
 }

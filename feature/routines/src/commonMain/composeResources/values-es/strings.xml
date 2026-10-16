@@ -197,7 +197,7 @@
     <string name="routines_share_error">No se pudo compartir la rutina.</string>
     <string name="routines_qr_hint">En otro móvil con Haltera, abre Rutinas, pulsa Añadir rutina › Escanear QR y escanea este código.</string>
     <string name="routines_qr_image">Código QR de la rutina %1$s</string>
-    <string name="routines_qr_too_large">Esta rutina es demasiado grande para un código QR. Compártela como archivo.</string>
+    <string name="routines_qr_too_large">Esta rutina es demasiado grande para un código QR (los ejercicios personalizados la agrandan). Compártela como archivo: el archivo lo conserva todo.</string>
     <string name="routines_close">Cerrar</string>
     <string name="routines_import">Importar</string>
     <string name="routines_import_file">Importar desde archivo</string>
@@ -209,6 +209,11 @@
     <plurals name="routines_import_custom_count">
         <item quantity="one">Incluye %1$d ejercicio personalizado, que se añade a tus ejercicios.</item>
         <item quantity="other">Incluye %1$d ejercicios personalizados, que se añaden a tus ejercicios.</item>
+    </plurals>
+    <string name="routines_import_custom_by">Ejercicios personalizados de %1$s.</string>
+    <plurals name="routines_import_custom_existing">
+        <item quantity="one">%1$d ya está en tus ejercicios: se reutiliza, no se duplica.</item>
+        <item quantity="other">%1$d ya están en tus ejercicios: se reutilizan, no se duplican.</item>
     </plurals>
     <string name="routines_import_missing_title">Ejercicios que no están en este dispositivo</string>
     <string name="routines_import_missing_keep">Añadirlos como ejercicios personalizados</string>

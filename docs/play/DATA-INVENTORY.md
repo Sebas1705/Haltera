@@ -19,9 +19,10 @@ behaviour that cannot be read from this repository.
 | Routines (name, description, days, slots, targets, rest times, progression rules) | SQLite `ironlog.db` (becomes the Haltera database name; see the rename) | `data/local` `.sq` files |
 | Workout sessions: dates, exercises, sets, reps, loads (grams), RPE, durations, notes, body weight at the time | same | `WorkoutSessionEntity`, `SetLogEntity` |
 | Body weight entries (date, weight, note) | same | `BodyWeightEntity` |
-| Custom exercises and variants | same | |
+| Custom exercises and variants; for one imported from a shared routine, its **creator name** (as typed by whoever shared it) and origin id | same | `ExerciseEntity.author`, `originId` (schema 6); synced with the exercise in `exercises` while the cloud copy is on |
 | Nutrition: custom foods and recipes, foods logged from Open Food Facts (name, brand, barcode, macros), meal entries per day | same | `FoodEntity`, `MealEntryEntity` |
 | Settings: units, bar weight, plates, keep screen on, rest sound and vibration, nutrition goals | DataStore preferences | `SettingsPrefs` |
+| "Your name for shared routines" (user-entered, optional; filled once with the Google display name when a Google account is linked and the user never set it) | DataStore preferences (`settings.shareName`) | Device-local: never synced; cleared by "Also erase data on this device" |
 | Nutrition profile used for calorie goals: **sex, birth year, height, activity level, objective**, macro goals | DataStore preferences | `NutritionPrefs`; all optional (null by default) |
 | Live workout state (current session) | `ironlog_session.xml` | Excluded from Android backup |
 
@@ -117,7 +118,12 @@ deletion of such backups; the policy states they are deleted when no longer need
 ### 2.6 Things the user does that the developer never sees
 
 Routine sharing (`.ironlog` file and QR code) goes through the Android share sheet or the scanner, device to device.
-Nothing is sent to a server of the developer. **Verified** (no endpoint in `data/repository/.../share`).
+Nothing is sent to a server of the developer. **Verified** (no endpoint in `data/repository/.../share`). A shared routine
+carries the custom exercises it uses and, on the ones the sharer created, the sharer's "Your name for shared routines"
+(nothing when it is empty). That name leaves the phone **only inside the files and QR codes the user chooses to
+share**, to whoever they give them to; the receiver's app stores it as the creator of the imported exercise ("by
+<name>") and keeps it when that exercise is shared again. **Verified** (`RoutineExport.toFile`,
+`SharedCustomExercisesTest`).
 
 ## 3. What the app does NOT do (each verified)
 

@@ -179,17 +179,24 @@ INSERT OR REPLACE INTO SetLogEntity(
 insertExerciseIfMissing:
 INSERT OR IGNORE INTO ExerciseEntity(
     id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, trackingType, level,
-    primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt
+    primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, updatedAt, author, originId
 ) VALUES (:id, 'USER', :nameEn, :nameEs, :nameEnSearch, :nameEsSearch, :category, :trackingType, :level,
-    :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, :deprecated, :updatedAt);
+    :primaryMuscles, :secondaryMuscles, :instructionsEn, :instructionsEs, :deprecated, :updatedAt, :author, :originId);
 
 updateUserExercise:
 UPDATE ExerciseEntity
 SET nameEn = :nameEn, nameEs = :nameEs, nameEnSearch = :nameEnSearch, nameEsSearch = :nameEsSearch,
     category = :category, trackingType = :trackingType, level = :level, primaryMuscles = :primaryMuscles,
     secondaryMuscles = :secondaryMuscles, instructionsEn = :instructionsEn, instructionsEs = :instructionsEs,
-    deprecated = :deprecated, updatedAt = :updatedAt
+    deprecated = :deprecated, updatedAt = :updatedAt, author = :author, originId = :originId
 WHERE id = :id AND source = 'USER';
+
+-- A remote edit or tombstone never deletes a variant this device logged (foreign key): it is deprecated instead.
+deprecateUserVariantsNotIn:
+UPDATE ExerciseVariantEntity SET deprecated = 1 WHERE exerciseId = :exerciseId AND source = 'USER' AND id NOT IN :keep;
+
+deprecateUserExercise:
+UPDATE ExerciseEntity SET deprecated = 1 WHERE id = ? AND source = 'USER';
 
 deleteUserVariantsNotIn:
 DELETE FROM ExerciseVariantEntity WHERE exerciseId = :exerciseId AND source = 'USER' AND id NOT IN :keep;

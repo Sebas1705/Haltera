@@ -15,6 +15,9 @@
     <string name="settings_keep_screen_on">Mantener la pantalla encendida durante la sesión</string>
     <string name="settings_rest_sound">Sonido al terminar el descanso</string>
     <string name="settings_rest_vibration">Vibrar al terminar el descanso</string>
+    <string name="settings_sharing">Compartir</string>
+    <string name="settings_share_name">Tu nombre en las rutinas compartidas</string>
+    <string name="settings_share_name_hint">Aparece como autor de tus ejercicios personalizados cuando compartes una rutina. Déjalo vacío para compartir sin nombre. Solo sale de este teléfono dentro de los archivos y códigos que compartes.</string>
     <string name="settings_credits">Créditos y licencias</string>
     <string name="unit_kg">kg</string>
     <string name="unit_lb">lb</string>

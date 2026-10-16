@@ -130,6 +130,10 @@ internal data class ExercisePayload(
     val deprecated: Long = 0,
     val updatedAt: Long,
     val variants: List<VariantPayload> = emptyList(),
+    /** Schema 6: creator of an exercise imported from a shared routine; absent in older documents. */
+    val author: String? = null,
+    /** Schema 6: the exercise id on the creator's device (import dedupe); absent in older documents. */
+    val originId: String? = null,
 )
 
 @Serializable
@@ -279,6 +283,7 @@ internal fun ExerciseEntity.toPayload(variants: List<VariantPayload>) = Exercise
     category = category, trackingType = trackingType, level = level, primaryMuscles = primaryMuscles,
     secondaryMuscles = secondaryMuscles, instructionsEn = instructionsEn, instructionsEs = instructionsEs,
     deprecated = deprecated, updatedAt = updatedAt, variants = variants,
+    author = author, originId = originId,
 )
 
 internal fun ExerciseVariantEntity.toPayload() = VariantPayload(

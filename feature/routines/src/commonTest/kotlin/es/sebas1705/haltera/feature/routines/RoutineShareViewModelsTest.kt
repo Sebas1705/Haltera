@@ -55,8 +55,9 @@ private class FakeSharing(private val routines: FakeRoutineRepository) : Routine
     val previewed = mutableListOf<String>()
     val languages = mutableListOf<String>()
     val imports = mutableListOf<Boolean>()
+    val authors = mutableListOf<String?>()
 
-    override suspend fun export(routineId: String): String? = exportJson
+    override suspend fun export(routineId: String, author: String?): String? = exportJson.also { authors += author }
 
     override suspend fun preview(text: String, language: String): ImportPreviewResult {
         previewed += text
@@ -82,6 +83,7 @@ class RoutineShareViewModelsTest {
     private val rule = CoroutineTestRule()
     private val routines = FakeRoutineRepository()
     private val sharing = FakeSharing(routines)
+    private val settings = FakeSettingsRepository()
 
     @BeforeTest
     fun setUp() = rule.setup()
@@ -93,7 +95,7 @@ class RoutineShareViewModelsTest {
     fun `share file sends the export to the share sheet with a safe name`() = runTest {
         val bridge = FakeBridge()
         val id = routines.createRoutine("Push/Pull: A")
-        val vm = RoutineExportViewModel(routines, sharing, bridge)
+        val vm = RoutineExportViewModel(routines, sharing, bridge, settings)
         vm.onEvent(RoutineExportIntent.ShareFile(id))
         assertEquals(listOf("PushPull A.haltera" to sharing.exportJson!!), bridge.shared)
         assertFalse(vm.uiState.value.error)
@@ -102,7 +104,7 @@ class RoutineShareViewModelsTest {
     @Test
     fun `show qr encodes the routine or reports it is too large`() = runTest {
         val id = routines.createRoutine("Legs")
-        val vm = RoutineExportViewModel(routines, sharing, FakeBridge())
+        val vm = RoutineExportViewModel(routines, sharing, FakeBridge(), settings)
         vm.onEvent(RoutineExportIntent.ShowQr(id))
         val qr = assertNotNull(vm.uiState.value.qr)
         assertEquals("Legs", qr.name)
@@ -122,9 +124,24 @@ class RoutineShareViewModelsTest {
     }
 
     @Test
+    fun `the file and the QR code carry the name for shared routines, trimmed, or none when blank`() = runTest {
+        val id = routines.createRoutine("Legs")
+        val vm = RoutineExportViewModel(routines, sharing, FakeBridge(), settings)
+        vm.onEvent(RoutineExportIntent.ShareFile(id))
+        settings.setShareName("  Ana López ")
+        vm.onEvent(RoutineExportIntent.ShareFile(id))
+        vm.onEvent(RoutineExportIntent.ShowQr(id))
+        vm.onEvent(RoutineExportIntent.DismissQr)
+        settings.setShareName("   ")
+        vm.onEvent(RoutineExportIntent.ShareFile(id))
+        // shareCode's default calls export, so the QR code reports its author too.
+        assertEquals(listOf(null, "Ana López", "Ana López", null), sharing.authors)
+    }
+
+    @Test
     fun `a failed export shows an error`() = runTest {
         sharing.exportJson = null
-        val vm = RoutineExportViewModel(routines, sharing, FakeBridge())
+        val vm = RoutineExportViewModel(routines, sharing, FakeBridge(), settings)
         vm.onEvent(RoutineExportIntent.ShareFile("missing"))
         assertTrue(vm.uiState.value.error)
         vm.onEvent(RoutineExportIntent.ErrorShown)

@@ -1,10 +1,13 @@
 package es.sebas1705.haltera.data.repository.share
 
 import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.Level
 import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.LocalizedSteps
 import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.models.NewExercise
 import es.sebas1705.haltera.data.models.NewVariant
@@ -13,6 +16,8 @@ import es.sebas1705.haltera.data.models.RoutineOrigin
 import es.sebas1705.haltera.data.models.RoutineTemplate
 import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.data.models.TrackingType
+import es.sebas1705.haltera.data.models.VariantEdit
+import es.sebas1705.haltera.data.models.toEdit
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 
@@ -27,7 +32,12 @@ data class ImportPreview(
     val template: RoutineOrigin? = null,
     /** The language [file] was materialised in when it comes from [template]. */
     val language: String = "en",
-)
+    /** Ids (in [file]) of embedded custom exercises already on this device: import reuses them. */
+    val existingCustomIds: Set<String> = emptySet(),
+) {
+    /** Distinct creators named by the embedded custom exercises. */
+    val authors: List<String> get() = file.customExercises.mapNotNull { it.author }.distinct()
+}
 
 sealed interface ImportPreviewResult {
     data class Ready(val preview: ImportPreview) : ImportPreviewResult
@@ -40,14 +50,20 @@ sealed interface ImportPreviewResult {
  * custom exercises; nothing existing is ever overwritten.
  */
 interface RoutineSharing {
-    /** The routine as `haltera-routine` JSON, or null when it does not exist. */
-    suspend fun export(routineId: String): String?
+    /**
+     * The routine as `haltera-routine` JSON, or null when it does not exist. [author] (the user's "name for shared
+     * routines") is written as the creator of the custom exercises they made; null or blank writes no name.
+     */
+    suspend fun export(routineId: String, author: String? = null): String?
 
     /**
      * The QR payload of the routine (see [RoutineShareCode]): a template code for an unmodified catalogue
-     * copy, otherwise the v2 code of [export]. Null when the routine does not exist.
+     * copy, otherwise the code of [export]. When that is longer than [RoutineShareCode.MAX_QR_LENGTH] and custom
+     * exercises carry instructions, the code without those instructions is returned if it fits (the file share
+     * keeps everything). Null when the routine does not exist.
      */
-    suspend fun shareCode(routineId: String): String? = export(routineId)?.let(RoutineShareCode::encode)
+    suspend fun shareCode(routineId: String, author: String? = null): String? =
+        export(routineId, author)?.let(RoutineShareCode::encode)
 
     /**
      * Reads JSON or a QR payload (any [RoutineShareCode] form) and checks which catalogue ids are missing. A
@@ -68,7 +84,10 @@ internal class DefaultRoutineSharing(
     private val now: () -> Long,
 ) : RoutineSharing {
 
-    override suspend fun export(routineId: String): String? {
+    override suspend fun export(routineId: String, author: String?): String? =
+        exportFile(routineId, author)?.let(RoutineExport::encode)
+
+    private suspend fun exportFile(routineId: String, author: String?): RoutineFile? {
         val routine = routines.getRoutine(routineId) ?: return null
         val exerciseIds = linkedSetOf<String>()
         routine.days.flatMap { it.slots }.forEach { slot ->
@@ -78,10 +97,10 @@ internal class DefaultRoutineSharing(
             }
         }
         val custom = exerciseIds.mapNotNull { exercises.getExercise(it) }.filter { it.source == ExerciseSource.USER }
-        return RoutineExport.encode(routine, custom, now())
+        return RoutineExport.toFile(routine, custom, now(), author)
     }
 
-    override suspend fun shareCode(routineId: String): String? {
+    override suspend fun shareCode(routineId: String, author: String?): String? {
         val routine = routines.getRoutine(routineId) ?: return null
         val template = routine.origin?.let { origin ->
             routines.templates().firstOrNull { it.id == origin.templateId && it.version == origin.version }
@@ -89,7 +108,12 @@ internal class DefaultRoutineSharing(
         if (template != null && isUnmodifiedCopy(routine, template)) {
             return RoutineShareCode.encodeTemplate(template.id, template.version)
         }
-        return export(routineId)?.let(RoutineShareCode::encode)
+        val file = exportFile(routineId, author) ?: return null
+        val code = RoutineShareCode.encode(RoutineExport.encode(file))
+        if (code.length <= RoutineShareCode.MAX_QR_LENGTH) return code
+        // Instructions are the bulk of custom exercises: a QR without them still carries the routine.
+        val lite = RoutineShareCode.encode(RoutineExport.encode(RoutineExport.withoutInstructions(file)))
+        return if (lite.length < code.length) lite else code
     }
 
     /** Whether [routine] has exactly the content [template] has in English or in Spanish. */
@@ -138,7 +162,8 @@ internal class DefaultRoutineSharing(
             val exercise = if (variant != null) exercises.getExercise(variant.exerciseId) else exercises.getExercise(id)
             if (exercise == null) missing += id else names[id] = variant?.name ?: exercise.name
         }
-        return ImportPreview(file, names, missing.distinct())
+        val existing = file.customExercises.filter { exercises.findByOrigin(it.origin) != null }.map { it.id }.toSet()
+        return ImportPreview(file, names, missing.distinct(), existingCustomIds = existing)
     }
 
     override suspend fun import(preview: ImportPreview, dropMissing: Boolean): String {
@@ -147,9 +172,14 @@ internal class DefaultRoutineSharing(
         val file = preview.file
         val idMap = mutableMapOf<String, String>()
         file.customExercises.forEach { shared ->
-            val created = exercises.createCustom(shared.toNewExercise())
-            idMap[shared.id] = created.id
-            shared.variants.forEachIndexed { i, v -> created.variants.getOrNull(i)?.let { idMap[v.id] = it.id } }
+            val existing = exercises.findByOrigin(shared.origin)
+            if (existing == null) {
+                val created = exercises.createCustom(shared.toNewExercise())
+                idMap[shared.id] = created.id
+                shared.variants.forEachIndexed { i, v -> created.variants.getOrNull(i)?.let { idMap[v.id] = it.id } }
+            } else {
+                exercises.reuse(existing, shared, idMap)
+            }
         }
         if (!dropMissing) createPlaceholders(preview.missingIds, idMap)
         val missing = preview.missingIds.toSet()
@@ -224,6 +254,9 @@ internal class DefaultRoutineSharing(
         primaryMuscles = RoutineExport.muscles(primaryMuscles),
         secondaryMuscles = RoutineExport.muscles(secondaryMuscles),
         variants = variants.map { NewVariant(Equipment.fromDb(it.equipment), LoadType.fromDb(it.loadType), it.name) },
+        instructions = instructions?.let { LocalizedSteps(it.en, it.es) } ?: LocalizedSteps.EMPTY,
+        author = author?.trim()?.takeIf { it.isNotEmpty() }?.take(MAX_AUTHOR_LENGTH),
+        originId = origin,
     )
 
     /** [template] as a shared routine with its texts in [language], as [RoutineRepository.copyTemplate] stores it. */
@@ -244,20 +277,60 @@ internal class DefaultRoutineSharing(
         },
     )
 
-    private fun equipmentOf(text: String): Equipment =
-        Equipment.entries.firstOrNull { it.name == text.uppercase().replace('-', '_') } ?: Equipment.OTHER
-
-    private fun loadTypeOf(equipment: Equipment): LoadType = when (equipment) {
-        Equipment.BARBELL, Equipment.EZ_BAR, Equipment.TRAP_BAR -> LoadType.BARBELL
-        Equipment.DUMBBELL, Equipment.KETTLEBELL -> LoadType.DUMBBELL
-        Equipment.MACHINE, Equipment.CABLE, Equipment.SMITH -> LoadType.MACHINE
-        Equipment.BAND -> LoadType.BAND
-        Equipment.BODYWEIGHT -> LoadType.BODYWEIGHT
-        else -> LoadType.NONE
-    }
-
     private companion object {
         /** The languages a catalogue copy can be stored in. */
         val LANGUAGES = listOf("en", "es")
+
+        /** A creator name longer than this is cut (it comes from a file anyone can write). */
+        const val MAX_AUTHOR_LENGTH = 60
     }
+}
+
+/**
+ * Maps [shared] onto [existing], the copy imported earlier (or the user's own exercise): it is restored if it
+ * was soft-deleted, and never overwritten, since the user may have edited it. Each shared variant maps to the
+ * same id (own exercise), else an active variant with the same equipment and load type, else the same
+ * equipment; a variant with no match is added to the existing exercise.
+ */
+private suspend fun ExerciseRepository.reuse(
+    existing: Exercise,
+    shared: SharedExercise,
+    idMap: MutableMap<String, String>,
+) {
+    if (existing.deprecated) restoreCustom(existing.id)
+    idMap[shared.id] = existing.id
+    fun match(e: Exercise, v: SharedVariant): ExerciseVariant? {
+        val equipment = Equipment.fromDb(v.equipment)
+        val active = e.variants.filterNot { it.deprecated }
+        return e.variants.firstOrNull { it.id == v.id }
+            ?: active.firstOrNull { it.equipment == equipment && it.loadType == LoadType.fromDb(v.loadType) }
+            ?: active.firstOrNull { it.equipment == equipment }
+    }
+    val unmatched = shared.variants.filter { match(existing, it) == null }
+    val target = if (unmatched.isEmpty()) {
+        existing
+    } else {
+        val edit = existing.toEdit()
+        updateCustom(
+            existing.id,
+            edit.copy(
+                variants = edit.variants + unmatched.map {
+                    VariantEdit(null, Equipment.fromDb(it.equipment), LoadType.fromDb(it.loadType), it.name)
+                },
+            ),
+        )
+    }
+    shared.variants.forEach { v -> match(target, v)?.let { idMap[v.id] = it.id } }
+}
+
+private fun equipmentOf(text: String): Equipment =
+    Equipment.entries.firstOrNull { it.name == text.uppercase().replace('-', '_') } ?: Equipment.OTHER
+
+private fun loadTypeOf(equipment: Equipment): LoadType = when (equipment) {
+    Equipment.BARBELL, Equipment.EZ_BAR, Equipment.TRAP_BAR -> LoadType.BARBELL
+    Equipment.DUMBBELL, Equipment.KETTLEBELL -> LoadType.DUMBBELL
+    Equipment.MACHINE, Equipment.CABLE, Equipment.SMITH -> LoadType.MACHINE
+    Equipment.BAND -> LoadType.BAND
+    Equipment.BODYWEIGHT -> LoadType.BODYWEIGHT
+    else -> LoadType.NONE
 }

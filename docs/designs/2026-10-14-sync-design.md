@@ -23,10 +23,16 @@ Everything under `users/{uid}/{collection}/{docId}`; the bundled exercise catalo
 | `routines` | routine id | routine + its days + their slots |
 | `sessions` | session id | session + its session exercises + their sets |
 | `bodyWeight` | entry id | one entry |
-| `exercises` | USER exercise id | a custom exercise + its variants |
+| `exercises` | USER exercise id | a custom exercise + its variants (schema 6 adds the optional `author` and `originId`; core design §3.1.1) |
 | `settings` | `user` | user settings (units, bar, plates, toggles) and the active routine id |
 
 Every document: `{ payload: <json string>, updatedAt: <epoch ms>, deleted: <bool>, schema: 1 }`. Deletes are tombstones (`deleted = true`, empty payload). Conflict rule: **last writer wins per document by `updatedAt`**. Security rules: a signed-in user reads/writes only `users/{request.auth.uid}/**`; tested with the Firestore emulator in CI (`firebase/rules-test`, as in Owlsplit).
+
+Custom exercises (core design §3.1.1): deleting an exercise nothing references writes an `exercises` tombstone; a
+soft delete (the exercise has history) is an ordinary update with `deprecated = 1`, and so is a restore. Applying a
+tombstone, or an edit that drops a variant, never deletes a variant that a session on the receiving phone
+references: that variant (or the exercise) is deprecated instead, so the session keeps its foreign key and syncs as
+before (`AggregateStore`, `CustomExerciseSyncTest`).
 
 ## 4. Contract between the workstreams (fixed)
 

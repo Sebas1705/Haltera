@@ -18,6 +18,7 @@ internal const val META_SYNC_APPLYING = "syncApplying"
  * and records the document's `updatedAt` as the root's clean SyncState. Children missing from the payload are
  * deleted and the rest upserted in place (ids are stable, so session links to routine slots survive an edit).
  */
+@Suppress("TooManyFunctions") // A reader and a writer per collection, plus the exercise delete policy.
 internal class AggregateStore(
     private val db: AppDatabase,
     private val settings: SettingsSyncBridge,
@@ -61,10 +62,7 @@ internal class AggregateStore(
             ROUTINES -> db.routineEntityQueries.delete(id)
             SESSIONS -> db.workoutSessionEntityQueries.delete(id)
             BODY_WEIGHT -> db.bodyWeightEntityQueries.delete(id)
-            EXERCISES -> {
-                q.deleteUserVariantsNotIn(id, emptyList())
-                q.deleteUserExercise(id)
-            }
+            EXERCISES -> deleteExercise(id)
             FOODS -> q.deleteSyncedFood(id) // recipe items cascade
             MEAL_DAYS -> q.deleteMealEntriesNotIn(id, emptyList())
             else -> Unit // settings/user is never deleted
@@ -201,16 +199,34 @@ internal class AggregateStore(
         return exercise.toPayload(variants.map { it.toPayload() })
     }
 
+    /**
+     * A tombstone deletes the exercise, unless this device logged it (sessions reference its variants, maybe
+     * offline before the delete arrived): then it is soft-deleted (deprecated), as the delete policy does locally.
+     */
+    private fun deleteExercise(id: String) {
+        val logged = loggedVariants(id)
+        q.deleteUserVariantsNotIn(id, logged)
+        if (logged.isEmpty()) q.deleteUserExercise(id) else q.deprecateUserExercise(id)
+    }
+
+    private fun loggedVariants(exerciseId: String): List<String> =
+        db.exerciseEntityQueries.variantsInSessions(exerciseId).executeAsList()
+
     private fun writeExercise(e: ExercisePayload) {
         q.insertExerciseIfMissing(
             e.id, e.nameEn, e.nameEs, e.nameEnSearch, e.nameEsSearch, e.category, e.trackingType, e.level,
-            e.primaryMuscles, e.secondaryMuscles, e.instructionsEn, e.instructionsEs, e.deprecated, e.updatedAt,
+            e.primaryMuscles, e.secondaryMuscles, e.instructionsEn, e.instructionsEs, e.deprecated, e.updatedAt, e.author,
+            e.originId,
         )
         q.updateUserExercise(
             e.nameEn, e.nameEs, e.nameEnSearch, e.nameEsSearch, e.category, e.trackingType, e.level,
-            e.primaryMuscles, e.secondaryMuscles, e.instructionsEn, e.instructionsEs, e.deprecated, e.updatedAt, e.id,
+            e.primaryMuscles, e.secondaryMuscles, e.instructionsEn, e.instructionsEs, e.deprecated, e.updatedAt, e.author,
+            e.originId, e.id,
         )
-        q.deleteUserVariantsNotIn(e.id, e.variants.map { it.id })
+        // A variant this device logged is kept (deprecated): sessions reference it.
+        val keep = e.variants.map { it.id }
+        q.deleteUserVariantsNotIn(e.id, keep + loggedVariants(e.id))
+        q.deprecateUserVariantsNotIn(e.id, keep)
         e.variants.forEach { v ->
             q.insertVariantIfMissing(
                 v.id, e.id, v.position, v.equipment, v.loadType, v.nameEn, v.nameEs, v.instructionsEn,

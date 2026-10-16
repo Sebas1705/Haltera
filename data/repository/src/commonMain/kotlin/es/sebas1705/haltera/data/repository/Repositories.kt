@@ -4,9 +4,12 @@ import es.sebas1705.haltera.data.models.BodyWeightEntry
 import es.sebas1705.haltera.data.models.CatalogImportResult
 import es.sebas1705.haltera.data.models.CatalogSummary
 import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.DeleteOutcome
 import es.sebas1705.haltera.data.models.Exercise
+import es.sebas1705.haltera.data.models.ExerciseEdit
 import es.sebas1705.haltera.data.models.ExerciseFilter
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.ExerciseUsage
 import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.NewExercise
 import es.sebas1705.haltera.data.models.RestPolicy
@@ -28,6 +31,7 @@ interface CatalogRepository {
     fun observeSummary(): Flow<CatalogSummary>
 }
 
+@Suppress("TooManyFunctions") // Catalogue reads plus the custom exercise lifecycle.
 interface ExerciseRepository {
     /**
      * Active (non-deprecated) exercises matching [filter], with their active variants, in [language] ("en" or "es").
@@ -52,6 +56,37 @@ interface ExerciseRepository {
 
     /** Creates a USER exercise with id `user-<uuid>` and its variants (`<exerciseId>.<equipment>`). */
     suspend fun createCustom(input: NewExercise): Exercise
+
+    /**
+     * Edits the USER exercise [id] (core design §3.1.1); ids stay, so sessions and routines keep pointing at it.
+     * Throws [IllegalArgumentException] for an unknown or catalogue exercise, a blank name, no variants or a variant
+     * of another exercise, and [IllegalStateException] when the edit changes what history depends on: the tracking
+     * type of a logged exercise, or the equipment or load type of a logged variant (add a new variant instead).
+     * Variants left out are deleted, or deprecated while a session or routine references them. The defaults
+     * (here and below) serve test fakes that do not edit exercises.
+     */
+    suspend fun updateCustom(id: String, edit: ExerciseEdit): Exercise =
+        throw UnsupportedOperationException("updateCustom")
+
+    /** Where the USER exercise [id] is used (routines, sessions, sets); empty for an unknown id. */
+    suspend fun usage(id: String): ExerciseUsage = ExerciseUsage()
+
+    /**
+     * Deletes the USER exercise [id] with the safe policy of core design §3.1.1: when routines use it, nothing
+     * changes unless [removeFromRoutines] (then those slots are removed first); with history it is soft-deleted
+     * (hidden, history keeps it); otherwise its rows are deleted and a tombstone syncs.
+     */
+    suspend fun deleteCustom(id: String, removeFromRoutines: Boolean): DeleteOutcome =
+        throw UnsupportedOperationException("deleteCustom")
+
+    /** Undoes a soft delete of the USER exercise [id]. */
+    suspend fun restoreCustom(id: String): Unit = throw UnsupportedOperationException("restoreCustom")
+
+    /**
+     * The USER exercise a shared exercise with origin [originId] was imported as, or the user's own exercise with
+     * that id (a routine they shared themselves); soft-deleted ones included. Null when there is none.
+     */
+    suspend fun findByOrigin(originId: String): Exercise? = null
 
     /** Finished-session history of one variant, latest first. */
     fun observeVariantHistory(variantId: String, limit: Int = DEFAULT_LIMIT): Flow<List<ExerciseHistoryEntry>>

@@ -3,12 +3,15 @@ package es.sebas1705.haltera.feature.exercises
 import es.sebas1705.haltera.core.datastore.SettingsRepository
 import es.sebas1705.haltera.core.datastore.UserSettings
 import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.data.models.DeleteOutcome
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.ExerciseEdit
 import es.sebas1705.haltera.data.models.ExerciseFilter
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
 import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.ExerciseUsage
 import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.Level
 import es.sebas1705.haltera.data.models.LoadType
@@ -83,6 +86,63 @@ class FakeExerciseRepository(initial: List<Exercise> = emptyList()) : ExerciseRe
         exercises.update { it + exercise }
         return exercise
     }
+
+    val updates = mutableListOf<Pair<String, ExerciseEdit>>()
+    val deletes = mutableListOf<Pair<String, Boolean>>()
+    val usages = mutableMapOf<String, ExerciseUsage>()
+    var failUpdate = false
+    var failDelete = false
+
+    /** Applies the edit like the SQL repository: same ids, new variants `<id>.<equipment>`, the rest hidden. */
+    override suspend fun updateCustom(id: String, edit: ExerciseEdit): Exercise {
+        if (failUpdate) error("disk full")
+        updates += id to edit
+        val current = exercises.value.first { it.id == id }
+        val kept = edit.variants.mapIndexed { i, v ->
+            ExerciseVariant(
+                v.id ?: "$id.${v.equipment.name.lowercase()}",
+                id,
+                v.equipment,
+                v.loadType,
+                v.name,
+                position = i,
+                source = ExerciseSource.USER,
+            )
+        }
+        val hidden = current.variants.filter { old -> kept.none { it.id == old.id } }.map { it.copy(deprecated = true) }
+        val updated = current.copy(
+            name = edit.name,
+            category = edit.category,
+            trackingType = edit.trackingType,
+            level = edit.level,
+            primaryMuscles = edit.primaryMuscles,
+            secondaryMuscles = edit.secondaryMuscles,
+            instructions = edit.instructions,
+            variants = kept + hidden,
+        )
+        exercises.update { all -> all.map { if (it.id == id) updated else it } }
+        return updated
+    }
+
+    override suspend fun usage(id: String): ExerciseUsage = usages[id] ?: ExerciseUsage()
+
+    /** DELETED removes it, HIDDEN (when its usage has history) marks it deprecated. */
+    override suspend fun deleteCustom(id: String, removeFromRoutines: Boolean): DeleteOutcome {
+        if (failDelete) error("disk full")
+        deletes += id to removeFromRoutines
+        val usage = usage(id)
+        if (usage.inRoutines && !removeFromRoutines) return DeleteOutcome.USED_IN_ROUTINES
+        return if (usage.hasHistory) {
+            exercises.update { all -> all.map { if (it.id == id) it.copy(deprecated = true) else it } }
+            DeleteOutcome.HIDDEN
+        } else {
+            exercises.update { all -> all.filterNot { it.id == id } }
+            DeleteOutcome.DELETED
+        }
+    }
+
+    override suspend fun restoreCustom(id: String) =
+        exercises.update { all -> all.map { if (it.id == id) it.copy(deprecated = false) else it } }
 
     override fun observeVariantHistory(variantId: String, limit: Int): Flow<List<ExerciseHistoryEntry>> =
         history.map { it[variantId].orEmpty().sortedByDescending { e -> e.sessionStartedAt }.take(limit) }

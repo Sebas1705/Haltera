@@ -27,8 +27,10 @@ import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonObject
 
 /**
- * The `haltera-routine` v1 sharing format (spec §10.1): a routine that references catalogue exercises by
- * stable id and embeds the user exercises it uses. History is never included.
+ * The `haltera-routine` sharing format (spec §10.1): a routine that references catalogue exercises by
+ * stable id and embeds the user exercises it uses. History is never included. Version 2 adds the custom
+ * exercises' instructions, creator name and origin id; a file is written as version 1 when it embeds no custom
+ * exercise, so older apps still read it. Version 1 files (and the legacy `ironlog-routine` key) still import.
  */
 @Serializable
 data class RoutineFile(
@@ -101,7 +103,11 @@ data class SharedSlot(
     )
 }
 
-/** A USER exercise embedded in the file, with its original ids (remapped on import). */
+/**
+ * A USER exercise embedded in the file, with its original ids (remapped on import). The fields after [variants]
+ * came with version 2 and are left out of the JSON when unset, so a file without them reads as version 1 did.
+ */
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
 data class SharedExercise(
     val id: String,
@@ -112,7 +118,23 @@ data class SharedExercise(
     val secondaryMuscles: List<String> = emptyList(),
     val trackingType: String = TrackingType.WEIGHT_REPS.name,
     val variants: List<SharedVariant> = emptyList(),
-)
+    /** v2: instruction steps in both languages. */
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val instructions: SharedSteps? = null,
+    /** v2: the creator's name ("Your name for shared routines"); null when they left it empty. */
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val author: String? = null,
+    /**
+     * v2: stable id of the exercise on its creator's device, kept when it is re-shared, so importing the same
+     * exercise twice reuses the first copy. Version 1 files only have [id], which is just as unique (`user-<uuid>`).
+     */
+    @EncodeDefault(EncodeDefault.Mode.NEVER) val originId: String? = null,
+) {
+    /** The id that identifies this exercise across devices. */
+    val origin: String get() = originId ?: id
+}
+
+/** Instruction steps in both languages (v2). */
+@Serializable
+data class SharedSteps(val en: List<String> = emptyList(), val es: List<String> = emptyList())
 
 @Serializable
 data class SharedVariant(
@@ -138,7 +160,12 @@ object RoutineExport {
 
     /** The format key written while the app was called Ironlog; still read, never written. */
     const val LEGACY_FORMAT = "ironlog-routine"
-    const val VERSION = 1
+
+    /** The newest version this app reads; written only when the file embeds custom exercises (v2 fields). */
+    const val VERSION = 2
+
+    /** Written when nothing needs v2, so older app versions still import routines without custom exercises. */
+    const val VERSION_1 = 1
 
     private val json = Json {
         ignoreUnknownKeys = true
@@ -146,10 +173,20 @@ object RoutineExport {
         classDiscriminator = "type"
     }
 
-    fun encode(routine: Routine, customExercises: List<Exercise>, exportedAt: Long): String =
-        json.encodeToString(RoutineFile.serializer(), toFile(routine, customExercises, exportedAt))
+    /**
+     * [author] is the sharer's name: it is written on the custom exercises they created themselves, while an
+     * exercise imported from someone else keeps its creator. Blank means no name.
+     */
+    fun encode(routine: Routine, customExercises: List<Exercise>, exportedAt: Long, author: String? = null): String =
+        json.encodeToString(RoutineFile.serializer(), toFile(routine, customExercises, exportedAt, author))
 
-    fun toFile(routine: Routine, customExercises: List<Exercise>, exportedAt: Long) = RoutineFile(
+    fun toFile(
+        routine: Routine,
+        customExercises: List<Exercise>,
+        exportedAt: Long,
+        author: String? = null,
+    ) = RoutineFile(
+        version = if (customExercises.isEmpty()) VERSION_1 else VERSION,
         exportedAt = exportedAt,
         routine = SharedRoutine(
             name = routine.name,
@@ -178,9 +215,17 @@ object RoutineExport {
                 secondaryMuscles = e.secondaryMuscles.map { it.name },
                 trackingType = e.trackingType.name,
                 variants = e.variants.map { v -> SharedVariant(v.id, v.equipment.name, v.loadType.name, v.name) },
+                instructions = e.instructions.takeIf { it.en.isNotEmpty() || it.es.isNotEmpty() }
+                    ?.let { SharedSteps(it.en, it.es) },
+                author = e.author ?: author?.trim()?.takeIf { it.isNotEmpty() },
+                originId = e.originId ?: e.id,
             )
         },
     )
+
+    /** [file] without the custom exercises' instructions: the smaller payload tried when a QR code overflows. */
+    fun withoutInstructions(file: RoutineFile) =
+        file.copy(customExercises = file.customExercises.map { it.copy(instructions = null) })
 
     fun encode(file: RoutineFile): String = json.encodeToString(RoutineFile.serializer(), file)
 

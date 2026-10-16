@@ -20,6 +20,12 @@ data class UserSettings(
     val restVibration: Boolean = true,
     /** Nutrition goals and calculator profile (nutrition design §2); defaults: no goals. */
     val nutrition: NutritionSettings = NutritionSettings(),
+    /**
+     * "Your name for shared routines": written as the creator of the custom exercises in a routine the user
+     * shares (core design §10.1). Null = never set (the Google display name fills it once the account is
+     * linked); "" = the user chose no name. Device-local: never synced.
+     */
+    val shareName: String? = null,
 ) {
     companion object {
         const val DEFAULT_BAR_KG = 20_000L
@@ -71,6 +77,12 @@ interface SettingsRepository {
     /** Replaces the nutrition goals. The default does nothing, for test fakes that do not need goals. */
     fun setNutrition(nutrition: NutritionSettings) = Unit
 
+    /**
+     * Sets "Your name for shared routines" (at most [MAX_SHARE_NAME] characters, trimmed where it is used; blank
+     * means no name).
+     */
+    fun setShareName(name: String) = Unit
+
     /** Back to the defaults, nutrition goals included ("Also erase data on this device"). */
     fun reset() = Unit
 }
@@ -87,6 +99,7 @@ class KeyValueSettingsRepository(private val store: Settings) : SettingsReposito
                 restSound = it.restSound,
                 restVibration = it.restVibration,
                 nutrition = it.nutrition,
+                shareName = it.shareName,
             )
         } else {
             it.copy(unit = unit)
@@ -106,6 +119,8 @@ class KeyValueSettingsRepository(private val store: Settings) : SettingsReposito
 
     override fun setNutrition(nutrition: NutritionSettings) = write { it.copy(nutrition = nutrition) }
 
+    override fun setShareName(name: String) = write { it.copy(shareName = name.take(MAX_SHARE_NAME)) }
+
     override fun reset() = write { UserSettings() }
 
     private fun write(change: (UserSettings) -> UserSettings) {
@@ -118,6 +133,7 @@ class KeyValueSettingsRepository(private val store: Settings) : SettingsReposito
         store.putBoolean(KEY_SOUND, s.restSound)
         store.putBoolean(KEY_VIBRATION, s.restVibration)
         writeNutrition(s.nutrition)
+        if (s.shareName == null) store.remove(KEY_SHARE_NAME) else store.putString(KEY_SHARE_NAME, s.shareName)
     }
 
     private fun writeNutrition(n: NutritionSettings) {
@@ -166,6 +182,7 @@ class KeyValueSettingsRepository(private val store: Settings) : SettingsReposito
             restSound = store.getBoolean(KEY_SOUND, defaults.restSound),
             restVibration = store.getBoolean(KEY_VIBRATION, defaults.restVibration),
             nutrition = readNutrition(),
+            shareName = store.getStringOrNull(KEY_SHARE_NAME),
         )
     }
 
@@ -186,5 +203,9 @@ class KeyValueSettingsRepository(private val store: Settings) : SettingsReposito
         const val KEY_N_HEIGHT = "nutrition.heightCm"
         const val KEY_N_ACTIVITY = "nutrition.activity"
         const val KEY_N_OBJECTIVE = "nutrition.objective"
+        const val KEY_SHARE_NAME = "settings.shareName"
     }
 }
+
+/** Longest "Your name for shared routines". */
+const val MAX_SHARE_NAME = 40

@@ -12,7 +12,9 @@ import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.DeleteOutcome
 import es.sebas1705.haltera.data.models.ExerciseSource
+import es.sebas1705.haltera.data.models.ExerciseUsage
 import es.sebas1705.haltera.data.models.Level
 import es.sebas1705.haltera.data.models.LoadType
 import es.sebas1705.haltera.data.models.Muscle
@@ -58,6 +60,10 @@ data class ExerciseDetail(
     val frames: List<String>,
     /** Instruction steps of the selected variant, falling back to the exercise's. */
     val steps: List<String>,
+    /** Creator of a custom exercise imported from a shared routine ("by <author>"). */
+    val author: String? = null,
+    /** A custom exercise the user deleted while it had history: hidden, kept for that history. */
+    val deleted: Boolean = false,
 )
 
 /** A load to show: a weight already formatted in the user's unit, or a band/stack level. */
@@ -87,11 +93,22 @@ data class ExerciseDetailState(
     val history: List<HistoryRow> = emptyList(),
     /** Records of the selected variant that apply to its tracking and load type. */
     val records: List<RecordRow> = emptyList(),
+    /** Delete confirmation open, with where the exercise is used. */
+    val deleteUsage: ExerciseUsage? = null,
+    val deleting: Boolean = false,
+    val deleteFailed: Boolean = false,
+    /** One-shot: the exercise was deleted for good, the screen closes. */
+    val closed: Boolean = false,
 ) : MVIBaseState
 
 sealed interface ExerciseDetailIntent : MVIBaseIntent {
     data class SetLanguage(val language: String) : ExerciseDetailIntent
     data class SelectVariant(val variantId: String) : ExerciseDetailIntent
+    data object RequestDelete : ExerciseDetailIntent
+    data object DismissDelete : ExerciseDetailIntent
+    data object ConfirmDelete : ExerciseDetailIntent
+    data object Restore : ExerciseDetailIntent
+    data object DeleteFailedShown : ExerciseDetailIntent
 }
 
 /** Detail of one exercise: media, variants, instructions, muscles, history and PRs (spec §7). */
@@ -115,6 +132,11 @@ class ExerciseDetailViewModel(
         when (intent) {
             is ExerciseDetailIntent.SetLanguage -> language.value = intent.language
             is ExerciseDetailIntent.SelectVariant -> selectedVariant.value = intent.variantId
+            ExerciseDetailIntent.RequestDelete -> requestDelete()
+            ExerciseDetailIntent.DismissDelete -> updateState { it.copy(deleteUsage = null) }
+            ExerciseDetailIntent.ConfirmDelete -> confirmDelete()
+            ExerciseDetailIntent.Restore -> attempt { exercises.restoreCustom(exerciseId) }
+            ExerciseDetailIntent.DeleteFailedShown -> updateState { it.copy(deleteFailed = false) }
         }
     }
 
@@ -161,6 +183,46 @@ class ExerciseDetailViewModel(
             .collect { m -> updateState { it.copy(unit = m.unit, history = m.history, records = m.records) } }
     }
 
+    /** Opens the confirmation with where the exercise is used (core design §3.1.1). */
+    private suspend fun requestDelete() {
+        if (currentState.detail?.custom != true || currentState.deleting) return
+        withUsage { usage -> updateState { it.copy(deleteUsage = usage) } }
+    }
+
+    /**
+     * Deletes with the safe policy: confirming removes it from the routines listed in the dialog first. Deleted
+     * for good closes the screen; hidden (it has history) stays, showing the deleted banner with Restore.
+     */
+    private suspend fun confirmDelete() {
+        if (currentState.deleteUsage == null || currentState.deleting) return
+        updateState { it.copy(deleting = true) }
+        val outcome = runCatching { exercises.deleteCustom(exerciseId, removeFromRoutines = true) }
+            .onFailure { if (it is CancellationException) throw it }
+            .getOrNull()
+        updateState {
+            it.copy(
+                deleting = false,
+                deleteUsage = null,
+                deleteFailed = outcome == null,
+                closed = outcome == DeleteOutcome.DELETED,
+            )
+        }
+    }
+
+    /** Reads the usage for the dialog, showing "could not delete" on a storage failure. */
+    private suspend fun withUsage(onUsage: suspend (ExerciseUsage) -> Unit) {
+        runCatching { exercises.usage(exerciseId) }
+            .onFailure { if (it is CancellationException) throw it }
+            .onSuccess { onUsage(it) }
+            .onFailure { updateState { it.copy(deleteFailed = true) } }
+    }
+
+    private suspend fun attempt(action: suspend () -> Unit) {
+        runCatching { action() }
+            .onFailure { if (it is CancellationException) throw it }
+            .onFailure { updateState { it.copy(deleteFailed = true) } }
+    }
+
     private data class HistoryKey(val variantId: String, val loadType: LoadType, val tracking: TrackingType)
 
     private data class HistoryMapping(val unit: WeightUnit, val history: List<HistoryRow>, val records: List<RecordRow>)
@@ -198,6 +260,8 @@ internal fun Exercise.toDetail(
         steps = (selected?.instructions?.get(language)?.takeIf { it.isNotEmpty() } ?: instructions.get(language))
             .map { it.trim() }
             .filter { it.isNotEmpty() },
+        author = author,
+        deleted = deprecated && source == ExerciseSource.USER,
     )
 }
 

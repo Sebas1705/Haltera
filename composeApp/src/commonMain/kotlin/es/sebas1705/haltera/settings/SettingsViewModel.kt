@@ -17,6 +17,7 @@ sealed interface SettingsIntent : MVIBaseIntent {
     data class SetKeepScreenOn(val enabled: Boolean) : SettingsIntent
     data class SetRestSound(val enabled: Boolean) : SettingsIntent
     data class SetRestVibration(val enabled: Boolean) : SettingsIntent
+    data class SetShareName(val name: String) : SettingsIntent
 }
 
 class SettingsViewModel(
@@ -40,6 +41,7 @@ class SettingsViewModel(
             is SettingsIntent.SetKeepScreenOn -> repository.setKeepScreenOn(intent.enabled)
             is SettingsIntent.SetRestSound -> repository.setRestSound(intent.enabled)
             is SettingsIntent.SetRestVibration -> repository.setRestVibration(intent.enabled)
+            is SettingsIntent.SetShareName -> repository.setShareName(intent.name)
         }
     }
 }

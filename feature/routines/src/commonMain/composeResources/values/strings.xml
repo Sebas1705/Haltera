@@ -197,7 +197,7 @@
     <string name="routines_share_error">Could not share the routine.</string>
     <string name="routines_qr_hint">In Haltera on another phone, open Routines, tap Add routine › Scan QR and scan this code.</string>
     <string name="routines_qr_image">QR code of the routine %1$s</string>
-    <string name="routines_qr_too_large">This routine is too large for a QR code. Share it as a file instead.</string>
+    <string name="routines_qr_too_large">This routine is too large for a QR code (custom exercises make it bigger). Share it as a file instead: the file keeps everything.</string>
     <string name="routines_close">Close</string>
     <string name="routines_import">Import</string>
     <string name="routines_import_file">Import from file</string>
@@ -209,6 +209,11 @@
     <plurals name="routines_import_custom_count">
         <item quantity="one">Includes %1$d custom exercise, added to your exercises.</item>
         <item quantity="other">Includes %1$d custom exercises, added to your exercises.</item>
+    </plurals>
+    <string name="routines_import_custom_by">Custom exercises by %1$s.</string>
+    <plurals name="routines_import_custom_existing">
+        <item quantity="one">%1$d of them is already in your exercises: it is reused, not duplicated.</item>
+        <item quantity="other">%1$d of them are already in your exercises: they are reused, not duplicated.</item>
     </plurals>
     <string name="routines_import_missing_title">Exercises not on this device</string>
     <string name="routines_import_missing_keep">Add them as custom exercises</string>

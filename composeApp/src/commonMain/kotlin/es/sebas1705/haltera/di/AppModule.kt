@@ -4,6 +4,7 @@ import es.sebas1705.haltera.account.AccountViewModel
 import es.sebas1705.haltera.account.CloudPromptViewModel
 import es.sebas1705.haltera.account.DatabaseLocalDataEraser
 import es.sebas1705.haltera.account.LocalDataEraser
+import es.sebas1705.haltera.account.ShareNameDefault
 import es.sebas1705.haltera.account.SyncStarter
 import es.sebas1705.haltera.core.datastore.datastoreModule
 import es.sebas1705.haltera.data.local.DatabaseDriverFactory
@@ -31,7 +32,17 @@ val appModule = module {
     single { createDatabase(get<DatabaseDriverFactory>()) }
     // The sync engine (and the anonymous sign-in once the cloud copy is on), after the catalogue import (the only start).
     single { SyncStarter(get(), get(), get()) }
-    viewModel { StartupViewModel(get(), get(), onImported = { get<SyncStarter>().start() }) }
+    single { ShareNameDefault(get(), get()) }
+    viewModel {
+        StartupViewModel(
+            get(),
+            get(),
+            onImported = {
+                get<SyncStarter>().start()
+                get<ShareNameDefault>().start()
+            },
+        )
+    }
     viewModelOf(::SettingsViewModel)
     single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get()) }
     viewModel { AccountViewModel(get(), get(), get(), get(), get(), get()) }

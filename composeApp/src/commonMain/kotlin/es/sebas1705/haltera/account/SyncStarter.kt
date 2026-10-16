@@ -1,6 +1,7 @@
 package es.sebas1705.haltera.account
 
 import co.touchlab.kermit.Logger
+import es.sebas1705.haltera.core.datastore.CloudBackupStore
 import es.sebas1705.haltera.data.sync.AccountService
 import es.sebas1705.haltera.data.sync.AccountSession
 import es.sebas1705.haltera.data.sync.SyncEngine
@@ -9,16 +10,21 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.min
 
 /**
- * Signs in anonymously on first launch (silently, retrying while offline) and starts the sync
- * engine (which follows the session). Called once after the catalogue import; no-op without Firebase config.
+ * Runs the optional cloud copy. Nothing touches Firebase (no sign-in, no Firestore) until the user turns the
+ * cloud copy on: then it signs in anonymously (silently, retrying while offline) and the sync engine, which only
+ * runs while the switch is on, follows the session. An install that was already signed in before the choice
+ * existed keeps syncing ([CloudBackupStore.adoptExistingAccount]). Called once after the catalogue import;
+ * no-op without Firebase config.
  */
 class SyncStarter(
     private val account: AccountService,
     private val engine: SyncEngine,
+    private val cloud: CloudBackupStore,
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
 ) {
     private var started = false
@@ -26,7 +32,9 @@ class SyncStarter(
     fun start() {
         if (started || account.session.value == AccountSession.NotConfigured) return
         started = true
-        scope.launch { ensureSignedIn() }
+        // The persisted Firebase user is read locally; a signed-in install made its choice by syncing already.
+        if (account.session.value is AccountSession.SignedIn) cloud.adoptExistingAccount()
+        scope.launch { cloud.enabled.collectLatest { on -> if (on) ensureSignedIn() } }
         engine.start(scope)
     }
 

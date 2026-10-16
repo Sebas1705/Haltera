@@ -1,5 +1,7 @@
 package es.sebas1705.haltera.account
 
+import com.russhwolf.settings.MapSettings
+import es.sebas1705.haltera.core.datastore.SettingsCloudBackupStore
 import es.sebas1705.haltera.data.sync.AccountService
 import es.sebas1705.haltera.data.sync.AccountSession
 import es.sebas1705.haltera.data.sync.GoogleIdToken
@@ -74,10 +76,13 @@ private class FakeRemote : RemoteStore {
 
 private class FakeEngine : SyncEngine {
     var forgotten = 0
+    var markedDirty = 0
     override val status: StateFlow<SyncStatus> = MutableStateFlow(SyncStatus.Disabled)
     override fun start(scope: CoroutineScope) = Unit
     override suspend fun syncNow() = Unit
-    override suspend fun markAllDirty() = Unit
+    override suspend fun markAllDirty() {
+        markedDirty++
+    }
     override suspend fun forgetAccount() {
         forgotten++
     }
@@ -105,6 +110,7 @@ class AccountViewModelTest {
     private val remote = FakeRemote()
     private val engine = FakeEngine()
     private val eraser = FakeEraser()
+    private val cloud = SettingsCloudBackupStore(MapSettings())
 
     @BeforeTest
     fun setMain() = Dispatchers.setMain(UnconfinedTestDispatcher())
@@ -115,7 +121,7 @@ class AccountViewModelTest {
     private val googleUser = AccountSession.SignedIn("uid", isAnonymous = false, email = "a@b.c")
     private val anonymousUser = AccountSession.SignedIn("anon", isAnonymous = true)
 
-    private fun viewModel(account: FakeAccount) = AccountViewModel(account, remote, google, engine, eraser)
+    private fun viewModel(account: FakeAccount) = AccountViewModel(account, remote, google, engine, eraser, cloud)
 
     private fun AccountViewModel.delete() {
         onEvent(AccountIntent.RequestDelete)
@@ -222,5 +228,96 @@ class AccountViewModelTest {
         assertFalse(vm.uiState.value.eraseLocal)
         assertTrue(vm.uiState.value.confirmDelete)
         assertNull(vm.uiState.value.error)
+    }
+
+    @Test
+    fun `the cloud copy starts off`() {
+        val vm = viewModel(FakeAccount(AccountSession.SignedOut))
+        assertFalse(vm.uiState.value.cloudBackup)
+    }
+
+    @Test
+    fun `turning the switch on opts in and queues the existing data for upload`() {
+        val vm = viewModel(FakeAccount(AccountSession.SignedOut))
+
+        vm.onEvent(AccountIntent.SetCloudBackup(true))
+
+        assertTrue(vm.uiState.value.cloudBackup)
+        assertTrue(cloud.enabled.value)
+        assertEquals(1, engine.markedDirty)
+        assertFalse(vm.uiState.value.busy)
+    }
+
+    @Test
+    fun `turning the switch off asks first and keeps the cloud data by default`() {
+        cloud.setEnabled(true)
+        val account = FakeAccount(anonymousUser)
+        val vm = viewModel(account)
+
+        vm.onEvent(AccountIntent.SetCloudBackup(false))
+        assertTrue(vm.uiState.value.confirmTurnOff)
+        assertTrue(cloud.enabled.value) // nothing changes until confirmed
+        assertFalse(vm.uiState.value.deleteCloud)
+
+        vm.onEvent(AccountIntent.ConfirmTurnOff)
+
+        assertFalse(cloud.enabled.value)
+        assertEquals(AccountMessage.CLOUD_OFF, vm.uiState.value.message)
+        assertTrue(remote.deleted.isEmpty())
+        assertEquals(0, engine.forgotten)
+        assertTrue(account.calls.isEmpty())
+        assertEquals(0, eraser.erased)
+    }
+
+    @Test
+    fun `cancelling the turn-off dialog leaves the cloud copy on`() {
+        cloud.setEnabled(true)
+        val vm = viewModel(FakeAccount(anonymousUser))
+        vm.onEvent(AccountIntent.SetCloudBackup(false))
+        vm.onEvent(AccountIntent.DismissTurnOff)
+
+        assertFalse(vm.uiState.value.confirmTurnOff)
+        assertTrue(cloud.enabled.value)
+    }
+
+    @Test
+    fun `turning off can also delete the cloud data through the existing delete path and keeps local data`() {
+        cloud.setEnabled(true)
+        val account = FakeAccount(anonymousUser)
+        val vm = viewModel(account)
+
+        vm.onEvent(AccountIntent.SetCloudBackup(false))
+        vm.onEvent(AccountIntent.SetDeleteCloud(true))
+        vm.onEvent(AccountIntent.ConfirmTurnOff)
+
+        assertFalse(cloud.enabled.value)
+        assertEquals(AccountMessage.CLOUD_OFF_DELETED, vm.uiState.value.message)
+        assertEquals(listOf("anon"), remote.deleted)
+        assertEquals(1, engine.forgotten)
+        assertEquals(listOf("deleteUser"), account.calls)
+        assertEquals(0, eraser.erased)
+    }
+
+    @Test
+    fun `the delete-data box starts unticked every time the turn-off dialog opens`() {
+        cloud.setEnabled(true)
+        val vm = viewModel(FakeAccount(anonymousUser))
+        vm.onEvent(AccountIntent.SetCloudBackup(false))
+        vm.onEvent(AccountIntent.SetDeleteCloud(true))
+        vm.onEvent(AccountIntent.DismissTurnOff)
+        vm.onEvent(AccountIntent.SetCloudBackup(false))
+
+        assertFalse(vm.uiState.value.deleteCloud)
+    }
+
+    @Test
+    fun `deleting the account also turns the cloud copy off so nothing signs in again`() {
+        cloud.setEnabled(true)
+        val vm = viewModel(FakeAccount(googleUser))
+
+        vm.delete()
+
+        assertEquals(AccountMessage.DELETED, vm.uiState.value.message)
+        assertFalse(cloud.enabled.value)
     }
 }

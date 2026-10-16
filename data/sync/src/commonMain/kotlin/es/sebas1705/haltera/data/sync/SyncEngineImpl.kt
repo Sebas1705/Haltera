@@ -32,7 +32,7 @@ import kotlin.coroutines.cancellation.CancellationException
  * `updatedAt`); an older or equal one is our own echo or stale. A dirty root is cleared only when its
  * `updatedAt` did not change while it was being uploaded.
  */
-@Suppress("TooManyFunctions")
+@Suppress("TooManyFunctions", "LongParameterList")
 class SyncEngineImpl(
     private val db: AppDatabase,
     private val remote: RemoteStore,
@@ -41,6 +41,8 @@ class SyncEngineImpl(
     private val io: CoroutineDispatcher,
     private val now: () -> Long,
     private val batchSize: Int = BATCH_SIZE,
+    /** The cloud copy switch: while false the engine does not touch the network even if a user is signed in. */
+    private val enabled: StateFlow<Boolean> = MutableStateFlow(true),
 ) : SyncEngine {
     private val store = AggregateStore(db, settings)
     private val q get() = db.syncTrackingQueries
@@ -60,8 +62,11 @@ class SyncEngineImpl(
         scope.launch(io) {
             combine(
                 account.session,
-                forgotten
-            ) { session, gone -> session.takeUnless { it is AccountSession.SignedIn && it.uid == gone } }
+                forgotten,
+                enabled,
+            ) { session, gone, on ->
+                session.takeIf { on && !(session is AccountSession.SignedIn && session.uid == gone) }
+            }
                 .collectLatest { session ->
                     if (session is AccountSession.SignedIn) {
                         runGuarded(session.uid)
@@ -96,6 +101,7 @@ class SyncEngineImpl(
     }
 
     override suspend fun syncNow() {
+        if (!enabled.value) return
         val uid = currentUid ?: (account.session.value as? AccountSession.SignedIn)?.uid ?: return
         if (uid == forgotten.value) return
         withContext(io) {

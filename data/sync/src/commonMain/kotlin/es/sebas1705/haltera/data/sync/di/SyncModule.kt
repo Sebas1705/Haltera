@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.data.sync.di
 
+import es.sebas1705.haltera.core.datastore.CloudBackupStore
 import es.sebas1705.haltera.data.sync.SettingsSyncBridge
 import es.sebas1705.haltera.data.sync.SyncEngine
 import es.sebas1705.haltera.data.sync.SyncEngineImpl
@@ -22,6 +23,7 @@ val syncModule = module {
             remote = get(),
             account = get(),
             settings = get(),
+            enabled = get<CloudBackupStore>().enabled,
             io = Dispatchers.IO,
             now = { Clock.System.now().toEpochMilliseconds() },
         )

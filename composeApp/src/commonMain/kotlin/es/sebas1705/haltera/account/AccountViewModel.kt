@@ -4,6 +4,7 @@ import co.touchlab.kermit.Logger
 import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
 import es.sebas1705.haltera.core.common.mvi.MVIBaseState
 import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
+import es.sebas1705.haltera.core.datastore.CloudBackupStore
 import es.sebas1705.haltera.data.sync.AccountService
 import es.sebas1705.haltera.data.sync.AccountSession
 import es.sebas1705.haltera.data.sync.GoogleIdToken
@@ -16,13 +17,19 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 
 /** One-off outcome shown under the Account section. */
-enum class AccountMessage { LINKED, MERGED, SIGNED_IN, DELETED, REAUTH_CANCELLED, FAILED }
+enum class AccountMessage { LINKED, MERGED, SIGNED_IN, DELETED, CLOUD_OFF, CLOUD_OFF_DELETED, REAUTH_CANCELLED, FAILED }
 
 data class AccountState(
     val session: AccountSession = AccountSession.NotConfigured,
     /** Null only before the first status. */
     val syncStatus: SyncStatus? = null,
     val googleAvailable: Boolean = false,
+    /** The "Back up to the cloud" switch. Off until the user opts in. */
+    val cloudBackup: Boolean = false,
+    /** The dialog asked when the switch is turned off. */
+    val confirmTurnOff: Boolean = false,
+    /** The "Also delete my cloud data" checkbox of that dialog (default off). */
+    val deleteCloud: Boolean = false,
     val busy: Boolean = false,
     val confirmDelete: Boolean = false,
     /** The "Also erase data on this device" checkbox of the delete dialog (default off). */
@@ -40,6 +47,12 @@ sealed interface AccountIntent : MVIBaseIntent {
     data object ConfirmDelete : AccountIntent
     data class SetEraseLocal(val erase: Boolean) : AccountIntent
     data object DismissMessage : AccountIntent
+
+    /** The switch: turning on starts the cloud copy; turning off opens the confirmation. */
+    data class SetCloudBackup(val on: Boolean) : AccountIntent
+    data class SetDeleteCloud(val delete: Boolean) : AccountIntent
+    data object DismissTurnOff : AccountIntent
+    data object ConfirmTurnOff : AccountIntent
 }
 
 /** Settings → Account (design §2, §6). */
@@ -49,17 +62,20 @@ class AccountViewModel(
     private val google: GoogleSignInLauncher,
     private val engine: SyncEngine,
     private val eraser: LocalDataEraser,
+    private val cloud: CloudBackupStore,
 ) : MVIBaseViewModel<AccountState, AccountIntent>(
     AccountState(
         session = account.session.value,
         syncStatus = engine.status.value,
-        googleAvailable = google.isAvailable
+        googleAvailable = google.isAvailable,
+        cloudBackup = cloud.enabled.value,
     ),
 ) {
 
     init {
         execute { account.session.collect { session -> updateState { it.copy(session = session) } } }
         execute { engine.status.collect { status -> updateState { it.copy(syncStatus = status) } } }
+        execute { cloud.enabled.collect { on -> updateState { it.copy(cloudBackup = on) } } }
     }
 
     override fun intentHandler(intent: AccountIntent): Job = when (intent) {
@@ -82,6 +98,20 @@ class AccountViewModel(
             updateState { it.copy(confirmDelete = false) }
             busy { deleteAccount() }
         }
+        is AccountIntent.SetCloudBackup ->
+            if (intent.on) {
+                busy { turnOnCloud() }
+            } else {
+                execute {
+                    updateState { it.copy(confirmTurnOff = true, deleteCloud = false) }
+                }
+            }
+        is AccountIntent.SetDeleteCloud -> execute { updateState { it.copy(deleteCloud = intent.delete) } }
+        AccountIntent.DismissTurnOff -> execute { updateState { it.copy(confirmTurnOff = false) } }
+        AccountIntent.ConfirmTurnOff -> {
+            updateState { it.copy(confirmTurnOff = false) }
+            busy { turnOffCloud(deleteData = currentState.deleteCloud) }
+        }
         AccountIntent.DismissMessage -> execute { updateState { it.copy(message = null, error = null) } }
     }
 
@@ -95,14 +125,37 @@ class AccountViewModel(
         is LinkResult.Failed -> throw AccountException(result.message)
     }
 
-    private suspend fun deleteAccount(): AccountMessage? {
+    /**
+     * Opting in: the switch goes on (the starter signs in anonymously, retrying while offline), and everything
+     * logged before is queued for upload, whichever account it ends up under.
+     */
+    private suspend fun turnOnCloud(): AccountMessage? {
+        cloud.setEnabled(true)
+        engine.markAllDirty()
+        return null
+    }
+
+    /** Stops syncing and keeps the local data; the cloud copy is deleted only when asked for. */
+    private suspend fun turnOffCloud(deleteData: Boolean): AccountMessage? {
+        cloud.setEnabled(false)
+        if (!deleteData) return AccountMessage.CLOUD_OFF
+        return when (val outcome = deleteAccount(eraseLocal = false)) {
+            AccountMessage.DELETED -> AccountMessage.CLOUD_OFF_DELETED
+            null -> AccountMessage.CLOUD_OFF // Nothing was signed in: nothing in the cloud to delete.
+            else -> outcome
+        }
+    }
+
+    private suspend fun deleteAccount(eraseLocal: Boolean = currentState.eraseLocal): AccountMessage? {
+        // Deleting the account ends the cloud copy: it must not sign in again by itself.
+        cloud.setEnabled(false)
         val session = account.session.value as? AccountSession.SignedIn ?: return null
         // Stop syncing this uid and drop its pending uploads first, so nothing is re-uploaded after the delete.
         engine.forgetAccount()
         remote.deleteAll(session.uid)
         val outcome = deleteUserReauthenticating(session)
         if (outcome != null) return outcome
-        if (currentState.eraseLocal) eraser.erase()
+        if (eraseLocal) eraser.erase()
         return AccountMessage.DELETED
     }
 

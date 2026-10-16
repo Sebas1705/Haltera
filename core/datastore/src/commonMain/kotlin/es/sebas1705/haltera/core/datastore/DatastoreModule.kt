@@ -8,4 +8,6 @@ val datastoreModule = module {
     single<SettingsRepository> { KeyValueSettingsRepository(Settings()) }
     // Device-local, not synced: separate from SettingsRepository (and so from SettingsSyncBridge).
     single<LoadStepStore> { SettingsLoadStepStore(Settings()) }
+    // The optional cloud copy choice: device-local, never synced, kept by "Also erase data on this device".
+    single<CloudBackupStore> { SettingsCloudBackupStore(Settings()) }
 }

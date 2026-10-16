@@ -90,11 +90,13 @@ internal class Device(
     cloud: FakeCloud,
     io: CoroutineDispatcher,
     val account: FakeAccount = FakeAccount(),
+    /** The cloud copy switch of this phone. */
+    val cloudOn: MutableStateFlow<Boolean> = MutableStateFlow(true),
 ) {
     val db = testDatabase()
     val settings = KeyValueSettingsRepository(MapSettings())
     val bridge = SettingsSyncBridge(settings, db)
-    val engine = SyncEngineImpl(db, cloud, account, bridge, io, now = { System.currentTimeMillis() })
+    val engine = SyncEngineImpl(db, cloud, account, bridge, io, now = { System.currentTimeMillis() }, enabled = cloudOn)
     val store = AggregateStore(db, bridge)
 
     fun state(collection: String, id: String): SyncState? =

@@ -23,6 +23,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /** Something waiting for the delete confirmation. */
 internal sealed interface PendingDelete {
@@ -57,10 +59,15 @@ internal data class RoutineEditorState(
     val pendingRestChange: PendingRestChange? = null,
     /** "I know my rest days" of a flexible routine: weekday chips instead of the 0–6 stepper. */
     val weekdayMode: Boolean = false,
+    /**
+     * The rest policy last written, until the observed routine reflects it: quick taps on the weekday chips or the
+     * stepper build on it instead of on the older saved policy (which would drop the previous tap).
+     */
+    val pendingRestPolicy: RestPolicy? = null,
     val error: Boolean = false,
 ) : MVIBaseState {
     val days: List<RoutineDay> get() = routine?.days.orEmpty()
-    val restPolicy: RestPolicy get() = routine?.restPolicy ?: RestPolicy.FIXED
+    val restPolicy: RestPolicy get() = pendingRestPolicy ?: routine?.restPolicy ?: RestPolicy.FIXED
 }
 
 internal sealed interface RoutineEditorIntent : MVIBaseIntent {
@@ -115,6 +122,9 @@ internal class RoutineEditorViewModel(
     /** Latest name and description to save; conflated so fast typing writes only the newest text, in order. */
     private val textSaves = MutableStateFlow<Pair<String, String>?>(null)
 
+    /** Rest policy writes run one at a time, in the order the taps came. */
+    private val restPolicyWrites = Mutex()
+
     init {
         execute {
             routines.observeRoutine(routineId)
@@ -142,6 +152,7 @@ internal class RoutineEditorViewModel(
                 name = if (first) routine.name else it.name,
                 description = if (first) routine.description else it.description,
                 weekdayMode = it.weekdayMode || routine.restPolicy.knowsWeekdays,
+                pendingRestPolicy = it.pendingRestPolicy?.takeUnless { pending -> pending.sameAs(routine.restPolicy) },
             )
         }
         val targets = routine.days.flatMap { day -> day.slots.map { it.target } }
@@ -203,7 +214,7 @@ internal class RoutineEditorViewModel(
                 if (removed > 0) {
                     updateState { it.copy(pendingRestChange = PendingRestChange.ToFlexible(removed, policy)) }
                 } else {
-                    safely { routines.setRestPolicy(routineId, policy) }
+                    writeRestPolicy(policy)
                 }
             }
             mode == RestMode.FIXED && current.isFlexible -> {
@@ -211,7 +222,7 @@ internal class RoutineEditorViewModel(
                 if (restDays > 0) {
                     updateState { it.copy(pendingRestChange = PendingRestChange.ToFixed(restDays)) }
                 } else {
-                    safely { routines.setRestPolicy(routineId, RestPolicy.FIXED) }
+                    writeRestPolicy(RestPolicy.FIXED)
                 }
             }
             else -> Unit
@@ -221,20 +232,20 @@ internal class RoutineEditorViewModel(
     private suspend fun confirmToFlexible() {
         val pending = currentState.pendingRestChange as? PendingRestChange.ToFlexible ?: return
         updateState { it.copy(pendingRestChange = null, weekdayMode = false) }
-        safely { routines.setRestPolicy(routineId, pending.policy) }
+        writeRestPolicy(pending.policy)
     }
 
     private suspend fun confirmToFixed(addRestDays: Boolean, restDayName: String) {
         val pending = currentState.pendingRestChange as? PendingRestChange.ToFixed ?: return
         updateState { it.copy(pendingRestChange = null, weekdayMode = false) }
         val count = if (addRestDays) pending.restDays else 0
-        safely { routines.setRestPolicy(routineId, RestPolicy.FIXED, count, restDayName) }
+        writeRestPolicy(RestPolicy.FIXED, count, restDayName)
     }
 
     private suspend fun setRestDays(count: Int) {
         if (!currentState.restPolicy.isFlexible) return
         val policy = RestPolicy.flexible(count)
-        if (policy != currentState.restPolicy) safely { routines.setRestPolicy(routineId, policy) }
+        if (policy != currentState.restPolicy) writeRestPolicy(policy)
     }
 
     /** Off goes back to the number (keeping the weekday count); on shows the chips, saved once one is picked. */
@@ -243,7 +254,7 @@ internal class RoutineEditorViewModel(
         if (!policy.isFlexible) return
         updateState { it.copy(weekdayMode = known) }
         if (!known && policy.knowsWeekdays) {
-            safely { routines.setRestPolicy(routineId, RestPolicy.flexible(policy.restDaysCount)) }
+            writeRestPolicy(RestPolicy.flexible(policy.restDaysCount))
         }
     }
 
@@ -256,8 +267,26 @@ internal class RoutineEditorViewModel(
             days += isoDay
         }
         updateState { it.copy(weekdayMode = true) }
-        safely { routines.setRestPolicy(routineId, RestPolicy.onWeekdays(days)) }
+        writeRestPolicy(RestPolicy.onWeekdays(days))
     }
+
+    /** Shows [policy] at once and saves it after the writes before it; a failed write falls back to the saved one. */
+    private suspend fun writeRestPolicy(policy: RestPolicy, appendRestDays: Int = 0, restDayName: String = "") {
+        updateState { it.copy(pendingRestPolicy = policy) }
+        restPolicyWrites.withLock {
+            attempt { routines.setRestPolicy(routineId, policy, appendRestDays, restDayName) }
+                .onSuccess {
+                    // The routine may already show this write (and no later one is waiting).
+                    val saved = currentState.routine?.restPolicy
+                    if (saved != null && currentState.pendingRestPolicy?.sameAs(saved) == true) {
+                        updateState { it.copy(pendingRestPolicy = null) }
+                    }
+                }
+                .onFailure { updateState { it.copy(pendingRestPolicy = null, error = true) } }
+        }
+    }
+
+    private fun RestPolicy.sameAs(other: RestPolicy): Boolean = normalized() == other.normalized()
 
     private suspend fun duplicateDay(dayId: String) {
         val day = day(dayId) ?: return

@@ -9,6 +9,7 @@ import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.feature.routines.ui.editor.PendingRestChange
 import es.sebas1705.haltera.feature.routines.ui.editor.RoutineEditorIntent
 import es.sebas1705.haltera.feature.routines.ui.editor.RoutineEditorViewModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -153,6 +154,50 @@ class RestPolicyEditorTest {
         vm.onEvent(RoutineEditorIntent.ToggleRestWeekday(0))
         vm.onEvent(RoutineEditorIntent.ToggleRestWeekday(8))
         assertEquals((1..6).toList(), vm.uiState.value.restPolicy.weekdays)
+    }
+
+    @Test
+    fun `quick weekday taps keep every pick while the database catches up`() = runTest {
+        val vm = viewModel(ab)
+        vm.onEvent(RoutineEditorIntent.SetRestMode(RestMode.FLEXIBLE))
+        val gate = CompletableDeferred<Unit>()
+        routines.restPolicyGate = gate
+
+        // Both taps land before the first write is saved and observed.
+        vm.onEvent(RoutineEditorIntent.ToggleRestWeekday(2))
+        vm.onEvent(RoutineEditorIntent.ToggleRestWeekday(5))
+        assertEquals(listOf(2, 5), vm.uiState.value.restPolicy.weekdays)
+
+        gate.complete(Unit)
+        assertEquals(listOf(2, 5), routines.routine(ab).restPolicy.weekdays)
+        assertEquals(listOf(2, 5), vm.uiState.value.restPolicy.weekdays)
+        assertNull(vm.uiState.value.pendingRestPolicy)
+    }
+
+    @Test
+    fun `quick taps on the rest days stepper count each one`() = runTest {
+        val vm = viewModel(ab)
+        vm.onEvent(RoutineEditorIntent.SetRestMode(RestMode.FLEXIBLE))
+        val gate = CompletableDeferred<Unit>()
+        routines.restPolicyGate = gate
+        repeat(2) {
+            vm.onEvent(RoutineEditorIntent.SetRestDaysPerWeek(vm.uiState.value.restPolicy.restDaysCount + 1))
+        }
+        gate.complete(Unit)
+        assertEquals(2, routines.routine(ab).restPolicy.restDaysCount)
+        assertEquals(2, vm.uiState.value.restPolicy.restDaysCount)
+    }
+
+    @Test
+    fun `a failed rest policy write falls back to the saved policy`() = runTest {
+        val vm = viewModel(ab)
+        vm.onEvent(RoutineEditorIntent.SetRestMode(RestMode.FLEXIBLE))
+        routines.failure = IllegalStateException("disk full")
+        vm.onEvent(RoutineEditorIntent.ToggleRestWeekday(3))
+
+        assertTrue(vm.uiState.value.error)
+        assertNull(vm.uiState.value.pendingRestPolicy)
+        assertEquals(RestPolicy.flexible(0), vm.uiState.value.restPolicy)
     }
 
     @Test

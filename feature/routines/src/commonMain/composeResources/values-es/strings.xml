@@ -83,7 +83,10 @@
     </plurals>
     <string name="routines_slot_superset">Superserie %1$s</string>
     <string name="routines_prescription_range_value">%1$d–%2$d reps</string>
-    <string name="routines_prescription_reps_value">%1$d reps</string>
+    <plurals name="routines_prescription_reps_value">
+        <item quantity="one">%1$d rep</item>
+        <item quantity="other">%1$d reps</item>
+    </plurals>
     <string name="routines_prescription_duration_value">%1$s</string>
     <string name="routines_prescription_distance_value">%1$d m</string>
 
@@ -207,13 +210,13 @@
     <string name="routines_import_set_active">Marcar como rutina activa</string>
     <string name="routines_import_copy_note">La rutina se añade como una copia nueva. No se cambia nada de lo que ya tienes.</string>
     <plurals name="routines_import_custom_count">
-        <item quantity="one">Incluye %1$d ejercicio personalizado, que se añade a tus ejercicios.</item>
-        <item quantity="other">Incluye %1$d ejercicios personalizados, que se añaden a tus ejercicios.</item>
+        <item quantity="one">Se añadirá %1$d ejercicio personalizado a tus ejercicios.</item>
+        <item quantity="other">Se añadirán %1$d ejercicios personalizados a tus ejercicios.</item>
     </plurals>
     <string name="routines_import_custom_by">Ejercicios personalizados de %1$s.</string>
     <plurals name="routines_import_custom_existing">
-        <item quantity="one">%1$d ya está en tus ejercicios: se reutiliza, no se duplica.</item>
-        <item quantity="other">%1$d ya están en tus ejercicios: se reutilizan, no se duplican.</item>
+        <item quantity="one">%1$d ejercicio personalizado ya está en tus ejercicios: se reutiliza, no se duplica.</item>
+        <item quantity="other">%1$d ejercicios personalizados ya están en tus ejercicios: se reutilizan, no se duplican.</item>
     </plurals>
     <string name="routines_import_missing_title">Ejercicios que no están en este dispositivo</string>
     <string name="routines_import_missing_keep">Añadirlos como ejercicios personalizados</string>
@@ -358,6 +361,10 @@
     <string name="routines_rest_more">Más días de descanso</string>
     <string name="routines_rest_count_hint">La app nunca decide qué días descansas: solo los cuenta en Hoy.</string>
     <string name="routines_rest_weekdays_hint">Elige hasta 6 días. Hoy muestra descanso esos días y aun así puedes entrenar.</string>
+    <plurals name="routines_flexible_rotation">
+        <item quantity="one">%1$d entreno en rotación</item>
+        <item quantity="other">%1$d entrenos en rotación</item>
+    </plurals>
     <plurals name="routines_rest_per_week">
         <item quantity="one">%1$d día de descanso a la semana</item>
         <item quantity="other">%1$d días de descanso a la semana</item>

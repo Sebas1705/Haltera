@@ -41,7 +41,24 @@ written by an older app version), `Cycle` skips it silently.
 
 **"x" (rest days used)** = days of the current week (Monday first, device time zone) **before today** without a
 session of this routine (by the local date of `startedAt`). Today is not counted yet: it can still be trained.
-A day with only a free session counts as rest for the routine. The count is shown even when it exceeds N.
+A day with only a free session counts as rest for the routine. The count is shown even when it exceeds N, but
+never as "x of N" then (see Wording).
+
+### Wording (revised after the alpha.4 QA)
+
+The training days of a flexible routine are a rotation, not days of the week, so they are never put next to the
+weekly rest days as if they added up to a week ("3 training days · 5 rest days a week" read as 8 days):
+
+| Where | Text |
+|---|---|
+| Routine list, editor header, import preview | *"3 workouts in rotation · 5 rest days a week"* (fixed routines keep *"4-day cycle · 3 training days"*) |
+| Today, x ≤ N | *"Rest days this week: 1 of 3"* |
+| Today, x > N | *"4 rest days this week (target 3)"*, never "4 of 3" |
+| Today, N = 0 and x > 0 | *"2 rest days this week (none planned)"* |
+| Today, N = 0 and x = 0 | *"No rest days planned this week"* |
+
+Counts use plurals in both languages ("1 rest day", "1 workout"). The choice is `RestWeekUi.wording`
+(`feature:today`) and `routineSummary` (`feature:routines`).
 
 Examples (Push · Pull · Legs · Upper, 3 rest days a week, today Thursday):
 
@@ -104,5 +121,6 @@ numbers come from the flexible rest days.
   weekday chips (Mon…Sun, at most six); off → a 0–6 stepper. Flexible routines hide the "Rest day" button and
   the training/rest switch of each day.
 - Today: the day label counts training days only ("Day 2 of 4 · Pull"); weekday rest shows the existing rest hint;
-  both flexible modes show "Rest days this week: x of N" under it.
+  both flexible modes show the weekly rest line under it ("Rest days this week: x of N", or the forms of §1
+  "Wording" when x exceeds N or N is 0).
 - Famous routines stay fixed (none of the bundled templates is clearly flexible).

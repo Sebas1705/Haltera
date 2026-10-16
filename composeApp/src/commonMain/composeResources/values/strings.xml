@@ -103,7 +103,10 @@
     <string name="import_summary">Sessions: %1$d, sets: %2$d</string>
     <string name="import_range">From %1$s to %2$s</string>
     <string name="import_body_weights">Body weight entries: %1$d</string>
-    <string name="import_matched">Exercises matched automatically: %1$d</string>
+    <plurals name="import_matched">
+        <item quantity="one">%1$d exercise recognised automatically</item>
+        <item quantity="other">%1$d exercises recognised automatically</item>
+    </plurals>
     <string name="import_skipped_rows">Rows ignored (empty sets or unreadable dates): %1$d</string>
     <string name="import_unit_title">This file does not say which unit its weights are in. They were logged in:</string>
     <string name="import_existing_title">Sessions already in your logbook: %1$d</string>

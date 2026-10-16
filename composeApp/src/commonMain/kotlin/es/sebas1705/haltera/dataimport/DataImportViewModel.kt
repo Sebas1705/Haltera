@@ -41,7 +41,22 @@ data class ImportReview(
     /** By normalised name; a name without an entry is created as a custom exercise. */
     val mapped: Map<String, MappedExercise> = emptyMap(),
     val working: Boolean = false,
-)
+) {
+    /** Skipping existing sessions leaves nothing to write: every session and body weight is already here. */
+    val nothingNew: Boolean
+        get() = existing == ExistingPolicy.SKIP &&
+            preview.sessions - preview.existingSessions <= 0 &&
+            preview.bodyWeights - preview.existingBodyWeights <= 0
+
+    /**
+     * The "n exercises recognised automatically" line, or null when it says nothing: matching only concerns the
+     * sessions that will be written, and "0 recognised" is already told by the list of exercises not found.
+     */
+    val matchedLine: Int? get() = preview.matchedExercises.takeIf { it > 0 && !nothingNew }
+
+    /** The exercises not found, shown only when something will be written. */
+    val unmatchedShown: Boolean get() = !nothingNew && preview.unmatched.isNotEmpty()
+}
 
 /** The "Map to..." search for one unmatched name. */
 data class MappingSearch(

@@ -235,7 +235,7 @@ private fun MissingCard(missing: List<String>, drop: Boolean, send: (RoutineImpo
     }
 }
 
-/** Fixed: "4-day cycle · 3 training days"; flexible: "3 training days · 2 rest days a week". */
+/** Fixed: "4-day cycle · 3 training days"; flexible: "3 workouts in rotation · 2 rest days a week". */
 @Composable
 private fun SharedSummary(routine: SharedRoutine) {
     val policy = routine.rest?.toPolicy() ?: RestPolicy.FIXED
@@ -246,25 +246,30 @@ private fun SharedSummary(routine: SharedRoutine) {
     )
 }
 
-/** How many custom exercises come with the routine, by whom, and how many are already here (reused). */
+/**
+ * What import will do with the custom exercises that come with the routine: how many it adds and how many it
+ * reuses (already here), and by whom. Each line only when its count is not zero, so they never contradict.
+ */
 @Composable
 private fun CustomExercisesNote(preview: ImportPreview) {
-    val custom = preview.file.customExercises.size
-    val existing = preview.existingCustomIds.size
+    val added = preview.newCustomCount
+    val reused = preview.reusedCustomCount
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            pluralStringResource(Res.plurals.routines_import_custom_count, custom, custom),
-            style = MaterialTheme.typography.bodyMedium,
-        )
+        if (added > 0) {
+            Text(
+                pluralStringResource(Res.plurals.routines_import_custom_count, added, added),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+        }
         if (preview.authors.isNotEmpty()) {
             Text(
                 stringResource(Res.string.routines_import_custom_by, preview.authors.joinToString(", ")),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }
-        if (existing > 0) {
+        if (reused > 0) {
             Text(
-                pluralStringResource(Res.plurals.routines_import_custom_existing, existing, existing),
+                pluralStringResource(Res.plurals.routines_import_custom_existing, reused, reused),
                 style = MaterialTheme.typography.bodyMedium,
             )
         }

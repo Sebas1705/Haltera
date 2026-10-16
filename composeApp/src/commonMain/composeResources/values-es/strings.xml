@@ -103,7 +103,10 @@
     <string name="import_summary">Sesiones: %1$d, series: %2$d</string>
     <string name="import_range">Del %1$s al %2$s</string>
     <string name="import_body_weights">Registros de peso corporal: %1$d</string>
-    <string name="import_matched">Ejercicios reconocidos automáticamente: %1$d</string>
+    <plurals name="import_matched">
+        <item quantity="one">%1$d ejercicio reconocido automáticamente</item>
+        <item quantity="other">%1$d ejercicios reconocidos automáticamente</item>
+    </plurals>
     <string name="import_skipped_rows">Filas ignoradas (series vacías o fechas ilegibles): %1$d</string>
     <string name="import_unit_title">Este archivo no indica la unidad de los pesos. Se registraron en:</string>
     <string name="import_existing_title">Sesiones que ya están en tu registro: %1$d</string>

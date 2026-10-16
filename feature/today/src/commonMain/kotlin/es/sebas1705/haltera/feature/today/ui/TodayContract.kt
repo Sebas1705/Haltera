@@ -44,7 +44,31 @@ internal data class PlanUi(
 )
 
 /** "Rest days this week: [used] of [planned]"; [restToday] when today is a chosen rest weekday. */
-internal data class RestWeekUi(val used: Int, val planned: Int, val restToday: Boolean)
+internal data class RestWeekUi(val used: Int, val planned: Int, val restToday: Boolean) {
+    /** Which sentence describes the week (docs/designs/2026-10-16-flexible-rest-days.md §1, "Wording"). */
+    val wording: RestWeekWording
+        get() = when {
+            used > planned && planned == 0 -> RestWeekWording.UNPLANNED
+            used > planned -> RestWeekWording.OVER_TARGET
+            planned == 0 -> RestWeekWording.NONE_PLANNED
+            else -> RestWeekWording.OF_TARGET
+        }
+}
+
+/** The weekly rest line of a flexible routine on Today. */
+internal enum class RestWeekWording {
+    /** "Rest days this week: 1 of 3" (within the target). */
+    OF_TARGET,
+
+    /** "4 rest days this week (target 3)": over the target, never "4 of 3". */
+    OVER_TARGET,
+
+    /** "2 rest days this week (none planned)": the routine plans 0 rest days. */
+    UNPLANNED,
+
+    /** "No rest days planned this week": 0 planned and none taken yet. */
+    NONE_PLANNED,
+}
 
 internal data class NextDayUi(
     val dayIndex: Int,

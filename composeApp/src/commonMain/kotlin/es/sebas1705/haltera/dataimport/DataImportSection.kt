@@ -83,6 +83,7 @@ import es.sebas1705.haltera.resources.unit_lb
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.time.ExperimentalTime
@@ -176,9 +177,7 @@ private fun RowScope.Line(text: String, color: Color) {
 @Composable
 private fun ReviewDialog(review: ImportReview, onEvent: (DataImportIntent) -> Unit) {
     val preview = review.preview
-    val nothingNew = review.existing == ExistingPolicy.SKIP &&
-        preview.sessions - preview.existingSessions <= 0 &&
-        preview.bodyWeights - preview.existingBodyWeights <= 0
+    val nothingNew = review.nothingNew
     AlertDialog(
         onDismissRequest = { if (!review.working) onEvent(DataImportIntent.Cancel) },
         title = { Text(stringResource(Res.string.import_title)) },
@@ -186,7 +185,7 @@ private fun ReviewDialog(review: ImportReview, onEvent: (DataImportIntent) -> Un
             Column(Modifier.verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(review.fileName, style = MaterialTheme.typography.labelMedium)
                 Text(stringResource(Res.string.import_detected, stringResource(sourceName(preview.source))))
-                Summary(preview)
+                Summary(preview, review.matchedLine)
                 if (preview.needsUnitChoice) UnitChoice(review, onEvent)
                 if (preview.existingSessions > 0) ExistingChoice(review, onEvent)
                 if (nothingNew) {
@@ -195,7 +194,7 @@ private fun ReviewDialog(review: ImportReview, onEvent: (DataImportIntent) -> Un
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
-                if (preview.unmatched.isNotEmpty()) Unmatched(review, onEvent)
+                if (review.unmatchedShown) Unmatched(review, onEvent)
                 if (review.working) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -222,14 +221,14 @@ private fun ReviewDialog(review: ImportReview, onEvent: (DataImportIntent) -> Un
 }
 
 @Composable
-private fun Summary(preview: ImportPreview) {
+private fun Summary(preview: ImportPreview, matched: Int?) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(stringResource(Res.string.import_summary, preview.sessions, preview.sets))
         val first = preview.firstStartedAt
         val last = preview.lastStartedAt
         if (first != null && last != null) Text(stringResource(Res.string.import_range, dateOf(first), dateOf(last)))
         if (preview.bodyWeights > 0) Text(stringResource(Res.string.import_body_weights, preview.bodyWeights))
-        Text(stringResource(Res.string.import_matched, preview.matchedExercises))
+        if (matched != null) Text(pluralStringResource(Res.plurals.import_matched, matched, matched))
         if (preview.skippedRows > 0) {
             Text(
                 stringResource(Res.string.import_skipped_rows, preview.skippedRows),

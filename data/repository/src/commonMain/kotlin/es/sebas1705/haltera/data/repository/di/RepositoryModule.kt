@@ -8,6 +8,8 @@ import es.sebas1705.haltera.data.repository.CatalogRepository
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.export.DataExporter
 import es.sebas1705.haltera.data.repository.export.SqlDataExporter
+import es.sebas1705.haltera.data.repository.importer.HistoryImporter
+import es.sebas1705.haltera.data.repository.importer.SqlHistoryImporter
 import es.sebas1705.haltera.data.repository.NutritionRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
@@ -61,4 +63,5 @@ val repositoryModule = module {
         SqlNutritionRepository(get(), get(), get(), get(), get(IoDispatcher), get(named("now")))
     }
     single<DataExporter> { SqlDataExporter(get(), get(), get(), get(), get(), get(), get(), get(IoDispatcher)) }
+    single<HistoryImporter> { SqlHistoryImporter(get(), get(), get(IoDispatcher)) }
 }

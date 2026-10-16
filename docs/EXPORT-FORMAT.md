@@ -2,8 +2,8 @@
 
 Settings → Data → **Export my data** writes one zip, `haltera-export-YYYY-MM-DD.zip` (the date is the local date of
 the device). It holds everything the user logged and nothing that ships with the app: the bundled exercise
-catalogue and the bundled food database are not exported; they are referenced by their stable ids. Import (P2)
-reads the same files.
+catalogue and the bundled food database are not exported; they are referenced by their stable ids. Settings → Data →
+Import workouts reads the same files back ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)).
 
 Code: `data/repository/.../export/` (`ExportFormat` = columns and row formatting, `DataExporter`, `ZipWriter`).
 Golden files for every file below live in `data/repository/src/androidUnitTest/resources/export/`; regenerate

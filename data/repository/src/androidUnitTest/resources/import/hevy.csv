@@ -1,0 +1,10 @@
+"title","start_time","end_time","description","exercise_title","superset_id","exercise_notes","set_index","set_type","weight_kg","reps","distance_km","duration_seconds","rpe"
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Bench Press (Barbell)","","Pause on chest",0,"warmup",40,10,,,
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Bench Press (Barbell)","","Pause on chest",1,"normal",82.5,5,,,8.5
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Bench Press (Barbell)","","Pause on chest",2,"failure",82.5,4,,,10
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Triceps Pushdown ""Rope""","1","",0,"normal",25,12,,,
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Triceps Pushdown ""Rope""","1","",1,"dropset",15,15,,,
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Plank","","",0,"normal",,,,60,
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Pull Up","","",0,"normal",,8,,,
+"Push Day","29 Apr 2025, 18:00","29 Apr 2025, 19:05","Felt strong, good session","Pull Up","","",1,"normal",,,,,
+"Morning Run","1 May 2025, 07:30","1 May 2025, 08:00","","Running","","",0,"normal",,,5.25,1500,

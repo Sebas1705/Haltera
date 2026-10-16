@@ -53,3 +53,12 @@ SELECT * FROM WorkoutSessionEntity
 WHERE startedAt > :afterStartedAt OR (startedAt = :afterStartedAt AND id > :afterId)
 ORDER BY startedAt, id
 LIMIT :limit;
+
+-- History import (docs/IMPORT-FORMATS.md): a finished session written whole, with a deterministic id.
+insertImported:
+INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
+VALUES (?, ?, ?, NULL, NULL, ?, ?, ?);
+
+-- Which of :ids are already in the logbook.
+selectExistingIds:
+SELECT id FROM WorkoutSessionEntity WHERE id IN :ids;

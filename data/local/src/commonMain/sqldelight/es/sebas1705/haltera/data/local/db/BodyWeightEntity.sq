@@ -22,3 +22,7 @@ SELECT * FROM BodyWeightEntity ORDER BY measuredAt DESC LIMIT 1;
 
 selectBetween:
 SELECT * FROM BodyWeightEntity WHERE measuredAt >= :from AND measuredAt < :to ORDER BY measuredAt;
+
+-- Which of :ids are already in the log (history import).
+selectExistingIds:
+SELECT id FROM BodyWeightEntity WHERE id IN :ids;

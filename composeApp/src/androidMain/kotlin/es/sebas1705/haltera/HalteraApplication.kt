@@ -14,6 +14,8 @@ import es.sebas1705.haltera.data.remote.isFirebaseConfigured
 import es.sebas1705.haltera.data.repository.di.AppVersionName
 import es.sebas1705.haltera.di.appModules
 import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.dataimport.AndroidImportFileBridge
+import es.sebas1705.haltera.dataimport.ImportFileBridge
 import es.sebas1705.haltera.export.AndroidExportFileBridge
 import es.sebas1705.haltera.export.ExportFileBridge
 import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
@@ -43,6 +45,7 @@ class HalteraApplication : Application() {
                     }
                     single<RoutineShareBridge> { AndroidRoutineShareBridge(androidContext(), get()) }
                     single<ExportFileBridge> { AndroidExportFileBridge(androidContext()) }
+                    single<ImportFileBridge> { AndroidImportFileBridge(androidContext()) }
                     single<BarcodeScanner> { AndroidBarcodeScanner() }
                     single { AppVersionName(versionName()) }
                     single { appInfo() }

@@ -45,6 +45,7 @@ import es.sebas1705.haltera.core.ui.theme.readFontLicences
 import es.sebas1705.haltera.core.units.PlateCalculator
 import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.core.units.Weights
+import es.sebas1705.haltera.dataimport.DataImportSection
 import es.sebas1705.haltera.export.DataExportSection
 import es.sebas1705.haltera.resources.Res
 import es.sebas1705.haltera.resources.back
@@ -166,7 +167,7 @@ fun SettingsScreen(
                 viewModel.onEvent(SettingsIntent.SetRestVibration(it))
             }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
-            DataExportSection()
+            DataSections()
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             TextButton(onClick = onAbout, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(stringResource(Res.string.settings_about))
@@ -176,6 +177,14 @@ fun SettingsScreen(
             }
         }
     }
+}
+
+/** Settings → Data: export, then import. */
+@Composable
+private fun DataSections() {
+    DataExportSection()
+    HorizontalDivider(Modifier.padding(vertical = 8.dp))
+    DataImportSection()
 }
 
 @Suppress("MagicNumber") // Common bar weights.

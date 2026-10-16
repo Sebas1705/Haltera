@@ -15,6 +15,8 @@ import es.sebas1705.haltera.data.models.TrackingType
 import es.sebas1705.haltera.domain.usecases.naming.ExerciseNaming
 import es.sebas1705.haltera.domain.usecases.naming.VariantLabel
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.session.LastTimeComparison
+import es.sebas1705.haltera.domain.usecases.session.Trend
 import es.sebas1705.haltera.domain.usecases.stats.RecordKind
 import es.sebas1705.haltera.feature.session.timer.TimerSnapshot
 
@@ -98,13 +100,34 @@ sealed interface SessionDialog {
     data object AddExercise : SessionDialog
 }
 
-/** Finish summary (spec §5): duration, volume, new PRs and progression increases earned. */
+/**
+ * Finish summary (spec §5): duration, sets, each exercise against the last time, new PRs and progression increases
+ * earned. Volume is left to the Progress statistics: kg × reps is hard to read at a glance.
+ */
 data class FinishSummary(
     val durationMs: Long,
-    val volumeGrams: Long,
     val completedSets: Int,
+    val comparisons: List<ComparisonLine>,
     val records: List<RecordLine>,
     val increases: List<IncreaseLine>,
+) {
+    /** Exercises with an earlier time to compare with (not first times, not uncomparable). */
+    val compared: Int get() = comparisons.count { it.comparison.trend in COMPARED }
+
+    /** Of [compared], the ones that went better than last time. */
+    val improved: Int get() = comparisons.count { it.comparison.trend == Trend.BETTER }
+
+    private companion object {
+        val COMPARED = setOf(Trend.BETTER, Trend.SAME, Trend.LOWER)
+    }
+}
+
+/** An exercise's best set today against the last time ([LastTimeComparison]), with how to show its sets. */
+data class ComparisonLine(
+    val name: ExerciseName,
+    val trackingType: TrackingType,
+    val loadType: LoadType,
+    val comparison: LastTimeComparison,
 )
 
 data class RecordLine(val name: ExerciseName, val kinds: Set<RecordKind>)

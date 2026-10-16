@@ -72,11 +72,13 @@ class SessionCatalog(
     suspend fun lastPerformance(variantId: String): LastPerformance? {
         if (variantId in lastCache) return lastCache[variantId]
         val history = sessions.lastForVariant(variantId, limit = LAST_LIMIT, before = sessionStartedAt)
-        val zone = timeZone()
-        val last = LastPerformance.from(history) { millis -> localDay(millis, zone) }
+        val last = LastPerformance.from(history, ::localDay)
         lastCache[variantId] = last
         return last
     }
+
+    /** The local calendar day (epoch day in the user's time zone) of an instant. */
+    fun localDay(millis: Long): Int = localDay(millis, timeZone())
 
     /** Best load of a variant's last performance day, for the flexible-slot picker. */
     suspend fun lastLoad(variantId: String): Long? = lastPerformance(variantId)?.best?.loadGrams

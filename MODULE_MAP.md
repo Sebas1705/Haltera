@@ -15,7 +15,7 @@
 | `data:routines` | `FamousRoutines.all`: the bundled famous-routine templates (spec §6.3), checked against `catalog.json` by a test |
 | `data:remote` | Firebase (GitLive): `FirestoreRemoteStore` (`users/{uid}/{collection}/{id}` with `payload`, `updatedAt`, `deleted`, `schema`), `FirebaseAccountService` (anonymous, link/sign in with Google, sign out, delete), `NotConfigured*` no-ops without Firebase config, `FirebaseConfig` / `isFirebaseConfigured`, `remoteModule` |
 | `data:repository` | Repository interfaces (`CatalogRepository`, `ExerciseRepository`, `RoutineRepository`, `SessionRepository`, `BodyWeightRepository`, `NutritionRepository`) with internal SQL implementations bound in `repositoryModule`; `OpenFoodFactsClient` (Ktor, barcode lookups); `export/` = `DataExporter` (zip of CSV and JSON, docs/EXPORT-FORMAT.md); `importer/` = `HistoryFileParser` (Hevy, Strong, FitNotes, Haltera export; pure), `ExerciseMatcher`, `HistoryImporter` (preview and one-transaction write with deterministic session ids, docs/IMPORT-FORMATS.md) |
-| `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats` (+ `Metric` catalogue and progress analytics), `RoutineScorer` (package `routinescore`: evidence-based routine score and advice, docs/designs/2026-10-15-routine-scoring.md); `ExerciseNaming` (title = exercise, subtitle = variant label); `nutrition/GoalCalculator` (Mifflin–St Jeor) and `nutrition/NutritionStats`; use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`); `LastPerformance` (the last training day of a variant and its best set, for the session's first-set default) |
+| `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle`, `Stats` (+ `Metric` catalogue and progress analytics), `RoutineScorer` (package `routinescore`: evidence-based routine score and advice, docs/designs/2026-10-15-routine-scoring.md); `ExerciseNaming` (title = exercise, subtitle = variant label); `nutrition/GoalCalculator` (Mifflin–St Jeor) and `nutrition/NutritionStats`; use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`); `LastPerformance` (the last training day of a variant and its best set, for the session's first-set default), `LastTimeComparisons` (best set today against that day: better, same, lower, first time) |
 | `feature:today` | Today tab (spec §7) |
 | `feature:routines` | Routines tab: my routines, editor (incl. duplicate day), famous routines, routine analysis (score badges, criteria, weekly sets chart) |
 | `feature:exercises` | Exercises tab: search, filters, detail, custom exercises |
@@ -79,7 +79,7 @@ What each feature fills in (spec §5, §7):
   of the first set from the variant's last training day in any context (`lastForVariant` + `LastPerformance`: its best
   non-warm-up set) and `SuggestNextLoad`, "Statistics" / "Description" in each card's menu (shell lambdas), plate breakdown with `PlateCalculator`, flexible-slot
   variant picker (`substituteExercise`), add/remove/move exercises, absolute-time rest timer, keep screen
-  on, finish with a summary (`Stats.volume`, `Stats.newRecords`). Foreground
+  on, finish with a summary (duration, sets, `LastTimeComparisons` per exercise, `Stats.newRecords`, increases; no volume). Foreground
   service and notifications go in this module's `androidMain`/`iosMain`. `SessionService` stops with its session
   (no in-progress session), when the task is removed, and is not sticky; `ExactAlarmPrompt` is the one-time
   explanation of the exact alarm permission (never shown again after "Not now" or opening settings).

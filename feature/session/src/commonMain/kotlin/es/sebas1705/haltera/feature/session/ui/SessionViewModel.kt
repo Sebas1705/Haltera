@@ -489,12 +489,11 @@ class SessionViewModel(
         !session.inProgress && session.exercises.any { e -> e.sets.any { it.completed } }
 
     private suspend fun buildSummary(session: WorkoutSession, slots: Map<String, RoutineSlot>, cards: List<ExerciseCard>): FinishSummary {
-        val names = cards.associate { it.id to it.name }
         return SummaryBuilder.build(
             session = session,
             slots = slots,
-            names = names,
-            loadTypes = cards.associate { it.id to it.loadType },
+            cards = cards.associate { it.id to SummaryBuilder.Card(it.name, it.trackingType, it.loadType) },
+            dayOf = catalog::localDay,
             previous = { variantId -> catalog.previousHistory(variantId, session.id) },
             increase = { slot, variantId -> catalog.earnedIncrease(slot, variantId, session.id) },
         )

@@ -22,6 +22,7 @@ import es.sebas1705.haltera.core.ui.components.PrBadge
 import es.sebas1705.haltera.core.ui.theme.HalteraTheme
 import es.sebas1705.haltera.core.ui.theme.tabularFigures
 import es.sebas1705.haltera.core.units.WeightUnit
+import es.sebas1705.haltera.domain.usecases.session.Trend
 import es.sebas1705.haltera.domain.usecases.stats.RecordKind
 import es.sebas1705.haltera.feature.session.load.LoadDetail
 import es.sebas1705.haltera.feature.session.resources.Res
@@ -37,12 +38,21 @@ import es.sebas1705.haltera.feature.session.resources.session_summary_no_records
 import es.sebas1705.haltera.feature.session.resources.session_summary_records
 import es.sebas1705.haltera.feature.session.resources.session_summary_sets
 import es.sebas1705.haltera.feature.session.resources.session_summary_title
-import es.sebas1705.haltera.feature.session.resources.session_summary_volume
+import es.sebas1705.haltera.feature.session.resources.session_summary_compare_title
+import es.sebas1705.haltera.feature.session.resources.session_summary_improved
+import es.sebas1705.haltera.feature.session.resources.session_summary_improved_value
+import es.sebas1705.haltera.feature.session.resources.session_trend_better
+import es.sebas1705.haltera.feature.session.resources.session_trend_first
+import es.sebas1705.haltera.feature.session.resources.session_trend_lower
+import es.sebas1705.haltera.feature.session.resources.session_trend_same
 import es.sebas1705.haltera.feature.session.timer.TimerMath
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** Finish summary: duration, volume, sets, new PRs and progression increases earned. */
+/**
+ * Finish summary: duration, sets, how many exercises improved, each exercise against the last time (best set then
+ * → today), new PRs and progression increases earned. No volume: it stays in the Progress statistics.
+ */
 @Composable
 internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () -> Unit, modifier: Modifier = Modifier) {
     Column(
@@ -56,8 +66,20 @@ internal fun SummaryView(summary: FinishSummary, unit: WeightUnit, onDone: () ->
                 TimerMath.formatElapsed(summary.durationMs),
                 Modifier.weight(1f)
             )
-            Metric(Res.string.session_summary_volume, volumeText(summary.volumeGrams, unit), Modifier.weight(1f))
             Metric(Res.string.session_summary_sets, summary.completedSets.toString(), Modifier.weight(1f))
+            Metric(
+                Res.string.session_summary_improved,
+                if (summary.compared == 0) {
+                    "—"
+                } else {
+                    stringResource(Res.string.session_summary_improved_value, summary.improved, summary.compared)
+                },
+                Modifier.weight(1f),
+            )
+        }
+        if (summary.comparisons.isNotEmpty()) {
+            Text(stringResource(Res.string.session_summary_compare_title), style = MaterialTheme.typography.titleMedium)
+            summary.comparisons.forEach { ComparisonRow(it, unit) }
         }
         Text(stringResource(Res.string.session_summary_records), style = MaterialTheme.typography.titleMedium)
         if (summary.records.isEmpty()) {
@@ -92,6 +114,44 @@ private fun Metric(label: StringResource, value: String, modifier: Modifier = Mo
         Column(Modifier.padding(12.dp)) {
             Text(stringResource(label), style = MaterialTheme.typography.labelMedium)
             Text(value, style = MaterialTheme.typography.titleLarge.tabularFigures())
+        }
+    }
+}
+
+/** "Chest Fly · Dumbbell", then "12 kg × 10 → 14 kg × 8" and the verdict ("Better", "Same", "Lower", "First time"). */
+@Composable
+private fun ComparisonRow(line: ComparisonLine, unit: WeightUnit) {
+    val comparison = line.comparison
+    val today = setValuesText(comparison.current, line.trackingType, line.loadType, unit)
+    val values = comparison.previous?.let { before ->
+        stringResource(
+            Res.string.session_summary_increase_line,
+            setValuesText(before, line.trackingType, line.loadType, unit),
+            today,
+        )
+    } ?: today
+    val verdict = when (comparison.trend) {
+        Trend.BETTER -> Res.string.session_trend_better
+        Trend.SAME -> Res.string.session_trend_same
+        Trend.LOWER -> Res.string.session_trend_lower
+        Trend.FIRST_TIME -> Res.string.session_trend_first
+        Trend.UNCOMPARABLE -> null
+    }
+    Column {
+        Text(line.name.fullTitle(), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Text(values, style = MaterialTheme.typography.bodyMedium.tabularFigures())
+            verdict?.let {
+                Text(
+                    stringResource(it),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = if (comparison.trend == Trend.BETTER) {
+                        HalteraTheme.colors.success
+                    } else {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    },
+                )
+            }
         }
     }
 }

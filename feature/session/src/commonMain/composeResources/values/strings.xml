@@ -98,8 +98,14 @@
 
     <string name="session_summary_title">Workout complete</string>
     <string name="session_summary_duration">Duration</string>
-    <string name="session_summary_volume">Volume</string>
     <string name="session_summary_sets">Sets</string>
+    <string name="session_summary_improved">Improved</string>
+    <string name="session_summary_improved_value">%1$d of %2$d</string>
+    <string name="session_summary_compare_title">Compared with last time</string>
+    <string name="session_trend_better">Better</string>
+    <string name="session_trend_same">Same</string>
+    <string name="session_trend_lower">Lower</string>
+    <string name="session_trend_first">First time</string>
     <string name="session_summary_records">New records</string>
     <string name="session_summary_no_records">No new records this time.</string>
     <string name="session_summary_increases">Load up next time</string>

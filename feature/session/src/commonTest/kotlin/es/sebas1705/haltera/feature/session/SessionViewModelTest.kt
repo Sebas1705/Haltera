@@ -29,6 +29,7 @@ import es.sebas1705.haltera.domain.usecases.naming.VariantLabel
 import es.sebas1705.haltera.domain.usecases.progression.IncreaseReason
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
+import es.sebas1705.haltera.domain.usecases.session.Trend
 import es.sebas1705.haltera.domain.usecases.stats.RecordKind
 import es.sebas1705.haltera.feature.session.timer.RestTimerController
 import es.sebas1705.haltera.feature.session.timer.TimerMath
@@ -546,8 +547,13 @@ class SessionViewModelTest {
 
         val summary = assertNotNull(vm.uiState.value.summary)
         assertEquals(45 * 60_000L, summary.durationMs)
-        assertEquals(3 * 62_500L * 12, summary.volumeGrams)
         assertEquals(3, summary.completedSets)
+        val comparison = summary.comparisons.single().comparison
+        assertEquals(Trend.BETTER, comparison.trend, "62.5 kg × 12 after 60 kg × 12")
+        assertEquals(60_000, comparison.previous?.loadGrams)
+        assertEquals(62_500, comparison.current.loadGrams)
+        assertEquals(1, summary.improved)
+        assertEquals(1, summary.compared)
         assertTrue(RecordKind.HEAVIEST_LOAD in summary.records.single().kinds)
         val increase = summary.increases.single()
         assertEquals(62_500, increase.fromGrams)

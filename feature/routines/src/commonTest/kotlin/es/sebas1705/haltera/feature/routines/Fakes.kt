@@ -29,6 +29,7 @@ import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.feature.routines.model.AppLanguage
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,6 +50,9 @@ class FakeRoutineRepository(
 
     /** When set, every write throws it. */
     var failure: Exception? = null
+
+    /** When set, [setRestPolicy] waits for it: a slow database, so the observed routine lags behind the taps. */
+    var restPolicyGate: CompletableDeferred<Unit>? = null
 
     val routines: List<Routine> get() = state.value
 
@@ -125,6 +129,7 @@ class FakeRoutineRepository(
     }
 
     override suspend fun setRestPolicy(routineId: String, policy: RestPolicy, appendRestDays: Int, restDayName: String) {
+        restPolicyGate?.await()
         val target = policy.normalized()
         write("setRestPolicy(${target.mode}, ${target.restDaysPerWeek}, ${target.restWeekdays}, $appendRestDays)")
         val wasFlexible = routine(routineId).restPolicy.isFlexible

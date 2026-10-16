@@ -32,6 +32,14 @@ const allowedFiles = new Set([
   "data/repository/src/commonMain/kotlin/es/sebas1705/haltera/data/repository/share/RoutineShareCode.kt",
   "data/repository/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/repository/RoutineSharingTest.kt",
   "composeApp/src/androidMain/AndroidManifest.xml", // .ironlog intent filter
+  // Public pages: users of the earlier Ironlog test builds must find their data and deletion route.
+  "firebase/hosting/privacy.html",
+  "firebase/hosting/privacidad.html",
+  "firebase/hosting/delete-account.html",
+  "firebase/hosting/borrar-cuenta.html",
+  "scripts/hosting-pages.test.mjs", // limits how often the pages may mention it
+  "docs/play/PLAY-CONSOLE-GUIDE.md", // migration of Ironlog testers and cloud data
+  "docs/play/DATA-INVENTORY.md", // legacy package and Firebase apps
   "docs/designs/2026-10-14-haltera-core-design.md", // share format spec mentions the legacy formats
 ]);
 

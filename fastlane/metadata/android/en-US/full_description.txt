@@ -22,8 +22,8 @@ NUTRITION LOG
 • Log your meals, set daily goals and see how your days add up.
 
 YOUR DATA
-• Everything works offline and is stored on your phone.
-• An account is optional: sign in only if you want to sync your logbook between devices.
+• Works offline. Your logbook is also backed up automatically to a private cloud space, so it survives a lost phone or a reinstall.
+• Link a Google account if you want to keep that backup when you change phone or use several devices.
 • Free and open source under the MIT license. The code is on GitHub.
 
 Haltera is a logbook and a planning tool, not medical advice. Ask a professional before changing your training or diet if you have a health condition.

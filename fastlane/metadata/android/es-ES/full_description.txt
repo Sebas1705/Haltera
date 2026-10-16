@@ -22,8 +22,8 @@ REGISTRO DE NUTRICIÓN
 • Registra tus comidas, fija objetivos diarios y mira cómo suman tus días.
 
 TUS DATOS
-• Todo funciona sin conexión y se guarda en tu móvil.
-• La cuenta es opcional: inicia sesión solo si quieres sincronizar tu diario entre dispositivos.
+• Funciona sin conexión. Tu diario también se copia automáticamente a un espacio privado en la nube, así que sobrevive a perder el móvil o reinstalar.
+• Vincula una cuenta de Google si quieres conservar esa copia al cambiar de móvil o usar varios dispositivos.
 • Gratuita y de código abierto con licencia MIT. El código está en GitHub.
 
 Haltera es un diario y una herramienta de planificación, no consejo médico. Consulta con un profesional antes de cambiar tu entrenamiento o tu dieta si tienes algún problema de salud.

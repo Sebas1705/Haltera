@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.data.repository.sql
 
+import es.sebas1705.haltera.core.search.TextNormalizer
 import es.sebas1705.haltera.data.local.SearchText
 import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.local.db.ExerciseEntity
@@ -27,13 +28,42 @@ internal class SqlExerciseRepository(
     private val now: () -> Long,
 ) : ExerciseRepository {
 
+    /** Fuzzy index of every active exercise per app language, rebuilt when exercises or variants change. */
+    private val searchIndex = SearchIndexCache<String, ExerciseSearch>(
+        watched = listOf(db.exerciseEntityQueries.selectActive(), db.exerciseVariantEntityQueries.countActive()),
+    ) { language ->
+        ExerciseSearch(
+            withVariants(db.exerciseEntityQueries.selectActive().executeAsList(), includeDeprecated = false),
+            language
+        )
+    }
+
     override fun search(filter: ExerciseFilter, language: String, limit: Int): Flow<List<Exercise>> {
+        val lang = if (language.lowercase().startsWith("es")) "es" else "en"
+        if (TextNormalizer.fold(filter.query).isBlank()) return browse(filter, lang, limit)
+        // A text query is ranked in memory (ExerciseSearch): order-independent, typo tolerant, with synonyms.
+        val usage = db.exerciseEntityQueries.usageStats()
+        return tablesChanged(
+            db.exerciseEntityQueries.selectActive(),
+            db.exerciseVariantEntityQueries.countActive(),
+            usage
+        )
+            .conflate()
+            .map {
+                val stats = usage.executeAsList().associate { it.exerciseId to ExerciseUsage(it.sessions, it.lastStartedAt ?: 0L) }
+                searchIndex.get(lang).search(filter, limit, stats, now())
+            }
+            .flowOn(dispatcher)
+    }
+
+    /** No text query: the filters only, most logged first (SQL `search` with an empty query). */
+    private fun browse(filter: ExerciseFilter, language: String, limit: Int): Flow<List<Exercise>> {
         val query = db.exerciseEntityQueries.search(
-            query = SearchText.query(filter.query),
+            query = "",
             category = filter.category?.name,
             muscle = filter.muscle?.name,
             equipment = filter.equipment?.name,
-            language = if (language.lowercase().startsWith("es")) "es" else "en",
+            language = language,
             limit = limit.toLong(),
         )
         return tablesChanged(query).conflate()

@@ -104,6 +104,11 @@ ORDER BY CASE WHEN nameSearch LIKE :word || '%' OR nameSearch LIKE '% ' || :word
          favourite DESC, length(nameEn)
 LIMIT :limit;
 
+-- Fuzzy search (FoodSearch, docs/designs/2026-10-16-fuzzy-search-design.md): every searchable food; the
+-- repository ranks them in memory.
+selectSearchable:
+SELECT * FROM FoodEntity WHERE deprecated = 0 ORDER BY id;
+
 selectFavourites:
 SELECT * FROM FoodEntity WHERE favourite = 1 AND deprecated = 0 ORDER BY nameEn;
 

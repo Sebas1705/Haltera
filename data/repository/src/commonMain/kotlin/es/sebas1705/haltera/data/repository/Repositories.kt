@@ -30,8 +30,13 @@ interface CatalogRepository {
 
 interface ExerciseRepository {
     /**
-     * Active (non-deprecated) exercises matching [filter], with their active variants, sorted by name in
-     * [language] ("en" or "es"). The query is accent and case insensitive and matches both languages.
+     * Active (non-deprecated) exercises matching [filter], with their active variants, in [language] ("en" or "es").
+     *
+     * Without a text query: every exercise passing the filters, the most logged first, then by name. With one:
+     * a fuzzy, ranked search (docs/designs/2026-10-16-fuzzy-search-design.md) over the names in both languages,
+     * variant names, muscles, equipment and category, tolerant of word order, accents, plurals and typos, with
+     * Spanish/English gym synonyms; best match first. The filters apply in both cases. Every exercise search
+     * of the app (Exercises tab, routine exercise picker, session "add exercise") goes through here.
      */
     fun search(filter: ExerciseFilter, language: String, limit: Int = DEFAULT_LIMIT): Flow<List<Exercise>>
 

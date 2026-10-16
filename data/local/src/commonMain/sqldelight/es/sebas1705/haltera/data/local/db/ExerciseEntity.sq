@@ -59,6 +59,7 @@ countActive:
 SELECT COUNT(*) FROM ExerciseEntity WHERE deprecated = 0;
 
 -- Exercise list (spec §7). :query is already normalised (SearchText.normalize); '' matches everything.
+-- The repository calls it with '' only (browsing with filters); text queries are ranked in memory by ExerciseSearch.
 -- :muscle matches primary muscles only; :equipment matches any active variant with that equipment.
 -- Order: with a query, names starting with it, then names with a word starting with it, then the rest; without
 -- one, the exercises the user logged most, then strength and calisthenics before stretches and cardio. Ties
@@ -96,3 +97,17 @@ LIMIT :limit;
 -- Data export: the exercises the user created (the bundled catalogue is never exported).
 selectUser:
 SELECT * FROM ExerciseEntity WHERE source = 'USER' ORDER BY id;
+
+-- Fuzzy search (ExerciseSearch, docs/designs/2026-10-16-fuzzy-search-design.md): every active exercise; the
+-- repository ranks them in memory and applies the filters.
+selectActive:
+SELECT * FROM ExerciseEntity WHERE deprecated = 0 ORDER BY id;
+
+-- Per exercise: sessions in which the user completed a set of it, and the start of the latest one (search boost).
+usageStats:
+SELECT uv.exerciseId, COUNT(DISTINCT se.sessionId) AS sessions, MAX(ws.startedAt) AS lastStartedAt
+FROM SessionExerciseEntity se
+JOIN ExerciseVariantEntity uv ON uv.id = se.variantId
+JOIN WorkoutSessionEntity ws ON ws.id = se.sessionId
+WHERE EXISTS (SELECT 1 FROM SetLogEntity sl WHERE sl.sessionExerciseId = se.id AND sl.completed = 1)
+GROUP BY uv.exerciseId;

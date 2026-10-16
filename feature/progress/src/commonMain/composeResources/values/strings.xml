@@ -101,6 +101,7 @@
 
     <!-- Exercise progress -->
     <string name="progress_exercise_empty">Finish a session to see your exercise progress here.</string>
+    <string name="progress_exercise_focus_empty">No finished sessions with this exercise yet. Its progress shows here once you save one.</string>
     <string name="progress_pick_exercise">Exercise</string>
     <string name="progress_chart_top_set">Top set</string>
     <string name="progress_chart_one_rm">Estimated 1RM</string>

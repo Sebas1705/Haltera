@@ -16,16 +16,23 @@ data class SessionRoute(val sessionId: String)
 /**
  * Registers the session destinations. The app shell calls this from its NavHost.
  * [onFinished] leaves the session screen after finishing or discarding (the shell pops back to Today).
+ * [onOpenExerciseProgress] (Progress → exercise progress of a variant) and [onOpenExerciseDetail]
+ * (Exercises → detail) open on top of the session: it stays on the back stack, keeps running with its rest
+ * timer, and back returns to it.
  */
 fun NavGraphBuilder.sessionGraph(
     navController: NavController,
     onFinished: () -> Unit,
+    onOpenExerciseProgress: (exerciseId: String, variantId: String) -> Unit = { _, _ -> },
+    onOpenExerciseDetail: (exerciseId: String) -> Unit = {},
 ) {
     composable<SessionRoute> { entry ->
         SessionScreen(
             sessionId = entry.toRoute<SessionRoute>().sessionId,
             onBack = { navController.popBackStack() },
             onFinished = onFinished,
+            onOpenStatistics = onOpenExerciseProgress,
+            onOpenDescription = onOpenExerciseDetail,
         )
     }
 }

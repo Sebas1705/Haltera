@@ -69,17 +69,20 @@ internal fun EmptyMessage(text: String) {
 }
 
 @Composable
-private fun ExerciseProgressContent(state: ExerciseProgressState, onEvent: (ExerciseProgressIntent) -> Unit) {
+internal fun ExerciseProgressContent(state: ExerciseProgressState, onEvent: (ExerciseProgressIntent) -> Unit) {
     val units = rememberUnitFormat(state.unit)
     val dates = rememberDateFormat()
     StatsGrid {
         fullWidth("picker") {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                ExercisePicker(
-                    state.exercises,
-                    state.selectedExercise
-                ) { onEvent(ExerciseProgressIntent.SelectExercise(it)) }
-                if (state.variants.size > 1) {
+                // Opened for one exercise: no picker, and the equipment is always shown.
+                if (!state.focused) {
+                    ExercisePicker(
+                        state.exercises,
+                        state.selectedExercise
+                    ) { onEvent(ExerciseProgressIntent.SelectExercise(it)) }
+                }
+                if (state.variants.size > 1 || (state.focused && state.variants.isNotEmpty())) {
                     VariantChips(
                         state.variants,
                         state.selectedVariantId

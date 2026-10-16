@@ -18,7 +18,8 @@ val progressModule = module {
     single { StatsPeriodSelection() }
     viewModelOf(::OverviewViewModel)
     viewModelOf(::CalendarViewModel)
-    viewModelOf(::ExerciseProgressViewModel)
+    // The tab has no parameters; the screen opened from a session passes an ExerciseFocus.
+    viewModel { params -> ExerciseProgressViewModel(get(), get(), get(), get(), params.getOrNull()) }
     viewModelOf(::MusclesViewModel)
     viewModelOf(::BodyWeightViewModel)
     viewModel { params -> SessionDetailViewModel(params.get(), get(), get(), get(), get(), get()) }

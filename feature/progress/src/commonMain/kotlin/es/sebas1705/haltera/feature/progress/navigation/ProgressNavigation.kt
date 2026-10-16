@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import es.sebas1705.haltera.feature.progress.ui.ProgressScreen
+import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseProgressScreen
 import es.sebas1705.haltera.feature.progress.ui.session.SessionDetailScreen
 import es.sebas1705.haltera.feature.progress.ui.session.SessionDetailViewModel
 import kotlinx.serialization.Serializable
@@ -16,6 +17,14 @@ import org.koin.core.parameter.parametersOf
 /** Top-level destination of the Progress tab. */
 @Serializable
 data object ProgressRoute
+
+/**
+ * Progress of one exercise (e1RM trend, progression table, records), starting on [variantId] when it has
+ * history. Public so the shell can open it from other features (the live session's "Statistics"); it draws
+ * its own top bar and back arrow.
+ */
+@Serializable
+data class ExerciseProgressRoute(val exerciseId: String, val variantId: String? = null)
 
 /** Detail of a saved session, with its edit actions (nested in the Progress tab). */
 @Serializable
@@ -41,6 +50,14 @@ fun NavGraphBuilder.progressGraph(
                     navController.navigate(ProgressSessionRoute(session.id))
                 }
             },
+        )
+    }
+    composable<ExerciseProgressRoute> { entry ->
+        val route = entry.toRoute<ExerciseProgressRoute>()
+        ExerciseProgressScreen(
+            exerciseId = route.exerciseId,
+            variantId = route.variantId,
+            onBack = { navController.popBackStack() },
         )
     }
     composable<ProgressSessionRoute> { entry ->

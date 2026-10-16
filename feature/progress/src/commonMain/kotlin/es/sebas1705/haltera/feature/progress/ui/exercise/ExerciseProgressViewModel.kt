@@ -6,6 +6,7 @@ import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
 import es.sebas1705.haltera.core.datastore.SettingsRepository
 import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
@@ -51,11 +52,18 @@ internal data class ExerciseProgressState(
     /** Estimated 1RM per session of the compared variant, oldest first. */
     val compareOneRm: List<ChartPoint> = emptyList(),
     val unit: WeightUnit = WeightUnit.KG,
+    /** Opened for one exercise (from a session): no exercise picker, its name is the title. */
+    val focused: Boolean = false,
+    /** Name of the focused exercise, known even before it has any history. */
+    val focusName: LocalizedText? = null,
 ) : MVIBaseState {
     val selectedExercise: VariantInfo? get() = exercises.firstOrNull { it.exerciseId == selectedExerciseId }
     val selectedVariant: VariantInfo? get() = variants.firstOrNull { it.variantId == selectedVariantId }
     val compareVariant: VariantInfo? get() = compareOptions.firstOrNull { it.variantId == compareVariantId }
 }
+
+/** One exercise to show (and the variant to start on), when the screen is opened from outside the tab. */
+data class ExerciseFocus(val exerciseId: String, val variantId: String?)
 
 internal sealed interface ExerciseProgressIntent : MVIBaseIntent {
     data class SelectExercise(val exerciseId: String) : ExerciseProgressIntent
@@ -69,7 +77,8 @@ internal sealed interface ExerciseProgressIntent : MVIBaseIntent {
 /**
  * Per-exercise progress: charts of top set, estimated 1RM (with its trend and an optional comparison)
  * and volume, the progression table, rep ranges and records. History is kept per variant (spec §3.1),
- * so everything shows one variant of the selected exercise at a time.
+ * so everything shows one variant of the selected exercise at a time. With a [focus] (opened from a session)
+ * the exercise is fixed, even before it has history, and the requested variant is shown first.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class ExerciseProgressViewModel(
@@ -77,11 +86,13 @@ internal class ExerciseProgressViewModel(
     private val exerciseRepository: ExerciseRepository,
     private val settings: SettingsRepository,
     private val routines: RoutineRepository,
-) : MVIBaseViewModel<ExerciseProgressState, ExerciseProgressIntent>(ExerciseProgressState()) {
+    private val focus: ExerciseFocus? = null,
+) : MVIBaseViewModel<ExerciseProgressState, ExerciseProgressIntent>(ExerciseProgressState(focused = focus != null)) {
 
     private val lookup = ExerciseLookup(exerciseRepository)
-    private val selectedExercise = MutableStateFlow<String?>(null)
-    private val selectedVariant = MutableStateFlow<String?>(null)
+    private val selectedExercise = MutableStateFlow(focus?.exerciseId)
+    private val selectedVariant = MutableStateFlow(focus?.variantId)
+    private var focusName: LocalizedText? = null
     private val compared = MutableStateFlow<String?>(null)
 
     init {
@@ -91,6 +102,7 @@ internal class ExerciseProgressViewModel(
     override fun intentHandler(intent: ExerciseProgressIntent): Job = execute {
         when (intent) {
             is ExerciseProgressIntent.SelectExercise -> {
+                if (focus != null) return@execute
                 selectedVariant.value = null
                 selectedExercise.value = intent.exerciseId
             }
@@ -109,11 +121,16 @@ internal class ExerciseProgressViewModel(
     }
 
     private suspend fun observe() {
+        focus?.let { focusName = exerciseRepository.getExercise(it.exerciseId)?.name }
         val allVariants = variantsWithHistory()
         val exercises = allVariants.map { list -> list.distinctBy { it.exerciseId } }
-        val effectiveExercise = combine(exercises, selectedExercise) { options, selected ->
-            selected?.takeIf { id -> options.any { it.exerciseId == id } } ?: options.firstOrNull()?.exerciseId
-        }.distinctUntilChanged()
+        val effectiveExercise = if (focus != null) {
+            flowOf(focus.exerciseId)
+        } else {
+            combine(exercises, selectedExercise) { options, selected ->
+                selected?.takeIf { id -> options.any { it.exerciseId == id } } ?: options.firstOrNull()?.exerciseId
+            }.distinctUntilChanged()
+        }
         val history: Flow<Pair<String?, List<ExerciseHistoryEntry>>> = effectiveExercise.flatMapLatest { id ->
             if (id == null) {
                 flowOf(
@@ -190,6 +207,8 @@ internal class ExerciseProgressViewModel(
                 ProgressMath.exerciseCharts(ExerciseProgression.table(compareEntries, inputs.bilateral)).oneRm
             },
             unit = unit,
+            focused = focus != null,
+            focusName = focusName,
         )
     }
 }

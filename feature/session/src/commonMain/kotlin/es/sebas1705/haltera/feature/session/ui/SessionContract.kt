@@ -34,6 +34,8 @@ data class ExerciseCard(
     val sets: List<SetLog>,
     /** Variants a flexible slot can switch to, with their last load; empty for fixed slots. */
     val variantOptions: List<VariantOption> = emptyList(),
+    /** The catalogue exercise of [variantId]; null when the variant is unknown (its statistics and description cannot open). */
+    val exerciseId: String? = null,
 ) {
     val prescription: Prescription? get() = slot?.prescription
     val done: Boolean get() = sets.isNotEmpty() && sets.all { it.completed }
@@ -71,6 +73,18 @@ data class SetEditor(
     val weightStep: Long? = null,
     val plateStep: Long? = null,
 )
+
+/**
+ * A screen of another tab opened from an exercise card (through the shell's lambdas). The session stays on the back
+ * stack: nothing is finished, and the rest timer keeps running from its absolute end time.
+ */
+sealed interface ExerciseLink {
+    /** Progress → exercise progress of [exerciseId], showing [variantId] (e1RM trend, progression table, records). */
+    data class Statistics(val exerciseId: String, val variantId: String) : ExerciseLink
+
+    /** Exercises → detail of [exerciseId] (instructions, media). */
+    data class Description(val exerciseId: String) : ExerciseLink
+}
 
 /** Add-exercise picker: query and matching exercises. */
 data class ExercisePicker(val query: String = "", val results: List<Exercise> = emptyList())
@@ -133,6 +147,8 @@ data class SessionState(
     val closed: Boolean = false,
     /** Discarded (or deleted, in log mode) in this screen: the screen leaves. */
     val discarded: Boolean = false,
+    /** A screen to open once ([SessionIntent.LinkOpened] clears it). */
+    val link: ExerciseLink? = null,
 ) : MVIBaseState {
     val inProgress: Boolean get() = !loading && !missing && endedAt == null
 
@@ -173,6 +189,15 @@ sealed interface SessionIntent : MVIBaseIntent {
     data class ChooseVariant(val cardId: String, val variantId: String) : SessionIntent
     data class RemoveExercise(val cardId: String) : SessionIntent
     data class MoveExercise(val cardId: String, val delta: Int) : SessionIntent
+
+    /** Opens the card's exercise statistics (Progress) for its variant; the session keeps running. */
+    data class OpenStatistics(val cardId: String) : SessionIntent
+
+    /** Opens the card's exercise description (Exercises); the session keeps running. */
+    data class OpenDescription(val cardId: String) : SessionIntent
+
+    /** The screen opened the pending [SessionState.link]. */
+    data object LinkOpened : SessionIntent
 
     data object OpenAddExercise : SessionIntent
     data class SearchExercises(val query: String) : SessionIntent

@@ -131,8 +131,25 @@ class SessionViewModel(
                 searchJob?.cancel()
                 updateState { it.copy(dialog = null) }
             }
+            is SessionIntent.OpenStatistics -> openLink(intent.cardId) { card, exerciseId ->
+                ExerciseLink.Statistics(exerciseId, card.variantId)
+            }
+            is SessionIntent.OpenDescription -> openLink(intent.cardId) { _, exerciseId ->
+                ExerciseLink.Description(exerciseId)
+            }
+            SessionIntent.LinkOpened -> updateState { it.copy(link = null) }
             else -> Unit
         }
+    }
+
+    /**
+     * Asks the screen to open another tab's screen for a card's exercise. Only navigation: the session, its sets,
+     * the rest timer and the notification are left as they are, and back returns here.
+     */
+    private fun openLink(cardId: String, link: (ExerciseCard, String) -> ExerciseLink) {
+        val card = currentState.cards.firstOrNull { it.id == cardId } ?: return
+        val exerciseId = card.exerciseId ?: return
+        updateState { it.copy(link = link(card, exerciseId)) }
     }
 
     // region Session stream
@@ -199,6 +216,7 @@ class SessionViewModel(
             suggestion = slot?.let { catalog.suggestion(it, exercise.variantId) },
             sets = exercise.sets.sortedBy { it.position },
             variantOptions = options,
+            exerciseId = variant?.exerciseId,
         )
     }
 

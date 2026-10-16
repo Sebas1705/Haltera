@@ -25,6 +25,8 @@
     <string name="session_move_up">Subir</string>
     <string name="session_move_down">Bajar</string>
     <string name="session_remove_exercise">Quitar ejercicio</string>
+    <string name="session_exercise_statistics">Estadísticas</string>
+    <string name="session_exercise_description">Descripción</string>
     <string name="session_set_complete">Serie %1$d hecha</string>
     <string name="session_warmup_complete">Calentamiento %1$d hecho</string>
     <string name="session_set_start_timer">Iniciar serie cronometrada</string>

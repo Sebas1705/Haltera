@@ -125,6 +125,10 @@ SET nameEn = :nameEn, nameEs = :nameEs, nameEnSearch = :nameEnSearch, nameEsSear
     instructionsEn = :instructionsEn, instructionsEs = :instructionsEs, updatedAt = :updatedAt
 WHERE id = :id AND source = 'USER';
 
+-- The user's soft-deleted custom exercises (Exercises tab, "Hidden"), to restore them.
+selectHiddenUser:
+SELECT * FROM ExerciseEntity WHERE source = 'USER' AND deprecated = 1 ORDER BY nameEn, id;
+
 setUserDeprecated:
 UPDATE ExerciseEntity SET deprecated = :deprecated, updatedAt = :updatedAt WHERE id = :id AND source = 'USER';
 

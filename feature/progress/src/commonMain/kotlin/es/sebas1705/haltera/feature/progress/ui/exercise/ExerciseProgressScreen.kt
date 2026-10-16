@@ -35,6 +35,7 @@ internal fun ExerciseProgressScreen(
     exerciseId: String,
     variantId: String?,
     onBack: () -> Unit,
+    onOpenExerciseDetail: (exerciseId: String) -> Unit = {},
     viewModel: ExerciseProgressViewModel = koinViewModel(key = "exercise-progress-$exerciseId-$variantId") {
         parametersOf(ExerciseFocus(exerciseId, variantId))
     },
@@ -60,7 +61,7 @@ internal fun ExerciseProgressScreen(
             when {
                 state.loading -> LoadingScreen()
                 state.variants.isEmpty() -> EmptyMessage(stringResource(Res.string.progress_exercise_focus_empty))
-                else -> ExerciseProgressContent(state) { viewModel.onEvent(it) }
+                else -> ExerciseProgressContent(state, onOpenExerciseDetail) { viewModel.onEvent(it) }
             }
         }
     }

@@ -44,7 +44,7 @@ class FakeExerciseRepository(initial: List<Exercise> = emptyList()) : ExerciseRe
         searches += filter to language
         if (failSearch) return flow { error("search failed") }
         return exercises.map { all ->
-            all.filter { it.matches(filter) }.sortedBy { it.name.get(language) }.take(limit)
+            all.filter { !it.deprecated && it.matches(filter) }.sortedBy { it.name.get(language) }.take(limit)
         }
     }
 
@@ -141,8 +141,15 @@ class FakeExerciseRepository(initial: List<Exercise> = emptyList()) : ExerciseRe
         }
     }
 
-    override suspend fun restoreCustom(id: String) =
+    var failRestore = false
+
+    override fun observeHiddenCustom(): Flow<List<Exercise>> =
+        exercises.map { all -> all.filter { it.source == ExerciseSource.USER && it.deprecated } }
+
+    override suspend fun restoreCustom(id: String) {
+        if (failRestore) error("disk full")
         exercises.update { all -> all.map { if (it.id == id) it.copy(deprecated = false) else it } }
+    }
 
     override fun observeVariantHistory(variantId: String, limit: Int): Flow<List<ExerciseHistoryEntry>> =
         history.map { it[variantId].orEmpty().sortedByDescending { e -> e.sessionStartedAt }.take(limit) }

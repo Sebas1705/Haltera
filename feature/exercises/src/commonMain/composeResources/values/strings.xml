@@ -151,8 +151,13 @@
     <string name="exercises_load_type_band">Band level</string>
     <string name="exercises_load_type_none">No load</string>
     <string name="exercises_detail_by">by %1$s</string>
-    <string name="exercises_detail_deleted">You deleted this exercise. It is hidden from the list and pickers but stays here so your history keeps its name.</string>
+    <string name="exercises_detail_deleted">You deleted this exercise. It is hidden from the list and pickers but stays here so your history keeps its name. You can restore it at any time, here or from “Hidden” in Exercises.</string>
     <string name="exercises_restore">Restore</string>
+    <string name="exercises_restore_named">Restore %1$s</string>
+    <string name="exercises_restore_failed">The exercise could not be restored. Try again.</string>
+    <string name="exercises_hidden_chip">Hidden (%1$d)</string>
+    <string name="exercises_hidden_title">Deleted exercises with history</string>
+    <string name="exercises_hidden_text">Your history still uses these custom exercises, so they were hidden instead of deleted. Restore one to see it again in the list, search and pickers.</string>
     <string name="exercises_delete_title">Delete %1$s?</string>
     <string name="exercises_delete_unused">Nothing uses it: it will be removed for good.</string>
     <plurals name="exercises_delete_routines">

@@ -151,8 +151,13 @@
     <string name="exercises_load_type_band">Nivel de banda</string>
     <string name="exercises_load_type_none">Sin carga</string>
     <string name="exercises_detail_by">de %1$s</string>
-    <string name="exercises_detail_deleted">Has borrado este ejercicio. No aparece en la lista ni al elegir ejercicios, pero sigue aquí para que tu historial conserve su nombre.</string>
+    <string name="exercises_detail_deleted">Has borrado este ejercicio. No aparece en la lista ni al elegir ejercicios, pero sigue aquí para que tu historial conserve su nombre. Puedes restaurarlo cuando quieras, aquí o desde «Ocultos» en Ejercicios.</string>
     <string name="exercises_restore">Restaurar</string>
+    <string name="exercises_restore_named">Restaurar %1$s</string>
+    <string name="exercises_restore_failed">No se ha podido restaurar el ejercicio. Inténtalo de nuevo.</string>
+    <string name="exercises_hidden_chip">Ocultos (%1$d)</string>
+    <string name="exercises_hidden_title">Ejercicios borrados con historial</string>
+    <string name="exercises_hidden_text">Tu historial aún usa estos ejercicios personalizados, así que se ocultaron en lugar de borrarse. Restaura uno para volver a verlo en la lista, la búsqueda y al elegir ejercicios.</string>
     <string name="exercises_delete_title">¿Borrar %1$s?</string>
     <string name="exercises_delete_unused">Nada lo usa: se eliminará definitivamente.</string>
     <plurals name="exercises_delete_routines">

@@ -35,14 +35,18 @@ internal data class ProgressSessionRoute(val sessionId: String)
  * [onOpenSession] opens a session (in progress or finished) in feature:session; Progress uses it for
  * sessions still in progress, for a session just logged on a calendar day and for "Edit sets" of a saved
  * one (feature:session opens it in log mode); finished sessions show in its own detail.
+ * [onOpenExerciseDetail] opens an exercise's detail in feature:exercises (description, records, and the Restore
+ * banner of a deleted custom exercise) from the exercise progress and the saved-session detail.
  */
 fun NavGraphBuilder.progressGraph(
     navController: NavController,
     onOpenSession: (sessionId: String) -> Unit,
+    onOpenExerciseDetail: (exerciseId: String) -> Unit = {},
 ) {
     composable<ProgressRoute> {
         ProgressScreen(
             onOpenSessionId = onOpenSession,
+            onOpenExerciseDetail = onOpenExerciseDetail,
             onOpenSession = { session ->
                 if (session.inProgress) {
                     onOpenSession(session.id)
@@ -58,6 +62,7 @@ fun NavGraphBuilder.progressGraph(
             exerciseId = route.exerciseId,
             variantId = route.variantId,
             onBack = { navController.popBackStack() },
+            onOpenExerciseDetail = onOpenExerciseDetail,
         )
     }
     composable<ProgressSessionRoute> { entry ->
@@ -68,6 +73,7 @@ fun NavGraphBuilder.progressGraph(
             onBack = { navController.popBackStack() },
             // Editing sets opens the saved session in feature:session, which derives log mode from it.
             onEditSets = { onOpenSession(sessionId) },
+            onOpenExercise = onOpenExerciseDetail,
         )
     }
 }

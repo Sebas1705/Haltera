@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -47,8 +48,17 @@ data class ExercisesState(
     val loading: Boolean = true,
     val error: Boolean = false,
     val items: List<ExerciseRow> = emptyList(),
+    /** The user's soft-deleted custom exercises (core design §3.1.1), sorted by name; empty hides the chip. */
+    val hidden: List<ExerciseRow> = emptyList(),
+    /** The "Hidden" chip is selected: the list shows [hidden] with Restore instead of the search results. */
+    val hiddenSelected: Boolean = false,
+    /** A restore failed (shown once). */
+    val restoreFailed: Boolean = false,
 ) : MVIBaseState {
     val hasFilters: Boolean get() = query.isNotBlank() || category != null || muscle != null || equipment != null
+
+    /** The hidden list is on screen: the chip is selected and something is hidden. */
+    val showingHidden: Boolean get() = hiddenSelected && hidden.isNotEmpty()
 }
 
 sealed interface ExercisesIntent : MVIBaseIntent {
@@ -60,6 +70,13 @@ sealed interface ExercisesIntent : MVIBaseIntent {
     data class EquipmentSelected(val equipment: Equipment?) : ExercisesIntent
     data object ClearFilters : ExercisesIntent
     data object Retry : ExercisesIntent
+
+    /** Shows or leaves the list of hidden (soft-deleted) custom exercises. */
+    data object ToggleHidden : ExercisesIntent
+
+    /** Restores the hidden custom exercise [id]: back in the list, search and pickers at once. */
+    data class Restore(val id: String) : ExercisesIntent
+    data object RestoreFailedShown : ExercisesIntent
 }
 
 /** Exercise list with search and filter chips (spec §7 Exercises). */
@@ -76,25 +93,26 @@ class ExercisesViewModel(
 
     init {
         startSearch()
+        observeHidden()
     }
 
     override fun intentHandler(intent: ExercisesIntent): Job = execute {
         when (intent) {
             is ExercisesIntent.SetLanguage -> params.update { it.copy(language = intent.language) }
             is ExercisesIntent.QueryChanged -> {
-                updateState { it.copy(query = intent.query) }
+                updateState { it.copy(query = intent.query, hiddenSelected = false) }
                 updateFilter { it.copy(query = intent.query) }
             }
             is ExercisesIntent.CategorySelected -> {
-                updateState { it.copy(category = intent.category) }
+                updateState { it.copy(category = intent.category, hiddenSelected = false) }
                 updateFilter { it.copy(category = intent.category) }
             }
             is ExercisesIntent.MuscleSelected -> {
-                updateState { it.copy(muscle = intent.muscle) }
+                updateState { it.copy(muscle = intent.muscle, hiddenSelected = false) }
                 updateFilter { it.copy(muscle = intent.muscle) }
             }
             is ExercisesIntent.EquipmentSelected -> {
-                updateState { it.copy(equipment = intent.equipment) }
+                updateState { it.copy(equipment = intent.equipment, hiddenSelected = false) }
                 updateFilter { it.copy(equipment = intent.equipment) }
             }
             ExercisesIntent.ClearFilters -> {
@@ -105,6 +123,17 @@ class ExercisesViewModel(
                 updateState { it.copy(loading = true, error = false) }
                 startSearch()
             }
+            ExercisesIntent.ToggleHidden -> {
+                val show = !currentState.showingHidden
+                // The hidden list ignores the search and the chips, so they are cleared rather than left misleading.
+                updateState { it.copy(hiddenSelected = show) }
+                if (show && currentState.hasFilters) {
+                    updateState { it.copy(query = "", category = null, muscle = null, equipment = null) }
+                    updateFilter { ExerciseFilter() }
+                }
+            }
+            is ExercisesIntent.Restore -> restore(intent.id)
+            ExercisesIntent.RestoreFailedShown -> updateState { it.copy(restoreFailed = false) }
         }
     }
 
@@ -130,6 +159,29 @@ class ExercisesViewModel(
                 }
                 .collect { rows -> updateState { it.copy(loading = false, error = false, items = rows) } }
         }
+    }
+
+    private suspend fun restore(id: String) {
+        val ok = runCatching { exercises.restoreCustom(id) }
+            .onFailure { if (it is CancellationException) throw it }
+            .isSuccess
+        if (!ok) updateState { it.copy(restoreFailed = true) }
+    }
+
+    /** Hidden custom exercises in the app language; the chip disappears with the last one restored. */
+    private fun observeHidden() = execute {
+        params.map { it.language }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .flatMapLatest { language ->
+                exercises.observeHiddenCustom()
+                    .map { list -> list.map { it.toRow(language) }.sortedBy { it.name.lowercase() } }
+                    .flowOn(dispatcher)
+            }
+            .catch { e -> if (e is CancellationException) throw e }
+            .collect { rows ->
+                updateState { it.copy(hidden = rows, hiddenSelected = it.hiddenSelected && rows.isNotEmpty()) }
+            }
     }
 
     companion object {

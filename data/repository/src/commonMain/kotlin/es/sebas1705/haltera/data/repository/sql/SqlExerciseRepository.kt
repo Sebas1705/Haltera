@@ -285,6 +285,14 @@ internal class SqlExerciseRepository(
             }
         }
 
+    override fun observeHiddenCustom(): Flow<List<Exercise>> {
+        val query = db.exerciseEntityQueries.selectHiddenUser()
+        return tablesChanged(query, db.exerciseVariantEntityQueries.countActive())
+            .conflate()
+            .map { withVariants(query.executeAsList(), includeDeprecated = true) }
+            .flowOn(dispatcher)
+    }
+
     override suspend fun restoreCustom(id: String) = withContext(dispatcher) {
         db.exerciseEntityQueries.setUserDeprecated(deprecated = 0, updatedAt = now(), id = id)
         Unit

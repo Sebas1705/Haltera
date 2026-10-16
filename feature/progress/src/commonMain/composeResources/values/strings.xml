@@ -479,4 +479,5 @@
     <string name="progress_metric_compare_formula">Each line is the best estimated 1RM of each session of that variant, on the same scale.</string>
     <string name="progress_metric_compare_counts">The same rules as the estimated 1RM.</string>
     <string name="progress_metric_compare_limits">Different exercises have different strength levels: compare their shapes and trends more than their heights.</string>
+    <string name="progress_exercise_details">Exercise details</string>
 </resources>

@@ -42,6 +42,8 @@ class FilterChipSpec<T : Any>(
 /**
  * A horizontally scrolling row of filter chips (category, muscle, equipment…) with a "Clear" button
  * shown while any filter is set. Labels come from the caller, so each feature keeps its own strings.
+ * [leading] adds the caller's own chips before the filters, so they are visible on narrow phones (e.g. the
+ * Exercises tab's "Hidden").
  */
 @Composable
 fun ExerciseFilterBar(
@@ -50,6 +52,7 @@ fun ExerciseFilterBar(
     clearLabel: String,
     onClear: () -> Unit,
     modifier: Modifier = Modifier,
+    leading: @Composable () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -68,6 +71,7 @@ fun ExerciseFilterBar(
                 leadingIcon = { Icon(Icons.Filled.Close, contentDescription = null) },
             )
         }
+        leading()
         @Suppress("UNCHECKED_CAST") // Each spec is only used with its own option type.
         filters.forEach { FilterMenuChip(it as FilterChipSpec<Any>, anyLabel) }
     }

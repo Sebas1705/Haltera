@@ -7,11 +7,13 @@ import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.Level
 import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.SlotSpec
 import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.feature.routines.model.ExerciseIndex
 import es.sebas1705.haltera.feature.routines.resources.Res
 import es.sebas1705.haltera.feature.routines.resources.routines_cycle_length
+import es.sebas1705.haltera.feature.routines.resources.routines_rest_per_week
 import es.sebas1705.haltera.feature.routines.resources.routines_equipment_band
 import es.sebas1705.haltera.feature.routines.resources.routines_equipment_barbell
 import es.sebas1705.haltera.feature.routines.resources.routines_equipment_bodyweight
@@ -140,6 +142,16 @@ internal fun cycleLabel(days: Int, trainingDays: Int): String =
         pluralStringResource(Res.plurals.routines_training_days, trainingDays, trainingDays)
 
 internal fun trainingDays(kinds: List<DayKind>): Int = kinds.count { it == DayKind.TRAINING }
+
+/** The cycle label of a fixed routine, or "3 training days · 2 rest days a week" for a flexible one. */
+@Composable
+internal fun routineSummary(kinds: List<DayKind>, policy: RestPolicy): String {
+    if (!policy.isFlexible) return cycleLabel(kinds.size, trainingDays(kinds))
+    val training = trainingDays(kinds)
+    val rest = policy.restDaysCount
+    return pluralStringResource(Res.plurals.routines_training_days, training, training) + " · " +
+        pluralStringResource(Res.plurals.routines_rest_per_week, rest, rest)
+}
 
 /** Superset group 1 is "A", 2 is "B"… */
 internal fun supersetLetter(group: Int): String = ('A' + (group - 1).coerceIn(0, LETTERS - 1)).toString()

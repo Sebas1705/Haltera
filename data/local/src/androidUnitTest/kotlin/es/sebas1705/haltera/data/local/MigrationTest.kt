@@ -98,8 +98,60 @@ class MigrationTest {
     }
 
     @Test
+    fun `migrating from version 4 makes every routine fixed and keeps its days, override and sessions`() {
+        File("src/commonMain/sqldelight/databases/4.db").copyTo(file, overwrite = true)
+        driver().use { v4 ->
+            v4.execute(
+                null,
+                "INSERT INTO RoutineEntity(id, name, description, isActive, nextDayIndex, createdAt, updatedAt, " +
+                    "nextDayIndexSetAt) VALUES ('r1', 'PPL', 'push pull legs', 1, 3, 10, 20, 15)",
+                0,
+            )
+            listOf("Push" to "TRAINING", "Pull" to "TRAINING", "Legs" to "TRAINING", "Rest" to "REST")
+                .forEachIndexed { i, (name, kind) ->
+                    v4.execute(
+                        null,
+                        "INSERT INTO RoutineDayEntity(id, routineId, position, name, kind) " +
+                            "VALUES ('d$i', 'r1', $i, '$name', '$kind')",
+                        0,
+                    )
+                }
+            v4.execute(
+                null,
+                "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName) " +
+                    "VALUES ('s1', 1000, 2000, 'r1', 2, 'Legs')",
+                0,
+            )
+            AppDatabase.Schema.migrate(v4, 4, AppDatabase.Schema.version)
+        }
+
+        val db = AppDatabase(driver())
+        val routine = db.routineEntityQueries.selectById("r1").executeAsOne()
+        assertEquals("FIXED", routine.restMode)
+        assertEquals(0L, routine.restDaysPerWeek)
+        assertEquals(0L, routine.restWeekdays)
+        assertEquals(listOf("PPL", "push pull legs"), listOf(routine.name, routine.description))
+        assertEquals(3L to 15L, routine.nextDayIndex to routine.nextDayIndexSetAt)
+        assertEquals(
+            listOf("TRAINING", "TRAINING", "TRAINING", "REST"),
+            db.routineDayEntityQueries.selectByRoutine("r1").executeAsList().map { it.kind },
+        )
+        assertEquals(2L, db.workoutSessionEntityQueries.selectById("s1").executeAsOne().routineDayIndex)
+
+        // The new columns are writable, and the routine is tracked for sync again.
+        db.routineEntityQueries.setRestPolicy("FLEXIBLE", 2, 0b100_0100, 30, "r1")
+        val flexible = db.routineEntityQueries.selectById("r1").executeAsOne()
+        assertEquals(
+            Triple("FLEXIBLE", 2L, 0b100_0100L),
+            Triple(flexible.restMode, flexible.restDaysPerWeek, flexible.restWeekdays)
+        )
+        assertEquals(1L, db.syncTrackingQueries.selectState("routines", "r1").executeAsOne().dirty)
+    }
+
+    @Test
     fun `the schema version is the shipped one plus the migrations`() {
-        // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync covers 1 -> 4).
-        assertEquals(4L, AppDatabase.Schema.version)
+        // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync
+        // covers 1 -> 4); 4 -> 5: flexible rest days.
+        assertEquals(5L, AppDatabase.Schema.version)
     }
 }

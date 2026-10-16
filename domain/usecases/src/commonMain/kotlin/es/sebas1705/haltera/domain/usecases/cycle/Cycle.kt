@@ -7,7 +7,8 @@ import es.sebas1705.haltera.data.models.WorkoutSession
 
 /**
  * The next day to train. [restDaysSkipped] are the REST days between the pointer and [dayIndex] (in
- * cycle order): when not empty, the plan says today is a rest day (spec §3.4, informational only).
+ * cycle order): when not empty, the plan says today is a rest day (spec §3.4, informational only). A flexible
+ * routine never reports skipped rest days: its rest follows the weekly policy ([FlexibleRest]).
  */
 data class NextDay(
     val dayIndex: Int,
@@ -24,6 +25,10 @@ data class NextDay(
  * `startedAt` (finished or not), so logging past days in any order, editing a session's date or deleting
  * one keeps it right. The stored `Routine.nextDayIndex` is only a manual override (Today's day picker),
  * stamped with `nextDayIndexSetAt`: it wins until a session of the routine starts after that instant.
+ *
+ * Fixed and flexible routines (docs/designs/2026-10-16-flexible-rest-days.md) share the pointer. A flexible
+ * routine holds training days only, so its next day is always the training day after the last one logged,
+ * however many calendar days passed; a stray REST day in it is skipped silently.
  */
 object Cycle {
     /** [pointer] clamped to a valid day index; 0 for an empty cycle. */
@@ -31,15 +36,18 @@ object Cycle {
 
     /**
      * The first TRAINING day at or after [pointer] (wrapping around), or null if the cycle has no
-     * training day. An out-of-range pointer is clamped first.
+     * training day. An out-of-range pointer is clamped first. With [flexible], skipped REST days are not
+     * reported (the plan never says rest because of a cycle position).
      */
-    fun nextPendingDay(days: List<RoutineDay>, pointer: Int): NextDay? {
+    fun nextPendingDay(days: List<RoutineDay>, pointer: Int, flexible: Boolean = false): NextDay? {
         if (days.isEmpty()) return null
         val start = clamp(pointer, days.size)
         val skipped = mutableListOf<Int>()
         for (offset in days.indices) {
             val index = (start + offset) % days.size
-            if (days[index].kind == DayKind.TRAINING) return NextDay(index, days[index], skipped)
+            if (days[index].kind == DayKind.TRAINING) {
+                return NextDay(index, days[index], if (flexible) emptyList() else skipped)
+            }
             skipped += index
         }
         return null
@@ -47,7 +55,7 @@ object Cycle {
 
     /** Next pending day of [routine] given its most recent session ([latest], by `startedAt`). */
     fun nextPendingDay(routine: Routine, latest: WorkoutSession? = null): NextDay? =
-        nextPendingDay(routine.days, pointer(routine, latest))
+        nextPendingDay(routine.days, pointer(routine, latest), routine.restPolicy.isFlexible)
 
     /**
      * The cycle pointer: the day after [latest] (the routine's most recent session by `startedAt`), unless

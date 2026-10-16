@@ -12,6 +12,7 @@ import es.sebas1705.haltera.data.local.db.RoutineSlotEntity
 import es.sebas1705.haltera.data.local.db.SessionExerciseEntity
 import es.sebas1705.haltera.data.local.db.SetLogEntity
 import es.sebas1705.haltera.data.local.db.WorkoutSessionEntity
+import es.sebas1705.haltera.data.models.RestMode
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
@@ -34,6 +35,11 @@ internal data class RoutinePayload(
     val createdAt: Long,
     val updatedAt: Long,
     val days: List<DayPayload> = emptyList(),
+    // Flexible rest days (schema 5, docs/designs/2026-10-16-flexible-rest-days.md). Documents written by older
+    // versions lack them and decode as a FIXED routine, which is how those versions behave.
+    val restMode: String = RestMode.FIXED.name,
+    val restDaysPerWeek: Long = 0,
+    val restWeekdays: Long = 0,
 )
 
 @Serializable
@@ -233,6 +239,7 @@ internal data class MealEntryPayload(
 internal fun RoutineEntity.toPayload(days: List<DayPayload>) = RoutinePayload(
     id = id, name = name, description = description, originTemplateId = originTemplateId,
     originVersion = originVersion, nextDayIndex = nextDayIndex, createdAt = createdAt, updatedAt = updatedAt, days = days,
+    restMode = restMode, restDaysPerWeek = restDaysPerWeek, restWeekdays = restWeekdays,
 )
 
 internal fun RoutineDayEntity.toPayload(slots: List<SlotPayload>) =

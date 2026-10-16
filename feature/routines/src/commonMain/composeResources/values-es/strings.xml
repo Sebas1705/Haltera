@@ -280,7 +280,7 @@
     <string name="routines_criterion_session_length">Duración de la sesión</string>
     <string name="routines_criterion_adherence">Constancia</string>
     <string name="routines_criterion_load_progress">Progreso de cargas</string>
-    <string name="routines_info_volume">Se cuentan las series efectivas por grupo muscular cada semana: una serie por cada músculo principal y media por cada músculo secundario. Los ejercicios de tirón (remos, jalones, dominadas) no suman a hombros: el deltoides posterior solo ayuda. Progreso › Músculos cuenta solo los músculos principales, así que coincide con la parte directa de estas cifras. Un ciclo de N días se escala a 7 días; un ciclo sin días de descanso se supone de 3 sesiones por semana (o un ciclo por semana a partir de 5 días). Los metaanálisis muestran que la ganancia muscular aumenta con las series semanales, con unas 10 a 20 series duras por músculo como buen objetivo y menos beneficio a partir de ahí; la fuerza necesita menos. Los grupos con menos de 10 series puntúan menos (en rutinas de fuerza, desde 6), los de más de 20 algo menos, y se señalan los de menos de 6 o más de 25. Los grupos grandes pesan el doble que los pequeños.</string>
+    <string name="routines_info_volume">Se cuentan las series efectivas por grupo muscular cada semana: una serie por cada músculo principal y media por cada músculo secundario. Los ejercicios de tirón (remos, jalones, dominadas) no suman a hombros: el deltoides posterior solo ayuda. Progreso › Músculos cuenta solo los músculos principales, así que coincide con la parte directa de estas cifras. Un ciclo de N días se escala a 7 días; un ciclo sin días de descanso se supone de 3 sesiones por semana (o un ciclo por semana a partir de 5 días); una rutina con descansos flexibles hace 7 sesiones menos sus días de descanso por semana. Los metaanálisis muestran que la ganancia muscular aumenta con las series semanales, con unas 10 a 20 series duras por músculo como buen objetivo y menos beneficio a partir de ahí; la fuerza necesita menos. Los grupos con menos de 10 series puntúan menos (en rutinas de fuerza, desde 6), los de más de 20 algo menos, y se señalan los de menos de 6 o más de 25. Los grupos grandes pesan el doble que los pequeños.</string>
     <string name="routines_info_frequency">Un grupo cuenta como entrenado un día cuando recibe al menos 2 series (los secundarios cuentan la mitad). Entrenar un músculo dos o más veces por semana supera a hacerlo una vez para ganar músculo, aunque con el mismo volumen la diferencia es pequeña. Cada grupo con al menos 6 series semanales puntúa completo desde dos veces por semana, 40 puntos con una vez y menos por debajo.</string>
     <string name="routines_info_coverage">Cada grupo principal (pecho, espalda, hombros, cuádriceps, isquiotibiales, glúteos, bíceps, tríceps, gemelos y abdominales) debería recibir al menos una serie por semana. Las guías de referencia recomiendan entrenar todos los grupos musculares principales. Los grupos grandes cuentan el doble.</string>
     <string name="routines_info_balance">Se compara el trabajo de empuje (press de pecho y hombro, fondos) con el de tirón (remos, jalones, face pulls), y el trabajo dominante de cuádriceps (sentadillas, prensa, zancadas) con el dominante de cadera (pesos muertos, bisagras de cadera, curl femoral). Equilibrar grupos musculares opuestos es una pauta habitual, y la relación isquiotibiales-cuádriceps es un marcador clásico de equilibrio muscular. Las proporciones entre 2:3 y 3:2 para empuje y tirón, y entre 1:2 y 2:1 para las piernas, puntúan completo; la nota baja a medida que la proporción se aleja. Estas franjas son una heurística, no una regla exacta.</string>
@@ -337,4 +337,49 @@
     </plurals>
     <string name="routines_analysis_chart_value_split">%1$s: %2$s series por semana (%3$s)</string>
     <string name="routines_advice_shoulder_overlap">Hombros: %1$s series por semana (%2$s de los press). El grupo abarca el deltoides anterior, el lateral y el posterior, y los press ya trabajan el anterior. Mantén las elevaciones laterales y el trabajo de deltoides posterior; si no te recuperas bien, recorta primero series de press.</string>
+
+    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md) -->
+    <string name="routines_rest_mode_title">Días de descanso</string>
+    <string name="routines_rest_mode_fixed">Fijos</string>
+    <string name="routines_rest_mode_flexible">Flexibles</string>
+    <string name="routines_rest_mode_fixed_hint">Los descansos forman parte del ciclo: los días se repiten en orden, descansos incluidos.</string>
+    <string name="routines_rest_mode_flexible_hint">Solo días de entreno, siempre en el mismo orden. Descansas cuando lo necesites y el siguiente entreno te espera.</string>
+    <string name="routines_rest_mode_info">Cómo funcionan fijos y flexibles</string>
+    <string name="routines_rest_mode_info_title">Descansos fijos o flexibles</string>
+    <string name="routines_rest_mode_info_text">Fijos: los días de descanso son posiciones del ciclo. Empuje · Tirón · Pierna · Descanso se repite exactamente así, y Hoy dice «descanso» cuando el ciclo llega a un día de descanso.\n\nFlexibles: la rutina son solo sus días de entreno, en orden. Hoy muestra siempre el entreno que va después del último que registraste, pasen los días que pasen. Ejemplo: Empuje · Tirón · Pierna con 3 días de descanso a la semana. Entrenas el lunes y el martes, descansas el miércoles y entrenas el jueves: haces Empuje, Tirón y Pierna en ese orden.\n\nCon flexibles puedes decir cuántos días a la semana descansas y la app solo los cuenta. Si siempre descansas los mismos días de la semana, elígelos: Hoy muestra descanso esos días y aun así puedes entrenar.\n\nNunca se bloquea nada: siempre puedes empezar cualquier día, una sesión libre o registrar una pasada.</string>
+    <string name="routines_rest_knows_days">Sé qué días descanso</string>
+    <string name="routines_rest_days_per_week">Días de descanso a la semana</string>
+    <string name="routines_rest_fewer">Menos días de descanso</string>
+    <string name="routines_rest_more">Más días de descanso</string>
+    <string name="routines_rest_count_hint">La app nunca decide qué días descansas: solo los cuenta en Hoy.</string>
+    <string name="routines_rest_weekdays_hint">Elige hasta 6 días. Hoy muestra descanso esos días y aun así puedes entrenar.</string>
+    <plurals name="routines_rest_per_week">
+        <item quantity="one">%1$d día de descanso a la semana</item>
+        <item quantity="other">%1$d días de descanso a la semana</item>
+    </plurals>
+    <string name="routines_weekday_1">Lun</string>
+    <string name="routines_weekday_2">Mar</string>
+    <string name="routines_weekday_3">Mié</string>
+    <string name="routines_weekday_4">Jue</string>
+    <string name="routines_weekday_5">Vie</string>
+    <string name="routines_weekday_6">Sáb</string>
+    <string name="routines_weekday_7">Dom</string>
+    <string name="routines_cycle_hint_flexible">Los días de entreno se repiten en orden: después del último vuelves al día 1, descanses los días que descanses.</string>
+    <string name="routines_to_flexible_title">¿Hacer flexible la rutina?</string>
+    <plurals name="routines_to_flexible_message">
+        <item quantity="one">Se quitará %1$d día de descanso del ciclo. Los días de entreno, su orden y tu historial se mantienen.</item>
+        <item quantity="other">Se quitarán %1$d días de descanso del ciclo. Los días de entreno, su orden y tu historial se mantienen.</item>
+    </plurals>
+    <string name="routines_to_flexible_confirm">Hacer flexible</string>
+    <string name="routines_to_fixed_title">¿Hacer fija la rutina?</string>
+    <plurals name="routines_to_fixed_message">
+        <item quantity="one">¿Añadir %1$d día de descanso al final del ciclo? Después puedes moverlo con las flechas de cada día.</item>
+        <item quantity="other">¿Añadir %1$d días de descanso al final del ciclo? Después puedes moverlos con las flechas de cada día.</item>
+    </plurals>
+    <plurals name="routines_to_fixed_add">
+        <item quantity="one">Añadir %1$d día de descanso</item>
+        <item quantity="other">Añadir %1$d días de descanso</item>
+    </plurals>
+    <string name="routines_to_fixed_none">Sin descansos</string>
+    <string name="routines_analysis_schedule_flexible">Descansos flexibles: las cifras semanales usan %1$s sesiones a la semana (7 menos tus días de descanso).</string>
 </resources>

@@ -14,6 +14,7 @@ import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.models.Muscle
 import es.sebas1705.haltera.data.models.Prescription
 import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineDay
 import es.sebas1705.haltera.data.models.RoutineSlot
@@ -521,4 +522,98 @@ class RoutineScorerTest {
         // Train, rest: 3 sets 3.5 times a week.
         assertEquals(10.5, score(routine).weeklySets[MuscleGroup.CHEST])
     }
+
+    // region Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md)
+
+    private fun Routine.flexible(restDays: Int) = copy(restPolicy = RestPolicy.flexible(restDays))
+
+    private val ab = routine(train("A", spec(bench, 4), spec(squat, 4)), train("B", spec(row, 4), spec(squat, 4)))
+
+    @Test
+    fun `a flexible routine trains 7 minus its rest days a week`() {
+        (0..6).forEach { rest ->
+            assertEquals(
+                (7 - rest).toDouble(),
+                score(ab.flexible(rest)).sessionsPerWeek,
+                "rest $rest"
+            )
+        }
+        // A/B at 4 sessions a week: squat on every session, chest on half of them.
+        val four = score(ab.flexible(3))
+        assertEquals(16.0, four.weeklySets[MuscleGroup.QUADS])
+        assertEquals(8.0, four.weeklySets[MuscleGroup.CHEST])
+    }
+
+    @Test
+    fun `rest weekdays give the same schedule as their count`() {
+        val weekdays = ab.copy(restPolicy = RestPolicy.onWeekdays(listOf(3, 6, 7)))
+        assertEquals(4.0, score(weekdays).sessionsPerWeek)
+        assertEquals(score(ab.flexible(3)).weeklySets, score(weekdays).weeklySets)
+    }
+
+    @Test
+    fun `flexible with four rest days matches the assumed three sessions of a fixed A B`() {
+        assertEquals(score(ab).weeklySets, score(ab.flexible(4)).weeklySets)
+        assertEquals(score(ab).total, score(ab.flexible(4)).total)
+    }
+
+    @Test
+    fun `frequency per muscle follows the flexible schedule`() {
+        val upperLowerFlexible = routine(upper, lower)
+        // Four sessions a week: upper and lower twice each.
+        assertEquals(100, score(upperLowerFlexible.flexible(3)).criterion(CriterionId.FREQUENCY).score)
+        // Two sessions a week: each group once, so frequency advice appears.
+        val twice = score(upperLowerFlexible.flexible(5)).criterion(CriterionId.FREQUENCY)
+        assertTrue(twice.score < 100)
+        val low = assertIs<Finding.Frequency>(twice.finding).low
+        assertTrue(low.isNotEmpty())
+        assertTrue(low.all { it.perWeek == 1.0 }, low.toString())
+    }
+
+    @Test
+    fun `the same days score the same as fixed with rest positions when the weekly sessions match`() {
+        // Fixed: upper, lower, rest, upper, lower, rest, rest = 4 sessions a week. Flexible: 3 rest days.
+        val flexible = routine(upper, lower).flexible(3)
+        assertEquals(score(upperLower).sessionsPerWeek, score(flexible).sessionsPerWeek)
+        assertEquals(score(upperLower).weeklySets, score(flexible).weeklySets)
+        assertEquals(
+            score(upperLower).criterion(CriterionId.FREQUENCY).score,
+            score(flexible).criterion(CriterionId.FREQUENCY).score,
+        )
+    }
+
+    @Test
+    fun `back to back days of a flexible routine are neighbours in the training order once they are forced`() {
+        val legsTwice = routine(
+            train("Legs", spec(squat, 5)),
+            train("Legs again", spec(squat, 5)),
+            train("Upper", spec(bench, 5))
+        )
+        // Six sessions a week: consecutive days happen, so Legs then Legs again is a conflict.
+        val busy = score(legsTwice.flexible(1)).criterion(CriterionId.RECOVERY)
+        assertEquals(
+            listOf(RecoveryConflict(MuscleGroup.QUADS, "Legs", "Legs again")),
+            assertIs<Finding.Recovery>(busy.finding).conflicts,
+        )
+        assertIs<Advice.SeparateDays>(busy.advice.single())
+        // Three sessions a week leave a day between them.
+        val relaxed = score(legsTwice.flexible(4)).criterion(CriterionId.RECOVERY)
+        assertTrue(assertIs<Finding.Recovery>(relaxed.finding).conflicts.isEmpty())
+    }
+
+    @Test
+    fun `adherence plans the flexible sessions a week`() {
+        val flexible = routine(upper, lower).flexible(3)
+        val done = (1..8).map { session(daysAgo = it * 3, dayIndex = 0, sets = 18) } + session(daysAgo = 40)
+        val adherence = score(flexible, done, now).criterion(CriterionId.ADHERENCE)
+        assertEquals(Finding.Adherence(done = 8, planned = 16, setCompletion = 1.0, weeks = 4), adherence.finding)
+    }
+
+    @Test
+    fun `an empty flexible routine is not scored`() {
+        assertEquals(0.0, score(routine().flexible(2)).sessionsPerWeek)
+        assertEquals(Verdict.NOT_SCORED, score(routine().flexible(2)).verdict)
+    }
+
+    // endregion
 }

@@ -161,6 +161,8 @@ internal class DefaultRoutineSharing(
                 if (target != null) routines.addSlot(dayId, slot.toSpec(target))
             }
         }
+        // Codes without `rest` (older apps, fixed routines) stay fixed.
+        file.routine.rest?.toPolicy()?.takeIf { it.isFlexible }?.let { routines.setRestPolicy(routineId, it) }
         return routineId
     }
 

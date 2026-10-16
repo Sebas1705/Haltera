@@ -48,6 +48,9 @@ group listed as both counts once, as primary.
   sessions/week = training days × 7 / N (a 7-day cycle is simply one week).
 - A cycle **without rest days** (A/B programmes, GZCLP) says nothing about the calendar. The scorer assumes
   **3 sessions a week** for cycles of up to 4 days, and one cycle a week (at most 6 sessions) for longer ones.
+- A routine with **flexible rest days** (docs/designs/2026-10-16-flexible-rest-days.md) knows its schedule:
+  sessions/week = 7 − rest days a week (the number, or the chosen weekdays). Back-to-back days are neighbours in
+  the training order once more than 3.5 sessions a week force them, as for cycles without rest days.
 - Training days without slots count as rest.
 
 Weekly sets of a group = its sets over the cycle × cycles per week. A group is **trained on a day** when it

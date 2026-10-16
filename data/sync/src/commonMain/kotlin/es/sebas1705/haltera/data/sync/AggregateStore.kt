@@ -120,6 +120,9 @@ internal class AggregateStore(
             r.nextDayIndex,
             r.createdAt,
             r.updatedAt,
+            r.restMode,
+            r.restDaysPerWeek,
+            r.restWeekdays,
             r.id
         )
         q.deleteDaysNotIn(r.id, r.days.map { it.id })

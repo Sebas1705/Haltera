@@ -36,9 +36,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.haltera.core.ui.components.LoadingScreen
 import es.sebas1705.haltera.core.ui.components.PlaceholderScreen
 import es.sebas1705.haltera.data.models.DayKind
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.data.repository.share.ImportPreview
 import es.sebas1705.haltera.data.repository.share.SharedDay
+import es.sebas1705.haltera.data.repository.share.SharedRoutine
 import es.sebas1705.haltera.feature.routines.resources.Res
 import es.sebas1705.haltera.feature.routines.resources.routines_error
 import es.sebas1705.haltera.feature.routines.resources.routines_import_add
@@ -54,6 +56,7 @@ import es.sebas1705.haltera.feature.routines.resources.routines_import_set_activ
 import es.sebas1705.haltera.feature.routines.resources.routines_import_title
 import es.sebas1705.haltera.feature.routines.resources.routines_import_unsupported
 import es.sebas1705.haltera.feature.routines.ui.components.BackButton
+import es.sebas1705.haltera.feature.routines.ui.components.routineSummary
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
@@ -136,6 +139,7 @@ private fun PreviewContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+            SharedSummary(routine)
         }
         items(routine.days) { day -> DayPreview(day, preview, state.language) }
         if (preview.file.customExercises.isNotEmpty()) {
@@ -233,4 +237,15 @@ private fun MissingCard(missing: List<String>, drop: Boolean, send: (RoutineImpo
                 }
         }
     }
+}
+
+/** Fixed: "4-day cycle · 3 training days"; flexible: "3 training days · 2 rest days a week". */
+@Composable
+private fun SharedSummary(routine: SharedRoutine) {
+    val policy = routine.rest?.toPolicy() ?: RestPolicy.FIXED
+    val kinds = routine.days.map { DayKind.fromDb(it.kind) }
+    Text(
+        routineSummary(if (policy.isFlexible) kinds.filter { it == DayKind.TRAINING } else kinds, policy),
+        style = MaterialTheme.typography.titleSmall,
+    )
 }

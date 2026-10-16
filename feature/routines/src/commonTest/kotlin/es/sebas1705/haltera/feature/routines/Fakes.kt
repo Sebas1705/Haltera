@@ -17,6 +17,7 @@ import es.sebas1705.haltera.data.models.LocalizedSteps
 import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.models.Muscle
 import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineDay
 import es.sebas1705.haltera.data.models.RoutineOrigin
@@ -121,6 +122,28 @@ class FakeRoutineRepository(
     override suspend fun setNextDayIndex(routineId: String, index: Int) {
         write("setNextDayIndex($index)")
         edit(routineId) { it.copy(nextDayIndex = index) }
+    }
+
+    override suspend fun setRestPolicy(routineId: String, policy: RestPolicy, appendRestDays: Int, restDayName: String) {
+        val target = policy.normalized()
+        write("setRestPolicy(${target.mode}, ${target.restDaysPerWeek}, ${target.restWeekdays}, $appendRestDays)")
+        val wasFlexible = routine(routineId).restPolicy.isFlexible
+        if (target.isFlexible && !wasFlexible) {
+            editDays(routineId) { days ->
+                days.filter { it.kind == DayKind.TRAINING || it.slots.isNotEmpty() }.map {
+                    it.copy(
+                        kind = DayKind.TRAINING
+                    )
+                }
+            }
+        } else if (!target.isFlexible && wasFlexible) {
+            editDays(routineId) { days ->
+                days + List(appendRestDays) {
+                    RoutineDay(id = id("day"), routineId = routineId, position = 0, name = restDayName, kind = DayKind.REST)
+                }
+            }
+        }
+        edit(routineId) { it.copy(restPolicy = target) }
     }
 
     override suspend fun addDay(routineId: String, name: String, kind: DayKind): String {

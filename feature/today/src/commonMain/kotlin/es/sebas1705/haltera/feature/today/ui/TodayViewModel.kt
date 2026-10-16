@@ -7,13 +7,16 @@ import es.sebas1705.haltera.core.units.Weights
 import es.sebas1705.haltera.data.models.DayKind
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.LocalizedText
+import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineSlot
 import es.sebas1705.haltera.data.models.SlotTarget
+import es.sebas1705.haltera.data.models.WorkoutSession
 import es.sebas1705.haltera.data.repository.BodyWeightRepository
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
 import es.sebas1705.haltera.core.ui.components.PastSessionForm
+import es.sebas1705.haltera.domain.usecases.cycle.FlexibleRest
 import es.sebas1705.haltera.domain.usecases.session.LogPastSession
 import es.sebas1705.haltera.domain.usecases.session.ObserveTodayPlan
 import es.sebas1705.haltera.domain.usecases.session.PastSessionTarget
@@ -48,12 +51,17 @@ internal class TodayViewModel(
     /** Slot names by target, resolved once per target. */
     private val names = mutableMapOf<SlotTarget, ResolvedName>()
 
+    /** The active routine and this week's sessions, for the flexible rest status (both flows update it). */
+    private var activeRoutine: Routine? = null
+    private var weekSessions: List<WorkoutSession> = emptyList()
+
     init {
         val week = Week.rangeFor(clock.now(), clock.timeZone)
         updateState { it.copy(week = Week.summarize(week, emptyList())) }
         execute {
             observeTodayPlan().collectLatest { plan ->
-                val ui = plan?.let { toUi(it) }
+                activeRoutine = plan?.routine
+                val ui = plan?.let { withRest(toUi(it)) }
                 updateState { it.copy(planLoaded = true, plan = ui) }
             }
         }
@@ -65,8 +73,9 @@ internal class TodayViewModel(
         }
         execute {
             sessions.observeSessionsBetween(week.startMillis, week.endMillis).collect { list ->
+                weekSessions = list
                 val summary = Week.summarize(week, list)
-                updateState { it.copy(week = summary) }
+                updateState { it.copy(week = summary, plan = it.plan?.let(::withRest)) }
             }
         }
         execute { bodyWeight.observeLatest().collect { entry -> updateState { it.copy(latestWeight = entry) } } }
@@ -199,6 +208,19 @@ internal class TodayViewModel(
             days = routine.days.sortedBy { it.position }.mapIndexed { index, day ->
                 DayOptionUi(index = index, name = day.name, isRest = day.kind == DayKind.REST)
             },
+        )
+    }
+
+    /**
+     * [plan] with the flexible rest status of the active routine this week (null for a fixed routine). Pure:
+     * recomputed from the routine and the week's sessions whenever either changes.
+     */
+    private fun withRest(plan: PlanUi): PlanUi {
+        val routine = activeRoutine?.takeIf { it.id == plan.routineId }
+        val week = routine?.let { FlexibleRest.week(it, weekSessions, clock.now(), clock.timeZone) }
+        return plan.copy(
+            restWeek = week?.let { RestWeekUi(it.used, it.planned, it.restToday) },
+            next = plan.next?.copy(restWeekday = week?.restToday == true),
         )
     }
 

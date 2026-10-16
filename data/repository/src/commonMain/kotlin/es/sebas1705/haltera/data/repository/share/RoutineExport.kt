@@ -10,11 +10,15 @@ import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.models.Muscle
 import es.sebas1705.haltera.data.models.Prescription
 import es.sebas1705.haltera.data.models.ProgressionRule
+import es.sebas1705.haltera.data.models.RestMode
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineSlot
 import es.sebas1705.haltera.data.models.SlotSpec
 import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.data.models.TrackingType
+import kotlinx.serialization.EncodeDefault
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -35,8 +39,42 @@ data class RoutineFile(
     val customExercises: List<SharedExercise> = emptyList(),
 )
 
+@OptIn(ExperimentalSerializationApi::class)
 @Serializable
-data class SharedRoutine(val name: String, val description: String = "", val days: List<SharedDay> = emptyList())
+data class SharedRoutine(
+    val name: String,
+    val description: String = "",
+    val days: List<SharedDay> = emptyList(),
+    /**
+     * Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md). Written only for flexible routines, so a
+     * fixed routine encodes exactly as before; absent (older codes) means fixed. Older apps ignore it.
+     */
+    @EncodeDefault(EncodeDefault.Mode.NEVER)
+    val rest: SharedRest? = null,
+)
+
+/** The rest policy of a flexible routine: [weekdays] are ISO numbers (1 = Monday); empty = not known. */
+@Serializable
+data class SharedRest(
+    val mode: String = RestMode.FLEXIBLE.name,
+    val daysPerWeek: Int = 0,
+    val weekdays: List<Int> = emptyList(),
+) {
+    /** The policy this describes; an unknown [mode] reads as fixed. */
+    fun toPolicy(): RestPolicy = when (RestMode.fromDb(mode)) {
+        RestMode.FIXED -> RestPolicy.FIXED
+        RestMode.FLEXIBLE ->
+            if (weekdays.isNotEmpty()) RestPolicy.onWeekdays(weekdays) else RestPolicy.flexible(daysPerWeek)
+    }
+
+    companion object {
+        /** Null for a fixed routine (nothing is written). */
+        fun of(policy: RestPolicy): SharedRest? {
+            val p = policy.normalized()
+            return if (!p.isFlexible) null else SharedRest(RestMode.FLEXIBLE.name, p.restDaysCount, p.weekdays)
+        }
+    }
+}
 
 @Serializable
 data class SharedDay(
@@ -128,6 +166,7 @@ object RoutineExport {
                     },
                 )
             },
+            rest = SharedRest.of(routine.restPolicy),
         ),
         customExercises = customExercises.map { e ->
             SharedExercise(

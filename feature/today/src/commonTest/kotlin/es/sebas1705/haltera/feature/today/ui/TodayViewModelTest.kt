@@ -14,6 +14,7 @@ import es.sebas1705.haltera.data.models.LoadType
 import es.sebas1705.haltera.data.models.LocalizedSteps
 import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.models.Prescription
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineDay
 import es.sebas1705.haltera.data.models.RoutineSlot
@@ -55,14 +56,18 @@ class TodayViewModelTest {
     @AfterTest
     fun tearDown() = Dispatchers.resetMain()
 
-    private fun viewModel(unit: WeightUnit = WeightUnit.KG) = TodayViewModel(
+    private fun viewModel(
+        unit: WeightUnit = WeightUnit.KG,
+        now: Long = NOW,
+        timeZone: TimeZone = TimeZone.UTC,
+    ) = TodayViewModel(
         observeTodayPlan = ObserveTodayPlan(routines, sessions),
         sessions = sessions,
         routines = routines,
         exercises = FakeExerciseRepository(listOf(BENCH, ROW)),
         bodyWeight = bodyWeight,
         settings = FakeSettingsRepository(unit),
-        clock = TodayClock(now = { NOW }, timeZone = TimeZone.UTC),
+        clock = TodayClock(now = { now }, timeZone = timeZone),
         logPastSession = LogPastSession(sessions),
     )
 
@@ -360,6 +365,159 @@ class TodayViewModelTest {
         assertEquals("0:00", formatElapsed(-5))
         assertEquals("5:07", formatElapsed(307_000))
         assertEquals("1:02:03", formatElapsed(3_723_000))
+    }
+
+    // Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md)
+
+    /** Push · Pull · Legs, flexible. */
+    private fun flexible(policy: RestPolicy) = ROUTINE.copy(
+        days = listOf(ROUTINE.days[0], ROUTINE.days[1], ROUTINE.days[3].copy(position = 2)),
+        restPolicy = policy,
+    )
+
+    private fun logged(id: String, dayIndex: Int, startedAt: Long, routineId: String? = "r1") =
+        WorkoutSession(
+            id,
+            startedAt,
+            endedAt = startedAt + 3_600_000,
+            routineId = routineId,
+            routineDayIndex = dayIndex
+        )
+
+    @Test
+    fun `a fixed routine has no flexible rest status`() {
+        routines.active.value = ROUTINE
+        assertNull(viewModel().uiState.value.plan?.restWeek)
+    }
+
+    @Test
+    fun `a flexible routine with a number shows the next day every day and the rest days used`() {
+        routines.active.value = flexible(RestPolicy.flexible(3))
+        // Monday Push; Tuesday nothing; today is Wednesday.
+        sessions.sessions.value = listOf(logged("mon", 0, at(2026, 10, 12, 18)))
+
+        val plan = assertNotNull(viewModel().uiState.value.plan)
+        val next = assertNotNull(plan.next)
+        assertEquals("Pull", next.dayName)
+        assertEquals(3, next.dayCount)
+        assertFalse(next.showRestHint)
+        assertEquals(RestWeekUi(used = 1, planned = 3, restToday = false), plan.restWeek)
+    }
+
+    @Test
+    fun `days without a session pass and the next day stays the same`() {
+        routines.active.value = flexible(RestPolicy.flexible(2))
+        sessions.sessions.value = listOf(logged("last", 1, at(2026, 10, 1, 18)))
+        // Two weeks without training: still Legs, never a rest day.
+        val plan = assertNotNull(viewModel(now = at(2026, 10, 16, 9)).uiState.value.plan)
+        assertEquals("Legs", plan.next?.dayName)
+        assertFalse(plan.next!!.showRestHint)
+        assertEquals(4, plan.restWeek?.used)
+    }
+
+    @Test
+    fun `logging a past session updates the next day and the rest count`() {
+        routines.active.value = flexible(RestPolicy.flexible(3))
+        sessions.sessions.value = listOf(logged("mon", 0, at(2026, 10, 12, 18)))
+        val vm = viewModel()
+        assertEquals(1, vm.uiState.value.plan?.restWeek?.used)
+
+        // Tuesday's forgotten Pull is logged today.
+        sessions.sessions.value += logged("tue", 1, at(2026, 10, 13, 19))
+
+        val plan = assertNotNull(vm.uiState.value.plan)
+        assertEquals("Legs", plan.next?.dayName)
+        assertEquals(0, plan.restWeek?.used)
+    }
+
+    @Test
+    fun `an older session logged afterwards does not move the next day back`() {
+        routines.active.value = flexible(RestPolicy.flexible(3))
+        sessions.sessions.value = listOf(logged("tue", 2, at(2026, 10, 13, 19)))
+        val vm = viewModel()
+        assertEquals("Push", vm.uiState.value.plan?.next?.dayName)
+        sessions.sessions.value += logged("mon", 0, at(2026, 10, 12, 19))
+        assertEquals("Push", vm.uiState.value.plan?.next?.dayName)
+        assertEquals(0, vm.uiState.value.plan?.restWeek?.used)
+    }
+
+    @Test
+    fun `free sessions do not move the next day and count as rest for the routine`() {
+        routines.active.value = flexible(RestPolicy.flexible(3))
+        sessions.sessions.value = listOf(
+            logged("mon", 0, at(2026, 10, 12, 18)),
+            WorkoutSession("free", at(2026, 10, 13, 18), endedAt = at(2026, 10, 13, 19)),
+        )
+        val plan = assertNotNull(viewModel().uiState.value.plan)
+        assertEquals("Pull", plan.next?.dayName)
+        assertEquals(1, plan.restWeek?.used)
+    }
+
+    @Test
+    fun `on a chosen rest weekday the card says rest but the next workout can still start`() = runTest {
+        // Wednesday is a rest weekday.
+        routines.active.value = flexible(RestPolicy.onWeekdays(listOf(3, 7)))
+        sessions.sessions.value = listOf(logged("tue", 0, at(2026, 10, 13, 18)))
+        val vm = viewModel()
+
+        val plan = assertNotNull(vm.uiState.value.plan)
+        assertTrue(plan.next!!.restWeekday)
+        assertTrue(plan.next!!.showRestHint)
+        assertFalse(plan.next!!.planSaysRest)
+        assertEquals(RestWeekUi(used = 1, planned = 2, restToday = true), plan.restWeek)
+
+        vm.effects.test {
+            vm.onEvent(TodayIntent.StartNextDay)
+            assertEquals(TodayEffect.OpenSession("session-r1-1"), awaitItem())
+        }
+        assertEquals(listOf<Pair<String, Int>?>("r1" to 1), sessions.started)
+    }
+
+    @Test
+    fun `training on a rest weekday clears the hint for that day`() {
+        routines.active.value = flexible(RestPolicy.onWeekdays(listOf(3)))
+        val vm = viewModel()
+        assertTrue(vm.uiState.value.plan!!.next!!.showRestHint)
+        sessions.sessions.value = listOf(logged("wed", 0, at(2026, 10, 14, 8)))
+        val next = vm.uiState.value.plan!!.next!!
+        assertFalse(next.showRestHint)
+        assertEquals("Pull", next.dayName)
+    }
+
+    @Test
+    fun `on the other weekdays there is no rest hint`() {
+        routines.active.value = flexible(RestPolicy.onWeekdays(listOf(3, 7)))
+        // Thursday.
+        val plan = assertNotNull(viewModel(now = at(2026, 10, 15, 10)).uiState.value.plan)
+        assertFalse(plan.next!!.showRestHint)
+        assertEquals(false, plan.restWeek?.restToday)
+    }
+
+    @Test
+    fun `the rest week follows the device time zone`() {
+        routines.active.value = flexible(RestPolicy.onWeekdays(listOf(3)))
+        // Tuesday 23:30 UTC is already Wednesday 08:30 in Tokyo.
+        val now = at(2026, 10, 13, 23) + 30 * 60_000
+        assertFalse(viewModel(now = now).uiState.value.plan!!.next!!.showRestHint)
+        assertTrue(viewModel(now = now, timeZone = TimeZone.of("Asia/Tokyo")).uiState.value.plan!!.next!!.showRestHint)
+    }
+
+    @Test
+    fun `switching the active routine from flexible to fixed drops the status`() {
+        routines.active.value = flexible(RestPolicy.flexible(2))
+        val vm = viewModel()
+        assertNotNull(vm.uiState.value.plan?.restWeek)
+        routines.active.value = ROUTINE
+        assertNull(vm.uiState.value.plan?.restWeek)
+        assertFalse(vm.uiState.value.plan!!.next!!.restWeekday)
+    }
+
+    @Test
+    fun `the day picker of a flexible routine lists training days only`() {
+        routines.active.value = flexible(RestPolicy.flexible(2))
+        val plan = assertNotNull(viewModel().uiState.value.plan)
+        assertEquals(listOf("Push", "Pull", "Legs"), plan.days.map { it.name })
+        assertTrue(plan.days.none { it.isRest })
     }
 
     private companion object {

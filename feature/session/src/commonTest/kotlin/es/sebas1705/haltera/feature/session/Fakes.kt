@@ -10,6 +10,7 @@ import es.sebas1705.haltera.data.models.ExerciseFilter
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
 import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineTemplate
 import es.sebas1705.haltera.data.models.SessionExercise
@@ -244,6 +245,13 @@ class FakeRoutineRepository(private val routines: List<Routine>) : RoutineReposi
     override suspend fun deleteRoutine(id: String) = error("unused")
     override suspend fun setActive(id: String?) = error("unused")
     override suspend fun setNextDayIndex(routineId: String, index: Int) = error("unused")
+    override suspend fun setRestPolicy(
+        routineId: String,
+        policy: RestPolicy,
+        appendRestDays: Int,
+        restDayName: String
+    ) =
+        error("unused")
     override suspend fun addDay(routineId: String, name: String, kind: DayKind): String = error("unused")
     override suspend fun updateDay(dayId: String, name: String, kind: DayKind) = error("unused")
     override suspend fun deleteDay(dayId: String) = error("unused")

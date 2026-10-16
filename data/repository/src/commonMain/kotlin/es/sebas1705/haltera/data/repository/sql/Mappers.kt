@@ -24,6 +24,8 @@ import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineDay
 import es.sebas1705.haltera.data.models.RoutineOrigin
 import es.sebas1705.haltera.data.models.RoutineSlot
+import es.sebas1705.haltera.data.models.RestMode
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.models.SetLog
 import es.sebas1705.haltera.data.models.TrackingType
@@ -103,6 +105,7 @@ internal fun RoutineEntity.toModel(days: List<RoutineDay>) = Routine(
     nextDayIndexSetAt = nextDayIndexSetAt,
     createdAt = createdAt,
     updatedAt = updatedAt,
+    restPolicy = RestPolicy(RestMode.fromDb(restMode), restDaysPerWeek.toInt(), restWeekdays.toInt()).normalized(),
 )
 
 internal fun RoutineDayEntity.toModel(slots: List<RoutineSlot>) = RoutineDay(

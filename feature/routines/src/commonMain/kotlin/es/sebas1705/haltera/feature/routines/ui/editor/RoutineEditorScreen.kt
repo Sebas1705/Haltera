@@ -58,6 +58,7 @@ import es.sebas1705.haltera.feature.routines.resources.routines_active_routine
 import es.sebas1705.haltera.feature.routines.resources.routines_add_rest_day
 import es.sebas1705.haltera.feature.routines.resources.routines_add_training_day
 import es.sebas1705.haltera.feature.routines.resources.routines_cycle_hint
+import es.sebas1705.haltera.feature.routines.resources.routines_cycle_hint_flexible
 import es.sebas1705.haltera.feature.routines.resources.routines_day_default_name
 import es.sebas1705.haltera.feature.routines.resources.routines_delete
 import es.sebas1705.haltera.feature.routines.resources.routines_delete_day_message
@@ -77,9 +78,8 @@ import es.sebas1705.haltera.feature.routines.resources.routines_set_active
 import es.sebas1705.haltera.feature.routines.ui.components.BackButton
 import es.sebas1705.haltera.feature.routines.ui.components.ConfirmDialog
 import es.sebas1705.haltera.feature.routines.ui.components.TextInputDialog
-import es.sebas1705.haltera.feature.routines.ui.components.cycleLabel
+import es.sebas1705.haltera.feature.routines.ui.components.routineSummary
 import es.sebas1705.haltera.feature.routines.ui.components.targetLabel
-import es.sebas1705.haltera.feature.routines.ui.components.trainingDays
 import es.sebas1705.haltera.feature.routines.ui.list.ActiveBadge
 import org.jetbrains.compose.resources.getString
 import org.jetbrains.compose.resources.stringResource
@@ -203,6 +203,7 @@ private fun EditorContent(
                 onOpenSlot = onOpenSlot,
                 onAddSlot = { onAddSlot(day.id) },
                 highlighted = day.id == flashDayId,
+                showKind = !state.restPolicy.isFlexible,
             )
         }
         item(key = "add-day") {
@@ -214,12 +215,14 @@ private fun EditorContent(
                     Icon(Icons.Filled.Add, contentDescription = null)
                     Text(stringResource(Res.string.routines_add_training_day), Modifier.padding(start = 4.dp))
                 }
-                OutlinedButton(
-                    onClick = { send(RoutineEditorIntent.AddDay(restName, DayKind.REST)) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(Icons.Filled.Add, contentDescription = null)
-                    Text(stringResource(Res.string.routines_add_rest_day), Modifier.padding(start = 4.dp))
+                if (!state.restPolicy.isFlexible) {
+                    OutlinedButton(
+                        onClick = { send(RoutineEditorIntent.AddDay(restName, DayKind.REST)) },
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        Icon(Icons.Filled.Add, contentDescription = null)
+                        Text(stringResource(Res.string.routines_add_rest_day), Modifier.padding(start = 4.dp))
+                    }
                 }
             }
         }
@@ -257,18 +260,21 @@ private fun Header(state: RoutineEditorState, send: (RoutineEditorIntent) -> Uni
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(
-                cycleLabel(state.days.size, trainingDays(state.days.map { it.kind })),
+                routineSummary(state.days.map { it.kind }, state.restPolicy),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.weight(1f, fill = false),
             )
             if (state.routine?.isActive == true) ActiveBadge()
         }
         Text(
-            stringResource(Res.string.routines_cycle_hint) + " " + stringResource(Res.string.routines_saved_automatically),
+            stringResource(
+                if (state.restPolicy.isFlexible) Res.string.routines_cycle_hint_flexible else Res.string.routines_cycle_hint,
+            ) + " " + stringResource(Res.string.routines_saved_automatically),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         if (state.score?.focus?.let { it != RoutineFocus.EMPTY } == true) AnalysisRow(state.score, onOpenAnalysis)
+        RestPolicySection(state, send)
     }
 }
 

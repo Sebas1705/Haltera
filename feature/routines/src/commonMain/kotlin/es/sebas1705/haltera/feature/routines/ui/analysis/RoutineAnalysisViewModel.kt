@@ -31,6 +31,8 @@ internal data class RoutineAnalysisState(
     val language: String = "en",
     val name: String = "",
     val score: RoutineScore? = null,
+    /** The routine has flexible rest days: its weekly sessions are known, not assumed. */
+    val flexibleRest: Boolean = false,
     /** Exercises of the routine and of the advice, to name them. */
     val index: ExerciseIndex = ExerciseIndex(),
     val error: Boolean = false,
@@ -80,7 +82,16 @@ internal class RoutineAnalysisViewModel(
             val score = scoreRoutine(routine, index, history.filter { it.startedAt >= now - SESSION_WINDOW_MS }, now)
             score to exercises.indexForExercises(suggestedExerciseIds(score), index)
         }.onSuccess { (score, index) ->
-            updateState { it.copy(loading = false, missing = false, name = routine.name, score = score, index = index) }
+            updateState {
+                it.copy(
+                    loading = false,
+                    missing = false,
+                    name = routine.name,
+                    score = score,
+                    index = index,
+                    flexibleRest = routine.restPolicy.isFlexible,
+                )
+            }
         }.onFailure {
             updateState { it.copy(loading = false, error = true) }
         }

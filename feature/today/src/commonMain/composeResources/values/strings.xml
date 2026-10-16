@@ -113,4 +113,7 @@
     <string name="today_nutrition_protein">Protein</string>
     <string name="today_nutrition_carbs">Carbs</string>
     <string name="today_nutrition_fat">Fat</string>
+    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md) -->
+    <string name="today_rest_week">Rest days this week: %1$d of %2$d</string>
+    <string name="today_rest_week_info">Information only: a flexible routine never skips a workout. The next day is always the one after your last session.</string>
 </resources>

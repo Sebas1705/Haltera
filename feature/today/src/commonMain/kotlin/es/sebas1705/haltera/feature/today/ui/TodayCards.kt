@@ -54,6 +54,8 @@ import es.sebas1705.haltera.feature.today.resources.today_no_routine_message
 import es.sebas1705.haltera.feature.today.resources.today_no_routine_title
 import es.sebas1705.haltera.feature.today.resources.today_no_training_days
 import es.sebas1705.haltera.feature.today.resources.today_rest_hint
+import es.sebas1705.haltera.feature.today.resources.today_rest_week
+import es.sebas1705.haltera.feature.today.resources.today_rest_week_info
 import es.sebas1705.haltera.feature.today.resources.today_resume_action
 import es.sebas1705.haltera.feature.today.resources.today_resume_elapsed
 import es.sebas1705.haltera.feature.today.resources.today_resume_title
@@ -133,7 +135,8 @@ internal fun PlanCard(
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.SemiBold,
                 )
-                if (next.planSaysRest) RestHint()
+                if (next.showRestHint) RestHint()
+                plan.restWeek?.let { RestWeekLine(it) }
                 // The primary action comes before the exercise list so it stays above the fold on
                 // small phones with long days.
                 Button(
@@ -169,6 +172,22 @@ internal fun PlanCard(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun RestWeekLine(week: RestWeekUi) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            stringResource(Res.string.today_rest_week, week.used, week.planned),
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Medium,
+        )
+        Text(
+            stringResource(Res.string.today_rest_week_info),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 

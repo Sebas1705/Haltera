@@ -9,6 +9,7 @@ import es.sebas1705.haltera.data.models.ExerciseFilter
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
 import es.sebas1705.haltera.data.models.ExerciseVariant
 import es.sebas1705.haltera.data.models.NewExercise
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineTemplate
 import es.sebas1705.haltera.data.models.SetInput
@@ -90,6 +91,22 @@ interface RoutineRepository {
      * with now. It applies until a session of the routine starts after it (spec §3.4, `Cycle`).
      */
     suspend fun setNextDayIndex(routineId: String, index: Int)
+
+    /**
+     * Sets how the routine rests ([policy] normalised; docs/designs/2026-10-16-flexible-rest-days.md). Changing
+     * the mode converts the days in one transaction and never removes a training day:
+     * - to FLEXIBLE, REST days without slots are removed and REST days with slots become training days;
+     * - to FIXED, [appendRestDays] REST days named [restDayName] are added at the end of the cycle.
+     *
+     * The day indexes of the routine's sessions and the manual override are remapped to the same days, so the
+     * history and the next day stay put. Within the same mode only the policy changes.
+     */
+    suspend fun setRestPolicy(
+        routineId: String,
+        policy: RestPolicy,
+        appendRestDays: Int = 0,
+        restDayName: String = "Rest",
+    )
 
     /** Appends a day and returns its id. */
     suspend fun addDay(routineId: String, name: String, kind: DayKind = DayKind.TRAINING): String

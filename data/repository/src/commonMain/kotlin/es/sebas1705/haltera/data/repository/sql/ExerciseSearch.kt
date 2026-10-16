@@ -84,6 +84,10 @@ internal object ExerciseSearchDocuments {
     const val NAME = 1.0
     const val OTHER_NAME = 0.9
     const val VARIANT_NAME = 0.8
+
+    /** Name + equipment of a variant (name bonuses only, FieldKind.VARIANT). */
+    const val VARIANT_COMBO = 0.95
+    const val OTHER_VARIANT_COMBO = 0.85
     const val PRIMARY_MUSCLE = 0.7
     const val EQUIPMENT = 0.65
     const val SECONDARY_MUSCLE = 0.5
@@ -98,6 +102,13 @@ internal object ExerciseSearchDocuments {
                 v.name?.let { name ->
                     add(SearchField(name.of(language), VARIANT_NAME, FieldKind.ALIAS))
                     add(SearchField(name.of(other), VARIANT_NAME, FieldKind.ALIAS))
+                }
+            }
+            // "Aperturas mancuerna" is the dumbbell variant of "Aperturas": name + equipment counts as a name.
+            e.variants.map { it.equipment }.distinct().forEach { equipment ->
+                EQUIPMENT_LABELS[equipment]?.let { label ->
+                    add(SearchField(e.name.of(language) + " " + label.of(language), VARIANT_COMBO, FieldKind.VARIANT))
+                    add(SearchField(e.name.of(other) + " " + label.of(other), OTHER_VARIANT_COMBO, FieldKind.VARIANT))
                 }
             }
             e.primaryMuscles.forEach { add(SearchField(MUSCLE_TERMS.getValue(it), PRIMARY_MUSCLE)) }
@@ -152,6 +163,23 @@ internal object ExerciseSearchDocuments {
         Equipment.CARDIO_MACHINE to "cardio machine maquina cardio",
         Equipment.OTHER to "",
         Equipment.NONE to "",
+    )
+
+    /** The equipment label of a variant as the app shows it, for name + equipment combinations. */
+    val EQUIPMENT_LABELS: Map<Equipment, LocalizedText> = mapOf(
+        Equipment.BARBELL to LocalizedText(en = "barbell", es = "barra"),
+        Equipment.EZ_BAR to LocalizedText(en = "EZ bar", es = "barra Z"),
+        Equipment.TRAP_BAR to LocalizedText(en = "trap bar", es = "barra hexagonal"),
+        Equipment.DUMBBELL to LocalizedText(en = "dumbbell", es = "mancuerna"),
+        Equipment.KETTLEBELL to LocalizedText(en = "kettlebell", es = "kettlebell"),
+        Equipment.SMITH to LocalizedText(en = "smith machine", es = "multipower"),
+        Equipment.MACHINE to LocalizedText(en = "machine", es = "máquina"),
+        Equipment.CABLE to LocalizedText(en = "cable", es = "polea"),
+        Equipment.BAND to LocalizedText(en = "band", es = "goma"),
+        Equipment.BODYWEIGHT to LocalizedText(en = "bodyweight", es = "peso corporal"),
+        Equipment.MEDICINE_BALL to LocalizedText(en = "medicine ball", es = "balón medicinal"),
+        Equipment.SWISS_BALL to LocalizedText(en = "swiss ball", es = "fitball"),
+        Equipment.FOAM_ROLLER to LocalizedText(en = "foam roller", es = "rodillo"),
     )
 
     /** Category words in English and Spanish. */

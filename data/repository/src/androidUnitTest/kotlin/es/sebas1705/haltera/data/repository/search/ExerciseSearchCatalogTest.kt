@@ -49,7 +49,17 @@ class ExerciseSearchCatalogTest {
         top("es", "banca press", "bench-press"),
         top("es", "sentadila", "squat"),
         top("es", "dominadass", "pull-up"),
-        inTop("es", "aperturas mancuerna", "chest-fly", 5),
+        inTop("es", "aperturas mancuerna", "chest-fly", 2),
+        // Name + equipment of one exercise ranks it like a name.
+        inTop("en", "chest fly dumbbell", "chest-fly", 2),
+        top("es", "press banca mancuerna", "bench-press"),
+        top("es", "press inclinado mancuernas", "incline-bench-press"),
+        top("es", "sentadilla barra", "squat"),
+        top("en", "hammer curl cable", "hammer-curl"),
+        // Opposites are never typos of each other.
+        top("en", "decline bench", "decline-bench-press"),
+        top("es", "press declinado", "decline-bench-press"),
+        top("es", "press inclinado", "incline-bench-press"),
         top("es", "curl biceps", "biceps-curl"),
         top("en", "lat pull down", "lat-pulldown"),
         top("en", "deadlfit", "deadlift"),
@@ -195,6 +205,33 @@ class ExerciseSearchCatalogTest {
                 "${failures.size} of ${cases.size} cases failed:\n" + failures.joinToString("\n")
             )
         }
+    }
+
+    @Test
+    fun `opposite words are never matched as typos`() = runTest {
+        val repository = repository()
+        suspend fun ids(lang: String, q: String) = repository.search(
+            ExerciseFilter(query = q),
+            lang
+        ).first().map { it.id }
+        val incline = ids("es", "press banca inclinado mancuerna")
+        assertEquals("incline-bench-press", incline.first())
+        assertTrue(incline.take(5).none { it.startsWith("decline") }, "no decline in the top 5: ${incline.take(5)}")
+        val decline = ids("en", "decline bench")
+        assertEquals("decline-bench-press", decline.first())
+        assertTrue(decline.take(3).none { it.startsWith("incline") }, "no incline in the top 3: ${decline.take(3)}")
+        assertTrue(ids("es", "declinado").none { it.startsWith("incline-") }, "declinado never lists Press inclinado")
+        assertTrue(ids("en", "inclined").none { it.startsWith("decline-") }, "inclined never lists decline exercises")
+        val pushdown = ids("en", "tricep pushdown")
+        assertTrue(pushdown.none { it.contains("pulldown") }, "pushdown never lists pulldowns: $pushdown")
+        assertTrue(ids("en", "lat pulldown").none { it.contains("pushdown") }, "pulldown never lists pushdowns")
+        val abductors = ids("es", "abductores")
+        assertTrue(
+            abductors.none {
+                it.contains("adduct")
+            },
+            "abductores never lists adductor exercises: ${abductors.filter { it.contains("adduct") }}"
+        )
     }
 
     @Test

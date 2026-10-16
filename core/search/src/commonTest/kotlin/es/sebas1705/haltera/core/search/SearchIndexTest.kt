@@ -152,4 +152,34 @@ class SearchIndexTest {
         )
         assertTrue(keywordOnly.keys("peso muerto").isEmpty())
     }
+
+    @Test
+    fun `a query split across a name and a variant ranks it like a name, without adding term weight`() {
+        val variants = SearchIndex.build(
+            listOf(
+                SearchDocument(
+                    "fly",
+                    listOf(
+                        SearchField("Aperturas", 1.0, FieldKind.NAME),
+                        SearchField("dumbbell mancuerna", 0.65),
+                        SearchField("Aperturas mancuerna", 0.95, FieldKind.VARIANT),
+                    ),
+                ),
+                SearchDocument(
+                    "incline",
+                    listOf(SearchField("Apertura con mancuernas en banco inclinado", 1.0, FieldKind.NAME))
+                ),
+                SearchDocument(
+                    "variantOnly",
+                    listOf(
+                        SearchField("Plank", 1.0, FieldKind.NAME),
+                        SearchField("Remo mancuerna", 0.95, FieldKind.VARIANT)
+                    )
+                ),
+            ),
+        )
+        assertEquals("fly", variants.keys("aperturas mancuerna").first())
+        // A variant name alone never makes a document match.
+        assertTrue(variants.keys("remo").isEmpty())
+    }
 }

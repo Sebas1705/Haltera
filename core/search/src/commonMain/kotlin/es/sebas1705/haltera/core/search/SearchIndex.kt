@@ -12,6 +12,13 @@ enum class FieldKind {
 
     /** Plain keywords (muscle, equipment, category words): matched as they are. */
     KEYWORD,
+
+    /**
+     * A name of one variant of the document, e.g. exercise name + equipment ("Aperturas mancuerna"): counts only
+     * for the exact-name, name-prefix and coverage bonuses, so a query split across the name and the equipment
+     * of the same exercise ranks it like a name match. Its words add no term weight.
+     */
+    VARIANT,
 }
 
 /** One searchable text of a document with its relative [weight] (1.0 = the name in the app language). */
@@ -223,6 +230,10 @@ class SearchIndex<K> private constructor(
 
             fun add(field: SearchField) {
                 val terms = TextNormalizer.terms(field.text)
+                if (field.kind == FieldKind.VARIANT) {
+                    if (terms.isNotEmpty()) names += name(field, terms)
+                    return
+                }
                 terms.forEach { add(it, field.weight) }
                 // The unstemmed words too, so a typo is measured against the real word ("aple" → "apple").
                 TextNormalizer.words(field.text).forEach { add(it, field.weight) }
@@ -321,7 +332,10 @@ object SearchWeights {
         if (typos == 0) return 0.0
         val distance = EditDistance.distance(term, word, typos)
         val fuzzy = if (distance <= typos) FUZZY * (1.0 - distance.toDouble() / max(term.length, word.length)) else 0.0
-        return if (prefix && typoInPrefix(term, word)) max(fuzzy, FUZZY_PREFIX) else fuzzy
+        val quality = if (prefix && typoInPrefix(term, word)) max(fuzzy, FUZZY_PREFIX) else fuzzy
+        // Opposites one or two letters apart ("inclinado" / "declinado") are never typos of each other. Checked
+        // only for the rare typo candidates, so the cost stays off the hot path.
+        return if (quality > 0.0 && Antonyms.opposite(term, word)) 0.0 else quality
     }
 
     /** [term] is within one edit of the start of the longer [word], with the same first letter. */

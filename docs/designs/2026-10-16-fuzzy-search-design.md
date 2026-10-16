@@ -58,6 +58,7 @@ Per query term a document keeps its best `quality × field weight`. Fields and w
 | Name in the app language | 1.0 | 1.0 |
 | Name in the other language | 0.9 | 0.9 |
 | Variant names (both languages) | 0.8 | — |
+| Name + equipment of each variant ("Aperturas mancuerna"), name bonuses only | 0.95 (other language 0.85) | — |
 | Terms added by the synonym table | 0.9 × the field they came from | — |
 | Joined word pairs | 0.95 × the field | 0.95 × the field |
 | Primary muscles (English + Spanish words) | 0.7 | — |
@@ -110,11 +111,36 @@ Keep groups tight: a loose group ("press" = "prensa") makes every search noisier
 words do not need entries: they are indexed in both languages from the exercise data (`ExerciseSearchDocuments`).
 Foods use no synonym table (their names are already bilingual).
 
+### Name + equipment
+
+The catalogue models equipment as variants ("Aperturas" with dumbbell and cable variants), so a query like
+"aperturas mancuerna" is split across the name and a variant. Each exercise therefore also has one
+`FieldKind.VARIANT` name per equipment ("Aperturas mancuerna", "Chest Fly dumbbell"). Variant names count only
+for the exact-name, name-prefix and coverage bonuses: they never make a document match on their own and add no
+term weight, so other rankings move little (every earlier table expectation still holds). "aperturas mancuerna" now ranks
+the plain chest fly first.
+
+### Antonyms (`core:search/Antonyms.kt`)
+
+Some opposite gym words are one or two letters apart and would otherwise be typos of each other. The typo step
+never links them (exact and prefix matches are unaffected), also inside joined words and word starts:
+
+| One side | Other side |
+|---|---|
+| inclinado/a, incline(d) | declinado/a, decline(d) |
+| supino/a, supinated, supine | prono/a, pronated, prone |
+| abductor(es), abduction, abducción | aductor(es), adductor, adduction, aducción |
+| interno/a, internal | externo/a, external |
+| pulldown | pushdown |
+| pullup | pushup |
+
+Add a pair when two opposite words are within the typo allowance (§3) of each other.
+
 ## 6. Tests
 
 - `core:search` (common): normaliser, stemming pairs, edit distance, synonym table (the owner's pairs in both
   directions), scoring tiers, field weights, threshold, required terms, stability, filters and boosts.
-- `data:repository` (JVM, real bundled data): 114 table-driven exercise queries (reordered words, typos,
+- `data:repository` (JVM, real bundled data): 122 table-driven exercise queries (reordered words, typos,
   plurals, accents, prefixes, other-language names, synonyms, no-result cases), keystroke-by-keystroke typing,
   filters combined with text, custom exercises and index invalidation, usage boost, stability under shuffled
   input, benchmarks; ~30 food queries and favourites.

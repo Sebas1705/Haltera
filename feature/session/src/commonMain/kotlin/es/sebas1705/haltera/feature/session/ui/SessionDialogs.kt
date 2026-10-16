@@ -7,12 +7,14 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -108,7 +110,10 @@ internal fun AddExerciseDialog(
             if (picker.results.isEmpty()) {
                 Text(stringResource(Res.string.session_no_results))
             } else {
-                LazyColumn(Modifier.heightIn(max = 420.dp)) {
+                val listState = rememberLazyListState()
+                // Ranked results: show the best match when it changes (keyed items would keep the old scroll anchor).
+                LaunchedEffect(picker.results.first().id) { listState.scrollToItem(0) }
+                LazyColumn(Modifier.heightIn(max = 420.dp), state = listState) {
                     items(picker.results, key = { it.id }) { exercise ->
                         ExerciseResult(exercise, expanded == exercise.id, onPick) {
                             expanded = if (expanded == exercise.id) null else exercise.id

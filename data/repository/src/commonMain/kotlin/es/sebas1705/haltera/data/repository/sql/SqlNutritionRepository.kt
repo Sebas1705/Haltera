@@ -2,7 +2,7 @@ package es.sebas1705.haltera.data.repository.sql
 
 import es.sebas1705.haltera.core.datastore.NutritionSettings
 import es.sebas1705.haltera.core.datastore.SettingsRepository
-import es.sebas1705.haltera.data.local.SearchText
+import es.sebas1705.haltera.core.search.TextNormalizer
 import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.local.db.FoodEntity
 import es.sebas1705.haltera.data.local.db.MealEntryEntity
@@ -128,24 +128,17 @@ internal class SqlNutritionRepository(
 
     // Foods
 
+    /** Fuzzy index of the searchable foods per app language, rebuilt when a food changes. */
+    private val searchIndex = SearchIndexCache<String, FoodSearch>(
+        watched = listOf(db.foodEntityQueries.selectSearchable())
+    ) {
+        FoodSearch(db.foodEntityQueries.selectSearchable().executeAsList().map { row -> row.toModel() }, it)
+    }
+
+    // Ranked in memory (FoodSearch): order-independent, typo tolerant, favourites first among equals.
     override suspend fun search(query: String, language: String, limit: Int): List<Food> = withContext(dispatcher) {
-        val words = SearchText.query(query).split(' ').filter { it.isNotBlank() }
-        if (words.isEmpty()) return@withContext emptyList()
-        val key = words.maxBy { it.length }
-        val es = language.lowercase().startsWith("es")
-        foods.search(word = key, limit = CANDIDATES).executeAsList()
-            .filter { row -> words.all { row.nameSearch.contains(it) } }
-            .map { it.toModel() }
-            .sortedWith(
-                compareBy<Food>(
-                    // Favourites first, then names in the user's language that start with the query, then own foods.
-                    { if (it.favourite) 0 else 1 },
-                    { if (SearchText.normalize(it.name(if (es) "es" else "en")).startsWith(words.first())) 0 else 1 },
-                    { if (it.source == FoodSource.GENERIC) 1 else 0 },
-                    { it.name(if (es) "es" else "en").length },
-                ),
-            )
-            .take(limit)
+        if (TextNormalizer.fold(query).isBlank()) return@withContext emptyList()
+        searchIndex.get(if (language.lowercase().startsWith("es")) "es" else "en").search(query, limit)
     }
 
     override fun observeRecents(limit: Int): Flow<List<Food>> =
@@ -373,7 +366,6 @@ internal class SqlNutritionRepository(
         const val USER_PREFIX = "food-"
         const val RECIPE_PREFIX = "recipe-"
         const val OFF_PREFIX = "off-"
-        const val CANDIDATES = 300L
     }
 }
 

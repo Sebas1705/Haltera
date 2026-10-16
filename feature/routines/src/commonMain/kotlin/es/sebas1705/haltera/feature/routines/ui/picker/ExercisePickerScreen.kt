@@ -1,6 +1,5 @@
 package es.sebas1705.haltera.feature.routines.ui.picker
 
-import es.sebas1705.haltera.core.ui.adaptive.centeredContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
@@ -40,6 +41,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
 import es.sebas1705.haltera.core.ui.components.ExerciseFilterBar
 import es.sebas1705.haltera.core.ui.components.FilterChipSpec
 import es.sebas1705.haltera.core.ui.components.LoadingScreen
@@ -125,7 +127,10 @@ internal fun ExercisePickerScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(24.dp),
                 )
-                else -> LazyColumn(Modifier.fillMaxSize().centeredContent()) {
+                else -> LazyColumn(
+                    Modifier.fillMaxSize().centeredContent(),
+                    state = rememberTopOnNewBest(state.results.first().id)
+                ) {
                     items(state.results, key = { it.id }) { exercise ->
                         ExerciseRow(
                             exercise = exercise,
@@ -255,4 +260,12 @@ private fun PickerFilters(state: ExercisePickerState, send: (ExercisePickerInten
         clearLabel = stringResource(Res.string.routines_filter_clear),
         onClear = { send(ExercisePickerIntent.ClearFilters) },
     )
+}
+
+/** List state that returns to the top when the best (first) result changes: results are ranked and keyed. */
+@Composable
+private fun rememberTopOnNewBest(firstId: String): LazyListState {
+    val listState = rememberLazyListState()
+    LaunchedEffect(firstId) { listState.scrollToItem(0) }
+    return listState
 }

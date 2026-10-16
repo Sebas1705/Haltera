@@ -169,6 +169,9 @@ private fun FilterRow(state: ExercisesState, onIntent: (ExercisesIntent) -> Unit
 @Composable
 private fun ExerciseList(items: List<ExerciseRow>, onOpenExercise: (String) -> Unit) {
     val listState = rememberLazyListState()
+    // Ranked results: when the best match changes, show the list from the top (items are keyed, so the list
+    // would otherwise stay on the previously first row wherever it moved).
+    LaunchedEffect(items.firstOrNull()?.id) { listState.scrollToItem(0) }
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize().centeredContent(),

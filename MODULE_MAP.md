@@ -7,6 +7,7 @@
 | `core:ui` | `HealthDisclaimer(kind)` (the shared "not medical advice" wording: general, statistics, analysis, nutrition), `AppTheme` (brand colours from `brand/tokens.json`, Barlow Semi Condensed + Inter, light + dark; docs/BRAND.md), `HalteraTheme.colors` (accent, PR gold, semantic), `tabularFigures()`, `HalteraLogo`, `PrBadge`, `readFontLicences`, `LoadingScreen`, `ErrorScreen`, `PlaceholderScreen`, `PastSessionDialog` (date, start, duration, what was trained; labels passed in) |
 | `core:units` | `WeightUnit`, `Weights` (kg/lb ↔ grams, `format`), `roundToIncrement`, `PlateCalculator` (plates per side for a total) |
 | `core:datastore` | `SettingsRepository` / `UserSettings` (unit, bar weight, available plates, keep screen on, rest sound/vibration, `NutritionSettings` goals) on multiplatform-settings; `LoadStepStore` (per-variant load step, device-local, never synced); `datastoreModule` |
+| `core:search` | Pure fuzzy search engine (docs/designs/2026-10-16-fuzzy-search-design.md): `TextNormalizer` (accents, punctuation, stopwords, es+en plural stemming), `EditDistance` (bounded Damerau–Levenshtein), `SynonymTable` and the curated `GymSynonyms` (Spanish ↔ English gym terms), `Antonyms` (opposites never matched as typos, e.g. inclinado/declinado), `SearchIndex` (build once, rank on every keystroke; weights in `SearchWeights`). No dependencies; used by `data:repository` |
 | `core:logging` | Kermit logger |
 | `core:testing` | Coroutine test rule |
 | `data:models` | Domain types of spec §3 (`Exercise`, `ExerciseVariant`, `Routine`, `RoutineDay`, `RoutineSlot`, `RestPolicy` (fixed or flexible rest days), `SlotTarget`, `Prescription`, `ProgressionRule`, `LoadIncrement`, `WorkoutSession`, `SessionExercise`, `SetLog`, `BodyWeightEntry`, `RoutineTemplate`…), lenient enum parsing, `ModelJson` (slot JSON columns) |
@@ -14,7 +15,7 @@
 | `data:sync` | Account and sync (docs/designs/2026-10-14-sync-design.md): the §4 contract (`SyncContract.kt`: `RemoteStore`, `AccountService`, `SyncEngine`…), `SyncEngineImpl`, aggregate payloads (`AggregateStore`: also `foods` and `mealDays`), `SettingsSyncBridge` (settings and nutrition goals); `syncModule`. Change tracking lives in `data:local` (`SyncTracking.sq` triggers) |
 | `data:routines` | `FamousRoutines.all`: the bundled famous-routine templates (spec §6.3), checked against `catalog.json` by a test |
 | `data:remote` | Firebase (GitLive): `FirestoreRemoteStore` (`users/{uid}/{collection}/{id}` with `payload`, `updatedAt`, `deleted`, `schema`), `FirebaseAccountService` (anonymous, link/sign in with Google, sign out, delete), `NotConfigured*` no-ops without Firebase config, `FirebaseConfig` / `isFirebaseConfigured`, `remoteModule` |
-| `data:repository` | Repository interfaces (`CatalogRepository`, `ExerciseRepository`, `RoutineRepository`, `SessionRepository`, `BodyWeightRepository`, `NutritionRepository`) with internal SQL implementations bound in `repositoryModule`; `OpenFoodFactsClient` (Ktor, barcode lookups); `export/` = `DataExporter` (zip of CSV and JSON, docs/EXPORT-FORMAT.md); `importer/` = `HistoryFileParser` (Hevy, Strong, FitNotes, Haltera export; pure), `ExerciseMatcher`, `HistoryImporter` (preview and one-transaction write with deterministic session ids, docs/IMPORT-FORMATS.md) |
+| `data:repository` | Repository interfaces (`CatalogRepository`, `ExerciseRepository`, `RoutineRepository`, `SessionRepository`, `BodyWeightRepository`, `NutritionRepository`) with internal SQL implementations bound in `repositoryModule`; fuzzy search over `core:search` (`sql/ExerciseSearch`: exercise fields, weights and usage boost; `sql/FoodSearch`; `sql/SearchIndexCache`: index rebuilt only after a table write); `OpenFoodFactsClient` (Ktor, barcode lookups); `export/` = `DataExporter` (zip of CSV and JSON, docs/EXPORT-FORMAT.md); `importer/` = `HistoryFileParser` (Hevy, Strong, FitNotes, Haltera export; pure), `ExerciseMatcher`, `HistoryImporter` (preview and one-transaction write with deterministic session ids, docs/IMPORT-FORMATS.md) |
 | `domain:usecases` | Pure engines `ProgressionEngine`, `Cycle` (+ `FlexibleRest`: weekly rest status of flexible routines, docs/designs/2026-10-16-flexible-rest-days.md), `Stats` (+ `Metric` catalogue and progress analytics), `RoutineScorer` (package `routinescore`: evidence-based routine score and advice, docs/designs/2026-10-15-routine-scoring.md); `ExerciseNaming` (title = exercise, subtitle = variant label); `nutrition/GoalCalculator` (Mifflin–St Jeor) and `nutrition/NutritionStats`; use cases `SuggestNextLoad`, `ObserveTodayPlan`, `LogPastSession` (`useCaseModule`); `LastPerformance` (the last training day of a variant and its best set, for the session's first-set default), `LastTimeComparisons` (best set today against that day: better, same, lower, first time) |
 | `feature:today` | Today tab (spec §7) |
 | `feature:routines` | Routines tab: my routines, editor (incl. duplicate day), famous routines, routine analysis (score badges, criteria, weekly sets chart) |
@@ -72,7 +73,7 @@ What each feature fills in (spec §5, §7):
   `observeSessionsBetween`.
 - **routines**: list (`observeRoutines`, active badge, `setActive`), editor (days/slots CRUD, reorder,
   prescription, progression), famous routines (`templates()`, `copyTemplate(id, language)`).
-- **exercises**: `ExerciseRepository.search(filter, language)` with filter chips (muscle, equipment,
+- **exercises**: `ExerciseRepository.search(filter, language)` (fuzzy and ranked for a text query, see "Search" below) with filter chips (muscle, equipment,
   category), detail (`observeExercise`, variants, `observeVariantHistory`, `Stats.personalRecords`), custom
   exercise editor (`createCustom`).
 - **session**: live session on `observeSession(id)`: set rows (`logSet`, `updateSet`, `deleteSet`), prefill
@@ -85,3 +86,14 @@ What each feature fills in (spec §5, §7):
   explanation of the exact alarm permission (never shown again after "Not now" or opening settings).
 - **progress**: month calendar (`observeSessionsBetween`, "Add session on this day"), saved-session detail (edit sets in log mode, `updateTimes`, `deleteSession`), per-exercise history and charts
   (`observeExerciseHistory`, `Stats.bestOneRm`, `Stats.volume`), PR list, weekly volume per muscle.
+
+## Search
+
+Every exercise search (Exercises tab, routine editor exercise picker, session "add exercise" picker) calls
+`ExerciseRepository.search(filter, language, limit)`; food search calls `NutritionRepository.search(query, language)`.
+Do not filter or sort results again in a feature: a blank query returns the filtered catalogue (most logged first),
+a text query returns a ranked fuzzy search (any word order, accents, plurals, typos, Spanish/English synonyms,
+filters applied, best first). The engine is `core:search`; the scoring, field weights and synonym table are
+documented in [docs/designs/2026-10-16-fuzzy-search-design.md](docs/designs/2026-10-16-fuzzy-search-design.md).
+To teach it a new gym term, add a group to `core:search/.../GymSynonyms.kt` and a case to
+`ExerciseSearchCatalogTest` (`data:repository`).

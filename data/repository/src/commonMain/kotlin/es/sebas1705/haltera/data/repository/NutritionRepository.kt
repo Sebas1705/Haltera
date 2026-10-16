@@ -46,7 +46,11 @@ interface NutritionRepository {
 
     // Foods
 
-    /** Accent-insensitive search over both names and the brand; every word of [query] must match. */
+    /**
+     * Fuzzy search over both names and the brand (docs/designs/2026-10-16-fuzzy-search-design.md): accent and
+     * case insensitive, any word order, typos and plurals tolerated, best match first, favourites boosted.
+     * A blank query returns nothing. Barcode lookups are [lookupBarcode].
+     */
     suspend fun search(query: String, language: String, limit: Int = SEARCH_LIMIT): List<Food>
 
     /** Foods by the time they were last logged, newest first. */

@@ -7,6 +7,8 @@ kotlin {
             implementation(project(":data:local"))
             implementation(project(":data:routines"))
             implementation(project(":core:datastore"))
+            // In-memory fuzzy ranking of exercise and food searches.
+            implementation(project(":core:search"))
             // Open Food Facts barcode lookups (nutrition).
             implementation(libs.ktor.client.core)
             implementation(libs.sqldelight.coroutines)

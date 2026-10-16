@@ -31,7 +31,10 @@
         <item quantity="one">%1$d sesión</item>
         <item quantity="other">%1$d sesiones</item>
     </plurals>
-    <string name="today_week_volume">%1$s %2$s de volumen</string>
+    <plurals name="today_week_sets">
+        <item quantity="one">%1$d serie</item>
+        <item quantity="other">%1$d series</item>
+    </plurals>
     <string name="today_weekday_1">L</string>
     <string name="today_weekday_2">M</string>
     <string name="today_weekday_3">X</string>

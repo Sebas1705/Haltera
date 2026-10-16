@@ -25,6 +25,8 @@
     <string name="session_move_up">Subir</string>
     <string name="session_move_down">Bajar</string>
     <string name="session_remove_exercise">Quitar ejercicio</string>
+    <string name="session_exercise_statistics">Estadísticas</string>
+    <string name="session_exercise_description">Descripción</string>
     <string name="session_set_complete">Serie %1$d hecha</string>
     <string name="session_warmup_complete">Calentamiento %1$d hecho</string>
     <string name="session_set_start_timer">Iniciar serie cronometrada</string>
@@ -96,8 +98,14 @@
 
     <string name="session_summary_title">Entrenamiento completado</string>
     <string name="session_summary_duration">Duración</string>
-    <string name="session_summary_volume">Volumen</string>
     <string name="session_summary_sets">Series</string>
+    <string name="session_summary_improved">Mejorados</string>
+    <string name="session_summary_improved_value">%1$d de %2$d</string>
+    <string name="session_summary_compare_title">Respecto a la última vez</string>
+    <string name="session_trend_better">Mejor</string>
+    <string name="session_trend_same">Igual</string>
+    <string name="session_trend_lower">Por debajo</string>
+    <string name="session_trend_first">Primera vez</string>
     <string name="session_summary_records">Récords nuevos</string>
     <string name="session_summary_no_records">Esta vez no hay récords nuevos.</string>
     <string name="session_summary_increases">Sube la carga la próxima vez</string>

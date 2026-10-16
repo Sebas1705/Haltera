@@ -29,6 +29,7 @@ import es.sebas1705.haltera.domain.usecases.naming.VariantLabel
 import es.sebas1705.haltera.domain.usecases.progression.IncreaseReason
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
+import es.sebas1705.haltera.domain.usecases.session.Trend
 import es.sebas1705.haltera.domain.usecases.stats.RecordKind
 import es.sebas1705.haltera.feature.session.timer.RestTimerController
 import es.sebas1705.haltera.feature.session.timer.TimerMath
@@ -39,6 +40,7 @@ import es.sebas1705.haltera.feature.session.ui.SessionDialog
 import es.sebas1705.haltera.feature.session.ui.SessionIntent
 import es.sebas1705.haltera.feature.session.ui.SessionViewModel
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.TimeZone
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -73,6 +75,7 @@ class SessionViewModelTest {
             routines = FakeRoutineRepository(listOf(ROUTINE)),
             sessions = sessions,
             suggestNextLoad = SuggestNextLoad(sessions),
+            timeZone = { TimeZone.UTC },
         )
         return SessionViewModel(SESSION_ID, sessions, catalog, settings, timer, indicator, loadSteps) { clock.now }
             .also { it.onEvent(SessionIntent.SetLanguage("en")) }
@@ -163,14 +166,14 @@ class SessionViewModelTest {
 
     @Test
     fun firstWorkingSetStartsAtTheHeaviestSetOfTheLastSessionOfTheSlot() = runTest {
-        sessions.history += pastSets(listOf(100_000L to 5), sessionId = "older", at = 1L)
+        sessions.history += pastSets(listOf(100_000L to 5), sessionId = "older", at = 1L - 24 * 60 * 60_000L)
         sessions.history += pastSets(listOf(60_000L to 10, 70_000L to 8, 65_000L to 9), sessionId = "last", at = 2L)
         val vm = viewModel()
         val working = working(vm)
         assertEquals(
             List(3) { 70_000L },
             working.map { it.loadGrams },
-            "the latest session's max, not the all-time max"
+            "the latest day's max, not the all-time max"
         )
         assertEquals(List(3) { 8 }, working.map { it.reps })
         assertTrue(working.none { it.completed })
@@ -544,8 +547,13 @@ class SessionViewModelTest {
 
         val summary = assertNotNull(vm.uiState.value.summary)
         assertEquals(45 * 60_000L, summary.durationMs)
-        assertEquals(3 * 62_500L * 12, summary.volumeGrams)
         assertEquals(3, summary.completedSets)
+        val comparison = summary.comparisons.single().comparison
+        assertEquals(Trend.BETTER, comparison.trend, "62.5 kg × 12 after 60 kg × 12")
+        assertEquals(60_000, comparison.previous?.loadGrams)
+        assertEquals(62_500, comparison.current.loadGrams)
+        assertEquals(1, summary.improved)
+        assertEquals(1, summary.compared)
         assertTrue(RecordKind.HEAVIEST_LOAD in summary.records.single().kinds)
         val increase = summary.increases.single()
         assertEquals(62_500, increase.fromGrams)

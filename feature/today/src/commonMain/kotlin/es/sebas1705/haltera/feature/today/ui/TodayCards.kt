@@ -63,7 +63,7 @@ import es.sebas1705.haltera.feature.today.resources.today_trained
 import es.sebas1705.haltera.feature.today.resources.today_unknown_exercise
 import es.sebas1705.haltera.feature.today.resources.today_week_sessions
 import es.sebas1705.haltera.feature.today.resources.today_week_title
-import es.sebas1705.haltera.feature.today.resources.today_week_volume
+import es.sebas1705.haltera.feature.today.resources.today_week_sets
 import es.sebas1705.haltera.feature.today.resources.today_weight_value
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
@@ -221,7 +221,7 @@ internal fun NoRoutineCard(startEnabled: Boolean, onFreeSession: () -> Unit, mod
 }
 
 @Composable
-internal fun WeekCard(week: WeekUi, unit: WeightUnit, modifier: Modifier = Modifier) {
+internal fun WeekCard(week: WeekUi, modifier: Modifier = Modifier) {
     OutlinedCard(modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(stringResource(Res.string.today_week_title), style = MaterialTheme.typography.titleMedium)
@@ -229,12 +229,8 @@ internal fun WeekCard(week: WeekUi, unit: WeightUnit, modifier: Modifier = Modif
                 week.days.forEach { day -> WeekDayCell(day) }
             }
             val sessions = pluralStringResource(Res.plurals.today_week_sessions, week.sessionCount, week.sessionCount)
-            val volume = stringResource(
-                Res.string.today_week_volume,
-                Weights.format(week.volumeGrams, unit, decimals = 0),
-                unitLabel(unit),
-            )
-            Text("$sessions · $volume", style = MaterialTheme.typography.bodyMedium)
+            val sets = pluralStringResource(Res.plurals.today_week_sets, week.setCount, week.setCount)
+            Text("$sessions · $sets", style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

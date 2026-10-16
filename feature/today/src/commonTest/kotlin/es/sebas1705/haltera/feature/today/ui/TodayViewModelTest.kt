@@ -221,7 +221,7 @@ class TodayViewModelTest {
         assertEquals(listOf(true, false, true, false, false, false, false), week.days.map { it.trained })
         assertEquals(listOf(false, false, true, false, false, false, false), week.days.map { it.isToday })
         assertEquals(2, week.sessionCount)
-        assertEquals(500_000, week.volumeGrams)
+        assertEquals(1, week.setCount)
     }
 
     @Test

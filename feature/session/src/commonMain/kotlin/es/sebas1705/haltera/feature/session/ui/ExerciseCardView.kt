@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -41,6 +42,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -58,6 +63,8 @@ import es.sebas1705.haltera.feature.session.resources.Res
 import es.sebas1705.haltera.feature.session.resources.session_add_set
 import es.sebas1705.haltera.feature.session.resources.session_increase
 import es.sebas1705.haltera.feature.session.resources.session_increase_marker
+import es.sebas1705.haltera.feature.session.resources.session_exercise_description
+import es.sebas1705.haltera.feature.session.resources.session_exercise_statistics
 import es.sebas1705.haltera.feature.session.resources.session_more
 import es.sebas1705.haltera.feature.session.resources.session_move_down
 import es.sebas1705.haltera.feature.session.resources.session_move_up
@@ -79,6 +86,7 @@ import es.sebas1705.haltera.feature.session.timer.TimerMath
 import org.jetbrains.compose.resources.stringResource
 
 /** Callbacks of an exercise card. */
+@Suppress("LongParameterList") // One callback per card action.
 internal class CardActions(
     val onToggleSet: (String) -> Unit,
     val onStartTimed: (String) -> Unit,
@@ -87,6 +95,8 @@ internal class CardActions(
     val onChooseVariant: (cardId: String, variantId: String) -> Unit,
     val onMove: (cardId: String, delta: Int) -> Unit,
     val onRemove: (String) -> Unit,
+    val onStatistics: (String) -> Unit = {},
+    val onDescription: (String) -> Unit = {},
 )
 
 @Composable
@@ -153,44 +163,97 @@ private fun CardHeader(card: ExerciseCard, editable: Boolean, actions: CardActio
                 )
             }
         }
-        if (editable) CardMenu(card, actions)
+        // Statistics and description are always there; moving and removing only while the session can change.
+        if (card.exerciseId != null || editable) CardMenu(card, editable, actions)
     }
 }
 
 @Composable
-private fun CardMenu(card: ExerciseCard, actions: CardActions) {
+private fun CardMenu(card: ExerciseCard, editable: Boolean, actions: CardActions) {
     var open by rememberSaveable { mutableStateOf(false) }
     Box {
         IconButton(onClick = { open = true }) {
             Icon(Icons.Filled.MoreVert, contentDescription = stringResource(Res.string.session_more))
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.session_move_up)) },
-                leadingIcon = { Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null) },
-                onClick = {
-                    open = false
-                    actions.onMove(card.id, -1)
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.session_move_down)) },
-                leadingIcon = { Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null) },
-                onClick = {
-                    open = false
-                    actions.onMove(card.id, 1)
-                },
-            )
-            DropdownMenuItem(
-                text = { Text(stringResource(Res.string.session_remove_exercise)) },
-                leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = null) },
-                onClick = {
-                    open = false
-                    actions.onRemove(card.id)
-                },
-            )
+            if (card.exerciseId != null) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.session_exercise_statistics)) },
+                    leadingIcon = { Icon(StatisticsIcon, contentDescription = null) },
+                    onClick = {
+                        open = false
+                        actions.onStatistics(card.id)
+                    },
+                )
+                DropdownMenuItem(
+                    text = { Text(stringResource(Res.string.session_exercise_description)) },
+                    leadingIcon = { Icon(Icons.Filled.Info, contentDescription = null) },
+                    onClick = {
+                        open = false
+                        actions.onDescription(card.id)
+                    },
+                )
+            }
+            if (editable) EditItems(card, actions) { open = false }
         }
     }
+}
+
+@Composable
+private fun EditItems(card: ExerciseCard, actions: CardActions, close: () -> Unit) {
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.session_move_up)) },
+        leadingIcon = { Icon(Icons.Filled.KeyboardArrowUp, contentDescription = null) },
+        onClick = {
+            close()
+            actions.onMove(card.id, -1)
+        },
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.session_move_down)) },
+        leadingIcon = { Icon(Icons.Filled.KeyboardArrowDown, contentDescription = null) },
+        onClick = {
+            close()
+            actions.onMove(card.id, 1)
+        },
+    )
+    DropdownMenuItem(
+        text = { Text(stringResource(Res.string.session_remove_exercise)) },
+        leadingIcon = { Icon(Icons.Filled.Delete, contentDescription = null) },
+        onClick = {
+            close()
+            actions.onRemove(card.id)
+        },
+    )
+}
+
+/** A small bar chart: the exercise's statistics. */
+private val StatisticsIcon: ImageVector by lazy {
+    ImageVector.Builder("Statistics", 24.dp, 24.dp, 24f, 24f).apply {
+        path(fill = SolidColor(Color.Black)) {
+            // Three bars of rising height on a baseline.
+            moveTo(4f, 20f)
+            lineTo(20f, 20f)
+            lineTo(20f, 18f)
+            lineTo(4f, 18f)
+            close()
+            moveTo(5f, 12f)
+            lineTo(8f, 12f)
+            lineTo(8f, 17f)
+            lineTo(5f, 17f)
+            close()
+            moveTo(10.5f, 8f)
+            lineTo(13.5f, 8f)
+            lineTo(13.5f, 17f)
+            lineTo(10.5f, 17f)
+            close()
+            moveTo(16f, 4f)
+            lineTo(19f, 4f)
+            lineTo(19f, 17f)
+            lineTo(16f, 17f)
+            close()
+        }
+    }.build()
 }
 
 @Composable

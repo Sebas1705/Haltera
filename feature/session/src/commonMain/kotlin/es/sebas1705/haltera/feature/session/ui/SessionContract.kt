@@ -15,6 +15,8 @@ import es.sebas1705.haltera.data.models.TrackingType
 import es.sebas1705.haltera.domain.usecases.naming.ExerciseNaming
 import es.sebas1705.haltera.domain.usecases.naming.VariantLabel
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.session.LastTimeComparison
+import es.sebas1705.haltera.domain.usecases.session.Trend
 import es.sebas1705.haltera.domain.usecases.stats.RecordKind
 import es.sebas1705.haltera.feature.session.timer.TimerSnapshot
 
@@ -34,6 +36,8 @@ data class ExerciseCard(
     val sets: List<SetLog>,
     /** Variants a flexible slot can switch to, with their last load; empty for fixed slots. */
     val variantOptions: List<VariantOption> = emptyList(),
+    /** The catalogue exercise of [variantId]; null when the variant is unknown (its statistics and description cannot open). */
+    val exerciseId: String? = null,
 ) {
     val prescription: Prescription? get() = slot?.prescription
     val done: Boolean get() = sets.isNotEmpty() && sets.all { it.completed }
@@ -72,6 +76,18 @@ data class SetEditor(
     val plateStep: Long? = null,
 )
 
+/**
+ * A screen of another tab opened from an exercise card (through the shell's lambdas). The session stays on the back
+ * stack: nothing is finished, and the rest timer keeps running from its absolute end time.
+ */
+sealed interface ExerciseLink {
+    /** Progress → exercise progress of [exerciseId], showing [variantId] (e1RM trend, progression table, records). */
+    data class Statistics(val exerciseId: String, val variantId: String) : ExerciseLink
+
+    /** Exercises → detail of [exerciseId] (instructions, media). */
+    data class Description(val exerciseId: String) : ExerciseLink
+}
+
 /** Add-exercise picker: query and matching exercises. */
 data class ExercisePicker(val query: String = "", val results: List<Exercise> = emptyList())
 
@@ -84,13 +100,34 @@ sealed interface SessionDialog {
     data object AddExercise : SessionDialog
 }
 
-/** Finish summary (spec §5): duration, volume, new PRs and progression increases earned. */
+/**
+ * Finish summary (spec §5): duration, sets, each exercise against the last time, new PRs and progression increases
+ * earned. Volume is left to the Progress statistics: kg × reps is hard to read at a glance.
+ */
 data class FinishSummary(
     val durationMs: Long,
-    val volumeGrams: Long,
     val completedSets: Int,
+    val comparisons: List<ComparisonLine>,
     val records: List<RecordLine>,
     val increases: List<IncreaseLine>,
+) {
+    /** Exercises with an earlier time to compare with (not first times, not uncomparable). */
+    val compared: Int get() = comparisons.count { it.comparison.trend in COMPARED }
+
+    /** Of [compared], the ones that went better than last time. */
+    val improved: Int get() = comparisons.count { it.comparison.trend == Trend.BETTER }
+
+    private companion object {
+        val COMPARED = setOf(Trend.BETTER, Trend.SAME, Trend.LOWER)
+    }
+}
+
+/** An exercise's best set today against the last time ([LastTimeComparison]), with how to show its sets. */
+data class ComparisonLine(
+    val name: ExerciseName,
+    val trackingType: TrackingType,
+    val loadType: LoadType,
+    val comparison: LastTimeComparison,
 )
 
 data class RecordLine(val name: ExerciseName, val kinds: Set<RecordKind>)
@@ -133,6 +170,8 @@ data class SessionState(
     val closed: Boolean = false,
     /** Discarded (or deleted, in log mode) in this screen: the screen leaves. */
     val discarded: Boolean = false,
+    /** A screen to open once ([SessionIntent.LinkOpened] clears it). */
+    val link: ExerciseLink? = null,
 ) : MVIBaseState {
     val inProgress: Boolean get() = !loading && !missing && endedAt == null
 
@@ -173,6 +212,15 @@ sealed interface SessionIntent : MVIBaseIntent {
     data class ChooseVariant(val cardId: String, val variantId: String) : SessionIntent
     data class RemoveExercise(val cardId: String) : SessionIntent
     data class MoveExercise(val cardId: String, val delta: Int) : SessionIntent
+
+    /** Opens the card's exercise statistics (Progress) for its variant; the session keeps running. */
+    data class OpenStatistics(val cardId: String) : SessionIntent
+
+    /** Opens the card's exercise description (Exercises); the session keeps running. */
+    data class OpenDescription(val cardId: String) : SessionIntent
+
+    /** The screen opened the pending [SessionState.link]. */
+    data object LinkOpened : SessionIntent
 
     data object OpenAddExercise : SessionIntent
     data class SearchExercises(val query: String) : SessionIntent

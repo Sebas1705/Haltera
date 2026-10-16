@@ -4,19 +4,20 @@ import es.sebas1705.haltera.core.units.PlateCalculator
 import es.sebas1705.haltera.data.models.LoadType
 import es.sebas1705.haltera.data.models.Prescription
 import es.sebas1705.haltera.data.models.RoutineSlot
-import es.sebas1705.haltera.data.models.SessionExercise
 import es.sebas1705.haltera.data.models.SetInput
 import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.models.SetLog
 import es.sebas1705.haltera.data.models.TrackingType
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
+import es.sebas1705.haltera.domain.usecases.session.LastPerformance
 
 /**
  * Prefilled set rows (spec §5 "Entry"). Rows are created not completed; confirming one is a single tap.
  *
- * - The first working set starts at the **heaviest** completed working set of the last performance (the
- *   caller passes the slot's latest session with this variant, else the variant's latest in any slot), with
- *   the prescribed reps; a suggested increase replaces that load.
+ * - The first working set starts at the **best** set of the most recent day the variant was done, in any
+ *   context ([LastPerformance.best]: the heaviest completed set that is not a warm-up), with the prescribed
+ *   reps. A suggested increase replaces that load only when it is heavier: a slot's progression never starts
+ *   below what was lifted more recently elsewhere.
  * - Every later working set starts as a copy of the set before it, and [followers] keeps the pending rows
  *   below a changed set in step with it.
  * - Warm-ups come from the last warm-ups, never from working sets; without warm-up history they start at
@@ -30,10 +31,10 @@ object Prefill {
         trackingType: TrackingType,
         loadType: LoadType,
         suggestion: Suggestion,
-        last: SessionExercise?,
+        last: LastPerformance?,
         warmupRounding: WarmupRounding? = null,
     ): List<SetInput> {
-        val lastWarmups = last?.sets.orEmpty().filter { it.kind == SetKind.WARMUP && it.completed }
+        val lastWarmups = LastPerformance.warmups(last?.latest)
         val warmupCount = slot.warmupSets.coerceAtLeast(0)
         val working = workingRowFor(slot, trackingType, loadType, suggestion, last)
         val generated = if (lastWarmups.isEmpty() && warmupRounding != null) {
@@ -54,14 +55,18 @@ object Prefill {
         trackingType: TrackingType,
         loadType: LoadType,
         suggestion: Suggestion,
-        last: SessionExercise?,
+        last: LastPerformance?,
     ): SetInput {
         val base = firstWorkingRow(slot.prescription, trackingType, loadType, last)
         val first = when (suggestion) {
-            is Suggestion.Increase -> base.copy(
-                loadGrams = if (tracksLoad(trackingType, loadType)) suggestion.toGrams else null,
-                reps = if (trackingType.tracksReps) lowReps(slot.prescription) ?: base.reps else null,
-            )
+            is Suggestion.Increase -> if (suggestion.toGrams > (base.loadGrams ?: Long.MIN_VALUE)) {
+                base.copy(
+                    loadGrams = if (tracksLoad(trackingType, loadType)) suggestion.toGrams else null,
+                    reps = if (trackingType.tracksReps) lowReps(slot.prescription) ?: base.reps else null,
+                )
+            } else {
+                base
+            }
             is Suggestion.Keep -> if (base.loadGrams == null && tracksLoad(trackingType, loadType)) {
                 base.copy(loadGrams = suggestion.loadGrams)
             } else {
@@ -81,7 +86,7 @@ object Prefill {
         prescription: Prescription?,
         trackingType: TrackingType,
         loadType: LoadType,
-        last: SessionExercise?,
+        last: LastPerformance?,
     ): SetInput {
         val previous = existing.lastOrNull { it.kind == SetKind.WORKING }
             ?: return firstWorkingRow(prescription, trackingType, loadType, last)
@@ -89,24 +94,19 @@ object Prefill {
     }
 
     /**
-     * The first working set of a session: the load (and how it was entered) of the heaviest completed working
-     * set of [last], the prescribed reps (that set's reps when nothing is prescribed).
+     * The first working set of a session: the load (and how it was entered) of the best set of the last day
+     * the variant was done ([LastPerformance.best]), the prescribed reps (that set's reps when nothing is
+     * prescribed).
      */
     fun firstWorkingRow(
         prescription: Prescription?,
         trackingType: TrackingType,
         loadType: LoadType,
-        last: SessionExercise?,
+        last: LastPerformance?,
     ): SetInput {
-        val reference = referenceSet(last)
+        val reference = last?.best
         val row = fromSet(reference, prescription, trackingType, loadType).copy(kind = SetKind.WORKING)
         return if (trackingType.tracksReps) row.copy(reps = lowReps(prescription) ?: reference?.reps) else row
-    }
-
-    /** The heaviest completed working set of [last]; without loads (time, reps only), its last one. */
-    fun referenceSet(last: SessionExercise?): SetLog? {
-        val done = last?.sets.orEmpty().filter { it.kind == SetKind.WORKING && it.completed }
-        return done.filter { it.loadGrams != null }.maxByOrNull { requireNotNull(it.loadGrams) } ?: done.lastOrNull()
     }
 
     /**

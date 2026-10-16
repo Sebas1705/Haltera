@@ -152,7 +152,7 @@ private fun PlanItems(state: TodayState, onIntent: (TodayIntent) -> Unit) {
 /** This week's summary, today's nutrition (when used) and body weight. */
 @Composable
 private fun SummaryItems(state: TodayState, onIntent: (TodayIntent) -> Unit, nutrition: @Composable () -> Unit) {
-    WeekCard(state.week, state.unit)
+    WeekCard(state.week)
     nutrition()
     BodyWeightCard(
         latest = state.latestWeight,

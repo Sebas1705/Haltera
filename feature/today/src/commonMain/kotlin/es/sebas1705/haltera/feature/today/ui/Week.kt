@@ -1,7 +1,7 @@
 package es.sebas1705.haltera.feature.today.ui
 
 import es.sebas1705.haltera.data.models.WorkoutSession
-import es.sebas1705.haltera.domain.usecases.stats.Stats
+import es.sebas1705.haltera.domain.usecases.stats.TrainingMath
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
@@ -40,7 +40,7 @@ internal object Week {
         )
     }
 
-    /** Marks the days with a session and totals the week (volume of every exercise, spec §7). */
+    /** Marks the days with a session and totals the week (sessions and counted sets: completed, not warm-up; volume lives in Progress). */
     fun summarize(range: WeekRange, sessions: List<WorkoutSession>): WeekUi {
         val trainedDates = sessions
             .map { Instant.fromEpochMilliseconds(it.startedAt).toLocalDateTime(range.timeZone).date }
@@ -55,7 +55,13 @@ internal object Week {
                 )
             },
             sessionCount = sessions.size,
-            volumeGrams = sessions.sumOf { session -> session.exercises.sumOf { Stats.volume(it) } },
+            setCount = sessions.sumOf { session ->
+                session.exercises.sumOf { exercise ->
+                    exercise.sets.count(
+                        TrainingMath::isCounted
+                    )
+                }
+            },
         )
     }
 }

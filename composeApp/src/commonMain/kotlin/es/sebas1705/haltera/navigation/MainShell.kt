@@ -42,10 +42,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import es.sebas1705.haltera.feature.exercises.navigation.ExerciseDetailRoute
 import es.sebas1705.haltera.feature.exercises.navigation.ExercisesRoute
 import es.sebas1705.haltera.feature.exercises.navigation.exercisesGraph
 import es.sebas1705.haltera.feature.nutrition.navigation.NutritionRoute
 import es.sebas1705.haltera.feature.nutrition.navigation.nutritionGraph
+import es.sebas1705.haltera.feature.progress.navigation.ExerciseProgressRoute
 import es.sebas1705.haltera.feature.progress.navigation.ProgressRoute
 import es.sebas1705.haltera.feature.progress.navigation.progressGraph
 import es.sebas1705.haltera.feature.routines.navigation.RoutinesRoute
@@ -174,7 +176,17 @@ private fun ShellNavHost(navController: NavHostController, modifier: Modifier) {
         exercisesGraph(navController)
         nutritionGraph(navController)
         progressGraph(navController, onOpenSession = openSession)
-        sessionGraph(navController, onFinished = { navController.popBackStack(TodayRoute, inclusive = false) })
+        sessionGraph(
+            navController,
+            onFinished = { navController.popBackStack(TodayRoute, inclusive = false) },
+            // Opened on top of the session, which stays on the back stack (and keeps running): back returns to it.
+            onOpenExerciseProgress = { exerciseId, variantId ->
+                navController.navigate(ExerciseProgressRoute(exerciseId, variantId)) { launchSingleTop = true }
+            },
+            onOpenExerciseDetail = { exerciseId ->
+                navController.navigate(ExerciseDetailRoute(exerciseId)) { launchSingleTop = true }
+            },
+        )
         settingsGraph(navController)
     }
 }

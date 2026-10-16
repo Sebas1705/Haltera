@@ -14,6 +14,7 @@ import es.sebas1705.haltera.feature.progress.model.ChartPoint
 import es.sebas1705.haltera.feature.progress.performed
 import es.sebas1705.haltera.feature.progress.session
 import es.sebas1705.haltera.feature.progress.set
+import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseFocus
 import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseProgressIntent
 import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseProgressViewModel
 import es.sebas1705.haltera.feature.progress.utc
@@ -126,6 +127,78 @@ class ExerciseProgressViewModelTest : MainDispatcherTest() {
             assertEquals(listOf(ChartPoint(second, 154_000.0)), state.compareOneRm)
             vm.onEvent(ExerciseProgressIntent.Compare(null))
             assertTrue(expectMostRecentItem().compareOneRm.isEmpty())
+        }
+    }
+
+    private fun focused(exerciseId: String, variantId: String?) = ExerciseProgressViewModel(
+        sessions,
+        exercises,
+        FakeSettingsRepository(),
+        FakeRoutineRepository(),
+        ExerciseFocus(exerciseId, variantId),
+    )
+
+    @Test
+    fun `opened from a session it shows that exercise and variant, not the most recent one`() = runTest(dispatcher) {
+        focused("squat", "squat.barbell").uiState.test {
+            val state = expectMostRecentItem()
+            assertTrue(state.focused)
+            assertEquals("squat", state.selectedExerciseId)
+            assertEquals("squat.barbell", state.selectedVariantId)
+            assertEquals(listOf(ChartPoint(second, 140_000.0)), state.charts.topSet)
+            assertEquals("squat", state.focusName?.en)
+        }
+    }
+
+    @Test
+    fun `opened for a variant it starts on that variant and can switch`() = runTest(dispatcher) {
+        val vm = focused("bench", "bench.barbell")
+        vm.uiState.test {
+            assertEquals("bench.barbell", expectMostRecentItem().selectedVariantId, "not the latest (dumbbell)")
+            vm.onEvent(ExerciseProgressIntent.SelectVariant("bench.dumbbell"))
+            assertEquals("bench.dumbbell", expectMostRecentItem().selectedVariantId)
+        }
+    }
+
+    @Test
+    fun `a focused exercise cannot be swapped for another`() = runTest(dispatcher) {
+        val vm = focused("squat", null)
+        vm.uiState.test {
+            expectMostRecentItem()
+            vm.onEvent(ExerciseProgressIntent.SelectExercise("bench"))
+            expectNoEvents()
+            assertEquals("squat", vm.uiState.value.selectedExerciseId)
+        }
+    }
+
+    @Test
+    fun `a variant without history falls back to the exercise's other variant`() = runTest(dispatcher) {
+        focused("bench", "bench.cable").uiState.test {
+            val state = expectMostRecentItem()
+            assertEquals("bench.dumbbell", state.selectedVariantId)
+            assertEquals(listOf("bench.dumbbell", "bench.barbell"), state.variants.map { it.variantId })
+        }
+    }
+
+    @Test
+    fun `a focused exercise without finished history is empty but named`() = runTest(dispatcher) {
+        // The deadlift only appears in a session still in progress.
+        focused("deadlift", "deadlift.barbell").uiState.test {
+            val state = expectMostRecentItem()
+            assertFalse(state.loading)
+            assertTrue(state.focused)
+            assertTrue(state.variants.isEmpty())
+            assertNull(state.records)
+            assertEquals("deadlift", state.focusName?.en)
+        }
+    }
+
+    @Test
+    fun `the tab is not focused`() = runTest(dispatcher) {
+        viewModel().uiState.test {
+            val state = expectMostRecentItem()
+            assertFalse(state.focused)
+            assertNull(state.focusName)
         }
     }
 

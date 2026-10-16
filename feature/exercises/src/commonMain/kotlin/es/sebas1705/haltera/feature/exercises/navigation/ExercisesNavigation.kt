@@ -15,9 +15,12 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object ExercisesRoute
 
-/** Nested: one exercise. */
+/**
+ * Nested: one exercise (instructions, media, variants, records). Public so the shell can open it from other
+ * features (the live session's "Description"); it draws its own top bar and back arrow.
+ */
 @Serializable
-internal data class ExerciseDetailRoute(val exerciseId: String)
+data class ExerciseDetailRoute(val exerciseId: String)
 
 /** Nested: the custom exercise editor. */
 @Serializable

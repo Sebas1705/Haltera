@@ -101,6 +101,7 @@
 
     <!-- Exercise progress -->
     <string name="progress_exercise_empty">Termina una sesión para ver aquí el progreso de tus ejercicios.</string>
+    <string name="progress_exercise_focus_empty">Aún no hay sesiones guardadas con este ejercicio. Su progreso aparecerá aquí cuando guardes una.</string>
     <string name="progress_pick_exercise">Ejercicio</string>
     <string name="progress_chart_top_set">Serie más pesada</string>
     <string name="progress_chart_one_rm">1RM estimado</string>

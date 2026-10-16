@@ -64,13 +64,17 @@ import org.koin.core.parameter.parametersOf
 
 /**
  * The session [sessionId] (spec §5), live or in log mode ([SessionState.logMode]). [onFinished] leaves after
- * finishing or discarding a live session; log mode leaves with [onBack].
+ * finishing or discarding a live session; log mode leaves with [onBack]. [onOpenStatistics] and
+ * [onOpenDescription] open an exercise's progress and description on top of the session, which keeps running.
  */
+@Suppress("LongParameterList") // The shell's navigation callbacks.
 @Composable
 fun SessionScreen(
     sessionId: String,
     onBack: () -> Unit,
     onFinished: () -> Unit,
+    onOpenStatistics: (exerciseId: String, variantId: String) -> Unit = { _, _ -> },
+    onOpenDescription: (exerciseId: String) -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: SessionViewModel = koinViewModel(key = "session-$sessionId") { parametersOf(sessionId) },
 ) {
@@ -78,6 +82,14 @@ fun SessionScreen(
     val language = uiLanguage()
     LaunchedEffect(language) { viewModel.onEvent(SessionIntent.SetLanguage(language)) }
     LaunchedEffect(state.closed) { if (state.closed) onBack() }
+    LaunchedEffect(state.link) {
+        when (val link = state.link) {
+            is ExerciseLink.Statistics -> onOpenStatistics(link.exerciseId, link.variantId)
+            is ExerciseLink.Description -> onOpenDescription(link.exerciseId)
+            null -> return@LaunchedEffect
+        }
+        viewModel.onEvent(SessionIntent.LinkOpened)
+    }
     LaunchedEffect(state.discarded) {
         if (state.discarded) if (state.logMode) onBack() else onFinished()
     }
@@ -222,6 +234,8 @@ private fun ExerciseList(state: SessionState, onEvent: (SessionIntent) -> Unit, 
             onChooseVariant = { card, variant -> onEvent(SessionIntent.ChooseVariant(card, variant)) },
             onMove = { card, delta -> onEvent(SessionIntent.MoveExercise(card, delta)) },
             onRemove = { onEvent(SessionIntent.RemoveExercise(it)) },
+            onStatistics = { onEvent(SessionIntent.OpenStatistics(it)) },
+            onDescription = { onEvent(SessionIntent.OpenDescription(it)) },
         )
     }
     val current = state.currentCardId

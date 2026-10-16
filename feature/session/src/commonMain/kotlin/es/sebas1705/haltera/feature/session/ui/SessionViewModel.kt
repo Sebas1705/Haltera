@@ -131,8 +131,25 @@ class SessionViewModel(
                 searchJob?.cancel()
                 updateState { it.copy(dialog = null) }
             }
+            is SessionIntent.OpenStatistics -> openLink(intent.cardId) { card, exerciseId ->
+                ExerciseLink.Statistics(exerciseId, card.variantId)
+            }
+            is SessionIntent.OpenDescription -> openLink(intent.cardId) { _, exerciseId ->
+                ExerciseLink.Description(exerciseId)
+            }
+            SessionIntent.LinkOpened -> updateState { it.copy(link = null) }
             else -> Unit
         }
+    }
+
+    /**
+     * Asks the screen to open another tab's screen for a card's exercise. Only navigation: the session, its sets,
+     * the rest timer and the notification are left as they are, and back returns here.
+     */
+    private fun openLink(cardId: String, link: (ExerciseCard, String) -> ExerciseLink) {
+        val card = currentState.cards.firstOrNull { it.id == cardId } ?: return
+        val exerciseId = card.exerciseId ?: return
+        updateState { it.copy(link = link(card, exerciseId)) }
     }
 
     // region Session stream
@@ -199,6 +216,7 @@ class SessionViewModel(
             suggestion = slot?.let { catalog.suggestion(it, exercise.variantId) },
             sets = exercise.sets.sortedBy { it.position },
             variantOptions = options,
+            exerciseId = variant?.exerciseId,
         )
     }
 
@@ -219,7 +237,7 @@ class SessionViewModel(
             trackingType = tracking,
             loadType = loadType,
             suggestion = catalog.suggestion(slot, variantId),
-            last = catalog.lastPerformance(slot.id, variantId),
+            last = catalog.lastPerformance(variantId),
             warmupRounding = warmupRounding(variantId, loadType),
         )
         rows.forEach { sessions.logSet(cardId, it) }
@@ -343,7 +361,7 @@ class SessionViewModel(
 
     private suspend fun addSet(cardId: String) {
         val card = currentState.cards.firstOrNull { it.id == cardId } ?: return
-        val last = catalog.lastPerformance(card.slotId, card.variantId)
+        val last = catalog.lastPerformance(card.variantId)
         sessions.logSet(card.id, Prefill.extraRow(card.sets, card.prescription, card.trackingType, card.loadType, last))
     }
 
@@ -397,7 +415,7 @@ class SessionViewModel(
         val variant = catalog.variant(variantId)
         val tracking = variant?.let { catalog.exercise(it.exerciseId) }?.trackingType ?: TrackingType.WEIGHT_REPS
         val loadType = variant?.loadType ?: LoadType.NONE
-        val last = catalog.lastPerformance(null, variantId)
+        val last = catalog.lastPerformance(variantId)
         val rows = mutableListOf<SetLog>()
         repeat(AD_HOC_SETS) {
             val input = Prefill.extraRow(rows, null, tracking, loadType, last)
@@ -471,12 +489,11 @@ class SessionViewModel(
         !session.inProgress && session.exercises.any { e -> e.sets.any { it.completed } }
 
     private suspend fun buildSummary(session: WorkoutSession, slots: Map<String, RoutineSlot>, cards: List<ExerciseCard>): FinishSummary {
-        val names = cards.associate { it.id to it.name }
         return SummaryBuilder.build(
             session = session,
             slots = slots,
-            names = names,
-            loadTypes = cards.associate { it.id to it.loadType },
+            cards = cards.associate { it.id to SummaryBuilder.Card(it.name, it.trackingType, it.loadType) },
+            dayOf = catalog::localDay,
             previous = { variantId -> catalog.previousHistory(variantId, session.id) },
             increase = { slot, variantId -> catalog.earnedIncrease(slot, variantId, session.id) },
         )

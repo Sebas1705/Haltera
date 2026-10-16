@@ -67,6 +67,8 @@ internal fun DayCard(
     onOpenSlot: (String) -> Unit,
     onAddSlot: () -> Unit,
     highlighted: Boolean = false,
+    /** False for a flexible routine: every day trains (a stray rest day still shows the switch to fix it). */
+    showKind: Boolean = true,
 ) {
     val rest = day.kind == DayKind.REST
     val accent = MaterialTheme.colorScheme.primary
@@ -82,17 +84,19 @@ internal fun DayCard(
     ) {
         Column(Modifier.padding(start = 12.dp, end = 4.dp, top = 4.dp, bottom = 8.dp)) {
             DayHeader(day, dayCount, send, onRename)
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                FilterChip(
-                    selected = !rest,
-                    onClick = { send(RoutineEditorIntent.SetDayKind(day.id, DayKind.TRAINING)) },
-                    label = { Text(stringResource(Res.string.routines_kind_training)) },
-                )
-                FilterChip(
-                    selected = rest,
-                    onClick = { send(RoutineEditorIntent.SetDayKind(day.id, DayKind.REST)) },
-                    label = { Text(stringResource(Res.string.routines_kind_rest)) },
-                )
+            if (showKind || rest) {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(
+                        selected = !rest,
+                        onClick = { send(RoutineEditorIntent.SetDayKind(day.id, DayKind.TRAINING)) },
+                        label = { Text(stringResource(Res.string.routines_kind_training)) },
+                    )
+                    FilterChip(
+                        selected = rest,
+                        onClick = { send(RoutineEditorIntent.SetDayKind(day.id, DayKind.REST)) },
+                        label = { Text(stringResource(Res.string.routines_kind_rest)) },
+                    )
+                }
             }
             if (rest && day.slots.isEmpty()) {
                 MutedText(stringResource(Res.string.routines_rest_day))

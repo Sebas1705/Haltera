@@ -113,7 +113,9 @@ internal fun sumSets(maps: List<Map<MuscleGroup, Double>>): Map<MuscleGroup, Dou
  *
  * Schedule: a cycle with rest days maps one cycle day to one calendar day, so N days run 7/N times a week. A cycle
  * without rest days (A/B programmes) says nothing about the calendar; the scorer assumes three sessions a week
- * for cycles of up to four days and one cycle a week (at most six sessions) for longer ones.
+ * for cycles of up to four days and one cycle a week (at most six sessions) for longer ones. A flexible routine
+ * (docs/designs/2026-10-16-flexible-rest-days.md) knows its schedule: 7 − rest days a week sessions, and
+ * back-to-back days are neighbours in the training order once more than 3.5 sessions a week force them.
  */
 internal class RoutinePlan(routine: Routine, catalogue: ScoringCatalogue) {
     private val cycleLength = routine.days.size
@@ -126,10 +128,15 @@ internal class RoutinePlan(routine: Routine, catalogue: ScoringCatalogue) {
         }
     }
 
-    private val hasRestDays = days.size < cycleLength
+    /** Flexible routines know their sessions a week (7 − rest days a week); null for a fixed cycle. */
+    private val flexibleSessions: Int? = routine.restPolicy.normalized().trainingDaysPerWeek
+
+    /** Rest positions in the cycle (a flexible routine has none: its rest is a weekly policy). */
+    private val hasRestDays = flexibleSessions == null && days.size < cycleLength
 
     val sessionsPerWeek: Double = when {
         days.isEmpty() -> 0.0
+        flexibleSessions != null -> flexibleSessions.toDouble()
         hasRestDays -> days.size * WEEK_DAYS / cycleLength
         cycleLength >= LONG_CYCLE -> min(cycleLength, MAX_SESSIONS).toDouble()
         else -> ASSUMED_SESSIONS

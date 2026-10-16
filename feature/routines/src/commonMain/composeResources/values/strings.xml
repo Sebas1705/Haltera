@@ -280,7 +280,7 @@
     <string name="routines_criterion_session_length">Session length</string>
     <string name="routines_criterion_adherence">Adherence</string>
     <string name="routines_criterion_load_progress">Load progress</string>
-    <string name="routines_info_volume">Working sets are counted per muscle group each week: one set for each primary muscle and half a set for each secondary muscle. Pulling movements (rows, pulldowns, pull-ups) give no shoulder credit: the rear delt only helps there. Progress › Muscles counts primary muscles only, so it matches the direct part of these numbers. A cycle of N days is scaled to 7 days; a cycle without rest days is assumed to run 3 sessions a week (or one cycle a week from 5 days). Meta-analyses find that muscle growth rises with weekly sets, with about 10 to 20 hard sets per muscle a good target and smaller returns beyond that; strength needs less. Groups under 10 sets score lower (strength routines from 6), groups over 20 a little lower, and groups under 6 or over 25 are flagged. Large groups weigh twice as much as small ones.</string>
+    <string name="routines_info_volume">Working sets are counted per muscle group each week: one set for each primary muscle and half a set for each secondary muscle. Pulling movements (rows, pulldowns, pull-ups) give no shoulder credit: the rear delt only helps there. Progress › Muscles counts primary muscles only, so it matches the direct part of these numbers. A cycle of N days is scaled to 7 days; a cycle without rest days is assumed to run 3 sessions a week (or one cycle a week from 5 days); a routine with flexible rest days runs 7 minus its rest days sessions a week. Meta-analyses find that muscle growth rises with weekly sets, with about 10 to 20 hard sets per muscle a good target and smaller returns beyond that; strength needs less. Groups under 10 sets score lower (strength routines from 6), groups over 20 a little lower, and groups under 6 or over 25 are flagged. Large groups weigh twice as much as small ones.</string>
     <string name="routines_info_frequency">A group counts as trained on a day when it gets at least 2 sets there (secondary muscles count half). Training a muscle twice a week or more beats once a week for growth, although with equal volume the difference is small. Each group with at least 6 weekly sets scores fully from twice a week, 40 points at once a week and less below that.</string>
     <string name="routines_info_coverage">Each major group (chest, back, shoulders, quads, hamstrings, glutes, biceps, triceps, calves and abs) should get at least about one set a week. Position stands recommend training all major muscle groups. Large groups count double.</string>
     <string name="routines_info_balance">Push work (chest and shoulder presses, dips) is compared with pull work (rows, pull-downs, face pulls), and quad-dominant work (squats, leg presses, lunges) with hip-dominant work (deadlifts, hip hinges, leg curls). Balancing opposing muscle groups is a common guideline, and the hamstring to quadriceps ratio is a classic marker of muscle balance. Ratios between 2:3 and 3:2 for push and pull, and between 1:2 and 2:1 for the legs, score fully; the score falls as the ratio moves away. These bands are a heuristic, not an exact rule.</string>
@@ -337,4 +337,49 @@
     </plurals>
     <string name="routines_analysis_chart_value_split">%1$s: %2$s sets a week (%3$s)</string>
     <string name="routines_advice_shoulder_overlap">Shoulders: %1$s sets a week (%2$s from presses). The group covers the front, side and rear delts, and presses already train the front one. Keep the lateral raise and rear-delt work; if recovery suffers, trim pressing sets first.</string>
+
+    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md) -->
+    <string name="routines_rest_mode_title">Rest days</string>
+    <string name="routines_rest_mode_fixed">Fixed</string>
+    <string name="routines_rest_mode_flexible">Flexible</string>
+    <string name="routines_rest_mode_fixed_hint">Rest days are part of the cycle: the days repeat in order, rests included.</string>
+    <string name="routines_rest_mode_flexible_hint">Only training days, always in the same order. You rest whenever you need and the next workout waits for you.</string>
+    <string name="routines_rest_mode_info">How fixed and flexible work</string>
+    <string name="routines_rest_mode_info_title">Fixed or flexible rest days</string>
+    <string name="routines_rest_mode_info_text">Fixed: rest days are positions of the cycle. Push · Pull · Legs · Rest repeats exactly like that, and Today says “rest” when the cycle reaches a rest day.\n\nFlexible: the routine is only its training days, in order. Today always shows the workout after the last one you logged, however many days went by. Example: Push · Pull · Legs with 3 rest days a week. Train on Monday and Tuesday, rest on Wednesday, train on Thursday: you do Push, Pull and Legs in that order.\n\nWith flexible you can say how many days a week you rest, and the app only counts them. If you always rest on the same weekdays, pick them: Today shows a rest day on them, and you can still train.\n\nNothing is ever blocked: you can always start any day, a free session, or log a past one.</string>
+    <string name="routines_rest_knows_days">I know my rest days</string>
+    <string name="routines_rest_days_per_week">Rest days a week</string>
+    <string name="routines_rest_fewer">Fewer rest days</string>
+    <string name="routines_rest_more">More rest days</string>
+    <string name="routines_rest_count_hint">The app never decides which days you rest: it only counts them on Today.</string>
+    <string name="routines_rest_weekdays_hint">Pick up to 6 days. Today shows a rest day on them, and you can still train.</string>
+    <plurals name="routines_rest_per_week">
+        <item quantity="one">%1$d rest day a week</item>
+        <item quantity="other">%1$d rest days a week</item>
+    </plurals>
+    <string name="routines_weekday_1">Mon</string>
+    <string name="routines_weekday_2">Tue</string>
+    <string name="routines_weekday_3">Wed</string>
+    <string name="routines_weekday_4">Thu</string>
+    <string name="routines_weekday_5">Fri</string>
+    <string name="routines_weekday_6">Sat</string>
+    <string name="routines_weekday_7">Sun</string>
+    <string name="routines_cycle_hint_flexible">The training days repeat in order: after the last one you start again at day 1, however many days you rested.</string>
+    <string name="routines_to_flexible_title">Make the routine flexible?</string>
+    <plurals name="routines_to_flexible_message">
+        <item quantity="one">%1$d rest day will be removed from the cycle. Training days, their order and your history stay.</item>
+        <item quantity="other">%1$d rest days will be removed from the cycle. Training days, their order and your history stay.</item>
+    </plurals>
+    <string name="routines_to_flexible_confirm">Make flexible</string>
+    <string name="routines_to_fixed_title">Make the routine fixed?</string>
+    <plurals name="routines_to_fixed_message">
+        <item quantity="one">Add %1$d rest day at the end of the cycle? You can move it afterwards with the arrows of each day.</item>
+        <item quantity="other">Add %1$d rest days at the end of the cycle? You can move them afterwards with the arrows of each day.</item>
+    </plurals>
+    <plurals name="routines_to_fixed_add">
+        <item quantity="one">Add %1$d rest day</item>
+        <item quantity="other">Add %1$d rest days</item>
+    </plurals>
+    <string name="routines_to_fixed_none">No rest days</string>
+    <string name="routines_analysis_schedule_flexible">Flexible rest days: weekly numbers use %1$s sessions a week (7 minus your rest days).</string>
 </resources>

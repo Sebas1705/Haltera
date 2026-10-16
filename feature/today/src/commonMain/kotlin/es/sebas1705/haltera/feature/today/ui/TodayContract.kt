@@ -39,16 +39,26 @@ internal data class PlanUi(
     /** Null when the cycle has no training day. */
     val next: NextDayUi?,
     val days: List<DayOptionUi>,
+    /** Flexible routines only (docs/designs/2026-10-16-flexible-rest-days.md): this week's rest days, informational. */
+    val restWeek: RestWeekUi? = null,
 )
+
+/** "Rest days this week: [used] of [planned]"; [restToday] when today is a chosen rest weekday. */
+internal data class RestWeekUi(val used: Int, val planned: Int, val restToday: Boolean)
 
 internal data class NextDayUi(
     val dayIndex: Int,
     val dayCount: Int,
     val dayName: String,
-    /** The pointer was on one or more REST days (spec §3.4): informational only. */
+    /** The pointer was on one or more REST days of a fixed cycle (spec §3.4): informational only. */
     val planSaysRest: Boolean,
     val exercises: List<SlotUi>,
-)
+    /** Today is a chosen rest weekday of a flexible routine (not trained yet today): informational only. */
+    val restWeekday: Boolean = false,
+) {
+    /** Whether the card shows the rest hint; the next workout can always be started. */
+    val showRestHint: Boolean get() = planSaysRest || restWeekday
+}
 
 /** One slot of the next day. [name] is null if the exercise is not in the catalogue. */
 internal data class SlotUi(

@@ -67,7 +67,8 @@ it was), then the nutrients **for that amount**: `kcal`, `protein_g`, `carbs_g`,
 
 A JSON array with one element per routine, each exactly the `haltera-routine` v1 document of the routine share
 file (`.haltera`, see `RoutineExport`): `{"format":"haltera-routine","version":1,"exportedAt":…,"routine":{…},
-"customExercises":[…]}`. Each element can be read on its own by the routine importer.
+"customExercises":[…]}`. Each element can be read on its own by the routine importer. A routine with flexible rest days
+also carries `routine.rest` (`{"mode":"FLEXIBLE","daysPerWeek":…,"weekdays":[…]}`, docs/designs/2026-10-16-flexible-rest-days.md).
 
 ## `exercises.json`
 

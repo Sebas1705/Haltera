@@ -62,3 +62,15 @@ VALUES (?, ?, ?, NULL, NULL, ?, ?, ?);
 -- Which of :ids are already in the logbook.
 selectExistingIds:
 SELECT id FROM WorkoutSessionEntity WHERE id IN :ids;
+
+-- Remapping a routine's day positions (fixed <-> flexible conversion) in two steps that cannot collide:
+-- first each old index becomes -1 - new, then the negative ones are flipped back.
+markDayIndexRemap:
+UPDATE WorkoutSessionEntity SET routineDayIndex = -1 - :newIndex WHERE routineId = :routineId AND routineDayIndex = :oldIndex;
+
+applyDayIndexRemap:
+UPDATE WorkoutSessionEntity SET routineDayIndex = -1 - routineDayIndex WHERE routineId = :routineId AND routineDayIndex < 0;
+
+-- A session of a routine day that a conversion removed (an empty rest day) no longer points at a day.
+clearDayIndex:
+UPDATE WorkoutSessionEntity SET routineDayIndex = NULL WHERE routineId = :routineId AND routineDayIndex = :oldIndex;

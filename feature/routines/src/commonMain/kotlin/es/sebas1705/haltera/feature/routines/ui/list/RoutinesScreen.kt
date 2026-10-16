@@ -84,8 +84,7 @@ import es.sebas1705.haltera.feature.routines.resources.routines_set_active
 import es.sebas1705.haltera.feature.routines.resources.routines_set_inactive
 import es.sebas1705.haltera.feature.routines.resources.routines_untitled
 import es.sebas1705.haltera.feature.routines.ui.components.ConfirmDialog
-import es.sebas1705.haltera.feature.routines.ui.components.cycleLabel
-import es.sebas1705.haltera.feature.routines.ui.components.trainingDays
+import es.sebas1705.haltera.feature.routines.ui.components.routineSummary
 import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import es.sebas1705.haltera.feature.routines.ui.share.ExportMenuItems
 import es.sebas1705.haltera.feature.routines.ui.share.ExportOverlays
@@ -223,7 +222,7 @@ private fun RoutineCard(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        cycleLabel(routine.days.size, trainingDays(routine.days.map { it.kind })),
+                        routineSummary(routine.days.map { it.kind }, routine.restPolicy),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.weight(1f, fill = false),

@@ -92,6 +92,18 @@ enum class DayKind {
     }
 }
 
+/**
+ * How a routine places its rest days (docs/designs/2026-10-16-flexible-rest-days.md): [FIXED] rest days are
+ * positions of the cycle; [FLEXIBLE] the cycle holds training days only and rest follows a weekly policy.
+ */
+enum class RestMode {
+    FIXED, FLEXIBLE;
+
+    companion object {
+        fun fromDb(value: String?): RestMode = lenientEnum(value, FIXED)
+    }
+}
+
 enum class SetKind {
     WARMUP, WORKING, DROP, FAILURE;
 

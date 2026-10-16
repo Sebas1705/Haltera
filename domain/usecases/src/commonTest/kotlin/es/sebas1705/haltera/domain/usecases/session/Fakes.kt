@@ -2,6 +2,7 @@ package es.sebas1705.haltera.domain.usecases.session
 
 import es.sebas1705.haltera.data.models.DayKind
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineTemplate
 import es.sebas1705.haltera.data.models.SetInput
@@ -93,6 +94,13 @@ internal class FakeRoutines(routine: Routine?) : RoutineRepository {
     override suspend fun deleteRoutine(id: String) = unused()
     override suspend fun setActive(id: String?) = unused()
     override suspend fun setNextDayIndex(routineId: String, index: Int) = unused()
+    override suspend fun setRestPolicy(
+        routineId: String,
+        policy: RestPolicy,
+        appendRestDays: Int,
+        restDayName: String
+    ) =
+        unused()
     override suspend fun addDay(routineId: String, name: String, kind: DayKind): String = unused()
     override suspend fun updateDay(dayId: String, name: String, kind: DayKind) = unused()
     override suspend fun deleteDay(dayId: String) = unused()

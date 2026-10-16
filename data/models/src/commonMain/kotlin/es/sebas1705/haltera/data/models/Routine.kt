@@ -8,7 +8,8 @@ import kotlinx.serialization.Serializable
  * [nextDayIndex] is the manual override of the cycle (spec §3.4), chosen at [nextDayIndexSetAt] (null if
  * never chosen). The next day is normally derived from the routine's latest session; the override only
  * wins while no session started after it. It may point to a REST day; the `cycle` use case resolves the
- * next training day.
+ * next training day. [restPolicy] says whether rest days are cycle positions (fixed, the default) or a weekly
+ * policy over a cycle of training days (flexible; docs/designs/2026-10-16-flexible-rest-days.md).
  */
 data class Routine(
     val id: String,
@@ -21,6 +22,7 @@ data class Routine(
     val nextDayIndexSetAt: Long? = null,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
+    val restPolicy: RestPolicy = RestPolicy.FIXED,
 )
 
 /** The famous-routine template a routine was copied from. */

@@ -59,6 +59,7 @@ import es.sebas1705.haltera.feature.routines.resources.routines_analysis_missing
 import es.sebas1705.haltera.feature.routines.resources.routines_analysis_no_advice
 import es.sebas1705.haltera.feature.routines.resources.routines_analysis_out_of
 import es.sebas1705.haltera.feature.routines.resources.routines_analysis_schedule
+import es.sebas1705.haltera.feature.routines.resources.routines_analysis_schedule_flexible
 import es.sebas1705.haltera.feature.routines.resources.routines_analysis_sources
 import es.sebas1705.haltera.feature.routines.resources.routines_analysis_title
 import es.sebas1705.haltera.feature.routines.resources.routines_analysis_weight
@@ -152,7 +153,7 @@ private fun SummaryCard(state: RoutineAnalysisState, score: RoutineScore) {
                 Text(verdictText(score.verdict), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     stringResource(
-                        Res.string.routines_analysis_schedule,
+                        if (state.flexibleRest) Res.string.routines_analysis_schedule_flexible else Res.string.routines_analysis_schedule,
                         formatOne(score.sessionsPerWeek, state.language)
                     ),
                     style = MaterialTheme.typography.bodySmall,

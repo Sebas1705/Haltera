@@ -115,7 +115,8 @@ VALUES (:id, :name, :description, :originTemplateId, :originVersion, 0, :nextDay
 updateRoutine:
 UPDATE RoutineEntity
 SET name = :name, description = :description, originTemplateId = :originTemplateId, originVersion = :originVersion,
-    nextDayIndex = :nextDayIndex, createdAt = :createdAt, updatedAt = :updatedAt
+    nextDayIndex = :nextDayIndex, createdAt = :createdAt, updatedAt = :updatedAt,
+    restMode = :restMode, restDaysPerWeek = :restDaysPerWeek, restWeekdays = :restWeekdays
 WHERE id = :id;
 
 deleteDaysNotIn:

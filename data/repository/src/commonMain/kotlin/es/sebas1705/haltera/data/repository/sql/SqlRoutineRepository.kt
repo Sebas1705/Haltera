@@ -4,6 +4,8 @@ import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.local.db.RoutineEntity
 import es.sebas1705.haltera.data.models.DayKind
 import es.sebas1705.haltera.data.models.ModelJson
+import es.sebas1705.haltera.data.models.RestMode
+import es.sebas1705.haltera.data.models.RestPolicy
 import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.RoutineTemplate
 import es.sebas1705.haltera.data.models.SlotSpec
@@ -66,6 +68,74 @@ internal class SqlRoutineRepository(
         val count = db.routineDayEntityQueries.countByRoutine(routineId).executeAsOne().toInt()
         val clamped = if (count == 0) 0 else index.coerceIn(0, count - 1)
         db.routineEntityQueries.setNextDayIndex(nextDayIndex = clamped.toLong(), setAt = now(), id = routineId)
+    }
+
+    override suspend fun setRestPolicy(
+        routineId: String,
+        policy: RestPolicy,
+        appendRestDays: Int,
+        restDayName: String,
+    ) = write {
+        val target = policy.normalized()
+        db.transaction {
+            val row = db.routineEntityQueries.selectById(routineId).executeAsOneOrNull() ?: return@transaction
+            val wasFlexible = RestMode.fromDb(row.restMode) == RestMode.FLEXIBLE
+            when {
+                target.isFlexible && !wasFlexible -> dropRestDays(routineId, row.nextDayIndex)
+                !target.isFlexible && wasFlexible -> appendRestDays(routineId, appendRestDays, restDayName)
+                else -> Unit
+            }
+            db.routineEntityQueries.setRestPolicy(
+                restMode = target.mode.name,
+                restDaysPerWeek = target.restDaysPerWeek.toLong(),
+                restWeekdays = target.restWeekdays.toLong(),
+                updatedAt = now(),
+                id = routineId,
+            )
+        }
+    }
+
+    /**
+     * Fixed → flexible: removes the REST days without slots, turns REST days with slots into training days and
+     * remaps the sessions' day indexes and the override ([overrideIndex]) to the same days.
+     */
+    private fun dropRestDays(routineId: String, overrideIndex: Long) {
+        val days = db.routineDayEntityQueries.selectByRoutine(routineId).executeAsList()
+        val kept = days.filter { day ->
+            day.kind != DayKind.REST.name || db.routineSlotEntityQueries.selectByDay(day.id).executeAsList().isNotEmpty()
+        }
+        if (kept.size == days.size && days.none { it.kind == DayKind.REST.name }) return
+        val newIndex = days.map { day -> kept.indexOfFirst { it.id == day.id } }
+        // Sessions of a removed (empty rest) day no longer point at a day; the others follow their day.
+        newIndex.forEachIndexed { old, new ->
+            if (new < 0) db.workoutSessionEntityQueries.clearDayIndex(routineId, old.toLong())
+        }
+        newIndex.forEachIndexed { old, new ->
+            if (new >= 0 && new != old) {
+                db.workoutSessionEntityQueries.markDayIndexRemap(new.toLong(), routineId, old.toLong())
+            }
+        }
+        db.workoutSessionEntityQueries.applyDayIndexRemap(routineId)
+        days.filter { day -> kept.none { it.id == day.id } }.forEach { db.routineDayEntityQueries.delete(it.id) }
+        kept.forEachIndexed { index, day ->
+            db.routineDayEntityQueries.setPosition(index.toLong(), day.id)
+            if (day.kind == DayKind.REST.name) {
+                db.routineDayEntityQueries.update(name = day.name, kind = DayKind.TRAINING.name, id = day.id)
+            }
+        }
+        // The override follows its day; one on a removed rest day moves to the next kept day.
+        val clampedOverride = if (days.isEmpty()) 0 else overrideIndex.toInt().coerceIn(0, days.lastIndex)
+        val overrideDay = days.indices.map { (clampedOverride + it) % days.size }.firstOrNull { newIndex[it] >= 0 }
+        val newOverride = overrideDay?.let { newIndex[it] } ?: 0
+        db.routineEntityQueries.clampNextDayIndex(nextDayIndex = newOverride.toLong(), id = routineId)
+    }
+
+    /** Flexible → fixed: [count] REST days at the end; existing positions (and session indexes) do not move. */
+    private fun appendRestDays(routineId: String, count: Int, name: String) {
+        val start = db.routineDayEntityQueries.countByRoutine(routineId).executeAsOne()
+        repeat(count.coerceIn(0, RestPolicy.MAX_REST_DAYS)) { offset ->
+            db.routineDayEntityQueries.insert(newId(), routineId, start + offset, name, DayKind.REST.name)
+        }
     }
 
     override suspend fun addDay(routineId: String, name: String, kind: DayKind): String = io {

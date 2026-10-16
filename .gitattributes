@@ -10,3 +10,6 @@
 *.otf binary
 *.jks binary
 *.keystore binary
+
+# Export golden files: CRLF line ends and the BOM are part of the format
+data/repository/src/androidUnitTest/resources/export/* -text

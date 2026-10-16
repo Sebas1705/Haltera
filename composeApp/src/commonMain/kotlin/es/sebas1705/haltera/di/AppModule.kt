@@ -17,6 +17,7 @@ import es.sebas1705.haltera.feature.progress.di.progressModule
 import es.sebas1705.haltera.feature.routines.di.routinesModule
 import es.sebas1705.haltera.feature.session.di.sessionModule
 import es.sebas1705.haltera.feature.today.di.todayModule
+import es.sebas1705.haltera.export.DataExportViewModel
 import es.sebas1705.haltera.settings.SettingsViewModel
 import es.sebas1705.haltera.share.IncomingRoutineChannel
 import es.sebas1705.haltera.startup.StartupViewModel
@@ -33,6 +34,7 @@ val appModule = module {
     single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get()) }
     viewModel { AccountViewModel(get(), get(), get(), get(), get()) }
     single { IncomingRoutineChannel() }
+    viewModel { DataExportViewModel(get(), get(), get()) }
 }
 
 /**

@@ -45,3 +45,11 @@ SELECT * FROM WorkoutSessionEntity WHERE endedAt IS NOT NULL ORDER BY startedAt 
 -- [from, to) in epoch millis, any state.
 selectStartedBetween:
 SELECT * FROM WorkoutSessionEntity WHERE startedAt >= :from AND startedAt < :to ORDER BY startedAt;
+
+-- Data export (docs/EXPORT-FORMAT.md): all sessions oldest first, one page after the (startedAt, id) key.
+-- Row values are not used: Android 7 ships SQLite 3.9.
+selectExportPage:
+SELECT * FROM WorkoutSessionEntity
+WHERE startedAt > :afterStartedAt OR (startedAt = :afterStartedAt AND id > :afterId)
+ORDER BY startedAt, id
+LIMIT :limit;

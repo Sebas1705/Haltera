@@ -6,6 +6,8 @@ import es.sebas1705.haltera.data.local.foods.FoodImporter
 import es.sebas1705.haltera.data.repository.BodyWeightRepository
 import es.sebas1705.haltera.data.repository.CatalogRepository
 import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.repository.export.DataExporter
+import es.sebas1705.haltera.data.repository.export.SqlDataExporter
 import es.sebas1705.haltera.data.repository.NutritionRepository
 import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
@@ -58,4 +60,5 @@ val repositoryModule = module {
     single<NutritionRepository> {
         SqlNutritionRepository(get(), get(), get(), get(), get(IoDispatcher), get(named("now")))
     }
+    single<DataExporter> { SqlDataExporter(get(), get(), get(), get(), get(), get(), get(), get(IoDispatcher)) }
 }

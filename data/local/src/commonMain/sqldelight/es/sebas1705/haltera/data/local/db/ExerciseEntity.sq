@@ -92,3 +92,7 @@ ORDER BY
   CASE WHEN :language = 'es' THEN nameEsSearch ELSE nameEnSearch END,
   id
 LIMIT :limit;
+
+-- Data export: the exercises the user created (the bundled catalogue is never exported).
+selectUser:
+SELECT * FROM ExerciseEntity WHERE source = 'USER' ORDER BY id;

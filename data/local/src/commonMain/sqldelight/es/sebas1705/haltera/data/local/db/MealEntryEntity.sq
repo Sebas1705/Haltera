@@ -44,3 +44,7 @@ SELECT * FROM MealEntryEntity WHERE date >= :from AND date <= :to ORDER BY date,
 
 nextPosition:
 SELECT COALESCE(MAX(position) + 1, 0) FROM MealEntryEntity WHERE date = ? AND meal = ?;
+
+-- Data export: one page of the distinct dates with entries, after :afterDate.
+selectDatesPage:
+SELECT DISTINCT date FROM MealEntryEntity WHERE date > :afterDate ORDER BY date LIMIT :limit;

@@ -33,7 +33,7 @@ Column names are compared in lower case; the delimiter (comma, semicolon or tab)
 
 | Source | Detected when the header has | Headers seen in the wild |
 |---|---|---|
-| Haltera sessions | `session_id`, `exercise_id`, `set_type` | the 25 columns of `sessions.csv` |
+| Haltera sessions | `session_id`, `exercise_id`, `set_type` | the 30 columns of `sessions.csv` (25 in version 1 exports) |
 | Haltera body weight | `measured_at`, `weight_grams` | `body_weight.csv` |
 | Hevy | `exercise_title`, `start_time` | `title,start_time,end_time,description,exercise_title,superset_id,exercise_notes,set_index,set_type,weight_kg,reps,distance_km,duration_seconds,rpe` |
 | Strong | `exercise name`, `set order`, `date` | iOS: `Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,Notes,Workout Notes,RPE`. Android (semicolons): adds `Workout #`, and `Duration (sec)`, `Weight (kg)`, `Distance (meters)`, optionally `Weight Unit` |
@@ -97,6 +97,21 @@ its category, tracking type, muscles and equipment. The zip reader handles the s
 writes; a zip that was recompressed by another tool is refused with a message to extract `sessions.csv`. Meals and
 routines in the zip are not imported (routines have their own `.haltera` share file).
 
+Routine sessions (export version 2: `routine_id`, `routine_name`, `routine_day_index`, `slot_id`, `both_hands`):
+
+- When the routine `routine_id` exists on this device (re-importing your own export, Skip or Replace), the session is
+  linked to it again with its day (when that day index exists in the routine) and each exercise to its slot (when the
+  slot exists and belongs to that routine). The routine's next day (Today, fixed and flexible routines) and the slot's
+  progression history then see the session exactly as before the export.
+- Otherwise (a fresh device, a deleted routine) nothing is invented: the session is not linked, keeps `routine_name`
+  and `day_name` and is titled `<routine name> · <day name>` like before the export, not as an untitled free session.
+- `both_hands` is the "Both hands" snapshot of the exercise (core design §3.3) and is kept whether or not the slot is
+  linked, so the dumbbell volume is the one of the exporting device.
+- Version 1 exports have none of these columns and import as before: unlinked, titled with the day name, one
+  implement per dumbbell exercise.
+- Set ids (`set_id`) are kept when they are not already used on the device, so a session replaced from the file
+  updates its sets in place (sync sees edits, not deletions). Hevy, Strong and FitNotes sets get ids derived from the
+  session id.
 ## Exercise matching
 
 Each name is normalised (lower case, accents removed, punctuation and spacing ignored) and compared with the

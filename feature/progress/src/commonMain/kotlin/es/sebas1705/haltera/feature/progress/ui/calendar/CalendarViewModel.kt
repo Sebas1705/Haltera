@@ -16,7 +16,6 @@ import es.sebas1705.haltera.feature.progress.model.MonthKey
 import es.sebas1705.haltera.feature.progress.model.PastSessionTime
 import es.sebas1705.haltera.feature.progress.model.ProgressClock
 import es.sebas1705.haltera.feature.progress.model.ProgressMath
-import es.sebas1705.haltera.feature.progress.model.bilateralSlots
 import es.sebas1705.haltera.feature.progress.model.SessionSummary
 import es.sebas1705.haltera.feature.progress.model.startOfDayMillis
 import es.sebas1705.haltera.feature.progress.ui.components.FREE_CHOICE_KEY
@@ -182,7 +181,6 @@ internal class CalendarViewModel(
                     list,
                     routineList.associate { it.id to it.name },
                     timeZone,
-                    routineList.bilateralSlots(),
                 ),
                 userSettings.unit
             )

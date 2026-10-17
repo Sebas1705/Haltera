@@ -31,7 +31,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import es.sebas1705.haltera.core.ui.components.LoadingScreen
@@ -67,6 +69,7 @@ import org.koin.core.parameter.parametersOf
  * finishing or discarding a live session; log mode leaves with [onBack]. [onOpenStatistics] and
  * [onOpenDescription] open an exercise's progress and description on top of the session, which keeps running.
  */
+@OptIn(ExperimentalComposeUiApi::class) // BackHandler
 @Suppress("LongParameterList") // The shell's navigation callbacks.
 @Composable
 fun SessionScreen(
@@ -92,6 +95,10 @@ fun SessionScreen(
     }
     LaunchedEffect(state.discarded) {
         if (state.discarded) if (state.logMode) onBack() else onFinished()
+    }
+    // Log mode: the system back asks like the back arrow when nothing was logged (an empty session is not kept).
+    BackHandler(enabled = state.logMode && !state.closed && !state.discarded) {
+        viewModel.onEvent(SessionIntent.RequestLeave)
     }
     KeepScreenOn(enabled = state.live && state.settings.keepScreenOn)
     if (state.live) {
@@ -149,7 +156,7 @@ internal fun SessionContent(
 private fun SessionTopBar(state: SessionState, now: Long, onEvent: (SessionIntent) -> Unit, onBack: () -> Unit) {
     TopAppBar(
         navigationIcon = {
-            IconButton(onClick = onBack) {
+            IconButton(onClick = { if (state.logMode) onEvent(SessionIntent.RequestLeave) else onBack() }) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.session_back))
             }
         },
@@ -269,6 +276,11 @@ private fun SessionOverlays(state: SessionState, onEvent: (SessionIntent) -> Uni
         SessionDialog.ConfirmDelete -> ConfirmDeleteDialog(onConfirm = {
             onEvent(SessionIntent.ConfirmDiscard)
         }, onDismiss = dismiss)
+        SessionDialog.EmptyLog -> EmptyLogDialog(
+            logMode = state.logMode,
+            onDelete = { onEvent(SessionIntent.ConfirmDiscard) },
+            onKeepEditing = dismiss
+        )
         SessionDialog.AddExercise -> AddExerciseDialog(
             picker = state.picker,
             onQuery = { onEvent(SessionIntent.SearchExercises(it)) },

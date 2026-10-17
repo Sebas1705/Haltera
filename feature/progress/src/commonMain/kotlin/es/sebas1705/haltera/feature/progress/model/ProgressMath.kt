@@ -42,20 +42,20 @@ internal object ProgressMath {
     const val TREND_DAYS = 30
     private const val MILLIS_PER_DAY = 86_400_000L
 
-    /** [bilateralSlots]: the routines' bilateral slots, so the volume is the one of the overview (TrainingMath.volume). */
+    /** The volume is the one of the overview (TrainingMath.volume). */
     fun summarize(
         session: WorkoutSession,
         routineNames: Map<String, String>,
-        bilateralSlots: Set<String> = emptySet(),
     ): SessionSummary = SessionSummary(
         id = session.id,
         startedAt = session.startedAt,
         durationMillis = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) },
-        routineName = session.routineId?.let { routineNames[it] },
+        // The routine's current name; the name the session kept once the routine is gone.
+        routineName = session.routineId?.let { routineNames[it] } ?: session.routineName,
         dayName = session.dayName,
         // Only exercises with at least one completed set: empty ones are left over from the plan.
         exerciseCount = session.exercises.count { exercise -> exercise.sets.any { it.completed } },
-        volumeGrams = TrainingMath.volume(session, bilateralSlots),
+        volumeGrams = TrainingMath.volume(session),
     )
 
     /** Sessions grouped by the local day they started on, each day ordered by start time. */
@@ -63,10 +63,9 @@ internal object ProgressMath {
         sessions: List<WorkoutSession>,
         routineNames: Map<String, String>,
         timeZone: TimeZone,
-        bilateralSlots: Set<String> = emptySet(),
     ): Map<LocalDate, List<SessionSummary>> = sessions
         .sortedBy { it.startedAt }
-        .groupBy({ it.startedAt.toLocalDate(timeZone) }, { summarize(it, routineNames, bilateralSlots) })
+        .groupBy({ it.startedAt.toLocalDate(timeZone) }, { summarize(it, routineNames) })
 
     /** Points of the three exercise charts from progression [rows] (any order), oldest first; zero values are skipped. */
     fun exerciseCharts(rows: List<ProgressionRow>): ExerciseCharts {

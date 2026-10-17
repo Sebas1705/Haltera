@@ -131,7 +131,7 @@ internal class SqlSessionRepository(
                 distanceM = input.distanceM?.toLong(),
                 rpe = input.rpe,
                 completed = input.completed.toDb(),
-                completedAt = if (input.completed) now() else null,
+                completedAt = if (input.completed) completionTime(sessionExerciseId) else null,
             )
         }
         id
@@ -149,7 +149,7 @@ internal class SqlSessionRepository(
                 distanceM = input.distanceM?.toLong(),
                 rpe = input.rpe,
                 completed = input.completed.toDb(),
-                completedAt = if (input.completed) existing.completedAt ?: now() else null,
+                completedAt = if (input.completed) existing.completedAt ?: completionTime(existing.sessionExerciseId) else null,
                 id = setId,
             )
         }
@@ -203,11 +203,29 @@ internal class SqlSessionRepository(
     }
 
     override suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?) = write {
-        db.workoutSessionEntityQueries.updateTimes(
-            startedAt = startedAt,
-            endedAt = endedAt?.coerceAtLeast(startedAt),
-            id = sessionId,
-        )
+        db.transaction {
+            val before = db.workoutSessionEntityQueries.selectById(sessionId).executeAsOneOrNull() ?: return@transaction
+            val end = endedAt?.coerceAtLeast(startedAt)
+            db.workoutSessionEntityQueries.updateTimes(startedAt = startedAt, endedAt = end, id = sessionId)
+            // The sets move with the session and stay inside it.
+            db.setLogEntityQueries.shiftCompletedAt(
+                startedAt = startedAt,
+                endedAt = end,
+                delta = startedAt - before.startedAt,
+                sessionId = sessionId,
+            )
+        }
+    }
+
+    /**
+     * When a set ticked now was completed: now in a live session; in a finished session (a past session logged later,
+     * or a saved session edited) now kept inside its start and end, so it never lies after the session ended.
+     */
+    private fun completionTime(sessionExerciseId: String): Long {
+        val at = now()
+        val times = db.sessionExerciseEntityQueries.sessionTimes(sessionExerciseId).executeAsOneOrNull() ?: return at
+        val end = times.endedAt ?: return at
+        return at.coerceIn(times.startedAt, end.coerceAtLeast(times.startedAt))
     }
 
     override suspend fun deleteSession(sessionId: String) = write { db.workoutSessionEntityQueries.delete(sessionId) }
@@ -217,8 +235,8 @@ internal class SqlSessionRepository(
             history.sessions(
                 db.workoutSessionEntityQueries.selectFinished(
                     limit.toLong()
-                ) { id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw ->
-                    WorkoutSessionEntity(id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw)
+                ) { id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw, routineName ->
+                    WorkoutSessionEntity(id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw, routineName)
                 }.executeAsList(),
             ).map { it.withoutEmptyExercises() }
         }
@@ -268,7 +286,7 @@ internal class SqlSessionRepository(
                     variant.id,
                     before,
                     1,
-                ) { _, _, _, _, _, _, at -> at }
+                ) { _, _, _, _, _, _, _, at -> at }
                     .executeAsOneOrNull()?.let { at -> variant.id to at }
             }.maxByOrNull { it.second }
             // No history in this slot: the allowed variant used most recently anywhere (free sessions, other

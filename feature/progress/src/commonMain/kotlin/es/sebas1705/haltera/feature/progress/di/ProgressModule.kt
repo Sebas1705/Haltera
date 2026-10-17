@@ -20,7 +20,7 @@ val progressModule = module {
     viewModelOf(::OverviewViewModel)
     viewModelOf(::CalendarViewModel)
     // The tab has no parameters; the screen opened from a session passes an ExerciseFocus.
-    viewModel { params -> ExerciseProgressViewModel(get(), get(), get(), get(), params.getOrNull()) }
+    viewModel { params -> ExerciseProgressViewModel(get(), get(), get(), params.getOrNull()) }
     viewModelOf(::MusclesViewModel)
     viewModelOf(::BodyWeightViewModel)
     viewModelOf(::ActivityViewModel)

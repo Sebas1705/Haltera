@@ -25,9 +25,14 @@ import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.feature.session.resources.Res
 import es.sebas1705.haltera.feature.session.resources.session_cancel
 import es.sebas1705.haltera.feature.session.resources.session_delete
+import es.sebas1705.haltera.feature.session.resources.session_discard
+import es.sebas1705.haltera.feature.session.resources.session_empty_live_keep
+import es.sebas1705.haltera.feature.session.resources.session_empty_live_text
+import es.sebas1705.haltera.feature.session.resources.session_empty_log_keep
+import es.sebas1705.haltera.feature.session.resources.session_empty_log_text
+import es.sebas1705.haltera.feature.session.resources.session_empty_log_title
 import es.sebas1705.haltera.feature.session.resources.session_delete_text
 import es.sebas1705.haltera.feature.session.resources.session_delete_title
-import es.sebas1705.haltera.feature.session.resources.session_discard
 import es.sebas1705.haltera.feature.session.resources.session_discard_text
 import es.sebas1705.haltera.feature.session.resources.session_discard_title
 import es.sebas1705.haltera.feature.session.resources.session_finish
@@ -64,6 +69,31 @@ internal fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) =
     Res.string.session_delete,
     onConfirm,
     onDismiss,
+)
+
+/**
+ * Nothing logged yet: an empty session is not kept. Log mode: keep logging or delete the session; a live session:
+ * keep training or discard it.
+ */
+@Composable
+internal fun EmptyLogDialog(logMode: Boolean, onDelete: () -> Unit, onKeepEditing: () -> Unit) = AlertDialog(
+    onDismissRequest = onKeepEditing,
+    title = { Text(stringResource(Res.string.session_empty_log_title)) },
+    text = {
+        Text(
+            stringResource(if (logMode) Res.string.session_empty_log_text else Res.string.session_empty_live_text)
+        )
+    },
+    confirmButton = {
+        TextButton(onClick = onKeepEditing) {
+            Text(stringResource(if (logMode) Res.string.session_empty_log_keep else Res.string.session_empty_live_keep))
+        }
+    },
+    dismissButton = {
+        TextButton(onClick = onDelete) {
+            Text(stringResource(if (logMode) Res.string.session_delete else Res.string.session_discard))
+        }
+    },
 )
 
 @Composable

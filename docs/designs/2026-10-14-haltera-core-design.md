@@ -134,7 +134,7 @@ routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `
 | `prescription` | `RepRange(min, max)`, `Reps(n)`, `Duration(s)`, `Distance(m)` — consistent with the exercise `trackingType` |
 | `restBetweenSets`, `restAfter` | Seconds |
 | `supersetGroup` | Optional; slots sharing a group alternate sets and rest only after the round |
-| `bilateral` | For dumbbells: volume counts both hands |
+| `bilateral` | "Both hands", for dumbbells: volume counts both hands. Snapshotted on each exercise logged from the slot (§3.3), so a change applies to sessions logged afterwards only |
 | `notes` | Free text |
 | `progression` | `ProgressionRule` |
 
@@ -149,9 +149,9 @@ routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `
 
 ### 3.3 Logging
 
-**`WorkoutSession`**: id, `startedAt`, `endedAt?` (null while in progress), `routineId?` + `routineDayIndex?` (null for a free session), notes, `bodyWeight?` (filled in F6).
+**`WorkoutSession`**: id, `startedAt`, `endedAt?` (null while in progress), `routineId?` + `routineDayIndex?` (null for a free session; both cleared when the routine is deleted), `dayName?` (snapshot of the day name), `routineName?` (the routine's name: renamed with it while it exists, kept when it is deleted, so the session keeps its title), notes, `bodyWeight?` (filled in F6).
 
-**`SessionExercise`**: order, `variantId` actually used, `slotId?` it came from (null if added ad hoc), notes.
+**`SessionExercise`**: order, `variantId` actually used, `slotId?` it came from (null if added ad hoc), notes, `bilateral` (the slot's "Both hands" flag when it was logged; see Volume).
 
 **`SetLog`**: order, `kind` (`WARMUP`, `WORKING`, `DROP`, `FAILURE`), `reps?`, `load?`, `durationS?`, `distanceM?`, `rpe?`, `completed`, `completedAt?`.
 
@@ -166,15 +166,22 @@ table and chart, and the "Session volume" record (Exercises detail, Progress, fi
   exercise. Unloaded and assisted (negative) bodyweight sets, band levels and machine stack positions are not
   weights and add nothing; timed and distance sets have no reps and add nothing.
 - `DUMBBELL` loads are stored per implement. The volume counts both implements only when the exercise was logged
-  from a routine slot with `bilateral` on (the slot editor turns it on for dumbbell slots); free sessions and
-  exercises added outside the plan count one implement. The flag is read when summing, never stored on the session,
-  so turning it off or on re-sums that slot's history everywhere at once.
+  from a routine slot with `bilateral` ("Both hands") on (the slot editor turns it on for dumbbell slots); free
+  sessions and exercises added outside the plan count one implement.
+- The flag is a **snapshot**: `SessionExercise.bilateral` is copied from the slot when the exercise is logged (a live
+  session's start or an exercise added from a slot, "Log past session", a Haltera import that carries it, a sync
+  payload) and the volume reads only the snapshot. Changing the slot's switch affects the sessions logged after the
+  change; removing the slot, deleting its routine or deleting a custom exercise used in it clears the link
+  (`slotId`) but never the snapshot, so past volume never changes. Schema 8 (migration `7.sqm`) backfilled the
+  snapshot from the slots that still existed at the upgrade; exercises whose slot had already been removed, and
+  exercises without a slot, count one implement, as before.
 
 | Example (2 sets) | Volume |
 |---|---|
 | Barbell bench 100 kg × 5, × 5 | 1,000 kg |
-| Dumbbell press 24 kg × 10, × 8 from a bilateral slot | 864 kg (both hands) |
-| The same dumbbell sets in a free session, or a one-arm row slot | 432 kg |
+| Dumbbell press 24 kg × 10, × 8 from a "Both hands" slot | 864 kg (both hands) |
+| The same session after the slot's switch is turned off, the slot is removed or the routine is deleted | 864 kg (snapshot) |
+| The same sets logged after the switch was turned off, in a free session, or from a one-arm row slot | 432 kg |
 | Machine 50 kg × 10 / stack position 7 × 10 | 500 kg / 0 |
 | Pull-up +20 kg × 10 / assisted −20 kg × 8 / bodyweight × 12 | 200 kg / 0 / 0 |
 | Band level 3 × 15, plank 60 s, farmer's walk 32 kg × 40 s | 0 |
@@ -185,7 +192,7 @@ The calendar is derived from `WorkoutSession` rows; there is no calendar table.
 
 Sequential, never date-anchored: the next suggested day is the day after the routine's most recent session by `startedAt` (finished or not), skipping `REST` days (rest days are informational — "today the plan says rest"). The pointer is derived from the sessions, not stored, so logging past sessions in any order, editing a session's date or deleting one keeps it right: if the latest session trained day k, the next day is k + 1 (mod N). The user can always pick a different day or start a free session. Picking the next day in Today stores a manual override (`nextDayIndex` + `nextDayIndexSetAt`) that wins until a session of the routine starts after it. Changing a routine's structure clamps the pointer to a valid day. A routine with **flexible rest days** (docs/designs/2026-10-16-flexible-rest-days.md) has training days only, so the same pointer always lands on the workout after the last one logged; its rest is a weekly policy (a number, or fixed weekdays shown as a rest hint).
 
-**Logbook, not coach.** Any session can be logged after the fact (any date, any routine day or free) and everything stays editable afterwards: date and time, duration, exercises, sets and loads. The only confirmation is before a delete. History reads (prefill, progression, PRs) are ordered by `startedAt` and a session only sees sessions that started before it.
+**Logbook, not coach.** Any session can be logged after the fact (any date, any routine day or free) and everything stays editable afterwards: date and time, duration, exercises, sets and loads. The only confirmation is before a delete. A session logged after the fact is only kept with at least one completed set: Save or back with nothing logged asks to log a set or delete the session (live sessions are unchanged). History reads (prefill, progression, PRs) are ordered by `startedAt` and a session only sees sessions that started before it.
 
 ### 3.5 Progression engine
 
@@ -232,7 +239,7 @@ Suggestions are never applied silently: the next session prefills the suggested 
 - **iOS:** a local notification scheduled at `restEndsAt` (rescheduled on every change). Live Activity is F9 (needs the Apple Developer account).
 - **Permissions** (notifications, exact alarms) are requested in context on the first session start.
 - **Keep screen on** during the session, configurable.
-- **Entry.** Each set is prefilled from the last session of that slot/variant or the progression suggestion; confirming is one tap. The load keypad adapts to `loadType` (barbell: total ↔ plates per side; machine: kg or plate #; bodyweight: +/− selector; band: level). Flexible slots show the variant picker when reached, with the last load for each variant.
+- **Entry.** Each set is prefilled from the last session of that slot/variant or the progression suggestion; confirming is one tap. The load keypad adapts to `loadType` (barbell: total ↔ plates per side; machine: kg or plate #; bodyweight: +/− selector; band: level). Flexible slots show the variant picker when reached, with the last load for each variant. A row without a load starts at the load its editor shows (a barbell at the bar, a band at level 1, a machine by stack position at plate 1; dumbbells, machine weight and bodyweight at none), so ticking or saving it stores what is on screen. A set that counts reps is completed only with at least one rep: ticking a row with no reps opens its editor, and saving the editor with 0 reps leaves the set not completed. A session with no completed set is not kept: Finish (live) or Save and back (logged after the fact) ask to keep going or to discard or delete it.
 - **Editing during a session** (add, remove, reorder, substitute an exercise, add sets) changes the session only. On finish, if it diverged from the routine, the app offers "Save changes to routine?".
 - **Finish** shows a summary (duration, volume, PRs, progression suggestions earned); the cycle follows from the session (§3.4).
 - **Log mode.** A session already saved, or one in progress started more than 12 h ago, opens in log mode: the same editor without rest timer, notifications, foreground service or keep-screen-on, titled with its date, and "Save" instead of "Finish" (it keeps the saved end time; a never-ended session gets 60 min). Past sessions are created already saved with their start and duration (Today "Log past session", Progress "Add session on this day"), then open in log mode; Progress "Edit sets" opens a saved session the same way. The mode is derived from the session, so `SessionRoute(sessionId)` is unchanged.

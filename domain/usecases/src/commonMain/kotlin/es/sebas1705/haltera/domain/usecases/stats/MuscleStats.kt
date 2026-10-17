@@ -56,14 +56,13 @@ object MuscleStats {
     private fun totals(
         sessions: List<DatedSession>,
         musclesByVariant: Map<String, List<Muscle>>,
-        window: DayWindow,
-        bilateralSlots: Set<String>,
+        window: DayWindow
     ): Totals {
         val totals = Totals()
         val exercises = sessions.filter { !it.session.inProgress && it.day in window }.flatMap { it.session.exercises }
         exercises.forEach { exercise ->
             val sets = TrainingMath.effectiveSets(exercise)
-            val volume = TrainingMath.volume(exercise, bilateralSlots)
+            val volume = TrainingMath.volume(exercise)
             // Lats and middle back are both "Back": a row set counts once for the group.
             val groups = musclesByVariant[exercise.variantId].orEmpty().mapNotNull(MuscleGroup::of).distinct()
             groups.forEach { muscle ->
@@ -82,11 +81,10 @@ object MuscleStats {
         sessions: List<DatedSession>,
         musclesByVariant: Map<String, List<Muscle>>,
         current: DayWindow,
-        previous: DayWindow?,
-        bilateralSlots: Set<String> = emptySet(),
+        previous: DayWindow?
     ): List<MuscleComparison> {
-        val now = totals(sessions, musclesByVariant, current, bilateralSlots)
-        val before = previous?.let { totals(sessions, musclesByVariant, it, bilateralSlots) }
+        val now = totals(sessions, musclesByVariant, current)
+        val before = previous?.let { totals(sessions, musclesByVariant, it) }
         val muscles = now.sets.keys + now.volume.keys + before?.sets?.keys.orEmpty() + before?.volume?.keys.orEmpty()
         return muscles.map { muscle ->
             MuscleComparison(

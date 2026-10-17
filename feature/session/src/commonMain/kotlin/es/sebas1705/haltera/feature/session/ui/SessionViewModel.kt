@@ -7,6 +7,7 @@ import es.sebas1705.haltera.data.models.LoadType
 import es.sebas1705.haltera.data.models.Prescription
 import es.sebas1705.haltera.data.models.RoutineSlot
 import es.sebas1705.haltera.data.models.SessionExercise
+import es.sebas1705.haltera.data.models.SetInput
 import es.sebas1705.haltera.data.models.SetLog
 import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.data.models.TrackingType
@@ -79,16 +80,7 @@ class SessionViewModel(
             is SessionIntent.ToggleSet -> toggleSet(intent.setId)
             is SessionIntent.StartTimedSet -> startTimedSet(intent.setId)
             SessionIntent.StopTimedSet -> stopTimedSet()
-            is SessionIntent.EditSet -> findSet(intent.setId)?.let { (card, set) ->
-                val editor = SetEditor(
-                    cardId = card.id,
-                    setId = set.id,
-                    draft = set.toInput(),
-                    weightStep = loadSteps.step(card.variantId, plates = false),
-                    plateStep = loadSteps.step(card.variantId, plates = true),
-                )
-                updateState { it.copy(editor = editor) }
-            }
+            is SessionIntent.EditSet -> findSet(intent.setId)?.let { (card, set) -> openEditor(card, set) }
             is SessionIntent.ChangeDraft -> updateState { it.copy(editor = it.editor?.copy(draft = intent.draft)) }
             SessionIntent.SaveDraft -> currentState.editor?.let { saveDraft(it) }
             is SessionIntent.SetLoadStep -> setLoadStep(intent.step, intent.plates)
@@ -115,13 +107,15 @@ class SessionViewModel(
             is SessionIntent.AddExercise -> addExercise(intent.variantId)
             is SessionIntent.AdjustRest -> timer.adjustRest(intent.deltaSeconds)
             SessionIntent.SkipRest -> timer.skip()
-            SessionIntent.RequestFinish -> if (isLogMode()) {
-                save()
-            } else {
-                updateState { it.copy(dialog = SessionDialog.ConfirmFinish) }
+            // Nothing completed: live or logged, an empty session is not kept (keep going, or discard / delete it).
+            SessionIntent.RequestFinish -> when {
+                nothingLogged() -> emptyLog()
+                isLogMode() -> save()
+                else -> updateState { it.copy(dialog = SessionDialog.ConfirmFinish) }
             }
-            SessionIntent.ConfirmFinish -> finish()
-            SessionIntent.Save -> save()
+            SessionIntent.ConfirmFinish -> if (nothingLogged()) emptyLog() else finish()
+            SessionIntent.Save -> if (nothingLogged()) emptyLog() else save()
+            SessionIntent.RequestLeave -> if (nothingLogged()) emptyLog() else updateState { it.copy(closed = true) }
             SessionIntent.RequestDiscard -> {
                 val dialog = if (isLogMode()) SessionDialog.ConfirmDelete else SessionDialog.ConfirmDiscard
                 updateState { it.copy(dialog = dialog) }
@@ -240,7 +234,7 @@ class SessionViewModel(
             last = catalog.lastPerformance(variantId),
             warmupRounding = warmupRounding(variantId, loadType),
         )
-        rows.forEach { sessions.logSet(cardId, it) }
+        rows.forEach { sessions.logSet(cardId, withShownLoad(it, tracking, loadType)) }
     }
 
     private fun warmupRounding(variantId: String, loadType: LoadType): WarmupRounding {
@@ -269,12 +263,42 @@ class SessionViewModel(
 
     // region Sets
 
+    /**
+     * Ticks or unticks a row. A completed set holds what the row shows: a row without a load gets the default the
+     * editor shows ([withShownLoad]). A set that counts reps needs at least one: ticking a row with no reps opens its
+     * editor instead (core design §5, "Entry").
+     */
     private suspend fun toggleSet(setId: String) {
         val (card, set) = findSet(setId) ?: return
         val completed = !set.completed
-        sessions.updateSet(set.id, set.toInput().copy(completed = completed))
+        val input = if (completed) withShownLoad(set.toInput(), card.trackingType, card.loadType) else set.toInput()
+        if (completed && card.trackingType.tracksReps && (input.reps ?: 0) <= 0) {
+            openEditor(card, set, complete = true)
+            return
+        }
+        sessions.updateSet(set.id, input.copy(completed = completed))
         if (completed && !isLogMode()) startRestAfter(card, set.id)
     }
+
+    /**
+     * Opens the set editor on [set] with the load it shows. With [complete] (a row ticked without reps) saving the
+     * editor completes the set.
+     */
+    private fun openEditor(card: ExerciseCard, set: SetLog, complete: Boolean = false) {
+        val draft = withShownLoad(set.toInput(), card.trackingType, card.loadType)
+        val editor = SetEditor(
+            cardId = card.id,
+            setId = set.id,
+            draft = if (complete) draft.copy(completed = true) else draft,
+            weightStep = loadSteps.step(card.variantId, plates = false),
+            plateStep = loadSteps.step(card.variantId, plates = true),
+        )
+        updateState { it.copy(editor = editor) }
+    }
+
+    /** [input] with the load the row and the editor show when it has none (Prefill.shownInEditor). */
+    private fun withShownLoad(input: SetInput, tracking: TrackingType, loadType: LoadType): SetInput =
+        Prefill.shownInEditor(input, tracking, loadType, settings.settings.value.barWeightGrams)
 
     private fun startRestAfter(card: ExerciseCard, setId: String) {
         val (seconds, labelCard) = restAfter(card, setId)
@@ -327,21 +351,25 @@ class SessionViewModel(
             updateState { it.copy(editor = null) }
             return
         }
-        val changed = original.toInput() != editor.draft
+        // A set that counts reps is completed only with at least one rep (as when ticking a row).
+        val noReps = card.trackingType.tracksReps && (editor.draft.reps ?: 0) <= 0
+        val draft = if (noReps) editor.draft.copy(completed = false) else editor.draft
+        val changed = original.toInput() != draft
         updateState {
             it.copy(editor = null, editedSetIds = if (changed) it.editedSetIds + editor.setId else it.editedSetIds)
         }
-        sessions.updateSet(editor.setId, editor.draft)
+        sessions.updateSet(editor.setId, draft)
+        if (draft.completed && !original.completed && !isLogMode()) startRestAfter(card, editor.setId)
         val edited = currentState.editedSetIds
         val warmups = Prefill.warmupFollowers(
             card.sets,
             original,
-            editor.draft,
+            draft,
             edited,
             card.loadType,
             warmupRounding(card.variantId, card.loadType),
         )
-        (Prefill.followers(card.sets, original, editor.draft, edited) + warmups).forEach { (id, input) ->
+        (Prefill.followers(card.sets, original, draft, edited) + warmups).forEach { (id, input) ->
             sessions.updateSet(id, input)
         }
     }
@@ -362,7 +390,8 @@ class SessionViewModel(
     private suspend fun addSet(cardId: String) {
         val card = currentState.cards.firstOrNull { it.id == cardId } ?: return
         val last = catalog.lastPerformance(card.variantId)
-        sessions.logSet(card.id, Prefill.extraRow(card.sets, card.prescription, card.trackingType, card.loadType, last))
+        val row = Prefill.extraRow(card.sets, card.prescription, card.trackingType, card.loadType, last)
+        sessions.logSet(card.id, withShownLoad(row, card.trackingType, card.loadType))
     }
 
     private fun findSet(setId: String): Pair<ExerciseCard, SetLog>? = currentState.cards.firstNotNullOfOrNull { card ->
@@ -418,7 +447,7 @@ class SessionViewModel(
         val last = catalog.lastPerformance(variantId)
         val rows = mutableListOf<SetLog>()
         repeat(AD_HOC_SETS) {
-            val input = Prefill.extraRow(rows, null, tracking, loadType, last)
+            val input = withShownLoad(Prefill.extraRow(rows, null, tracking, loadType, last), tracking, loadType)
             val setId = sessions.logSet(id, input)
             rows += SetLog(setId, id, it, input.kind, input.reps, input.loadGrams, input.loadDetail, input.durationS, input.distanceM)
         }
@@ -481,6 +510,12 @@ class SessionViewModel(
 
     private fun isLogMode(): Boolean = logMode == true
 
+    /** No completed set on any exercise: a session logged after the fact holds nothing yet. */
+    private fun nothingLogged(): Boolean = currentState.cards.none { card -> card.sets.any { it.completed } }
+
+    /** Log mode with nothing logged: an empty session is not kept as a logged one (QA alpha.5). */
+    private fun emptyLog() = updateState { it.copy(dialog = SessionDialog.EmptyLog) }
+
     /**
      * A saved session that already holds completed sets is being edited ("Edit sets"); a session logged after
      * the fact is saved empty on creation and filled here.
@@ -496,7 +531,6 @@ class SessionViewModel(
             dayOf = catalog::localDay,
             previous = { variantId -> catalog.previousHistory(variantId, session.id) },
             increase = { slot, variantId -> catalog.earnedIncrease(slot, variantId, session.id) },
-            bilateralSlots = catalog.bilateralSlots(),
         )
     }
 

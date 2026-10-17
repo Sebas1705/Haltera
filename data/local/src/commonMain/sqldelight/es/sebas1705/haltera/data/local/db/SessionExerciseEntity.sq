@@ -5,15 +5,21 @@ CREATE TABLE SessionExerciseEntity (
     position  INTEGER NOT NULL,
     variantId TEXT NOT NULL REFERENCES ExerciseVariantEntity(id),
     slotId    TEXT REFERENCES RoutineSlotEntity(id) ON DELETE SET NULL, -- null: added ad hoc
-    notes     TEXT NOT NULL DEFAULT ''
+    notes     TEXT NOT NULL DEFAULT '',
+    -- 0/1: the dumbbell volume counts both hands. A snapshot of the slot's "Both hands" flag taken when the exercise
+    -- was logged (core design §3.3); later edits or the removal of the slot never change it.
+    bilateral INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE INDEX SessionExerciseEntity_sessionId ON SessionExerciseEntity(sessionId, position);
 CREATE INDEX SessionExerciseEntity_variantId ON SessionExerciseEntity(variantId);
 CREATE INDEX SessionExerciseEntity_slotId ON SessionExerciseEntity(slotId);
 
+-- A live or past session logging an exercise: the "Both hands" flag of its slot (if any) is snapshotted now.
 insert:
-INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes) VALUES (?, ?, ?, ?, ?, '');
+INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes, bilateral)
+VALUES (:id, :sessionId, :position, :variantId, :slotId, '',
+    COALESCE((SELECT s.bilateral FROM RoutineSlotEntity s WHERE s.id = :slotId), 0));
 
 setVariant:
 UPDATE SessionExerciseEntity SET variantId = :variantId WHERE id = :id;
@@ -81,6 +87,14 @@ WHERE se.variantId IN :variantIds AND s.endedAt IS NOT NULL AND s.startedAt < :b
 ORDER BY s.startedAt DESC, se.position DESC
 LIMIT 1;
 
--- History import: an exercise of an imported session, with its notes.
+-- History import: an exercise of an imported session with its notes, the slot it is linked to (null when the file
+-- names none or the slot does not exist here) and its "Both hands" snapshot from the file.
 insertImported:
-INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes) VALUES (?, ?, ?, ?, NULL, ?);
+INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes, bilateral) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- The start and end of the session an exercise belongs to: a set ticked in a finished session gets a completion time
+-- inside it, never "now" (a past session logged days later).
+sessionTimes:
+SELECT s.startedAt, s.endedAt
+FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+WHERE se.id = :id;

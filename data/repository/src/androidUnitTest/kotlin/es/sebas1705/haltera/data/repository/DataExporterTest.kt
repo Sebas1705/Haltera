@@ -322,7 +322,7 @@ class DataExporterTest {
         )
         val manifest = Json.parseToJsonElement(archive.text("manifest.json")).jsonObject
         assertEquals("haltera-export", manifest.getValue("format").jsonPrimitive.content)
-        assertEquals(1, manifest.getValue("version").jsonPrimitive.int)
+        assertEquals(2, manifest.getValue("version").jsonPrimitive.int)
         assertEquals(APP_VERSION, manifest.getValue("appVersion").jsonPrimitive.content)
         assertEquals(AppDatabase.Schema.version, manifest.getValue("schemaVersion").jsonPrimitive.content.toLong())
         assertEquals("2026-10-16T09:15:30Z", manifest.getValue("exportedAt").jsonPrimitive.content)

@@ -13,7 +13,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
- * Pins the one volume rule (TrainingMath.volume, core design §3.1 "Volume") for every way a load is entered,
+ * Pins the one volume rule (TrainingMath.volume, core design §3.3 "Volume") for every way a load is entered,
  * and checks that every statistic built on it (overview, muscles, progression, records) gives the same number.
  */
 class VolumeRuleTest {
@@ -36,18 +36,38 @@ class VolumeRuleTest {
             ),
         ),
     )
-    private val bilateral = TrainingMath.bilateralSlots(routines)
-
     private fun slot(id: String, variantId: String, bilateral: Boolean = false) =
         RoutineSlot(id = id, dayId = "d", position = 0, target = SlotTarget.Fixed(variantId), bilateral = bilateral)
 
-    private fun volume(vararg sets: SetLog, slotId: String? = null) =
-        TrainingMath.volume(move("v", *sets, slotId = slotId), bilateral)
+    /** The slot's "Both hands" flag when the exercise is logged: what the repository snapshots. */
+    private fun flagOf(slotId: String?): Boolean =
+        routines.flatMap { r -> r.days.flatMap { it.slots } }.any { it.id == slotId && it.bilateral }
+
+    /** An exercise logged now from [slotId] (null: a free session), with the snapshot taken from the routines. */
+    private fun logged(variantId: String, vararg sets: SetLog, slotId: String? = null) =
+        move(variantId, *sets, slotId = slotId, bilateral = flagOf(slotId))
+
+    private fun volume(vararg sets: SetLog, slotId: String? = null) = TrainingMath.volume(
+        logged("v", *sets, slotId = slotId)
+    )
 
     @Test
-    fun `only bilateral slots are collected`() {
-        assertEquals(setOf("slot-db-press"), bilateral)
-        assertEquals(emptySet(), TrainingMath.bilateralSlots(emptyList()))
+    fun `the snapshot is the slot flag at log time`() {
+        assertTrue(flagOf("slot-db-press"))
+        assertFalse(flagOf("slot-bench"))
+        assertFalse(flagOf(null))
+    }
+
+    @Test
+    fun `past volume ignores later changes of the slot`() {
+        val press = logged("bench-press.dumbbell", lift(24.0, 10), lift(24.0, 10), slotId = "slot-db-press")
+        assertEquals(960_000L, TrainingMath.volume(press))
+        // Slot removed, routine deleted or custom exercise deleted: the link is cleared, the snapshot stays.
+        assertEquals(960_000L, TrainingMath.volume(press.copy(slotId = null)))
+        // "Both hands" switched off afterwards: only exercises logged from now on count one implement.
+        val after = move("bench-press.dumbbell", lift(24.0, 10), lift(24.0, 10), slotId = "slot-db-press")
+        assertEquals(960_000L, TrainingMath.volume(press))
+        assertEquals(480_000L, TrainingMath.volume(after))
     }
 
     @Test
@@ -96,21 +116,21 @@ class VolumeRuleTest {
 
     @Test
     fun `every statistic agrees on the same sessions`() {
-        val bench = move("bench-press.barbell", lift(100.0, 5), lift(100.0, 5), slotId = "slot-bench")
-        val press = move("bench-press.dumbbell", lift(30.0, 10), lift(30.0, 8), slotId = "slot-db-press")
-        val curl = move("biceps-curl.dumbbell", lift(12.0, 12))
+        val bench = logged("bench-press.barbell", lift(100.0, 5), lift(100.0, 5), slotId = "slot-bench")
+        val press = logged("bench-press.dumbbell", lift(30.0, 10), lift(30.0, 8), slotId = "slot-db-press")
+        val curl = logged("biceps-curl.dumbbell", lift(12.0, 12))
         val day = dated("s1", TODAY, bench, press, curl)
         val expected = 1_000_000L + (300_000L + 240_000L) * 2 + 144_000L
-        assertEquals(expected, TrainingMath.volume(day.session, bilateral))
+        assertEquals(expected, TrainingMath.volume(day.session))
 
         val window = DayWindow(TODAY, TODAY)
-        assertEquals(expected, Overview.totals(window, listOf(day), bilateral).volume)
+        assertEquals(expected, Overview.totals(window, listOf(day)).volume)
 
         val pressHistory = listOf(ExerciseHistoryEntry("s1", day.session.startedAt, press))
-        val pressVolume = TrainingMath.volume(press, bilateral)
+        val pressVolume = TrainingMath.volume(press)
         assertEquals(1_080_000L, pressVolume)
-        assertEquals(pressVolume, Stats.personalRecords(pressHistory, bilateral).bestSessionVolume?.value)
-        assertEquals(pressVolume, ExerciseProgression.table(pressHistory, bilateral).single().volume)
+        assertEquals(pressVolume, Stats.personalRecords(pressHistory).bestSessionVolume?.value)
+        assertEquals(pressVolume, ExerciseProgression.table(pressHistory).single().volume)
     }
 
     @Test
@@ -127,9 +147,10 @@ class VolumeRuleTest {
         val now = ExerciseHistoryEntry(
             "s1",
             1,
-            move("bench-press.dumbbell", lift(20.0, 10), lift(20.0, 10), slotId = "slot-db-press"),
+            logged("bench-press.dumbbell", lift(20.0, 10), lift(20.0, 10), slotId = "slot-db-press"),
         )
-        assertTrue(RecordKind.SESSION_VOLUME in Stats.newRecords(before, now, bilateral))
-        assertFalse(RecordKind.SESSION_VOLUME in Stats.newRecords(before, now), "without the rule it was missed")
+        assertTrue(RecordKind.SESSION_VOLUME in Stats.newRecords(before, now))
+        val oneHand = now.copy(exercise = now.exercise.copy(bilateral = false))
+        assertFalse(RecordKind.SESSION_VOLUME in Stats.newRecords(before, oneHand), "one implement is no record")
     }
 }

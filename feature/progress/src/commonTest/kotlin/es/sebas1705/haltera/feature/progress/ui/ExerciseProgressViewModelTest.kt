@@ -7,7 +7,6 @@ import es.sebas1705.haltera.feature.progress.MainDispatcherTest
 import es.sebas1705.haltera.feature.progress.exercise
 import es.sebas1705.haltera.domain.usecases.stats.RepRange
 import es.sebas1705.haltera.feature.progress.fakes.FakeExerciseRepository
-import es.sebas1705.haltera.feature.progress.fakes.FakeRoutineRepository
 import es.sebas1705.haltera.feature.progress.fakes.FakeSessionRepository
 import es.sebas1705.haltera.feature.progress.fakes.FakeSettingsRepository
 import es.sebas1705.haltera.feature.progress.model.ChartPoint
@@ -55,7 +54,6 @@ class ExerciseProgressViewModelTest : MainDispatcherTest() {
         sessions,
         exercises,
         FakeSettingsRepository(),
-        FakeRoutineRepository()
     )
 
     @Test
@@ -134,7 +132,6 @@ class ExerciseProgressViewModelTest : MainDispatcherTest() {
         sessions,
         exercises,
         FakeSettingsRepository(),
-        FakeRoutineRepository(),
         ExerciseFocus(exerciseId, variantId),
     )
 

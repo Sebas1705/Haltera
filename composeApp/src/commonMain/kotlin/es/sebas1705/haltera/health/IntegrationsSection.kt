@@ -35,13 +35,11 @@ import es.sebas1705.haltera.core.units.Numbers
 import es.sebas1705.haltera.data.repository.health.HealthAvailability
 import es.sebas1705.haltera.data.repository.health.HealthSyncError
 import es.sebas1705.haltera.resources.*
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
-import kotlin.time.Instant
 
 /** Settings → Integrations → Health Connect: per-type switches, connect, status, steps goal, disconnect. */
 @Composable
@@ -150,17 +148,18 @@ private fun Connected(state: IntegrationsState, onEvent: (IntegrationsIntent) ->
     }
 }
 
-@Composable
-private fun statusText(state: IntegrationsState): String = when {
-    state.syncing -> stringResource(Res.string.health_reading)
-    state.lastReadAt > 0 -> stringResource(Res.string.health_last_read, timeOf(state.lastReadAt))
-    else -> stringResource(Res.string.health_connected)
-}
-
 @OptIn(ExperimentalTime::class)
-private fun timeOf(millis: Long): String {
-    val t = Instant.fromEpochMilliseconds(millis).toLocalDateTime(TimeZone.currentSystemDefault())
-    return "${t.date} ${t.hour.toString().padStart(2, '0')}:${t.minute.toString().padStart(2, '0')}"
+@Composable
+private fun statusText(state: IntegrationsState): String {
+    val lastRead = rememberLastReadFormat()
+    return when {
+        state.syncing -> stringResource(Res.string.health_reading)
+        state.lastReadAt > 0 -> stringResource(
+            Res.string.health_last_read,
+            lastRead.format(state.lastReadAt, Clock.System.now().toEpochMilliseconds()),
+        )
+        else -> stringResource(Res.string.health_connected)
+    }
 }
 
 @Composable

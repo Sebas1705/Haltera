@@ -208,7 +208,30 @@ class FlexibleCycleTest {
             session("free", null, at("2026-10-12", 9), routineId = null),
             session("other", 0, at("2026-10-13", 9), routineId = "x"),
         )
-        assertEquals(2, FlexibleRest.week(ppl, logged, at("2026-10-14", 12), utc)!!.used)
+        val week = FlexibleRest.week(ppl, logged, at("2026-10-14", 12), utc)!!
+        assertEquals(2, week.used)
+        assertEquals(2, week.usedWithOtherTraining, "both rest days had other training")
+    }
+
+    @Test
+    fun `rest days with other training are counted apart, once per day and only before today`() {
+        // Sunday: PPL on Mon, Wed, Fri; free sessions on Tue (two) and Thu; another routine on Fri and today.
+        val logged = listOf(
+            session("mon", 0, at("2026-10-12", 18)),
+            session("tueA", null, at("2026-10-13", 8), routineId = null),
+            session("tueB", 0, at("2026-10-13", 19), routineId = "x"),
+            session("wed", 1, at("2026-10-14", 18)),
+            session("thu", null, at("2026-10-15", 18), routineId = null),
+            session("fri", 2, at("2026-10-16", 18)),
+            session("friOther", 0, at("2026-10-16", 20), routineId = "x"),
+            session("lastWeek", null, at("2026-10-10", 18), routineId = null),
+            session("sun", 0, at("2026-10-18", 9), routineId = "x"),
+        )
+        val week = FlexibleRest.week(ppl, logged, at("2026-10-18", 12), utc)!!
+        // Tue, Thu and Sat were rest days for PPL; Tue and Thu had other training (Fri was a PPL day anyway).
+        assertEquals(3, week.used)
+        assertEquals(2, week.usedWithOtherTraining)
+        assertEquals(0, FlexibleRest.week(ppl, emptyList(), at("2026-10-18", 12), utc)!!.usedWithOtherTraining)
     }
 
     @Test

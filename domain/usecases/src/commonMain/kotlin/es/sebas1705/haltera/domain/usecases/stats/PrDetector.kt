@@ -37,7 +37,7 @@ object PrDetector {
     private class Performance(val sessionId: String, val at: Long, val sets: List<Pair<Long, Int>>, val volume: Long)
 
     /** Records of one variant's [history] (any order), oldest first. */
-    fun events(history: List<ExerciseHistoryEntry>, bilateralSlots: Set<String> = emptySet()): List<PrEvent> {
+    fun events(history: List<ExerciseHistoryEntry>): List<PrEvent> {
         val variantId = history.firstOrNull()?.exercise?.variantId ?: return emptyList()
         val performances = history.groupBy { it.sessionId }.values
             .map { entries ->
@@ -49,7 +49,7 @@ object PrDetector {
                         e.exercise.sets.filter { TrainingMath.isCounted(it) && (it.reps ?: 0) > 0 }
                             .mapNotNull { set -> TrainingMath.weightGrams(set)?.let { it to (set.reps ?: 0) } }
                     },
-                    volume = entries.sumOf { TrainingMath.volume(it.exercise, bilateralSlots) },
+                    volume = entries.sumOf { TrainingMath.volume(it.exercise) },
                 )
             }
             .filter { it.sets.isNotEmpty() }
@@ -91,11 +91,11 @@ object PrDetector {
         }.maxWithOrNull(compareBy<Pair<Long, Int>> { it.first }.thenBy { it.second })
 
     /** Records of every variant in [sessions] (finished ones), oldest first. */
-    fun eventsForSessions(sessions: List<WorkoutSession>, bilateralSlots: Set<String> = emptySet()): List<PrEvent> =
+    fun eventsForSessions(sessions: List<WorkoutSession>): List<PrEvent> =
         sessions.filter { !it.inProgress }
             .flatMap { s -> s.exercises.map { ExerciseHistoryEntry(s.id, s.startedAt, it) } }
             .groupBy { it.exercise.variantId }
             .values
-            .flatMap { events(it, bilateralSlots) }
+            .flatMap { events(it) }
             .sortedBy { it.at }
 }

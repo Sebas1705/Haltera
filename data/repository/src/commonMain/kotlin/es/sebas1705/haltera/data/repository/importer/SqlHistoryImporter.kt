@@ -1,6 +1,7 @@
 package es.sebas1705.haltera.data.repository.importer
 
 import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.local.db.RoutineSlotEntity
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.data.models.ExerciseCategory
@@ -11,6 +12,7 @@ import es.sebas1705.haltera.data.models.NewExercise
 import es.sebas1705.haltera.data.models.NewVariant
 import es.sebas1705.haltera.data.models.TrackingType
 import es.sebas1705.haltera.data.repository.ExerciseRepository
+import es.sebas1705.haltera.data.repository.sql.toDb
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -231,28 +233,40 @@ internal class SqlHistoryImporter(
 
     /** Inserts one session with its exercises and sets; returns the number of sets. */
     private fun write(session: ImportedSession, targets: Map<String, ExerciseMatch>, options: ImportOptions): Int {
+        val routine = session.routineId?.let { db.routineEntityQueries.selectById(it).executeAsOneOrNull() }
+        val routineId = routine?.id
+        val dayIndex = routineId?.let { id ->
+            session.routineDayIndex?.takeIf { it < db.routineDayEntityQueries.countByRoutine(id).executeAsOne() }
+        }
         db.workoutSessionEntityQueries.insertImported(
             session.id,
             session.startedAt,
             session.endedAt,
+            routineId,
+            dayIndex?.toLong(),
             session.title,
             session.notes,
             session.bodyWeightGrams,
+            // Linked: the routine's name here; otherwise the name the file kept, so the title survives.
+            routine?.name ?: session.routineName,
         )
         var count = 0
         session.exercises.forEachIndexed { exerciseIndex, exercise ->
             val match = targets.getValue(Targets.ref(exercise))
             val exerciseId = "${session.id}:e$exerciseIndex"
+            val slot = routineId?.let { slotOf(exercise.slotId, it) }
             db.sessionExerciseEntityQueries.insertImported(
                 exerciseId,
                 session.id,
                 exerciseIndex.toLong(),
                 match.variantId,
+                slot?.id,
                 exercise.notes,
+                (exercise.bilateral ?: (slot?.bilateral == 1L)).toDb(),
             )
             exercise.sets.forEachIndexed { setIndex, set ->
                 db.setLogEntityQueries.insert(
-                    id = "$exerciseId:s$setIndex",
+                    id = setId(set, "$exerciseId:s$setIndex"),
                     sessionExerciseId = exerciseId,
                     position = setIndex.toLong(),
                     kind = set.kind.name,
@@ -269,6 +283,20 @@ internal class SqlHistoryImporter(
             }
         }
         return count
+    }
+
+    /**
+     * The id of an imported set: the file's own (Haltera exports) when it is not taken here, so replacing a session
+     * keeps its set ids and sync sees updates; otherwise the id derived from the session id (Hevy, Strong, FitNotes).
+     */
+    private fun setId(set: ImportedSet, derived: String): String =
+        set.id?.takeIf { db.setLogEntityQueries.selectById(it).executeAsOneOrNull() == null } ?: derived
+
+    /** The slot [slotId] when it exists here and belongs to [routineId]; null otherwise. */
+    private fun slotOf(slotId: String?, routineId: String): RoutineSlotEntity? {
+        val slot = slotId?.let { db.routineSlotEntityQueries.selectById(it).executeAsOneOrNull() } ?: return null
+        val day = db.routineDayEntityQueries.selectById(slot.dayId).executeAsOneOrNull()
+        return slot.takeIf { day?.routineId == routineId }
     }
 
     // endregion

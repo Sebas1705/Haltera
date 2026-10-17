@@ -451,6 +451,23 @@ class TodayViewModelTest {
         val plan = assertNotNull(viewModel().uiState.value.plan)
         assertEquals("Pull", plan.next?.dayName)
         assertEquals(1, plan.restWeek?.used)
+        assertEquals(1, plan.restWeek?.otherTraining, "Tuesday is a rest day for the routine, said apart")
+    }
+
+    @Test
+    fun `the rest line names the routine and tells other training apart from real rest`() {
+        // QA pre-alpha.5: the week strip showed 3 trained days next to "5 rest days" (free sessions and another
+        // routine). Today is Saturday; PPL on Monday only, a free session on Tuesday, another routine on Thursday.
+        routines.active.value = flexible(RestPolicy.flexible(2))
+        sessions.sessions.value = listOf(
+            logged("mon", 0, at(2026, 10, 12, 18)),
+            WorkoutSession("free", at(2026, 10, 13, 18), endedAt = at(2026, 10, 13, 19)),
+            logged("other", 0, at(2026, 10, 15, 18), routineId = "r2"),
+        )
+        val plan = assertNotNull(viewModel(now = at(2026, 10, 17, 9)).uiState.value.plan)
+        assertEquals(ROUTINE.name, plan.routineName)
+        assertEquals(RestWeekUi(used = 4, planned = 2, restToday = false, otherTraining = 2), plan.restWeek)
+        assertEquals(RestWeekWording.OVER_TARGET, plan.restWeek?.wording)
     }
 
     @Test

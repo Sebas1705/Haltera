@@ -47,6 +47,7 @@ internal object HalteraParser {
             }
             extendEnd(group, row, explicitEnd)
             if (group.notes.isEmpty()) group.notes = row["session_notes"]
+            link(group, row)
             if (group.bodyWeightGrams == null) {
                 group.bodyWeightGrams = ImportValues.decimal(row["session_body_weight_kg"])
                     ?.let { (it * GRAMS_PER_KG).roundToLong() }
@@ -55,6 +56,8 @@ internal object HalteraParser {
             val exercise = group.exercise("${row["exercise_position"]}|$variantId|$name", name)
             row["exercise_notes"].takeIf { it.isNotEmpty() }?.let { exercise.notes += it }
             describe(exercise, row["exercise_id"].ifEmpty { null }, variantId, definitions)
+            if (exercise.slotId == null) exercise.slotId = row["slot_id"].ifEmpty { null }
+            if (exercise.bilateral == null) exercise.bilateral = flag(row["both_hands"])
             exercise.sets += set(row, startedAt)
         }
         return ParsedImport(ImportSource.HALTERA, acc.build(), skippedRows = skipped)
@@ -76,7 +79,22 @@ internal object HalteraParser {
         }
     }
 
+    /** Version 2 columns: the routine, its name and the day the session was logged from (version 1 has none). */
+    private fun link(group: SessionAccumulator.Group, row: CsvTable.Row) {
+        if (group.routineId == null) group.routineId = row["routine_id"].ifEmpty { null }
+        if (group.routineName == null) group.routineName = row["routine_name"].ifEmpty { null }
+        if (group.routineDayIndex == null) group.routineDayIndex = row["routine_day_index"].toIntOrNull()?.takeIf { it >= 0 }
+    }
+
+    /** `both_hands`: 1 or 0; empty (version 1) or anything else is unknown. */
+    private fun flag(text: String): Boolean? = when (text) {
+        "1" -> true
+        "0" -> false
+        else -> null
+    }
+
     private fun set(row: CsvTable.Row, startedAt: Long) = ImportedSet(
+        id = row["set_id"].ifEmpty { null },
         kind = SetKind.fromDb(row["set_type"]),
         reps = ImportValues.integer(row["reps"]),
         loadGrams = row["load_grams"].takeIf { it.isNotEmpty() }

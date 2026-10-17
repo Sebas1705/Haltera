@@ -149,7 +149,8 @@ class SessionViewModelTest {
         assertEquals(1 + 3, sets.size, "one warm-up and three working rows")
         assertEquals(SetKind.WARMUP, sets.first().kind)
         assertTrue(sets.none { it.completed })
-        assertTrue(sets.drop(1).all { it.reps == 8 && it.loadGrams == null })
+        // No history: a barbell row starts at the bar, the load its editor shows.
+        assertTrue(sets.drop(1).all { it.reps == 8 && it.loadGrams == settings.settings.value.barWeightGrams })
         assertEquals(Suggestion.FirstTime, vm.uiState.value.cards.first().suggestion)
         assertEquals(SESSION_ID, indicator.shown)
     }
@@ -639,6 +640,7 @@ class SessionViewModelTest {
     @Test
     fun requestFinishInLogModeSavesWithoutAConfirmation() = runTest {
         val vm = viewModel(pastSession())
+        vm.onEvent(SessionIntent.ToggleSet(cardSets(vm).first().id))
         vm.onEvent(SessionIntent.RequestFinish)
         assertNull(vm.uiState.value.dialog)
         assertNotNull(vm.uiState.value.summary)
@@ -650,6 +652,7 @@ class SessionViewModelTest {
         val vm = viewModel(pastSession(startedAt = start, endedAt = null))
         assertTrue(vm.uiState.value.logMode)
 
+        vm.onEvent(SessionIntent.ToggleSet(cardSets(vm).first().id))
         vm.onEvent(SessionIntent.Save)
 
         assertEquals(
@@ -722,7 +725,11 @@ class SessionViewModelTest {
     fun firstTimeWarmUpsFollowTheFirstWorkingLoad() = runTest {
         val vm = viewModel()
         val warmup = cardSets(vm).first()
-        assertNull(warmup.loadGrams, "no history: the warm-up starts without a load")
+        assertEquals(
+            settings.settings.value.barWeightGrams,
+            warmup.loadGrams,
+            "no history: the warm-up starts at the bar"
+        )
 
         edit(vm, working(vm).first().id) { it.copy(loadGrams = 80_000) }
         assertEquals(47_500, sessions.set(warmup.id)!!.loadGrams, "60 % of 80 kg rounded down to the 2.5 kg step")

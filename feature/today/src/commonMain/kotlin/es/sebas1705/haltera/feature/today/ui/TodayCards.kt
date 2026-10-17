@@ -56,6 +56,7 @@ import es.sebas1705.haltera.feature.today.resources.today_no_training_days
 import es.sebas1705.haltera.feature.today.resources.today_rest_hint
 import es.sebas1705.haltera.feature.today.resources.today_rest_week
 import es.sebas1705.haltera.feature.today.resources.today_rest_week_none
+import es.sebas1705.haltera.feature.today.resources.today_rest_week_other_training
 import es.sebas1705.haltera.feature.today.resources.today_rest_week_over
 import es.sebas1705.haltera.feature.today.resources.today_rest_week_unplanned
 import es.sebas1705.haltera.feature.today.resources.today_rest_week_info
@@ -139,7 +140,7 @@ internal fun PlanCard(
                     fontWeight = FontWeight.SemiBold,
                 )
                 if (next.showRestHint) RestHint()
-                plan.restWeek?.let { RestWeekLine(it) }
+                plan.restWeek?.let { RestWeekLine(it, plan.routineName) }
                 // The primary action comes before the exercise list so it stays above the fold on
                 // small phones with long days.
                 Button(
@@ -179,23 +180,40 @@ internal fun PlanCard(
 }
 
 @Composable
-private fun RestWeekLine(week: RestWeekUi) {
+private fun RestWeekLine(week: RestWeekUi, routineName: String) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
             when (week.wording) {
-                RestWeekWording.OF_TARGET -> stringResource(Res.string.today_rest_week, week.used, week.planned)
-                RestWeekWording.OVER_TARGET ->
-                    pluralStringResource(Res.plurals.today_rest_week_over, week.used, week.used, week.planned)
+                RestWeekWording.OF_TARGET ->
+                    stringResource(Res.string.today_rest_week, week.used, week.planned, routineName)
+                RestWeekWording.OVER_TARGET -> pluralStringResource(
+                    Res.plurals.today_rest_week_over,
+                    week.used,
+                    week.used,
+                    week.planned,
+                    routineName,
+                )
                 RestWeekWording.UNPLANNED -> pluralStringResource(
                     Res.plurals.today_rest_week_unplanned,
                     week.used,
-                    week.used
+                    week.used,
+                    routineName,
                 )
-                RestWeekWording.NONE_PLANNED -> stringResource(Res.string.today_rest_week_none)
+                RestWeekWording.NONE_PLANNED -> stringResource(Res.string.today_rest_week_none, routineName)
             },
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
         )
+        if (week.otherTraining > 0) {
+            Text(
+                pluralStringResource(
+                    Res.plurals.today_rest_week_other_training,
+                    week.otherTraining,
+                    week.otherTraining,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         Text(
             stringResource(Res.string.today_rest_week_info),
             style = MaterialTheme.typography.bodySmall,

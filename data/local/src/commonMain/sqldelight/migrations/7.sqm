@@ -1,0 +1,54 @@
+-- Version 7 -> 8 (core design §3.3).
+--
+-- 1. A logged exercise keeps whether its dumbbell volume counts both hands. Until now the volume read the "Both hands"
+--    flag of the routine slot at summing time, so removing the slot, deleting its routine or its custom exercise, or
+--    toggling the switch rewrote past volume. The flag is now a snapshot taken when the exercise is logged.
+-- 2. A session keeps the name of its routine: it follows renames while the routine exists and stays when the routine
+--    is deleted, so "Push Pull Legs · Push" does not become "Push".
+-- 3. A session without a routine points at no day of it (docs/EXPORT-FORMAT.md: routine_day_index "empty when there
+--    is none"); deleting a routine used to leave the index behind.
+ALTER TABLE SessionExerciseEntity ADD COLUMN bilateral INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE WorkoutSessionEntity ADD COLUMN routineName TEXT;
+
+-- The backfill queues nothing for the cloud (the change-tracking triggers stay quiet while it runs): documents without
+-- the new fields are decoded the same way on the other phones (AggregateStore), and a session's document is rewritten
+-- the next time it changes.
+INSERT OR REPLACE INTO Meta(key, value) VALUES ('syncApplying', '1');
+
+-- Both hands: an exercise whose slot still exists takes the slot's current flag. An exercise without a slot (free
+-- session, added outside the plan, or a slot already removed: ON DELETE SET NULL cleared the link) keeps 0, one
+-- implement, which is what these versions showed for it.
+UPDATE SessionExerciseEntity SET bilateral = 1
+WHERE slotId IS NOT NULL
+  AND EXISTS (SELECT 1 FROM RoutineSlotEntity s WHERE s.id = SessionExerciseEntity.slotId AND s.bilateral = 1);
+
+-- Routine name: sessions whose routine still exists take its name. Sessions of a routine deleted before this version
+-- have lost the link and get no name.
+UPDATE WorkoutSessionEntity
+SET routineName = (SELECT r.name FROM RoutineEntity r WHERE r.id = WorkoutSessionEntity.routineId)
+WHERE routineId IS NOT NULL;
+
+UPDATE WorkoutSessionEntity SET routineDayIndex = NULL WHERE routineId IS NULL AND routineDayIndex IS NOT NULL;
+
+-- Sets ticked on a past session logged later were stamped with the time they were ticked, days after the session
+-- ended. Completion times of finished sessions are brought inside [startedAt, endedAt].
+UPDATE SetLogEntity
+SET completedAt = (
+    SELECT MAX(s.startedAt, MIN(s.endedAt, SetLogEntity.completedAt))
+    FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+    WHERE se.id = SetLogEntity.sessionExerciseId
+)
+WHERE completedAt IS NOT NULL
+  AND EXISTS (
+    SELECT 1 FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+    WHERE se.id = SetLogEntity.sessionExerciseId AND s.endedAt IS NOT NULL
+      AND (SetLogEntity.completedAt > s.endedAt OR SetLogEntity.completedAt < s.startedAt)
+  );
+
+INSERT OR REPLACE INTO Meta(key, value) VALUES ('syncApplying', '0');
+
+CREATE TRIGGER RoutineEntity_clearSessionDays
+BEFORE DELETE ON RoutineEntity
+BEGIN
+    UPDATE WorkoutSessionEntity SET routineDayIndex = NULL WHERE routineId = old.id;
+END;

@@ -78,6 +78,8 @@ internal data class SessionPayload(
     val notes: String = "",
     val bodyWeightGrams: Long? = null,
     val exercises: List<SessionExercisePayload> = emptyList(),
+    /** Schema 8: the routine name kept by the session; null in older documents (taken from the routine here). */
+    val routineName: String? = null,
 )
 
 @Serializable
@@ -88,6 +90,11 @@ internal data class SessionExercisePayload(
     val slotId: String? = null,
     val notes: String = "",
     val sets: List<SetPayload> = emptyList(),
+    /**
+     * Schema 8: the "Both hands" snapshot (0/1, core design §3.3). Null in documents written by older versions, which
+     * read the flag from the slot when summing: the receiver derives it from its copy of the slot, as they did.
+     */
+    val bilateral: Long? = null,
 )
 
 @Serializable
@@ -258,6 +265,7 @@ internal fun RoutineSlotEntity.toPayload() = SlotPayload(
 internal fun WorkoutSessionEntity.toPayload(exercises: List<SessionExercisePayload>) = SessionPayload(
     id = id, startedAt = startedAt, endedAt = endedAt, routineId = routineId, routineDayIndex = routineDayIndex,
     dayName = dayName, notes = notes, bodyWeightGrams = bodyWeightGrams, exercises = exercises,
+    routineName = routineName,
 )
 
 internal fun SessionExerciseEntity.toPayload(sets: List<SetPayload>) =
@@ -267,7 +275,8 @@ internal fun SessionExerciseEntity.toPayload(sets: List<SetPayload>) =
         variantId = variantId,
         slotId = slotId,
         notes = notes,
-        sets = sets
+        sets = sets,
+        bilateral = bilateral,
     )
 
 internal fun SetLogEntity.toPayload() = SetPayload(

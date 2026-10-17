@@ -31,14 +31,16 @@ internal fun lift(
     completed = completed,
 )
 
-internal fun move(variantId: String, vararg sets: SetLog, slotId: String? = null) =
+/** A performed exercise; [bilateral] is its "Both hands" snapshot (taken from the slot when it was logged). */
+internal fun move(variantId: String, vararg sets: SetLog, slotId: String? = null, bilateral: Boolean = false) =
     SessionExercise(
         id = "se-$variantId",
         sessionId = "",
         position = 0,
         variantId = variantId,
         slotId = slotId,
-        sets = sets.toList()
+        sets = sets.toList(),
+        bilateral = bilateral,
     )
 
 /** A session on epoch [day] at 10:00 UTC lasting [minutes] (null: in progress). */

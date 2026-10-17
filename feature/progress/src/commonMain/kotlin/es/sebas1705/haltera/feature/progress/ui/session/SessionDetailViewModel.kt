@@ -18,7 +18,6 @@ import es.sebas1705.haltera.feature.progress.model.ProgressClock
 import es.sebas1705.haltera.feature.progress.model.ProgressMath
 import es.sebas1705.haltera.feature.progress.model.SessionSummary
 import es.sebas1705.haltera.feature.progress.model.VariantInfo
-import es.sebas1705.haltera.feature.progress.model.bilateralSlots
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
@@ -133,12 +132,10 @@ internal class SessionDetailViewModel(
                 SessionDetailState(loading = false, notFound = true, unit = userSettings.unit)
             } else {
                 val routineNames = allRoutines.associate { it.id to it.name }
-                // The one volume rule (TrainingMath.volume): the same numbers as the calendar and the overview.
-                val bilateral = allRoutines.bilateralSlots()
                 val variants = lookup.resolve(session.exercises.map { it.variantId })
                 SessionDetailState(
                     loading = false,
-                    summary = ProgressMath.summarize(session, routineNames, bilateral),
+                    summary = ProgressMath.summarize(session, routineNames),
                     endedAt = session.endedAt,
                     notes = session.notes,
                     // Older saves may keep exercises without a completed set: nothing was logged, so hide them.
@@ -151,7 +148,8 @@ internal class SessionDetailViewModel(
                                 variant = variants[exercise.variantId],
                                 notes = exercise.notes,
                                 sets = exercise.sets.sortedBy { it.position },
-                                volumeGrams = TrainingMath.volume(exercise, bilateral),
+                                // The one volume rule (TrainingMath.volume): the same numbers as the calendar and the overview.
+                                volumeGrams = TrainingMath.volume(exercise),
                             )
                         },
                     unit = userSettings.unit,

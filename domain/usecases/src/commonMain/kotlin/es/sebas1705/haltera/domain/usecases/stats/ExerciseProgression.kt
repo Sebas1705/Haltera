@@ -50,8 +50,8 @@ object ExerciseProgression {
     const val MILLIS_PER_DAY = 86_400_000.0
 
     /** One row per session of [history] (one variant, any order), latest first. */
-    fun table(history: List<ExerciseHistoryEntry>, bilateralSlots: Set<String> = emptySet()): List<ProgressionRow> {
-        val prs = PrDetector.events(history, bilateralSlots).groupBy({ it.sessionId }, { it.kind })
+    fun table(history: List<ExerciseHistoryEntry>): List<ProgressionRow> {
+        val prs = PrDetector.events(history).groupBy({ it.sessionId }, { it.kind })
         val sessions = history.groupBy { it.sessionId }.values
             .map { entries -> entries.first() to entries }
             .sortedWith(compareBy({ it.first.sessionStartedAt }, { it.first.sessionId }))
@@ -68,7 +68,7 @@ object ExerciseProgression {
                 bestSet = bestSet(withReps),
                 oneRm = oneRm,
                 topLoad = withReps.mapNotNull { TrainingMath.weightGrams(it) }.maxOrNull(),
-                volume = entries.sumOf { TrainingMath.volume(it.exercise, bilateralSlots) },
+                volume = entries.sumOf { TrainingMath.volume(it.exercise) },
                 effectiveSets = effective,
                 oneRmDelta = if (oneRm > 0) previousOneRm?.let { oneRm - it } else null,
                 prs = prs[first.sessionId].orEmpty().toSet(),
@@ -124,10 +124,9 @@ data class ExerciseRecords(
 
 /** All-time records of one variant's [history]; ties keep the earliest. */
 fun ExerciseProgression.records(
-    history: List<ExerciseHistoryEntry>,
-    bilateralSlots: Set<String> = emptySet()
+    history: List<ExerciseHistoryEntry>
 ): ExerciseRecords {
-    val rows = table(history, bilateralSlots).sortedBy { it.at }
+    val rows = table(history).sortedBy { it.at }
     fun best(value: (ProgressionRow) -> Long?): Record? = rows
         .mapNotNull { row -> value(row)?.takeIf { it > 0 }?.let { Record(it, row.sessionId, row.at) } }
         .fold(null as Record?) { acc, r -> if (acc == null || r.value > acc.value) r else acc }

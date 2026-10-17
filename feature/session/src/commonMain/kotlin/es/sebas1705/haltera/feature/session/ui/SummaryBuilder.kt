@@ -28,8 +28,6 @@ object SummaryBuilder {
         dayOf: (Long) -> Int,
         previous: suspend (variantId: String) -> List<ExerciseHistoryEntry>,
         increase: suspend (slot: RoutineSlot, variantId: String) -> Suggestion.Increase?,
-        /** Bilateral routine slots, so the "session volume" record follows the one volume rule (TrainingMath.volume). */
-        bilateralSlots: Set<String> = emptySet(),
     ): FinishSummary {
         val exercises = session.exercises.sortedBy { it.position }
         val records = mutableListOf<RecordLine>()
@@ -43,7 +41,7 @@ object SummaryBuilder {
             val kinds = if (before.isEmpty()) {
                 emptySet()
             } else {
-                Stats.newRecords(before, ExerciseHistoryEntry(session.id, session.startedAt, exercise), bilateralSlots)
+                Stats.newRecords(before, ExerciseHistoryEntry(session.id, session.startedAt, exercise))
             }
             if (kinds.isNotEmpty()) records += RecordLine(card.name, kinds)
             LastTimeComparisons.compare(exercise, before, card.trackingType, card.loadType, dayOf)?.let {

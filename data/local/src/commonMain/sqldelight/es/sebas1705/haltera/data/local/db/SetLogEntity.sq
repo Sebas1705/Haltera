@@ -42,3 +42,11 @@ SELECT * FROM SetLogEntity WHERE sessionExerciseId = ? ORDER BY position;
 
 selectBySessionExercises:
 SELECT * FROM SetLogEntity WHERE sessionExerciseId IN ? ORDER BY sessionExerciseId, position;
+
+-- A session's times were edited: its completed sets move with the start (same offset) and stay inside
+-- [startedAt, endedAt] (no upper bound while in progress).
+shiftCompletedAt:
+UPDATE SetLogEntity
+SET completedAt = MAX(:startedAt, COALESCE(MIN(:endedAt, completedAt + :delta), completedAt + :delta))
+WHERE completedAt IS NOT NULL
+  AND sessionExerciseId IN (SELECT id FROM SessionExerciseEntity WHERE sessionId = :sessionId);

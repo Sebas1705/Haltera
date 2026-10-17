@@ -180,6 +180,28 @@ object Prefill {
     fun tracksLoad(trackingType: TrackingType, loadType: LoadType): Boolean =
         trackingType.tracksLoad && loadType != LoadType.NONE
 
+    /**
+     * [input] with the load the set editor shows when the set has none, so saving stores what was on screen (QA
+     * alpha.5: a barbell set showed "Total 20 kg / bar only", only the reps were changed, and it was saved without a
+     * load). A barbell shows the bar ([barGrams]), a band level 1, a machine by stack position plate 1. A dumbbell,
+     * a machine weight or a bodyweight load shows 0, which is no load, so those stay empty.
+     */
+    fun shownInEditor(input: SetInput, trackingType: TrackingType, loadType: LoadType, barGrams: Long): SetInput {
+        if (input.loadGrams != null || !tracksLoad(trackingType, loadType)) return input
+        return when (loadType) {
+            LoadType.BARBELL -> input.copy(
+                loadGrams = barGrams,
+                loadDetail = input.loadDetail ?: LoadDetail.encode(LoadDetail.Barbell(barGrams)),
+            )
+            LoadType.BAND -> input.copy(
+                loadGrams = 1,
+                loadDetail = input.loadDetail ?: LoadDetail.encode(LoadDetail.Band)
+            )
+            LoadType.MACHINE -> if (isMachinePlate(input.loadDetail)) input.copy(loadGrams = 1) else input
+            else -> input
+        }
+    }
+
     /** The reps a row starts at: the bottom of a range, or the fixed count. */
     fun lowReps(prescription: Prescription?): Int? = when (prescription) {
         is Prescription.RepRange -> prescription.min

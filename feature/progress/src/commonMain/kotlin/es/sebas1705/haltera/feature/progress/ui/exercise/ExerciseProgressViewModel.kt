@@ -8,7 +8,6 @@ import es.sebas1705.haltera.core.units.WeightUnit
 import es.sebas1705.haltera.data.models.ExerciseHistoryEntry
 import es.sebas1705.haltera.data.models.LocalizedText
 import es.sebas1705.haltera.data.repository.ExerciseRepository
-import es.sebas1705.haltera.data.repository.RoutineRepository
 import es.sebas1705.haltera.data.repository.SessionRepository
 import es.sebas1705.haltera.domain.usecases.stats.ExerciseProgression
 import es.sebas1705.haltera.domain.usecases.stats.ExerciseRecords
@@ -21,7 +20,6 @@ import es.sebas1705.haltera.feature.progress.model.ExerciseCharts
 import es.sebas1705.haltera.feature.progress.model.ExerciseLookup
 import es.sebas1705.haltera.feature.progress.model.ProgressMath
 import es.sebas1705.haltera.feature.progress.model.VariantInfo
-import es.sebas1705.haltera.feature.progress.model.bilateralSlots
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -85,7 +83,6 @@ internal class ExerciseProgressViewModel(
     private val sessions: SessionRepository,
     private val exerciseRepository: ExerciseRepository,
     private val settings: SettingsRepository,
-    private val routines: RoutineRepository,
     private val focus: ExerciseFocus? = null,
 ) : MVIBaseViewModel<ExerciseProgressState, ExerciseProgressIntent>(ExerciseProgressState(focused = focus != null)) {
 
@@ -144,13 +141,8 @@ internal class ExerciseProgressViewModel(
             if (id == null) flowOf(emptyList()) else exerciseRepository.observeVariantHistory(id)
         }
         val base =
-            combine(
-                allVariants,
-                history,
-                selectedVariant,
-                routines.observeRoutines()
-            ) { all, (exerciseId, entries), variantId, list ->
-                Inputs(all, exerciseId, entries, variantId, list.bilateralSlots())
+            combine(allVariants, history, selectedVariant) { all, (exerciseId, entries), variantId ->
+                Inputs(all, exerciseId, entries, variantId)
             }
         combine(base, compareHistory, compared, settings.settings) { inputs, compareEntries, compareId, userSettings ->
             buildState(inputs, compareId, compareEntries, userSettings.unit)
@@ -162,7 +154,6 @@ internal class ExerciseProgressViewModel(
         val exerciseId: String?,
         val entries: List<ExerciseHistoryEntry>,
         val variantId: String?,
-        val bilateral: Set<String>,
     )
 
     private suspend fun buildState(
@@ -180,7 +171,7 @@ internal class ExerciseProgressViewModel(
             }
         } ?: variants.firstOrNull()?.variantId
         val variantHistory = inputs.entries.filter { it.exercise.variantId == variant }
-        val rows = ExerciseProgression.table(variantHistory, inputs.bilateral)
+        val rows = ExerciseProgression.table(variantHistory)
         val options = inputs.all.filter { it.variantId != variant }
         val compareVariant = compareId?.takeIf { id -> options.any { it.variantId == id } }
         return ExerciseProgressState(
@@ -194,17 +185,14 @@ internal class ExerciseProgressViewModel(
             repRanges = ExerciseProgression.repRanges(variantHistory),
             trend = ExerciseProgression.oneRmTrend(rows),
             records = variantHistory.takeIf { it.isNotEmpty() }?.let {
-                ExerciseProgression.records(
-                    it,
-                    inputs.bilateral
-                )
+                ExerciseProgression.records(it)
             },
             compareOptions = options,
             compareVariantId = compareVariant,
             compareOneRm = if (compareVariant == null) {
                 emptyList()
             } else {
-                ProgressMath.exerciseCharts(ExerciseProgression.table(compareEntries, inputs.bilateral)).oneRm
+                ProgressMath.exerciseCharts(ExerciseProgression.table(compareEntries)).oneRm
             },
             unit = unit,
             focused = focus != null,

@@ -1,13 +1,13 @@
-﻿date,session_id,started_at,ended_at,day_name,session_notes,session_body_weight_kg,exercise_id,variant_id,exercise,variant,exercise_position,exercise_notes,set_number,set_type,reps,load_grams,load_kg,unit,load_detail,duration_s,distance_m,rpe,completed_at,set_id
+﻿date,session_id,started_at,ended_at,day_name,session_notes,session_body_weight_kg,exercise_id,variant_id,exercise,variant,exercise_position,exercise_notes,set_number,set_type,reps,load_grams,load_kg,unit,load_detail,duration_s,distance_m,rpe,completed_at,set_id,routine_id,routine_name,routine_day_index,slot_id,both_hands
 2026-10-14,s-001,2026-10-14T17:30:00Z,2026-10-14T18:40:00Z,"Push, A","Felt ""great""
-PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,1,WARMUP,10,20000,20,kg,,,,,2026-10-14T18:00:00Z,t-001
+PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,1,WARMUP,10,20000,20,kg,,,,,2026-10-14T18:00:00Z,t-001,,,,,0
 2026-10-14,s-001,2026-10-14T17:30:00Z,2026-10-14T18:40:00Z,"Push, A","Felt ""great""
-PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,2,WORKING,5,82500,82.5,kg,,,,8.5,2026-10-14T18:00:00Z,t-002
+PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,2,WORKING,5,82500,82.5,kg,,,,8.5,2026-10-14T18:00:00Z,t-002,,,,,0
 2026-10-14,s-001,2026-10-14T17:30:00Z,2026-10-14T18:40:00Z,"Push, A","Felt ""great""
-PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,3,FAILURE,3,82500,82.5,kg,,,,10,2026-10-14T18:00:00Z,t-003
+PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,3,FAILURE,3,82500,82.5,kg,,,,10,2026-10-14T18:00:00Z,t-003,,,,,0
 2026-10-14,s-001,2026-10-14T17:30:00Z,2026-10-14T18:40:00Z,"Push, A","Felt ""great""
-PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,4,DROP,8,60125,60.125,kg,,,,,2026-10-14T18:10:00Z,t-004
+PR attempt",,bench-press,bench-press.barbell,Bench Press,barbell,1,tempo 3-1-1,4,DROP,8,60125,60.125,kg,,,,,2026-10-14T18:10:00Z,t-004,,,,,0
 2026-10-14,s-001,2026-10-14T17:30:00Z,2026-10-14T18:40:00Z,"Push, A","Felt ""great""
-PR attempt",,user-ex1,user-ex1.machine,"Leg press, 45°",machine,2,,1,WORKING,12,7,,plate,"{""type"":""machinePlate""}",,,,2026-10-14T18:00:00Z,t-006
-2026-10-16,s-002,2026-10-15T23:30:00Z,,,,,plank,plank.bodyweight,Plank,bodyweight,1,,1,WORKING,,,,,,60,,,2026-10-14T18:00:00Z,t-007
-2026-10-16,s-002,2026-10-15T23:30:00Z,,,,,bench-press,bench-press.dumbbell,Bench Press,dumbbell,2,,1,WORKING,10,30000,30,kg,,,,7,2026-10-15T23:45:00Z,t-008
+PR attempt",,user-ex1,user-ex1.machine,"Leg press, 45°",machine,2,,1,WORKING,12,7,,plate,"{""type"":""machinePlate""}",,,,2026-10-14T18:00:00Z,t-006,,,,,0
+2026-10-16,s-002,2026-10-15T23:30:00Z,,,,,plank,plank.bodyweight,Plank,bodyweight,1,,1,WORKING,,,,,,60,,,2026-10-14T18:00:00Z,t-007,,,,,0
+2026-10-16,s-002,2026-10-15T23:30:00Z,,,,,bench-press,bench-press.dumbbell,Bench Press,dumbbell,2,,1,WORKING,10,30000,30,kg,,,,7,2026-10-15T23:45:00Z,t-008,,,,,0

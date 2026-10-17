@@ -24,7 +24,12 @@ import kotlin.time.Instant
 @Suppress("TooManyFunctions") // One small pure function per column group and number format.
 object ExportFormat {
     const val FORMAT = "haltera-export"
-    const val VERSION = 1
+
+    /**
+     * 2 (schema 8): `sessions.csv` gains `routine_id`, `routine_name`, `routine_day_index`, `slot_id` and `both_hands`,
+     * so importing an export keeps routine sessions linked and dumbbell volume right. Version 1 files still import.
+     */
+    const val VERSION = 2
 
     const val SESSIONS_FILE = "sessions.csv"
     const val BODY_WEIGHT_FILE = "body_weight.csv"
@@ -43,6 +48,8 @@ object ExportFormat {
         "exercise_id", "variant_id", "exercise", "variant", "exercise_position", "exercise_notes",
         "set_number", "set_type", "reps", "load_grams", "load_kg", "unit", "load_detail",
         "duration_s", "distance_m", "rpe", "completed_at", "set_id",
+        // Version 2.
+        "routine_id", "routine_name", "routine_day_index", "slot_id", "both_hands",
     )
 
     val BODY_WEIGHT_COLUMNS = listOf("date", "measured_at", "weight_kg", "weight_grams", "unit", "notes", "id")
@@ -112,11 +119,15 @@ object ExportFormat {
         val loadType: LoadType?,
     )
 
-    /** One row per completed set of [session]; sessions without completed sets give none. */
+    /**
+     * One row per completed set of [session]; sessions without completed sets give none. `routine_name` is [routineName]
+     * (the routine's current name) or, once the routine is gone, the name the session kept ([WorkoutSession.routineName]).
+     */
     fun sessionRows(
         session: WorkoutSession,
         variants: (String) -> VariantInfo,
         timeZone: TimeZone,
+        routineName: String? = null,
     ): List<List<String>> {
         val rows = mutableListOf<List<String>>()
         val head = listOf(
@@ -138,8 +149,15 @@ object ExportFormat {
                 (exerciseIndex + 1).toString(),
                 exercise.notes,
             )
+            val link = listOf(
+                session.routineId.orEmpty(),
+                (routineName ?: session.routineName).orEmpty(),
+                session.routineDayIndex?.toString().orEmpty(),
+                exercise.slotId.orEmpty(),
+                if (exercise.bilateral) "1" else "0",
+            )
             exercise.sets.filter { it.completed }.sortedBy { it.position }.forEachIndexed { setIndex, set ->
-                rows += head + exerciseColumns + setColumns(set, setIndex + 1, info.loadType)
+                rows += head + exerciseColumns + setColumns(set, setIndex + 1, info.loadType) + link
             }
         }
         return rows

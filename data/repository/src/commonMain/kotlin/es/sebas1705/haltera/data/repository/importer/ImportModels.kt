@@ -47,6 +47,8 @@ data class ParseOptions(val timeZone: TimeZone = TimeZone.currentSystemDefault()
 
 /** One set read from a file. A load is either an exact [loadGrams] or a [weight] in [weightUnit] (null: ask). */
 data class ImportedSet(
+    /** Haltera exports: the set id of the file, kept on import so a replaced session updates its sets in place. */
+    val id: String? = null,
     val kind: SetKind = SetKind.WORKING,
     val reps: Int? = null,
     val weight: Double? = null,
@@ -71,6 +73,10 @@ data class ImportedExercise(
     val trackingType: TrackingType? = null,
     val muscles: List<Muscle> = emptyList(),
     val equipment: Equipment? = null,
+    /** Haltera export v2: the routine slot it was logged from (linked only if it exists here). */
+    val slotId: String? = null,
+    /** Haltera export v2: the "Both hands" snapshot; null when the file does not say (one implement). */
+    val bilateral: Boolean? = null,
 )
 
 data class ImportedSession(
@@ -82,6 +88,10 @@ data class ImportedSession(
     val notes: String,
     val bodyWeightGrams: Long?,
     val exercises: List<ImportedExercise>,
+    /** Haltera export v2: the routine and day the session was logged from (linked only if they exist here). */
+    val routineId: String? = null,
+    val routineName: String? = null,
+    val routineDayIndex: Int? = null,
 ) {
     val setCount: Int get() = exercises.sumOf { it.sets.size }
 }

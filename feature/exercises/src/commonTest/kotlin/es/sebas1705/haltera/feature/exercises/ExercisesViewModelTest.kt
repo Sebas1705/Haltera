@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.feature.exercises
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.ExerciseCategory
@@ -135,6 +136,51 @@ class ExercisesViewModelTest {
         advanceUntilIdle()
         assertEquals(listOf("bench-press"), vm.uiState.value.items.map { it.id })
         assertEquals(ExerciseFilter(equipment = Equipment.DUMBBELL), repository.searches.last().first)
+    }
+
+    @Test
+    fun `the query and the chips survive process death and search at once`() = runTest {
+        val saved = SavedStateHandle()
+        val before = ExercisesViewModel(repository, dispatcher, saved)
+        before.onEvent(ExercisesIntent.SetLanguage("en"))
+        before.onEvent(ExercisesIntent.QueryChanged("press "))
+        before.onEvent(ExercisesIntent.CategorySelected(ExerciseCategory.STRENGTH))
+        before.onEvent(ExercisesIntent.MuscleSelected(Muscle.CHEST))
+        before.onEvent(ExercisesIntent.EquipmentSelected(Equipment.DUMBBELL))
+        advanceUntilIdle()
+
+        val handle = saved.afterProcessDeath()
+        val after = ExercisesViewModel(repository, dispatcher, handle)
+        val state = after.uiState.value
+        assertEquals("press ", state.query)
+        assertEquals(ExerciseCategory.STRENGTH, state.category)
+        assertEquals(Muscle.CHEST, state.muscle)
+        assertEquals(Equipment.DUMBBELL, state.equipment)
+        assertFalse(state.hiddenSelected)
+
+        after.onEvent(ExercisesIntent.SetLanguage("en"))
+        advanceUntilIdle()
+        assertEquals(
+            ExerciseFilter("press", ExerciseCategory.STRENGTH, Muscle.CHEST, Equipment.DUMBBELL),
+            repository.searches.last().first,
+        )
+        assertEquals(listOf("bench-press"), after.uiState.value.items.map { it.id })
+
+        // Clearing is saved as well.
+        after.onEvent(ExercisesIntent.ClearFilters)
+        advanceUntilIdle()
+        assertFalse(ExercisesViewModel(repository, dispatcher, handle.afterProcessDeath()).uiState.value.hasFilters)
+    }
+
+    @Test
+    fun `saved filters from another build are read leniently`() = runTest {
+        val saved = SavedStateHandle(
+            mapOf("exercises.category" to "GONE", "exercises.muscle" to "BICEPS", "exercises.equipment" to 3),
+        )
+        val state = ExercisesViewModel(repository, dispatcher, saved).uiState.value
+        assertEquals(null, state.category)
+        assertEquals(Muscle.BICEPS, state.muscle)
+        assertEquals(null, state.equipment)
     }
 
     @Test

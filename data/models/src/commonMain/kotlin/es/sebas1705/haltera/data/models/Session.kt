@@ -15,11 +15,20 @@ data class WorkoutSession(
     val notes: String = "",
     val bodyWeightGrams: Long? = null,
     val exercises: List<SessionExercise> = emptyList(),
+    /**
+     * Name of the routine the session was logged from: it follows renames while the routine exists and is kept when
+     * the routine is deleted ([routineId] is then null), so the title survives. Null for a free session.
+     */
+    val routineName: String? = null,
 ) {
     val inProgress: Boolean get() = endedAt == null
 }
 
-/** An exercise performed in a session, with the variant actually used. [slotId] is null if added ad hoc. */
+/**
+ * An exercise performed in a session, with the variant actually used. [slotId] is null if added ad hoc.
+ * [bilateral]: its dumbbell volume counts both hands, a snapshot of the slot's "Both hands" flag taken when it was
+ * logged (core design §3.3); editing or removing the slot later never changes it.
+ */
 data class SessionExercise(
     val id: String,
     val sessionId: String,
@@ -28,6 +37,7 @@ data class SessionExercise(
     val slotId: String? = null,
     val notes: String = "",
     val sets: List<SetLog> = emptyList(),
+    val bilateral: Boolean = false,
 )
 
 /**

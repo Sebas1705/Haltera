@@ -154,32 +154,42 @@ internal class AggregateStore(
     private fun writeSession(s: SessionPayload) {
         // Links to a routine or slot that does not exist here (deleted, or not synced yet) are dropped,
         // as ON DELETE SET NULL would have done.
+        // Without its routine a session points at no day of it either.
         val routineId = s.routineId?.takeIf { q.routineExists(it).executeAsOne() > 0 }
+        val dayIndex = s.routineDayIndex?.takeIf { routineId != null }
+        // Documents written before schema 8 have no routine name: the routine's name here if it exists, else the name
+        // this phone already kept for the session (an older version never clears it).
+        val routineName = s.routineName
+            ?: routineId?.let { q.routineName(it).executeAsOneOrNull() }
+            ?: db.workoutSessionEntityQueries.selectById(s.id).executeAsOneOrNull()?.routineName
         q.insertSessionIfMissing(
             s.id,
             s.startedAt,
             s.endedAt,
             routineId,
-            s.routineDayIndex,
+            dayIndex,
             s.dayName,
             s.notes,
-            s.bodyWeightGrams
+            s.bodyWeightGrams,
+            routineName,
         )
         q.updateSession(
             s.startedAt,
             s.endedAt,
             routineId,
-            s.routineDayIndex,
+            dayIndex,
             s.dayName,
             s.notes,
             s.bodyWeightGrams,
-            s.id
+            routineName,
+            s.id,
         )
         q.deleteSessionExercisesNotIn(s.id, s.exercises.map { it.id })
         s.exercises.forEach { e ->
             val slotId = e.slotId?.takeIf { q.slotExists(it).executeAsOne() > 0 }
-            q.insertSessionExerciseIfMissing(e.id, s.id, e.position, e.variantId, slotId, e.notes)
-            q.updateSessionExercise(s.id, e.position, e.variantId, slotId, e.notes, e.id)
+            val bilateral = e.bilateral ?: legacyBilateral(e.slotId)
+            q.insertSessionExerciseIfMissing(e.id, s.id, e.position, e.variantId, slotId, e.notes, bilateral)
+            q.updateSessionExercise(s.id, e.position, e.variantId, slotId, e.notes, bilateral, e.id)
             q.deleteSetsNotIn(e.id, e.sets.map { it.id })
             e.sets.forEach { t ->
                 q.replaceSet(
@@ -189,6 +199,13 @@ internal class AggregateStore(
             }
         }
     }
+
+    /**
+     * The "Both hands" snapshot of an exercise from a payload written before schema 8 (no `bilateral`): the flag of
+     * its slot on this device, as those versions computed it when summing; 0 (one implement) without the slot.
+     */
+    private fun legacyBilateral(slotId: String?): Long =
+        slotId?.let { q.slotBilateral(it).executeAsOneOrNull() } ?: 0L
 
     // USER exercises
 

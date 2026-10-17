@@ -252,12 +252,13 @@ interface SessionRepository {
     suspend fun updateExerciseNotes(sessionExerciseId: String, notes: String)
 
     /**
-     * Appends a set and returns its id; `completedAt` is set now when the input is completed. Works on
-     * finished sessions too (editing a saved session never reopens it).
+     * Appends a set and returns its id; `completedAt` is set now when the input is completed, kept inside the session's
+     * start and end when it is finished (a past session logged later). Works on finished sessions too (editing a saved
+     * session never reopens it).
      */
     suspend fun logSet(sessionExerciseId: String, input: SetInput): String
 
-    /** Replaces a set's values; `completedAt` is kept, set now, or cleared to match `completed`. */
+    /** Replaces a set's values; `completedAt` is kept, set (as in [logSet]), or cleared to match `completed`. */
     suspend fun updateSet(setId: String, input: SetInput)
 
     suspend fun deleteSet(setId: String)
@@ -287,7 +288,8 @@ interface SessionRepository {
 
     /**
      * Changes when a session started and ended ([endedAt] null makes it in progress again). An end
-     * before the start is moved to the start.
+     * before the start is moved to the start. Completion times of its sets move by the same offset as the start
+     * and are kept inside the new start and end.
      */
     suspend fun updateTimes(sessionId: String, startedAt: Long, endedAt: Long?)
 

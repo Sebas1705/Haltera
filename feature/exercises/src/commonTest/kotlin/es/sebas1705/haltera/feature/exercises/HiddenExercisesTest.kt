@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.feature.exercises
 
+import androidx.lifecycle.SavedStateHandle
 import es.sebas1705.haltera.data.models.Equipment
 import es.sebas1705.haltera.data.models.ExerciseSource
 import es.sebas1705.haltera.data.models.Muscle
@@ -126,6 +127,47 @@ class HiddenExercisesTest {
     }
 
     @Test
+    fun `the Hidden chip survives process death`() = runTest {
+        val saved = SavedStateHandle()
+        val before = ExercisesViewModel(repository, dispatcher, saved).also {
+            it.onEvent(ExercisesIntent.SetLanguage("en"))
+        }
+        advanceUntilIdle()
+        before.onEvent(ExercisesIntent.ToggleHidden)
+        advanceUntilIdle()
+        assertTrue(before.uiState.value.showingHidden)
+
+        // The process dies: a new ViewModel is created from the saved state only.
+        val restored = saved.afterProcessDeath()
+        val after = ExercisesViewModel(repository, dispatcher, restored)
+        assertTrue(after.uiState.value.hiddenSelected, "restored before anything loads")
+        after.onEvent(ExercisesIntent.SetLanguage("en"))
+        advanceUntilIdle()
+        val state = after.uiState.value
+        assertTrue(state.showingHidden)
+        assertEquals(listOf("user-atlas", "user-sled"), state.hidden.map { it.id })
+
+        // Leaving the hidden list is saved too.
+        after.onEvent(ExercisesIntent.ToggleHidden)
+        advanceUntilIdle()
+        val again = ExercisesViewModel(repository, dispatcher, restored.afterProcessDeath())
+        again.onEvent(ExercisesIntent.SetLanguage("en"))
+        advanceUntilIdle()
+        assertFalse(again.uiState.value.showingHidden)
+    }
+
+    @Test
+    fun `a restored Hidden chip is dropped when nothing is hidden any more`() = runTest {
+        val saved = SavedStateHandle(mapOf("exercises.hidden" to true))
+        val vm = ExercisesViewModel(FakeExerciseRepository(listOf(bench, live)), dispatcher, saved)
+        vm.onEvent(ExercisesIntent.SetLanguage("en"))
+        advanceUntilIdle()
+        assertFalse(vm.uiState.value.hiddenSelected)
+        assertFalse(vm.uiState.value.showingHidden)
+        assertEquals(false, saved.get<Boolean>("exercises.hidden"))
+    }
+
+    @Test
     fun `a failed restore is reported once and keeps the exercise hidden`() = runTest {
         repository.failRestore = true
         val vm = viewModel()
@@ -138,3 +180,6 @@ class HiddenExercisesTest {
         assertFalse(vm.uiState.value.restoreFailed)
     }
 }
+
+/** What a new process gets back: a fresh handle with the saved values only. */
+internal fun SavedStateHandle.afterProcessDeath() = SavedStateHandle(keys().associateWith { get<Any?>(it) })

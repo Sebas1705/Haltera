@@ -146,26 +146,37 @@ SET dayId = :dayId, position = :position, target = :target, sets = :sets, warmup
 WHERE id = :id;
 
 insertSessionIfMissing:
-INSERT OR IGNORE INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
-VALUES (:id, :startedAt, :endedAt, :routineId, :routineDayIndex, :dayName, :notes, :bodyWeightGrams);
+INSERT OR IGNORE INTO WorkoutSessionEntity(
+    id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams, routineName
+) VALUES (:id, :startedAt, :endedAt, :routineId, :routineDayIndex, :dayName, :notes, :bodyWeightGrams, :routineName);
 
 updateSession:
 UPDATE WorkoutSessionEntity
 SET startedAt = :startedAt, endedAt = :endedAt, routineId = :routineId, routineDayIndex = :routineDayIndex,
-    dayName = :dayName, notes = :notes, bodyWeightGrams = :bodyWeightGrams
+    dayName = :dayName, notes = :notes, bodyWeightGrams = :bodyWeightGrams, routineName = :routineName
 WHERE id = :id;
+
+-- The name of a routine here (null when it does not exist): decodes a session payload written before schema 8.
+routineName:
+SELECT name FROM RoutineEntity WHERE id = :id;
 
 deleteSessionExercisesNotIn:
 DELETE FROM SessionExerciseEntity WHERE sessionId = :sessionId AND id NOT IN :keep;
 
 insertSessionExerciseIfMissing:
-INSERT OR IGNORE INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes)
-VALUES (:id, :sessionId, :position, :variantId, :slotId, :notes);
+INSERT OR IGNORE INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes, bilateral)
+VALUES (:id, :sessionId, :position, :variantId, :slotId, :notes, :bilateral);
 
 updateSessionExercise:
 UPDATE SessionExerciseEntity
-SET sessionId = :sessionId, position = :position, variantId = :variantId, slotId = :slotId, notes = :notes
+SET sessionId = :sessionId, position = :position, variantId = :variantId, slotId = :slotId, notes = :notes,
+    bilateral = :bilateral
 WHERE id = :id;
+
+-- The "Both hands" flag of a slot (null when the slot does not exist here): decodes a session payload written by
+-- a version without the per-exercise snapshot.
+slotBilateral:
+SELECT bilateral FROM RoutineSlotEntity WHERE id = :id;
 
 deleteSetsNotIn:
 DELETE FROM SetLogEntity WHERE sessionExerciseId = :sessionExerciseId AND id NOT IN :keep;

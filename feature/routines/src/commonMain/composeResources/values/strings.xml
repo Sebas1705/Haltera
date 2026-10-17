@@ -132,7 +132,7 @@
     <string name="routines_superset_none">None</string>
     <string name="routines_superset_hint">Exercises of a day in the same group alternate sets and rest after each round.</string>
     <string name="routines_bilateral">Both hands</string>
-    <string name="routines_bilateral_hint">The load is one dumbbell; volume counts both.</string>
+    <string name="routines_bilateral_hint">The load is one dumbbell; volume counts both. A change applies to sessions you log from now on.</string>
     <string name="routines_notes">Notes</string>
     <string name="routines_section_progression">Progression</string>
     <string name="routines_progression_none">None</string>

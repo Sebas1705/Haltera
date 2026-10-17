@@ -83,7 +83,12 @@ class SessionViewModel(
                 val editor = SetEditor(
                     cardId = card.id,
                     setId = set.id,
-                    draft = set.toInput(),
+                    draft = Prefill.shownInEditor(
+                        set.toInput(),
+                        card.trackingType,
+                        card.loadType,
+                        currentState.settings.barWeightGrams,
+                    ),
                     weightStep = loadSteps.step(card.variantId, plates = false),
                     plateStep = loadSteps.step(card.variantId, plates = true),
                 )

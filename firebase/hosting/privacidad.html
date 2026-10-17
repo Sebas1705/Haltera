@@ -40,18 +40,31 @@
     </tbody>
   </table>
   </div>
-  <p>Parte de estos datos puede estar relacionada con la salud (peso corporal, nutrición, entrenamiento). Tú decides si los introduces. La app no necesita tu ubicación, contactos, micrófono ni cámara, y no lee otras aplicaciones.</p>
+  <p>Parte de estos datos puede estar relacionada con la salud (peso corporal, nutrición, entrenamiento). Tú decides si los introduces. La app no necesita tu ubicación, contactos, micrófono ni cámara, y no lee otras aplicaciones, salvo Health Connect si lo conectas (siguiente apartado).</p>
 
-  <h2 id="purposes">3. Para qué y con qué base jurídica</h2>
+  <h2 id="health-connect">3. Health Connect (Android)</h2>
+  <p>Health Connect es el almacén de datos de salud y actividad del propio Android, dentro del teléfono. Haltera puede usarlo, pero <strong>solo si lo conectas</strong> en <strong>Ajustes → Integraciones → Health Connect</strong>. No se lee ni se escribe nada antes de que pulses <strong>Conectar Health Connect</strong>, y cada tipo de dato tiene su propio interruptor: solo se piden los tipos que actives, mediante la pantalla de permisos de Health Connect, y puedes rechazar cualquiera.</p>
+  <ul>
+    <li><strong>Qué puede leer Haltera:</strong> pasos diarios, calorías activas y totales quemadas, frecuencia cardiaca en reposo (media diaria) y duración del sueño, como totales diarios; y el peso corporal registrado por otras apps o básculas inteligentes. Solo lee mientras la app está abierta, nunca en segundo plano, y como mucho los 30 días anteriores a conectarlo.</li>
+    <li><strong>Para qué:</strong> para mostrar tus estadísticas de Actividad (pasos por día frente a tu objetivo, medias, rachas, tendencias de calorías, frecuencia cardiaca y sueño), los pasos de hoy en la pantalla Hoy, las calorías comidas frente a las quemadas en Nutrición, y para añadir a tu registro de peso los pesos medidos en otro sitio.</li>
+    <li><strong>Qué puede escribir Haltera:</strong> tus entrenamientos terminados (inicio, fin y nombre, como sesiones de fuerza) y el peso corporal que registras, si activas esas opciones. Si los editas o borras en Haltera, se actualizan o se borran en Health Connect.</li>
+    <li><strong>Dónde se quedan:</strong> los totales diarios se guardan solo en tu teléfono y <strong>nunca se suben</strong>, ni siquiera con la copia en la nube activada. Un peso importado de Health Connect pasa a formar parte de tu registro de peso y, como el resto del registro, solo se copia en la nube si la copia en la nube está activada.</li>
+    <li><strong>No se comparten ni se usan para publicidad</strong> ni analítica, no se venden y no se usan para tomar decisiones sobre ti. El desarrollador nunca recibe datos de Health Connect.</li>
+    <li><strong>Puedes parar cuando quieras:</strong> desactiva un tipo o pulsa <strong>Desconectar</strong>, que devuelve los permisos de Health Connect de Haltera y borra del teléfono los totales diarios copiados. También puedes quitar el acceso de Haltera en los ajustes de Health Connect; Haltera borra entonces lo que había copiado de ese tipo. Los entrenamientos y pesos ya escritos se quedan en Health Connect, donde puedes borrarlos.</li>
+  </ul>
+  <p>Apple Salud (iOS) todavía no está disponible.</p>
+
+  <h2 id="purposes">4. Para qué y con qué base jurídica</h2>
   <ul>
     <li><strong>Prestar la copia opcional en la nube</strong> (guardar tu diario, recuperarlo en un móvil nuevo, sincronizar entre dispositivos): ejecución del servicio que solicitas al activarla (RGPD art. 6.1.b). Sin ella, la app funciona por completo en tu móvil y no se envían datos personales al desarrollador ni a Firebase.</li>
     <li><strong>Datos relacionados con la salud que decides registrar</strong> (peso, nutrición, entrenamiento): tu consentimiento explícito al introducirlos (art. 9.2.a) y, si activas la copia en la nube, al activarla (incluye esos registros y el perfil opcional de nutrición). Puedes retirarlo en cualquier momento desactivando la copia en la nube, borrando los registros o tu cuenta.</li>
+    <li><strong>Health Connect</strong>: tu consentimiento explícito (art. 9.2.a), que das al conectarlo y permitir cada tipo de dato; lo retiras desactivando el tipo, desconectando o quitando el acceso en Health Connect.</li>
     <li><strong>Vincular una cuenta de Google</strong>: tu consentimiento, que das al pulsar el botón y puedes revocar cerrando sesión o borrando tu cuenta (art. 6.1.a).</li>
     <li><strong>Seguridad y prevención de abusos</strong> del servidor (reglas de Firebase, límites de uso): interés legítimo (art. 6.1.f).</li>
     <li>No hay publicidad, ni elaboración de perfiles, ni decisiones automatizadas, ni servicio de analíticas o de informes de fallos.</li>
   </ul>
 
-  <h2 id="recipients">4. Quién recibe datos</h2>
+  <h2 id="recipients">5. Quién recibe datos</h2>
   <ul>
     <li><strong>Google (Firebase Authentication y Cloud Firestore)</strong> actúa como encargado que guarda tu cuenta y tu copia en la nube, solo si activas la copia en la nube. La base de datos está en la Unión Europea (eur3). Google puede transferir datos fuera del EEE conforme a sus propios términos de tratamiento de datos y cláusulas contractuales tipo. Los datos viajan cifrados (HTTPS/TLS).</li>
     <li><strong>Servicios de Google Play</strong> proporcionan el inicio de sesión con Google (solo si lo usas) y el escáner de códigos de barras y QR, que funciona en tu dispositivo. La app no recibe permiso de cámara y ninguna imagen llega al desarrollador.</li>
@@ -63,30 +76,30 @@
   </ul>
   <p>La copia de seguridad de Android (Auto Backup de Google) también puede copiar los datos locales de la app a tu cuenta de Google si la tienes activada en los ajustes del sistema. Eso lo controlas tú y Google, no el desarrollador.</p>
 
-  <h2 id="retention">5. Cuánto tiempo se conservan</h2>
+  <h2 id="retention">6. Cuánto tiempo se conservan</h2>
   <ul>
-    <li>En tu móvil: hasta que borres los datos en la app, los borres al eliminar tu cuenta o desinstales la app.</li>
+    <li>En tu móvil: hasta que borres los datos en la app, los borres al eliminar tu cuenta o desinstales la app. Los totales diarios copiados de Health Connect: hasta que desactives ese tipo, quites su acceso o desconectes.</li>
     <li>En la nube (solo si activaste la copia en la nube): mientras exista tu cuenta. Desactivar la copia en la nube detiene la sincronización y conserva lo que ya está en la nube, salvo que elijas <strong>Borrar también mis datos de la nube</strong>; puedes reanudarla más tarde o borrarla. Al borrar tu cuenta en la app se eliminan todos tus documentos en la nube y tu cuenta (consulta <a href="/borrar-cuenta">cómo borrar tu cuenta</a>). Mientras la cuenta existe, un elemento que borras puede quedar como una marca vacía en la nube para que otros dispositivos se enteren; esas marcas desaparecen con la cuenta.</li>
     <li>Los datos borrados pueden permanecer un tiempo limitado en los sistemas de copia de Google según sus propios plazos.</li>
   </ul>
 
-  <h2 id="rights">6. Tus derechos</h2>
+  <h2 id="rights">7. Tus derechos</h2>
   <p>Tienes derecho de acceso, rectificación, supresión, limitación, oposición y portabilidad, y a retirar tu consentimiento. Puedes ver y editar todo en la app, exportar tus rutinas y desactivar la copia en la nube y borrar tu cuenta y tus datos en la nube en <strong>Ajustes → Cuenta</strong> (interruptor <strong>Copia de seguridad en la nube</strong> con <strong>Borrar también mis datos de la nube</strong>, o <strong>Eliminar cuenta</strong>). Para otras solicitudes, abre una incidencia en <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> sin incluir datos personales (es público); responderé allí y, si necesito verificar algo, acordaremos una vía que no exija publicar datos personales. No puedo identificar una cuenta anónima desde fuera de la app, así que para esas cuentas el borrado dentro de la app es la única vía fiable.</p>
   <p>Si crees que tus datos se tratan de forma indebida puedes reclamar ante la Agencia Española de Protección de Datos (<a href="https://www.aepd.es">aepd.es</a>).</p>
 
-  <h2 id="children">7. Menores</h2>
+  <h2 id="children">8. Menores</h2>
   <p>Haltera no está dirigida a menores y está pensada para personas de 18 años o más. Si eres padre, madre o tutor y crees que un menor ha usado la app y su copia en la nube, solicita el borrado como se indica arriba. La copia en la nube está desactivada salvo que alguien la active.</p>
 
-  <h2 id="health">8. Aviso de salud</h2>
+  <h2 id="health">9. Aviso de salud</h2>
   <p>Haltera es un diario y una herramienta de planificación. Sus cifras, gráficas, puntuaciones y sugerencias no son consejo médico y no diagnostican, tratan ni previenen ninguna dolencia. Consulta con un profesional cualificado antes de cambiar tu entrenamiento o tu dieta, sobre todo si tienes algún problema de salud.</p>
 
-  <h2 id="security">9. Seguridad</h2>
+  <h2 id="security">10. Seguridad</h2>
   <p>Los datos viajan cifrados. El acceso a los datos de cada usuario en la nube está limitado a ese usuario mediante reglas de seguridad, y la app no incluye anuncios ni código de analíticas de terceros. Ningún sistema es perfectamente seguro, y la seguridad de tu dispositivo (bloqueo de pantalla, actualizaciones) también importa. Las vulnerabilidades pueden comunicarse mediante un aviso de seguridad privado en el repositorio de GitHub.</p>
 
-  <h2 id="changes">10. Cambios en esta política</h2>
+  <h2 id="changes">11. Cambios en esta política</h2>
   <p>Si la app pasa a tratar los datos de otra forma, esta página se actualiza antes de que el cambio se publique y se cambia la fecha de entrada en vigor de arriba. El historial es público en el repositorio.</p>
 
-  <h2 id="contact">11. Contacto</h2>
+  <h2 id="contact">12. Contacto</h2>
   <p>GitHub Issues: <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a>. El código fuente, que puedes leer para comprobar cualquier cosa escrita aquí, está en <a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>.</p>
 </main>
 <footer>

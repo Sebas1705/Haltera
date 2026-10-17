@@ -1,0 +1,21 @@
+-- Version 6 -> 7: Health Connect integration (docs/play/DATA-INVENTORY.md). A local cache of the daily totals read
+-- from the health platform and the ledger of what Haltera wrote to it. Both are device-only: no sync triggers.
+-- The tables are new, so there is nothing to backfill.
+
+CREATE TABLE HealthDayEntity (
+    date             TEXT NOT NULL PRIMARY KEY,
+    steps            INTEGER,
+    activeKcal       REAL,
+    totalKcal        REAL,
+    restingHeartRate INTEGER,
+    sleepMinutes     INTEGER,
+    updatedAt        INTEGER NOT NULL
+);
+
+CREATE TABLE HealthExportEntity (
+    kind        TEXT NOT NULL,
+    localId     TEXT NOT NULL,
+    fingerprint TEXT NOT NULL,
+    writtenAt   INTEGER NOT NULL,
+    PRIMARY KEY (kind, localId)
+);

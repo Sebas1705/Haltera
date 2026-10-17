@@ -227,7 +227,10 @@ flag(has("android.permission.POST_NOTIFICATIONS"), "`POST_NOTIFICATIONS` (runtim
 flag(has("android.permission.FOREGROUND_SERVICE"), "`FOREGROUND_SERVICE` (every foreground service must declare a type, and Play asks for a declaration per type)");
 const specialUse = components.filter((c) => c.foregroundServiceType.includes("specialUse"));
 flag(specialUse.length > 0, `foreground service type \`specialUse\`${specialUse.length ? ` on ${specialUse.map((c) => c.name).join(", ")}: needs the \`PROPERTY_SPECIAL_USE_FGS_SUBTYPE\` property and the Play Console foreground service declaration with a description and a demo video` : ""}`);
-flag(has("android.permission.INTERNET"), "`INTERNET` (needed for optional sync and sign-in; declare network use in the Data safety form)");
+const health = [...permissions, ...permissionsSdk23].filter((p) => p.startsWith("android.permission.health."));
+flag(health.length > 0, `Health Connect permissions${health.length ? ` (${health.map((p) => p.replace("android.permission.health.", "")).join(", ")})` : ""}: each needs the Play Console Health Connect declaration with a justification (PLAY-CONSOLE-GUIDE.md 3.8.1), the rationale activity and a Health Connect section in the privacy policy`);
+flag(health.some((p) => /BACKGROUND|HISTORY/.test(p)), "Health Connect background or history read permission (not used by Haltera: remove it unless a reviewed feature needs it)");
+flag(has("android.permission.INTERNET"),"`INTERNET` (needed for optional sync and sign-in; declare network use in the Data safety form)");
 const exported = components.filter((c) => c.exported === "true");
 flag(exported.some((c) => c.tag !== "activity"), "exported components other than activities (check each is intended)");
 const backup = {

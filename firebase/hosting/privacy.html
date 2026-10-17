@@ -40,18 +40,31 @@
     </tbody>
   </table>
   </div>
-  <p>Some of this can be health-related (body weight, nutrition, training). You decide whether to enter it. The app does not need your location, contacts, microphone or camera, and does not read other apps.</p>
+  <p>Some of this can be health-related (body weight, nutrition, training). You decide whether to enter it. The app does not need your location, contacts, microphone or camera, and does not read other apps, except Health Connect if you connect it (next section).</p>
 
-  <h2 id="purposes">3. Why, and on what legal basis</h2>
+  <h2 id="health-connect">3. Health Connect (Android)</h2>
+  <p>Health Connect is Android's on-device store for health and fitness data. Haltera can use it, but <strong>only if you connect it</strong> in <strong>Settings → Integrations → Health Connect</strong>. Nothing is read or written before you tap <strong>Connect Health Connect</strong>, and each type of data has its own switch: only the types you switch on are requested, through Health Connect's own permission screen, and you can refuse any of them.</p>
+  <ul>
+    <li><strong>What Haltera can read:</strong> daily steps, active and total calories burned, resting heart rate (daily average) and sleep duration, as daily totals; and body weight recorded by other apps or smart scales. It reads only while the app is open, never in the background, and at most the last 30 days before you connected.</li>
+    <li><strong>Why:</strong> to show your Activity statistics (steps per day against your goal, averages, streaks, calorie, heart-rate and sleep trends), today's steps on the Today screen, calories eaten against calories burned in Nutrition, and to add weights measured elsewhere to your body-weight log.</li>
+    <li><strong>What Haltera can write:</strong> your finished workouts (start, end and name, as strength-training sessions) and the body weight you log, if you switch those on. Editing or deleting them in Haltera updates or removes them in Health Connect.</li>
+    <li><strong>Where it stays:</strong> the daily totals are kept only on your phone and are <strong>never uploaded</strong>, not even with the cloud copy on. A body-weight entry imported from Health Connect becomes part of your body-weight log and, like the rest of the log, is copied to the cloud only if the cloud copy is on.</li>
+    <li><strong>Not shared, not used for advertising</strong> or analytics, not sold, and not used to make decisions about you. The developer never receives Health Connect data.</li>
+    <li><strong>You can stop at any time:</strong> switch a type off, or tap <strong>Disconnect</strong>, which gives back Haltera's Health Connect permissions and deletes the copied daily totals from your phone. You can also remove Haltera's access in Health Connect's own settings; Haltera then deletes what it had copied for that type. Workouts and weights already written stay in Health Connect, where you can delete them.</li>
+  </ul>
+  <p>Apple Health (iOS) is not supported yet.</p>
+
+  <h2 id="purposes">4. Why, and on what legal basis</h2>
   <ul>
     <li><strong>Provide the optional cloud copy</strong> (store your logbook, restore it on a new phone, sync between your devices): performance of the service you ask for by turning it on (GDPR art. 6.1.b). Without it, the app works fully on your phone and no personal data is sent to the developer or to Firebase.</li>
     <li><strong>Health-related data you choose to log</strong> (weight, nutrition, training): your explicit consent by entering it (art. 9.2.a), and, if you turn on the cloud copy, by turning it on (it includes these entries and the optional nutrition profile). You can withdraw it at any time by turning the cloud copy off, deleting the entries, or deleting your account.</li>
+    <li><strong>Health Connect</strong>: your explicit consent (art. 9.2.a), given by connecting it and allowing each type of data; you withdraw it by switching the type off, disconnecting, or removing access in Health Connect.</li>
     <li><strong>Linking a Google account</strong>: your consent, which you give by tapping the button and can revoke by signing out or deleting your account (art. 6.1.a).</li>
     <li><strong>Security and abuse prevention</strong> of the backend (Firebase rules, rate limiting): legitimate interest (art. 6.1.f).</li>
     <li>No advertising, no profiling, no automated decisions, and no analytics or crash-reporting service.</li>
   </ul>
 
-  <h2 id="recipients">4. Who receives data</h2>
+  <h2 id="recipients">5. Who receives data</h2>
   <ul>
     <li><strong>Google (Firebase Authentication and Cloud Firestore)</strong> acts as the processor that stores your account and cloud copy, only if you turn the cloud copy on. The database is located in the European Union (eur3). Google may transfer data outside the EEA under its own data processing terms and standard contractual clauses. Data is encrypted in transit (HTTPS/TLS).</li>
     <li><strong>Google Play services</strong> provide Google sign-in (only if you use it) and the barcode and QR scanner, which runs on your device. The app does not receive camera permission and no image is sent to the developer.</li>
@@ -63,30 +76,30 @@
   </ul>
   <p>Android's own device backup (Google's Auto Backup) may also copy the app's local data to your Google account if you have it enabled in system settings. That is controlled by you and Google, not by the developer.</p>
 
-  <h2 id="retention">5. How long it is kept</h2>
+  <h2 id="retention">6. How long it is kept</h2>
   <ul>
-    <li>On your phone: until you delete the data in the app, erase it when deleting your account, or uninstall the app.</li>
+    <li>On your phone: until you delete the data in the app, erase it when deleting your account, or uninstall the app. Daily totals copied from Health Connect: until you switch that type off, remove its access, or disconnect.</li>
     <li>In the cloud (only if you turned the cloud copy on): for as long as your account exists. Turning the cloud copy off stops the sync and keeps what is already in the cloud unless you choose <strong>Also delete my cloud data</strong>; you can resume it later or delete it. When you delete your account in the app, all your cloud documents and your account are deleted (see <a href="/delete-account">how to delete your account</a>). While the account exists, an item you delete may remain as an empty marker in the cloud so other devices learn about the deletion; these markers go away with the account.</li>
     <li>Deleted data may remain for a limited time in Google's own backup systems under Google's retention terms.</li>
   </ul>
 
-  <h2 id="rights">6. Your rights</h2>
+  <h2 id="rights">7. Your rights</h2>
   <p>You have the right of access, rectification, erasure, restriction, objection and portability, and the right to withdraw consent. You can view and edit everything in the app, export your routines, and turn the cloud copy off, and delete your account and cloud data in <strong>Settings → Account</strong> (<strong>Back up to the cloud</strong> switch with <strong>Also delete my cloud data</strong>, or <strong>Delete account</strong>). For other requests, open an issue at <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a> without including personal data (it is public); I will reply there and, if I need to verify something, agree a way that does not require posting personal data publicly. I cannot identify an anonymous account from outside the app, so for those accounts the in-app deletion is the only reliable route.</p>
   <p>If you think your data is mishandled you can complain to the Spanish data protection authority, the Agencia Española de Protección de Datos (<a href="https://www.aepd.es">aepd.es</a>).</p>
 
-  <h2 id="children">7. Children</h2>
+  <h2 id="children">8. Children</h2>
   <p>Haltera is not directed at children and is intended for people aged 18 or over. If you are a parent and believe a child has used the app and its cloud copy, ask for deletion as described above. The cloud copy is off unless someone turns it on.</p>
 
-  <h2 id="health">8. Health disclaimer</h2>
+  <h2 id="health">9. Health disclaimer</h2>
   <p>Haltera is a logbook and planning tool. Its figures, charts, scores and suggestions are not medical advice and do not diagnose, treat or prevent any condition. Ask a qualified professional before changing your training or diet, especially if you have a health condition.</p>
 
-  <h2 id="security">9. Security</h2>
+  <h2 id="security">10. Security</h2>
   <p>Data travels encrypted. Access to each user's cloud data is restricted to that user by security rules, and the app has no ads or third-party analytics code. No system is perfectly secure, and your device security (screen lock, updates) matters too. Security vulnerabilities can be reported through a private security advisory in the GitHub repository.</p>
 
-  <h2 id="changes">10. Changes to this policy</h2>
+  <h2 id="changes">11. Changes to this policy</h2>
   <p>If the app starts handling data differently, this page is updated before the change ships and the effective date at the top is changed. The history is public in the repository.</p>
 
-  <h2 id="contact">11. Contact</h2>
+  <h2 id="contact">12. Contact</h2>
   <p>GitHub Issues: <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a>. The source code, which you can read to check anything written here, is at <a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>.</p>
 </main>
 <footer>

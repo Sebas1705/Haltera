@@ -7,12 +7,14 @@ import es.sebas1705.haltera.data.models.Nutrients
 import es.sebas1705.haltera.data.models.NutritionGoals
 import es.sebas1705.haltera.data.repository.BodyWeightRepository
 import es.sebas1705.haltera.data.repository.NutritionRepository
+import es.sebas1705.haltera.data.repository.health.HealthRepository
 import es.sebas1705.haltera.domain.usecases.nutrition.Adherence
 import es.sebas1705.haltera.domain.usecases.nutrition.DailyIntake
 import es.sebas1705.haltera.domain.usecases.nutrition.IntakeWeightTrend
 import es.sebas1705.haltera.domain.usecases.nutrition.MacroSplit
 import es.sebas1705.haltera.domain.usecases.nutrition.NutritionStats
 import es.sebas1705.haltera.domain.usecases.nutrition.WeeklyAverage
+import es.sebas1705.haltera.domain.usecases.stats.EnergyBalance
 import es.sebas1705.haltera.feature.nutrition.model.Today
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -41,6 +43,9 @@ internal data class StatsState(
     val latestWeightGrams: Long? = null,
     val proteinPerKg: Double? = null,
     val trend: IntakeWeightTrend = IntakeWeightTrend(emptyList(), emptyList()),
+    /** Days with both a food log and total calories burned from Health Connect, oldest first (empty when not connected). */
+    val energy: List<EnergyBalance.Day> = emptyList(),
+    val energySummary: EnergyBalance.Summary? = null,
 ) : MVIBaseState
 
 internal sealed interface StatsIntent : MVIBaseIntent {
@@ -52,6 +57,7 @@ internal sealed interface StatsIntent : MVIBaseIntent {
 internal class StatsViewModel(
     private val repository: NutritionRepository,
     private val bodyWeight: BodyWeightRepository,
+    private val health: HealthRepository,
     private val today: Today,
     private val timeZone: TimeZone = TimeZone.currentSystemDefault(),
 ) : MVIBaseViewModel<StatsState, StatsIntent>(
@@ -65,9 +71,20 @@ internal class StatsViewModel(
                 val to = today.date()
                 repository.observeDays(to.minus(DatePeriod(days = r.days - 1)), to)
             }
-            combine(days, repository.observeGoals(), bodyWeight.observeAll(), range) { d, goals, weights, r ->
+            val burned = range.flatMapLatest { r ->
+                val to = today.date()
+                health.observeDays(to.minus(DatePeriod(days = r.days - 1)), to)
+            }
+            combine(
+                days,
+                repository.observeGoals(),
+                bodyWeight.observeAll(),
+                range,
+                burned
+            ) { d, goals, weights, r, h ->
                 val to = today.date()
                 val daily = NutritionStats.daily(d)
+                val energy = EnergyBalance.days(daily.associate { it.date to it.nutrients.kcal }, h)
                 val average = NutritionStats.averagePerDay(daily)
                 val latest = weights.maxByOrNull { it.measuredAt }?.weightGrams
                 StatsState(
@@ -84,6 +101,8 @@ internal class StatsViewModel(
                     latestWeightGrams = latest,
                     proteinPerKg = average?.let { NutritionStats.proteinPerKg(it.protein, latest) },
                     trend = NutritionStats.intakeVsWeight(daily, weights, timeZone),
+                    energy = energy,
+                    energySummary = EnergyBalance.summary(energy),
                 )
             }.collect { computed -> updateState { computed } }
         }

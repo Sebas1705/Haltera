@@ -13,7 +13,7 @@ It follows **Clean Architecture** with a layered module graph. Network-backed da
 ├──────────────────────────────────────────────────────────────────┤
 │                domain:usecases                                   │  ← Business logic
 ├──────────────────────────────────────────────────────────────────┤
-│  data:repository │ data:local │ data:routines │ data:models       │  ← Data layer
+│  data:repository │ data:local │ data:health │ data:models …       │  ← Data layer
 ├──────────────────────────────────────────────────────────────────┤
 │  core:common │ ui │ units │ datastore │ logging │ testing          │  ← Shared foundations
 └──────────────────────────────────────────────────────────────────┘

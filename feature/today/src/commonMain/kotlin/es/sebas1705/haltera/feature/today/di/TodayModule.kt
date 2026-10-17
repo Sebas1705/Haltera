@@ -2,6 +2,7 @@ package es.sebas1705.haltera.feature.today.di
 
 import es.sebas1705.haltera.feature.today.ui.TodayClock
 import es.sebas1705.haltera.feature.today.ui.TodayNutritionViewModel
+import es.sebas1705.haltera.feature.today.ui.TodayStepsViewModel
 import es.sebas1705.haltera.feature.today.ui.TodayViewModel
 import kotlinx.datetime.TimeZone
 import org.koin.core.module.dsl.viewModelOf
@@ -20,4 +21,5 @@ val todayModule = module {
     }
     viewModelOf(::TodayViewModel)
     viewModelOf(::TodayNutritionViewModel)
+    viewModelOf(::TodayStepsViewModel)
 }

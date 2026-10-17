@@ -39,6 +39,8 @@ class EraseUserDataTest {
         exec("INSERT INTO RoutineEntity(id, name, createdAt, updatedAt) VALUES ('r', 'PPL', 1, 1)")
         exec("INSERT INTO WorkoutSessionEntity(id, startedAt, routineId) VALUES ('s', 1, 'r')")
         exec("INSERT INTO SyncCursor(collection, sinceUpdatedAt) VALUES ('routines', 5)")
+        db.healthDayEntityQueries.upsert("2026-10-16", 9_000, 300.0, 2_400.0, 58, 420, 1)
+        db.healthExportEntityQueries.upsert("WORKOUT", "s", "fp", 1)
         assert(count("SyncState") > 0) // The triggers tracked the inserts.
 
         db.eraseUserData()
@@ -52,6 +54,8 @@ class EraseUserDataTest {
         assertEquals(0, count("WorkoutSessionEntity"))
         assertEquals(0, count("SyncState"))
         assertEquals(0, count("SyncCursor"))
+        assertEquals(0, count("HealthDayEntity"))
+        assertEquals(0, count("HealthExportEntity"))
         // Tracking is back on afterwards.
         db.bodyWeightEntityQueries.upsert("b2", 2L, 81_000L, "")
         assertEquals(1, count("SyncState"))

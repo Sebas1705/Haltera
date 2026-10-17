@@ -125,4 +125,9 @@
     </plurals>
     <string name="today_rest_week_none">No rest days planned this week</string>
     <string name="today_rest_week_info">Information only: a flexible routine never skips a workout. The next day is always the one after your last session.</string>
+    <string name="today_steps_title">Steps</string>
+    <string name="today_steps_value">%1$s / %2$s</string>
+    <string name="today_steps_none">No steps yet today</string>
+    <string name="today_steps_source">From Health Connect</string>
+    <string name="today_steps_reached">Daily goal reached</string>
 </resources>

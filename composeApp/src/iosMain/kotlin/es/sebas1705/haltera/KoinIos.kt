@@ -15,6 +15,8 @@ import es.sebas1705.haltera.dataimport.ImportFileBridge
 import es.sebas1705.haltera.dataimport.IosImportFileBridge
 import es.sebas1705.haltera.export.ExportFileBridge
 import es.sebas1705.haltera.export.IosExportFileBridge
+import es.sebas1705.haltera.health.HealthConnectBridge
+import es.sebas1705.haltera.health.NoHealthConnectBridge
 import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import es.sebas1705.haltera.settings.AppInfo
 import es.sebas1705.haltera.share.IosRoutineShareBridge
@@ -38,6 +40,11 @@ fun startHalteraKoin(googleSignIn: GoogleSignInBridge?) {
                 single<RoutineShareBridge> { IosRoutineShareBridge(get()) }
                 single<ExportFileBridge> { IosExportFileBridge() }
                 single<ImportFileBridge> { IosImportFileBridge() }
+                // Apple Health (HealthKit) is not implemented yet: no HealthGateway is bound, so data:repository uses
+                // UnavailableHealthGateway and Settings → Integrations says it is not available. Follow-up: a HealthKit
+                // HealthGateway (HKStatisticsCollectionQuery for daily totals, HKWorkout writes), the HealthKit
+                // entitlement and NSHealthShareUsageDescription / NSHealthUpdateUsageDescription; needs a Mac and an iPhone.
+                single<HealthConnectBridge> { NoHealthConnectBridge }
                 // Product barcode scanning is not available on iOS yet (an AVFoundation scanner is future work).
                 single<BarcodeScanner> { NoBarcodeScanner }
                 single {

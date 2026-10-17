@@ -250,4 +250,15 @@
         <item quantity="one">%1$s: %2$d día apuntado del %3$s al %4$s; máximo %5$s el %6$s; media %7$s</item>
         <item quantity="other">%1$s: %2$d días apuntados del %3$s al %4$s; máximo %5$s el %6$s; media %7$s</item>
     </plurals>
+    <string name="nutrition_stats_energy">Comido vs quemado</string>
+    <string name="nutrition_stats_energy_info">Las calorías que registraste aquí frente a las calorías totales quemadas que da Health Connect (de tu reloj u otras apps), en los días que tienen ambas. Diferencia = comido − quemado: negativa significa que se quemó más de lo que se comió. Las calorías quemadas son estimaciones de esos dispositivos y pueden fallar un 20 % o más, así que mira la tendencia de semanas, no días sueltos.</string>
+    <plurals name="nutrition_stats_energy_summary">
+        <item quantity="one">%1$d día con ambas · %2$s kcal comidas y %3$s kcal quemadas (%4$s kcal)</item>
+        <item quantity="other">%1$d días con ambas · de media %2$s kcal comidas y %3$s kcal quemadas (%4$s kcal)</item>
+    </plurals>
+    <string name="nutrition_stats_energy_day">Día</string>
+    <string name="nutrition_stats_energy_eaten">Comido</string>
+    <string name="nutrition_stats_energy_burned">Quemado</string>
+    <string name="nutrition_stats_energy_balance">Diferencia</string>
+    <string name="nutrition_stats_energy_average">Media</string>
 </resources>

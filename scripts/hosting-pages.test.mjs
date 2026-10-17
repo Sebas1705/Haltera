@@ -64,13 +64,24 @@ test("each page declares its language and the language links point at the twin",
 });
 
 test("privacy policies have the required sections", () => {
-  const ids = ["controller", "data", "purposes", "recipients", "retention", "rights", "children", "health", "changes", "contact"];
+  const ids = ["controller", "data", "health-connect", "purposes", "recipients", "retention", "rights", "children", "health", "changes", "contact"];
   for (const page of ["privacy.html", "privacidad.html"]) {
     const html = read(page);
     for (const id of ids) assert.match(html, new RegExp(`<h2 id="${id}">`), `${page} lacks section ${id}`);
     assert.match(html, /2026/, `${page} has no effective date`);
     assert.match(html, /github\.com\/Sebas1705\/Haltera\/issues/, `${page} has no contact`);
     assert.doesNotMatch(html, /@gmail|mailto:/, `${page} exposes an email address`);
+  }
+});
+
+test("the Health Connect section says what is read, that it stays on the phone, is not used for ads and can be disconnected", () => {
+  const facts = {
+    "privacy.html": [/steps/, /never uploaded/, /not used for advertising/i, /Disconnect/, /Settings → Integrations → Health Connect/],
+    "privacidad.html": [/pasos/, /nunca se suben/, /no se comparten ni se usan para publicidad/i, /Desconectar/, /Ajustes → Integraciones → Health Connect/],
+  };
+  for (const [page, patterns] of Object.entries(facts)) {
+    const section = read(page).split('<h2 id="health-connect">')[1]?.split("<h2")[0] ?? "";
+    for (const pattern of patterns) assert.match(section, pattern, `${page}: Health Connect section lacks ${pattern}`);
   }
 });
 

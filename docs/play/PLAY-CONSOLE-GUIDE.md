@@ -27,7 +27,7 @@ checks the URLs).
 
 - [ ] **1.** Create the app in Play Console
 - [ ] **2.** Play App Signing with **our** key (before uploading anything)
-- [ ] **3.** App content: privacy policy, ads, app access, advertising ID, content rating, target audience, Data safety, Health apps, foreground service, exact alarm, financial features and the rest
+- [ ] **3.** App content: privacy policy, ads, app access, advertising ID, content rating, target audience, Data safety, Health apps, Health Connect permissions, foreground service, exact alarm, financial features and the rest
 - [ ] **4.** Store listing (text and graphics already in the repo)
 - [ ] **5.** Service account for the Play API, JSON in Doppler (`PLAY_SERVICE_ACCOUNT_JSON`)
 - [ ] **6.** First AAB uploaded **by hand** to Closed testing
@@ -175,9 +175,19 @@ Installs that were already syncing before P3 keep their copy, which is why the d
 | Health and fitness → body weight | Body weight entries and the weight stored in sessions. Declare under **Health info** (Play has no separate weight type) | **Optional** | App functionality |
 | Health and fitness → nutrition | Foods, meals, calories and macros. Declare under **Fitness info** or **Health info** (no separate nutrition type) **[unverified which Play expects]** | **Optional** | App functionality |
 | App activity → **Other user-generated content** | Notes, routine and exercise names, custom foods | **Optional** | App functionality |
+| Health and fitness → **Fitness info** (Health Connect) | Daily steps, active and total calories burned **read from Health Connect** and kept on the phone; finished workouts **written to** Health Connect | **Optional** (only if the user connects Health Connect and switches the type on) | App functionality |
+| Health and fitness → **Health info** (Health Connect) | Body weight, resting heart rate and sleep duration **read from Health Connect**; body weight written to it | **Optional** (same) | App functionality |
 | Device or other IDs | **Not collected by the app.** Firebase installation IDs are not used for analytics here. Do not tick unless the Console's Firebase disclosure page says Auth/Firestore need it | — | — |
 
 Notes:
+- **Health Connect data (P4) and Data safety:** Data safety defines "collected" as transmitted off the device, but the
+  Health Connect policy asks apps to disclose the Health Connect data they access **[unverified how Play reviews a
+  device-only read; declaring it is the safe answer]**. Haltera keeps the daily totals in a device-only table that is
+  never synced; the only Health Connect data that can leave the phone is a **body-weight entry imported from Health
+  Connect**, which becomes an ordinary log entry and is uploaded with the rest of the log **only if the cloud copy is
+  on**. So: tick Fitness info and Health info (already ticked for the cloud copy), keep them **Optional**, purpose
+  **App functionality**, **not shared**, do not tick "processed ephemerally". Nothing from Health Connect is used for
+  ads or analytics, sold, or used to decide eligibility for anything.
 - **Not collected:** location, contacts, photos or videos, audio, files, calendar, web history, financial info,
   messages, crash logs, diagnostics. Crash logs and diagnostics are **not** collected (no Crashlytics).
 - The IP address is processed by Google as part of Firebase; Play's guidance (Firebase disclosure page) lists what
@@ -194,12 +204,56 @@ Declare the features the app offers:
 - **Health and fitness → Activity and Fitness (Actividad y forma física)**: yes (workout logging, progression, charts).
 - **Health and fitness → Nutrition and Weight Management (Nutrición y control de peso)**: yes (food log, calorie and
   macro goals, body weight).
-- Period tracking, sleep, stress/mental acuity: **no**.
+- **Sleep management**: Haltera only shows a sleep-duration trend read from Health Connect (optional, off by default).
+  If the form asks whether the app offers sleep features, answer **yes: sleep-duration trend read from Health
+  Connect** **[unverified: the category may target sleep apps only; answering yes is the honest side]**.
+- Period tracking, stress/mental acuity: **no**.
 - **Medical** categories (diseases and conditions, clinical decision support, medication, etc.): **no**.
 - **Medical device app: no.** Haltera is not a medical device, makes no diagnostic or treatment claims, and shows a
   health disclaimer on analysis screens (`HealthDisclaimer`; AGENTS.md).
-- **Health Connect: not used** (no permission, no dependency). Leave Health Connect declarations alone.
+- **Health Connect: used** (P4, Settings → Integrations → Health Connect). Fill in the Health Connect part as in
+  **3.8.1** below.
 - If a second page appears asking about medical-device regulation (EU MDR): answer "not a medical device".
+
+### 3.8.1 Health Connect permissions declaration
+
+**Where:** App content → **Health apps (Aplicaciones de salud)** → the Health Connect section, or a separate **Health
+Connect** card if the Console shows one **[menu path unverified]**. The form lists every `android.permission.health.*`
+permission found in the uploaded bundle and asks, for each one, why the app needs it. Upload a bundle that contains
+this feature first (closed testing is enough); otherwise the form does not list the permissions. Review can take
+several days and **blocks the release that adds the permissions** until it is approved.
+
+Facts for the form (code: `data/health`, `data/repository/.../health`, `composeApp/.../health`):
+
+- Exactly these permissions are declared (`data/health/src/androidMain/AndroidManifest.xml`, kept in step with the code
+  by `HealthConnectGatewayTest`): `READ_STEPS`, `READ_ACTIVE_CALORIES_BURNED`, `READ_TOTAL_CALORIES_BURNED`,
+  `READ_WEIGHT`, `READ_RESTING_HEART_RATE`, `READ_SLEEP`, `WRITE_EXERCISE`, `WRITE_WEIGHT`. **No**
+  `READ_HEALTH_DATA_IN_BACKGROUND`, **no** `READ_HEALTH_DATA_HISTORY`, no medical records.
+- Nothing is requested until the user taps **Connect Health Connect**; each data type has its own switch and only
+  the switched-on types are requested. Reads happen only while the app is in the foreground.
+- Permission rationale (required by Health Connect): `HealthPermissionsRationaleActivity` (Android 13 and older:
+  `androidx.health.ACTION_SHOW_PERMISSIONS_RATIONALE`; Android 14+: the `ViewPermissionUsageActivity` alias with
+  `VIEW_PERMISSION_USAGE` / `HEALTH_PERMISSIONS`). It opens the privacy policy, whose **Health Connect** section says
+  what is read, why, that it is not shared or used for ads, and how to disconnect.
+- What is read stays on the phone (device-only table, never synced). Disconnecting revokes the permissions and deletes
+  the copied totals.
+
+**Justification per permission (paste; shorten if a field is limited):**
+
+| Permission | Justification |
+|---|---|
+| `READ_STEPS` | Haltera shows the daily steps in its Activity statistics (steps per day against a daily goal, 7-day average, weekly totals, streaks) and on the Today screen. Read only after the user connects Health Connect and switches Steps on, only while the app is open; kept on the device. |
+| `READ_ACTIVE_CALORIES_BURNED` | Shown as a daily active-calories trend in the Activity statistics, next to the workouts the user logs. Optional, read in the foreground only, kept on the device. |
+| `READ_TOTAL_CALORIES_BURNED` | Compared with the calories the user logs in the food diary ("eaten vs burned" in Nutrition statistics) and shown as a trend. Optional, read in the foreground only, kept on the device. |
+| `READ_WEIGHT` | Body weight measured by smart scales or other apps is added to the body-weight log, which Haltera charts with a moving average and weekly averages. Optional; entries Haltera wrote itself are never imported back. |
+| `READ_RESTING_HEART_RATE` | Shown as an optional daily resting-heart-rate trend in the Activity statistics, next to training load. Off by default, trend only, no medical interpretation. |
+| `READ_SLEEP` | Shown as an optional sleep-duration trend (hours per night) in the Activity statistics, next to training load. Off by default, trend only. |
+| `WRITE_EXERCISE` | Each finished workout is written to Health Connect as a strength-training exercise session (start, end, title) so other fitness apps see the gym sessions. Optional; editing or deleting the workout in Haltera updates or removes the same record. |
+| `WRITE_WEIGHT` | Body weight logged in Haltera is written to Health Connect so other apps can use it. Optional, off by default. |
+
+Do **not** add permissions to the manifest without updating this form, DATA-INVENTORY.md and the privacy pages: Health
+Connect refuses permissions the app does not declare, and Play rejects declared permissions with no feature using
+them.
 
 ### 3.9 Foreground service declaration
 
@@ -421,6 +475,10 @@ The package changes, so Haltera is a **new app**, not an update:
 
 - Foreground service and full-screen intent requirements (declaration, special use): https://support.google.com/googleplay/android-developer/answer/13392821
 - Health apps declaration and categories: https://support.google.com/googleplay/android-developer/answer/14738291
+- Health Connect: developer guide (permissions, rationale activity, availability):
+  https://developer.android.com/health-and-fitness/guides/health-connect/develop/get-started and Play policy for
+  Health Connect permissions: https://support.google.com/googleplay/android-developer/answer/12991134 **[links from
+  memory, not re-checked in this PR]**
 - Exact alarm permissions policy (`USE_EXACT_ALARM`, `SCHEDULE_EXACT_ALARM`, declaration form): https://support.google.com/googleplay/android-developer/answer/9888170
 - Carried over from the Owlsplit guide (consulted 2026-10-13, not re-read today):
   - Testing requirements for new personal accounts: https://support.google.com/googleplay/android-developer/answer/14151465

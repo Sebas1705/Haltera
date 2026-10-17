@@ -79,7 +79,7 @@ internal fun rememberChartStyle(): ChartStyle {
 /**
  * Vertical bars from 0, one per bucket, with an optional [ghost] value per bar (the comparison period,
  * drawn as an outline behind). Tapping a bar shows [tooltip] for it; tapping again hides it.
- * [description] summarises the chart for screen readers.
+ * [description] summarises the chart for screen readers. [goal] draws a dashed horizontal line in [goalColor].
  */
 @Composable
 internal fun BarChart(
@@ -95,6 +95,8 @@ internal fun BarChart(
     highlightLast: Boolean = false,
     maxLabels: Int = MAX_X_LABELS,
     height: Dp = 180.dp,
+    goal: Double? = null,
+    goalColor: Color = MaterialTheme.colorScheme.onSurface,
 ) {
     val style = rememberChartStyle()
     val measurer = rememberTextMeasurer()
@@ -123,11 +125,23 @@ internal fun BarChart(
             },
     ) {
         if (values.isEmpty()) return@Canvas
-        val scale = ChartScale.nice(0.0, (values + ghost.orEmpty()).max(), includeZero = true)
+        val scale = ChartScale.nice(0.0, (values + ghost.orEmpty() + listOfNotNull(goal)).max(), includeZero = true)
         val area = drawYAxis(scale, format, unit, measurer, style)
         plot.area = area
         val bars = BarColors(color, ghostColor, highlightLast, selected)
         drawBars(values, ghost, scale, area, bars)
+        goal?.let { g ->
+            val y = area.y(scale, g)
+            drawLine(
+                goalColor,
+                Offset(area.left, y),
+                Offset(area.right, y),
+                strokeWidth = GOAL_STROKE_DP.dp.toPx(),
+                pathEffect = PathEffect.dashPathEffect(
+                    floatArrayOf(LINE_DASH_ON_DP.dp.toPx(), LINE_DASH_OFF_DP.dp.toPx())
+                ),
+            )
+        }
         val slot = area.width / values.size
         ChartScale.labelIndices(labels.size, maxLabels).forEach { i ->
             drawXLabel(labels[i], area.left + i * slot + slot / 2, measurer, style)
@@ -284,6 +298,7 @@ private fun DrawScope.drawSeries(line: LineSeries, offsets: List<Offset>) {
 }
 
 private const val BAR_RADIUS_DP = 3
+private const val GOAL_STROKE_DP = 1.5f
 private const val GHOST_STROKE_DP = 1.5f
 private const val GHOST_DASH_ON = 6f
 private const val GHOST_DASH_OFF = 4f

@@ -21,6 +21,9 @@ import es.sebas1705.haltera.feature.session.di.sessionModule
 import es.sebas1705.haltera.feature.today.di.todayModule
 import es.sebas1705.haltera.dataimport.DataImportViewModel
 import es.sebas1705.haltera.export.DataExportViewModel
+import es.sebas1705.haltera.health.HealthConnectBridge
+import es.sebas1705.haltera.health.IntegrationsViewModel
+import es.sebas1705.haltera.health.NoHealthConnectBridge
 import es.sebas1705.haltera.settings.SettingsViewModel
 import es.sebas1705.haltera.share.IncomingRoutineChannel
 import es.sebas1705.haltera.startup.StartupViewModel
@@ -50,11 +53,13 @@ val appModule = module {
     single { IncomingRoutineChannel() }
     viewModel { DataExportViewModel(get(), get(), get()) }
     viewModel { DataImportViewModel(get(), get(), get(), get()) }
+    viewModel { IntegrationsViewModel(get(), get(), getOrNull<HealthConnectBridge>() ?: NoHealthConnectBridge) }
 }
 
 /**
  * Every shared module; the platform adds its `DatabaseDriverFactory`, `FirebaseConfig`,
- * `GoogleSignInLauncher`, `BarcodeScanner` and `AppVersionName`.
+ * `GoogleSignInLauncher`, `BarcodeScanner`, `AppVersionName`
+ * and, on Android, the Health Connect `HealthGateway` and `HealthConnectBridge`.
  */
 val appModules = listOf(
     appModule,

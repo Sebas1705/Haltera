@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.data.repository
 
+import es.sebas1705.haltera.data.repository.export.ExportFormat
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.repository.importer.HistoryFileParser
@@ -303,7 +304,7 @@ class HistoryFileParserTest {
 
     @Test
     fun `an export from a newer format version is refused`() {
-        val manifest = "{\"format\":\"haltera-export\",\"version\":2}"
+        val manifest = "{\"format\":\"haltera-export\",\"version\":${ExportFormat.VERSION + 1}}"
 
         assertEquals(ImportError.NEWER_FORMAT, failure(zipOf("manifest.json" to manifest, "sessions.csv" to "x")))
     }
@@ -318,6 +319,10 @@ class HistoryFileParserTest {
 
         assertEquals(ImportSource.HALTERA, parsed.source)
         val session: ImportedSession = parsed.sessions.single()
+        // A version 1 file: no routine link and no both-hands snapshot.
+        assertEquals(null, session.routineId)
+        assertEquals(null, session.routineDayIndex)
+        assertEquals(listOf(null), session.exercises.map { it.bilateral }.distinct())
         assertEquals("s-001", session.id)
         assertEquals("Push, A", session.title)
         assertEquals("Felt \"great\"\nPR attempt", session.notes.replace("\r\n", "\n"))

@@ -17,6 +17,8 @@ internal class SessionAccumulator(private val source: ImportSource) {
         var trackingType: TrackingType? = null
         var muscles: List<Muscle> = emptyList()
         var equipment: Equipment? = null
+        var slotId: String? = null
+        var bilateral: Boolean? = null
 
         fun toExercise() = ImportedExercise(
             name = name,
@@ -28,6 +30,8 @@ internal class SessionAccumulator(private val source: ImportSource) {
             trackingType = trackingType,
             muscles = muscles,
             equipment = equipment,
+            slotId = slotId,
+            bilateral = bilateral,
         )
     }
 
@@ -42,6 +46,9 @@ internal class SessionAccumulator(private val source: ImportSource) {
         var endedAt: Long? = null
         var notes: String = ""
         var bodyWeightGrams: Long? = null
+        var routineId: String? = null
+        var routineName: String? = null
+        var routineDayIndex: Int? = null
         val exercises = LinkedHashMap<String, ExerciseAcc>()
 
         fun exercise(key: String, name: String): ExerciseAcc = exercises.getOrPut(key) { ExerciseAcc(name) }
@@ -71,6 +78,9 @@ internal class SessionAccumulator(private val source: ImportSource) {
                 notes = g.notes,
                 bodyWeightGrams = g.bodyWeightGrams,
                 exercises = exercises,
+                routineId = g.routineId,
+                routineName = g.routineName,
+                routineDayIndex = g.routineDayIndex,
             )
         }
     }

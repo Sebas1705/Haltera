@@ -1,4 +1,4 @@
-# Export format (`haltera-export` v1)
+# Export format (`haltera-export` v2)
 
 Settings → Data → **Export my data** writes one zip, `haltera-export-YYYY-MM-DD.zip` (the date is the local date of
 the device). It holds everything the user logged and nothing that ships with the app: the bundled exercise
@@ -50,6 +50,11 @@ them deliberately with `UPDATE_GOLDEN=1 ./gradlew :data:repository:testDebugUnit
 | `rpe` | Rate of perceived exertion, up to 2 decimals, if entered |
 | `completed_at` | UTC instant the set was ticked |
 | `set_id` | Set id |
+| `routine_id` | Version 2. Routine the session was started from; empty for a free session or a routine deleted since |
+| `routine_name` | Version 2. Its name at export time (informative; the importer keeps it as the title when the routine is not on the device) |
+| `routine_day_index` | Version 2. 0-based position of the routine day; empty when there is none |
+| `slot_id` | Version 2. Routine slot the exercise was logged from; empty when added outside the plan or the slot was removed |
+| `both_hands` | Version 2. `1` when the dumbbell volume of the exercise counts both hands (its "Both hands" snapshot, core design §3.3), else `0` |
 
 ## `body_weight.csv`
 
@@ -78,7 +83,7 @@ resolved. Catalogue exercises never appear here.
 
 ## `manifest.json`
 
-`format` (`haltera-export`), `version` (1), `appVersion`, `schemaVersion` (database schema), `exportedAt`
+`format` (`haltera-export`), `version` (2), `appVersion`, `schemaVersion` (database schema), `exportedAt`
 (UTC instant), `timeZone`, `counts` (`sessions` with at least one row, `sets`, `bodyWeightEntries`, `mealEntries`,
 `routines`, `customExercises`) and `files`. It is the last entry of the zip.
 
@@ -88,4 +93,9 @@ resolved. Catalogue exercises never appear here.
   choose UTF-8 and comma. Google Sheets and LibreOffice detect it.
 - Text is exported as typed: a note that starts with `=` is not escaped, so open untrusted files as text, not
   as formulas.
-- Compatibility: version 1 will only gain columns and keys; a breaking change bumps `version`.
+- Compatibility: a version only gains columns and keys; a breaking change bumps `version`. Readers match columns by
+  name, never by position.
+- Version history: 1 (alpha.1–alpha.4) had the first 25 columns of `sessions.csv`. 2 (schema 8) appends
+  `routine_id`, `routine_name`, `routine_day_index`, `slot_id` and `both_hands`, so re-importing an export keeps
+  routine sessions linked and dumbbell volume right ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)). The importer reads
+  both; a file with a `version` newer than the app's is refused.

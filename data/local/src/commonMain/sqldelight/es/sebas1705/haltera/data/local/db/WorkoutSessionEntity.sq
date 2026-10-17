@@ -54,10 +54,11 @@ WHERE startedAt > :afterStartedAt OR (startedAt = :afterStartedAt AND id > :afte
 ORDER BY startedAt, id
 LIMIT :limit;
 
--- History import (docs/IMPORT-FORMATS.md): a finished session written whole, with a deterministic id.
+-- History import (docs/IMPORT-FORMATS.md): a finished session written whole, with a deterministic id, linked to a
+-- routine of this device when a Haltera export names one that exists.
 insertImported:
 INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
-VALUES (?, ?, ?, NULL, NULL, ?, ?, ?);
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
 
 -- Which of :ids are already in the logbook.
 selectExistingIds:

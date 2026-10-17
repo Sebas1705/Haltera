@@ -107,7 +107,8 @@ internal class SqlDataExporter(
         val zip = ZipWriter(sink, dosTime(exportedAt))
         val sessions = ByteArrayOutput(ENTRY_CAPACITY)
         val sessionsCsv = CsvWriter(sessions, ExportFormat.SESSION_COLUMNS)
-        val sessionCount = writeSessions(sessionsCsv, timeZone)
+        val routineList = routines.observeRoutines().first()
+        val sessionCount = writeSessions(sessionsCsv, timeZone, routineList.associate { it.id to it.name })
         zip.entry(ExportFormat.SESSIONS_FILE, sessions)
 
         val weights = ByteArrayOutput()
@@ -122,7 +123,7 @@ internal class SqlDataExporter(
         writeMeals(mealsCsv)
         zip.entry(ExportFormat.MEAL_ENTRIES_FILE, meals)
 
-        val routineFiles = routines.observeRoutines().first().mapNotNull { sharing.export(it.id) }
+        val routineFiles = routineList.mapNotNull { sharing.export(it.id) }
         zip.entry(ExportFormat.ROUTINES_FILE, text("[" + routineFiles.joinToString(",\n") + "]\n"))
 
         val custom = customExercises()
@@ -162,7 +163,7 @@ internal class SqlDataExporter(
     }
 
     /** Writes the sets page by page (oldest session first); returns the number of sessions with rows. */
-    private suspend fun writeSessions(csv: CsvWriter, timeZone: TimeZone): Int {
+    private suspend fun writeSessions(csv: CsvWriter, timeZone: TimeZone, routineNames: Map<String, String>): Int {
         val variants = HashMap<String, ExportFormat.VariantInfo>()
         var sessionCount = 0
         var afterStartedAt = Long.MIN_VALUE
@@ -174,7 +175,8 @@ internal class SqlDataExporter(
             val sessions = history.sessions(page)
             resolve(sessions.flatMap { s -> s.exercises.map { it.variantId } }, variants)
             sessions.forEach { session ->
-                val rows = ExportFormat.sessionRows(session, { variants.getValue(it) }, timeZone)
+                val routineName = session.routineId?.let(routineNames::get)
+                val rows = ExportFormat.sessionRows(session, { variants.getValue(it) }, timeZone, routineName)
                 rows.forEach(csv::row)
                 if (rows.isNotEmpty()) sessionCount++
             }

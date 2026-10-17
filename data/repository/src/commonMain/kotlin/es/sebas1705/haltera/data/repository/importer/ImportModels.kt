@@ -71,6 +71,10 @@ data class ImportedExercise(
     val trackingType: TrackingType? = null,
     val muscles: List<Muscle> = emptyList(),
     val equipment: Equipment? = null,
+    /** Haltera export v2: the routine slot it was logged from (linked only if it exists here). */
+    val slotId: String? = null,
+    /** Haltera export v2: the "Both hands" snapshot; null when the file does not say (one implement). */
+    val bilateral: Boolean? = null,
 )
 
 data class ImportedSession(
@@ -82,6 +86,10 @@ data class ImportedSession(
     val notes: String,
     val bodyWeightGrams: Long?,
     val exercises: List<ImportedExercise>,
+    /** Haltera export v2: the routine and day the session was logged from (linked only if they exist here). */
+    val routineId: String? = null,
+    val routineName: String? = null,
+    val routineDayIndex: Int? = null,
 ) {
     val setCount: Int get() = exercises.sumOf { it.sets.size }
 }

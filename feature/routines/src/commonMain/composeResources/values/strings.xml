@@ -83,7 +83,10 @@
     </plurals>
     <string name="routines_slot_superset">Superset %1$s</string>
     <string name="routines_prescription_range_value">%1$d–%2$d reps</string>
-    <string name="routines_prescription_reps_value">%1$d reps</string>
+    <plurals name="routines_prescription_reps_value">
+        <item quantity="one">%1$d rep</item>
+        <item quantity="other">%1$d reps</item>
+    </plurals>
     <string name="routines_prescription_duration_value">%1$s</string>
     <string name="routines_prescription_distance_value">%1$d m</string>
 
@@ -207,13 +210,13 @@
     <string name="routines_import_set_active">Set as active routine</string>
     <string name="routines_import_copy_note">The routine is added as a new copy. Nothing you have is changed.</string>
     <plurals name="routines_import_custom_count">
-        <item quantity="one">Includes %1$d custom exercise, added to your exercises.</item>
-        <item quantity="other">Includes %1$d custom exercises, added to your exercises.</item>
+        <item quantity="one">%1$d custom exercise will be added to your exercises.</item>
+        <item quantity="other">%1$d custom exercises will be added to your exercises.</item>
     </plurals>
     <string name="routines_import_custom_by">Custom exercises by %1$s.</string>
     <plurals name="routines_import_custom_existing">
-        <item quantity="one">%1$d of them is already in your exercises: it is reused, not duplicated.</item>
-        <item quantity="other">%1$d of them are already in your exercises: they are reused, not duplicated.</item>
+        <item quantity="one">%1$d custom exercise is already in your exercises: it is reused, not duplicated.</item>
+        <item quantity="other">%1$d custom exercises are already in your exercises: they are reused, not duplicated.</item>
     </plurals>
     <string name="routines_import_missing_title">Exercises not on this device</string>
     <string name="routines_import_missing_keep">Add them as custom exercises</string>
@@ -358,6 +361,10 @@
     <string name="routines_rest_more">More rest days</string>
     <string name="routines_rest_count_hint">The app never decides which days you rest: it only counts them on Today.</string>
     <string name="routines_rest_weekdays_hint">Pick up to 6 days. Today shows a rest day on them, and you can still train.</string>
+    <plurals name="routines_flexible_rotation">
+        <item quantity="one">%1$d workout in rotation</item>
+        <item quantity="other">%1$d workouts in rotation</item>
+    </plurals>
     <plurals name="routines_rest_per_week">
         <item quantity="one">%1$d rest day a week</item>
         <item quantity="other">%1$d rest days a week</item>

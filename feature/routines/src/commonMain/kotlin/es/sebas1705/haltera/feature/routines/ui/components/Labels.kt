@@ -13,6 +13,7 @@ import es.sebas1705.haltera.data.models.SlotTarget
 import es.sebas1705.haltera.feature.routines.model.ExerciseIndex
 import es.sebas1705.haltera.feature.routines.resources.Res
 import es.sebas1705.haltera.feature.routines.resources.routines_cycle_length
+import es.sebas1705.haltera.feature.routines.resources.routines_flexible_rotation
 import es.sebas1705.haltera.feature.routines.resources.routines_rest_per_week
 import es.sebas1705.haltera.feature.routines.resources.routines_equipment_band
 import es.sebas1705.haltera.feature.routines.resources.routines_equipment_barbell
@@ -116,11 +117,15 @@ internal fun targetLabel(target: SlotTarget, index: ExerciseIndex, language: Str
 @Composable
 internal fun prescriptionLabel(prescription: Prescription): String = when (prescription) {
     is Prescription.RepRange -> if (prescription.min == prescription.max) {
-        stringResource(Res.string.routines_prescription_reps_value, prescription.min)
+        pluralStringResource(Res.plurals.routines_prescription_reps_value, prescription.min, prescription.min)
     } else {
         stringResource(Res.string.routines_prescription_range_value, prescription.min, prescription.max)
     }
-    is Prescription.Reps -> stringResource(Res.string.routines_prescription_reps_value, prescription.reps)
+    is Prescription.Reps -> pluralStringResource(
+        Res.plurals.routines_prescription_reps_value,
+        prescription.reps,
+        prescription.reps
+    )
     is Prescription.Duration ->
         stringResource(Res.string.routines_prescription_duration_value, formatSeconds(prescription.seconds))
     is Prescription.Distance -> stringResource(Res.string.routines_prescription_distance_value, prescription.meters)
@@ -143,13 +148,17 @@ internal fun cycleLabel(days: Int, trainingDays: Int): String =
 
 internal fun trainingDays(kinds: List<DayKind>): Int = kinds.count { it == DayKind.TRAINING }
 
-/** The cycle label of a fixed routine, or "3 training days · 2 rest days a week" for a flexible one. */
+/**
+ * The cycle label of a fixed routine, or "3 workouts in rotation · 5 rest days a week" for a flexible one: its
+ * training days are a rotation, not days of the week, so they are never added up with the weekly rest days
+ * (docs/designs/2026-10-16-flexible-rest-days.md §1, "Wording").
+ */
 @Composable
 internal fun routineSummary(kinds: List<DayKind>, policy: RestPolicy): String {
     if (!policy.isFlexible) return cycleLabel(kinds.size, trainingDays(kinds))
     val training = trainingDays(kinds)
     val rest = policy.restDaysCount
-    return pluralStringResource(Res.plurals.routines_training_days, training, training) + " · " +
+    return pluralStringResource(Res.plurals.routines_flexible_rotation, training, training) + " · " +
         pluralStringResource(Res.plurals.routines_rest_per_week, rest, rest)
 }
 

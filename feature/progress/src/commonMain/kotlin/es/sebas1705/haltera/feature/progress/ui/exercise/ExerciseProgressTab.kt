@@ -5,12 +5,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
@@ -18,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +37,7 @@ import es.sebas1705.haltera.core.ui.components.LoadingScreen
 import es.sebas1705.haltera.domain.usecases.stats.Metric
 import es.sebas1705.haltera.feature.progress.model.VariantInfo
 import es.sebas1705.haltera.feature.progress.resources.*
+import es.sebas1705.haltera.feature.progress.resources.progress_exercise_details
 import es.sebas1705.haltera.feature.progress.ui.components.ComparisonTile
 import es.sebas1705.haltera.feature.progress.ui.components.DateFormat
 import es.sebas1705.haltera.feature.progress.ui.components.StatsGrid
@@ -52,12 +57,15 @@ import org.koin.compose.viewmodel.koinViewModel
 
 /** Exercises tab: pick an exercise with history, see its charts, progression table and records. */
 @Composable
-internal fun ExerciseProgressTab(viewModel: ExerciseProgressViewModel = koinViewModel()) {
+internal fun ExerciseProgressTab(
+    onOpenExerciseDetail: (exerciseId: String) -> Unit = {},
+    viewModel: ExerciseProgressViewModel = koinViewModel(),
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     when {
         state.loading -> LoadingScreen()
         state.exercises.isEmpty() -> EmptyMessage(stringResource(Res.string.progress_exercise_empty))
-        else -> ExerciseProgressContent(state) { viewModel.onEvent(it) }
+        else -> ExerciseProgressContent(state, onOpenExerciseDetail) { viewModel.onEvent(it) }
     }
 }
 
@@ -69,7 +77,11 @@ internal fun EmptyMessage(text: String) {
 }
 
 @Composable
-internal fun ExerciseProgressContent(state: ExerciseProgressState, onEvent: (ExerciseProgressIntent) -> Unit) {
+internal fun ExerciseProgressContent(
+    state: ExerciseProgressState,
+    onOpenExerciseDetail: (exerciseId: String) -> Unit,
+    onEvent: (ExerciseProgressIntent) -> Unit,
+) {
     val units = rememberUnitFormat(state.unit)
     val dates = rememberDateFormat()
     StatsGrid {
@@ -87,6 +99,14 @@ internal fun ExerciseProgressContent(state: ExerciseProgressState, onEvent: (Exe
                         state.variants,
                         state.selectedVariantId
                     ) { onEvent(ExerciseProgressIntent.SelectVariant(it)) }
+                }
+                // The exercise's own page: description, records and, for a deleted custom exercise, Restore.
+                state.selectedExerciseId?.let { id ->
+                    TextButton(onClick = { onOpenExerciseDetail(id) }) {
+                        Icon(Icons.Outlined.Info, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text(stringResource(Res.string.progress_exercise_details))
+                    }
                 }
             }
         }

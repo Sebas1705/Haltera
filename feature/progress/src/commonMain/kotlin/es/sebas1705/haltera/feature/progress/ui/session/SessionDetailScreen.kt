@@ -1,6 +1,6 @@
 package es.sebas1705.haltera.feature.progress.ui.session
 
-import es.sebas1705.haltera.core.ui.adaptive.centeredContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
@@ -35,9 +36,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import es.sebas1705.haltera.core.ui.adaptive.centeredContent
 import es.sebas1705.haltera.core.ui.components.ErrorScreen
 import es.sebas1705.haltera.core.ui.components.LoadingScreen
 import es.sebas1705.haltera.core.units.WeightUnit
@@ -56,6 +59,7 @@ import es.sebas1705.haltera.feature.progress.resources.progress_delete_session_t
 import es.sebas1705.haltera.feature.progress.resources.progress_edit_sets
 import es.sebas1705.haltera.feature.progress.resources.progress_edit_times
 import es.sebas1705.haltera.feature.progress.resources.progress_exercise_count
+import es.sebas1705.haltera.feature.progress.resources.progress_exercise_details
 import es.sebas1705.haltera.feature.progress.resources.progress_free_session
 import es.sebas1705.haltera.feature.progress.resources.progress_more
 import es.sebas1705.haltera.feature.progress.resources.progress_no_sets
@@ -89,7 +93,12 @@ import org.jetbrains.compose.resources.stringResource
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun SessionDetailScreen(viewModel: SessionDetailViewModel, onBack: () -> Unit, onEditSets: () -> Unit) {
+internal fun SessionDetailScreen(
+    viewModel: SessionDetailViewModel,
+    onBack: () -> Unit,
+    onEditSets: () -> Unit,
+    onOpenExercise: (exerciseId: String) -> Unit = {},
+) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val back by rememberUpdatedState(onBack)
     LaunchedEffect(state.deleted) { if (state.deleted) back() }
@@ -117,7 +126,7 @@ internal fun SessionDetailScreen(viewModel: SessionDetailViewModel, onBack: () -
                 stringResource(Res.string.progress_session_not_found),
                 modifier = Modifier.padding(padding)
             )
-            else -> SessionDetailContent(state, summary, Modifier.padding(padding))
+            else -> SessionDetailContent(state, summary, onOpenExercise, Modifier.padding(padding))
         }
     }
     DetailDialogs(state.dialog, onIntent)
@@ -185,7 +194,12 @@ private fun DetailDialogs(dialog: DetailDialog?, onIntent: (SessionDetailIntent)
 }
 
 @Composable
-private fun SessionDetailContent(state: SessionDetailState, summary: SessionSummary, modifier: Modifier) {
+private fun SessionDetailContent(
+    state: SessionDetailState,
+    summary: SessionSummary,
+    onOpenExercise: (exerciseId: String) -> Unit,
+    modifier: Modifier,
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize().centeredContent(),
         contentPadding = PaddingValues(16.dp),
@@ -204,7 +218,7 @@ private fun SessionDetailContent(state: SessionDetailState, summary: SessionSumm
         if (state.notes.isNotBlank()) {
             item { NotesText(state.notes) }
         }
-        items(state.exercises, key = { it.id }) { exercise -> ExerciseCard(exercise, state.unit) }
+        items(state.exercises, key = { it.id }) { exercise -> ExerciseCard(exercise, state.unit, onOpenExercise) }
     }
 }
 
@@ -237,10 +251,29 @@ private fun NotesText(notes: String) {
 }
 
 @Composable
-private fun ExerciseCard(exercise: ExerciseDetail, unit: WeightUnit) {
+private fun ExerciseCard(exercise: ExerciseDetail, unit: WeightUnit, onOpenExercise: (exerciseId: String) -> Unit) {
     Card(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(variantLabel(exercise.variant), style = MaterialTheme.typography.titleMedium)
+            val variant = exercise.variant
+            if (variant == null) {
+                Text(variantLabel(null), style = MaterialTheme.typography.titleMedium)
+            } else {
+                // The name opens the exercise (description, records, Restore of a deleted custom exercise).
+                val details = stringResource(Res.string.progress_exercise_details)
+                Row(
+                    Modifier.fillMaxWidth()
+                        .clickable(onClickLabel = details) { onOpenExercise(variant.exerciseId) },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        variantLabel(variant),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Icon(Icons.Outlined.Info, contentDescription = details, tint = MaterialTheme.colorScheme.primary)
+                }
+            }
             if (exercise.volumeGrams > 0) {
                 Text(
                     stringResource(Res.string.progress_session_volume, formatVolume(exercise.volumeGrams, unit)),

@@ -37,23 +37,18 @@ object Stats {
     /** Sets that count for stats: completed and not warm-ups. */
     fun countedSets(sets: List<SetLog>): List<SetLog> = sets.filter { it.completed && it.kind != SetKind.WARMUP }
 
-    /**
-     * Volume (load × reps summed) of the counted sets, in gram-reps. [bilateral] doubles it (one
-     * dumbbell per hand). Sets without load or reps add nothing; negative (assisted) loads add nothing.
-     */
-    fun volume(sets: List<SetLog>, bilateral: Boolean = false): Long {
-        val total = countedSets(sets).sumOf { set -> (set.loadGrams ?: 0).coerceAtLeast(0) * (set.reps ?: 0) }
-        return if (bilateral) total * 2 else total
-    }
-
-    fun volume(exercise: SessionExercise, bilateral: Boolean = false): Long = volume(exercise.sets, bilateral)
-
     /** Best estimated 1RM among the counted sets of a performed exercise, or 0. */
     fun bestOneRm(exercise: SessionExercise): Long =
         countedSets(exercise.sets).maxOfOrNull { epleyOneRm(it.loadGrams ?: 0, it.reps ?: 0) } ?: 0
 
-    /** Records over a variant's history (any order). Ties keep the earliest. */
-    fun personalRecords(history: List<ExerciseHistoryEntry>): PersonalRecords {
+    /**
+     * Records over a variant's history (any order). Ties keep the earliest. The session volume follows the one
+     * volume rule ([TrainingMath.volume]): pass the routines' [bilateralSlots] so it agrees with Progress.
+     */
+    fun personalRecords(
+        history: List<ExerciseHistoryEntry>,
+        bilateralSlots: Set<String> = emptySet()
+    ): PersonalRecords {
         val ordered = history.sortedBy { it.sessionStartedAt }
         fun best(value: (ExerciseHistoryEntry) -> Long?): Record? {
             var record: Record? = null
@@ -67,7 +62,7 @@ object Stats {
             heaviestLoad = best { e -> countedSets(e.exercise.sets).mapNotNull { it.loadGrams }.maxOrNull() },
             bestEstimatedOneRm = best { e -> bestOneRm(e.exercise) },
             mostReps = best { e -> countedSets(e.exercise.sets).mapNotNull { it.reps?.toLong() }.maxOrNull() },
-            bestSessionVolume = best { e -> volume(e.exercise) },
+            bestSessionVolume = best { e -> TrainingMath.volume(e.exercise, bilateralSlots) },
         )
     }
 
@@ -75,9 +70,13 @@ object Stats {
      * Records that [current] beats compared to [previous] (the history before it): the record kinds
      * where the new value is strictly greater, for the finish summary.
      */
-    fun newRecords(previous: List<ExerciseHistoryEntry>, current: ExerciseHistoryEntry): Set<RecordKind> {
-        val before = personalRecords(previous)
-        val now = personalRecords(listOf(current))
+    fun newRecords(
+        previous: List<ExerciseHistoryEntry>,
+        current: ExerciseHistoryEntry,
+        bilateralSlots: Set<String> = emptySet(),
+    ): Set<RecordKind> {
+        val before = personalRecords(previous, bilateralSlots)
+        val now = personalRecords(listOf(current), bilateralSlots)
         return buildSet {
             if (beats(now.heaviestLoad, before.heaviestLoad)) add(RecordKind.HEAVIEST_LOAD)
             if (beats(now.bestEstimatedOneRm, before.bestEstimatedOneRm)) add(RecordKind.ESTIMATED_ONE_RM)

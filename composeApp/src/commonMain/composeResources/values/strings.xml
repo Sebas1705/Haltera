@@ -103,7 +103,10 @@
     <string name="import_summary">Sessions: %1$d, sets: %2$d</string>
     <string name="import_range">From %1$s to %2$s</string>
     <string name="import_body_weights">Body weight entries: %1$d</string>
-    <string name="import_matched">Exercises matched automatically: %1$d</string>
+    <plurals name="import_matched">
+        <item quantity="one">%1$d exercise recognised automatically</item>
+        <item quantity="other">%1$d exercises recognised automatically</item>
+    </plurals>
     <string name="import_skipped_rows">Rows ignored (empty sets or unreadable dates): %1$d</string>
     <string name="import_unit_title">This file does not say which unit its weights are in. They were logged in:</string>
     <string name="import_existing_title">Sessions already in your logbook: %1$d</string>
@@ -111,10 +114,15 @@
     <string name="import_existing_replace">Replace them</string>
     <string name="import_nothing_new">Everything in this file is already in your logbook.</string>
     <string name="import_unmatched_title">Exercises not found: %1$d</string>
-    <string name="import_unmatched_text">Each one is created as a custom exercise unless you map it to an existing one. This choice applies to this import only.</string>
+    <string name="import_unmatched_text">Each one is created as a custom exercise unless you map it to an existing one or keep a suggestion. This choice applies to this import only.</string>
     <string name="import_unmatched_row">Sets: %1$d, sessions: %2$d</string>
     <string name="import_create_custom">Create as custom exercise</string>
     <string name="import_map">Map to...</string>
+    <string name="import_suggested">Suggested: %1$s</string>
+    <string name="import_suggestion_high">Very likely the same exercise, so it is selected. Check it before importing.</string>
+    <string name="import_suggestion_medium">Possibly the same exercise. Tap the suggestion to use it.</string>
+    <string name="import_suggestion_high_unselected">Very likely the same exercise. Tap the suggestion to use it.</string>
+    <string name="import_suggestion_medium_selected">Possibly the same exercise, selected by you. Check it before importing.</string>
     <string name="import_mapped_to">Map to: %1$s</string>
     <string name="import_map_title">Map %1$s to</string>
     <string name="import_search">Search exercises</string>

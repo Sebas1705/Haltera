@@ -29,12 +29,14 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
@@ -118,6 +120,8 @@ class ExerciseDetailViewModel(
     private val exercises: ExerciseRepository,
     private val settings: SettingsRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
+    /** Routine slots whose dumbbell volume counts both hands (TrainingMath.bilateralSlots of every routine). */
+    private val bilateralSlots: Flow<Set<String>> = flowOf(emptySet()),
 ) : MVIBaseViewModel<ExerciseDetailState, ExerciseDetailIntent>(ExerciseDetailState()) {
 
     private val language = MutableStateFlow<String?>(null)
@@ -168,11 +172,15 @@ class ExerciseDetailViewModel(
             .distinctUntilChanged()
             .flatMapLatest { key ->
                 val units = settings.settings.map { it.unit }.distinctUntilChanged()
-                combine(exercises.observeVariantHistory(key.variantId), units) { history, unit ->
+                combine(
+                    exercises.observeVariantHistory(key.variantId),
+                    units,
+                    bilateralSlots.distinctUntilChanged(),
+                ) { history, unit, bilateral ->
                     HistoryMapping(
                         unit = unit,
                         history = history.take(HISTORY_ROWS).map { it.toRow(key.loadType, unit) },
-                        records = Stats.personalRecords(history).toRows(key.tracking, key.loadType, unit),
+                        records = Stats.personalRecords(history, bilateral).toRows(key.tracking, key.loadType, unit),
                     )
                 }.flowOn(dispatcher)
             }

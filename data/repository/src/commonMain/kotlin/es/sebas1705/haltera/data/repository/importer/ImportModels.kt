@@ -108,6 +108,8 @@ data class UnmatchedExercise(
     val name: String,
     val sets: Int,
     val sessions: Int,
+    /** An existing exercise the preview proposes (fuzzy search, ExerciseSuggester); null when nothing is close. */
+    val suggestion: ExerciseSuggestion? = null,
 )
 
 data class ImportPreview(

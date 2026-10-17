@@ -41,6 +41,7 @@ internal fun ProgressScreen(
     onOpenSession: (SessionSummary) -> Unit,
     onOpenSessionId: (sessionId: String) -> Unit,
     modifier: Modifier = Modifier,
+    onOpenExerciseDetail: (exerciseId: String) -> Unit = {},
 ) {
     var selected by rememberSaveable { mutableIntStateOf(0) }
     Column(modifier.fillMaxSize()) {
@@ -56,7 +57,7 @@ internal fun ProgressScreen(
         when (ProgressTab.entries[selected]) {
             ProgressTab.OVERVIEW -> OverviewTab()
             ProgressTab.CALENDAR -> CalendarTab(onOpenSession, onLogged = onOpenSessionId)
-            ProgressTab.EXERCISES -> ExerciseProgressTab()
+            ProgressTab.EXERCISES -> ExerciseProgressTab(onOpenExerciseDetail)
             ProgressTab.MUSCLES -> MusclesTab()
             ProgressTab.BODY_WEIGHT -> BodyWeightTab()
         }

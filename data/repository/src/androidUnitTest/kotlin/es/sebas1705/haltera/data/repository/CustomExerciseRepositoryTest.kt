@@ -375,6 +375,42 @@ class CustomExerciseRepositoryTest {
     }
 
     @Test
+    fun `hidden custom exercises are listed live until they are restored`() = runTest {
+        val r = repos()
+        val sled = r.sled()
+        r.log(sled.variants[0].id)
+        val other = r.exercises.createCustom(
+            NewExercise(LocalizedText.same("Atlas carry"), ExerciseCategory.STRENGTH, TrackingType.WEIGHT_REPS),
+        )
+        r.log(other.variants[0].id)
+        assertEquals(emptyList(), r.exercises.observeHiddenCustom().first())
+
+        r.exercises.deleteCustom(sled.id, removeFromRoutines = false)
+        r.exercises.deleteCustom(other.id, removeFromRoutines = false)
+        // Sorted by English name, with every variant so the detail and the list can show them.
+        val hidden = r.exercises.observeHiddenCustom().first()
+        assertEquals(listOf(other.id, sled.id), hidden.map { it.id })
+        assertEquals(sled.variants.map { it.id }, hidden.last().variants.map { it.id })
+        assertTrue(hidden.all { it.deprecated })
+
+        // As if the soft delete had been uploaded: the restore must make it dirty again.
+        db.syncTrackingQueries.clearAllDirty()
+        assertEquals(0L, syncState(sled.id)?.dirty)
+        r.exercises.restoreCustom(sled.id)
+        assertEquals(listOf(other.id), r.exercises.observeHiddenCustom().first().map { it.id })
+        assertEquals(listOf(sled.id), r.searchIds("sled"), "searchable again at once")
+        assertEquals(1L, syncState(sled.id)?.dirty, "the restore syncs as an update")
+        assertEquals(0L, syncState(sled.id)?.deleted)
+    }
+
+    @Test
+    fun `deprecated catalogue exercises are never listed as hidden`() = runTest {
+        val r = repos()
+        db.exerciseEntityQueries.deprecate(updatedAt = 2_000L, id = "bench-press")
+        assertEquals(emptyList(), r.exercises.observeHiddenCustom().first())
+    }
+
+    @Test
     fun `an exercise only added to an in-progress session counts as history`() = runTest {
         val r = repos()
         val sled = r.sled()

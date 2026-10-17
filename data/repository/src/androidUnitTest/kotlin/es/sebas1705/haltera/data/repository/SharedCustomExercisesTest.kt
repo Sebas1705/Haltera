@@ -142,6 +142,9 @@ class SharedCustomExercisesTest {
         val preview = receiver.preview(json)
         assertEquals(listOf("Ana"), preview.authors)
         assertTrue(preview.existingCustomIds.isEmpty())
+        // What the preview says import will do: one added, none reused.
+        assertEquals(1, preview.newCustomCount)
+        assertEquals(0, preview.reusedCustomCount)
         val copy = receiver.routines.getRoutine(receiver.sharing.import(preview, dropMissing = false))!!
 
         val exercise = receiver.exercises.getExercise(receiver.userExercises().single().id)!!
@@ -188,6 +191,9 @@ class SharedCustomExercisesTest {
 
         val preview = receiver.preview(json)
         assertEquals(setOf(preview.file.customExercises.single().id), preview.existingCustomIds)
+        // QA alpha.4: "added" and "reused" for the same exercise. Now only "reused".
+        assertEquals(0, preview.newCustomCount)
+        assertEquals(1, preview.reusedCustomCount)
         val second = receiver.routines.getRoutine(receiver.sharing.import(preview, dropMissing = false))!!
         assertEquals(1, receiver.userExercises().size)
         assertEquals(first.days[0].slots.map { it.target }, second.days[0].slots.map { it.target })

@@ -55,6 +55,9 @@ import es.sebas1705.haltera.feature.today.resources.today_no_routine_title
 import es.sebas1705.haltera.feature.today.resources.today_no_training_days
 import es.sebas1705.haltera.feature.today.resources.today_rest_hint
 import es.sebas1705.haltera.feature.today.resources.today_rest_week
+import es.sebas1705.haltera.feature.today.resources.today_rest_week_none
+import es.sebas1705.haltera.feature.today.resources.today_rest_week_over
+import es.sebas1705.haltera.feature.today.resources.today_rest_week_unplanned
 import es.sebas1705.haltera.feature.today.resources.today_rest_week_info
 import es.sebas1705.haltera.feature.today.resources.today_resume_action
 import es.sebas1705.haltera.feature.today.resources.today_resume_elapsed
@@ -179,7 +182,17 @@ internal fun PlanCard(
 private fun RestWeekLine(week: RestWeekUi) {
     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(
-            stringResource(Res.string.today_rest_week, week.used, week.planned),
+            when (week.wording) {
+                RestWeekWording.OF_TARGET -> stringResource(Res.string.today_rest_week, week.used, week.planned)
+                RestWeekWording.OVER_TARGET ->
+                    pluralStringResource(Res.plurals.today_rest_week_over, week.used, week.used, week.planned)
+                RestWeekWording.UNPLANNED -> pluralStringResource(
+                    Res.plurals.today_rest_week_unplanned,
+                    week.used,
+                    week.used
+                )
+                RestWeekWording.NONE_PLANNED -> stringResource(Res.string.today_rest_week_none)
+            },
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Medium,
         )

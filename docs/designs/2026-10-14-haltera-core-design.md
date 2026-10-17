@@ -77,7 +77,7 @@ Same proven stack as Owlsplit, started fresh from the Templetry `kmp/modular-fea
 | Value | Entry | Stored total |
 |---|---|---|
 | `BARBELL` | Bar weight (configurable: 20/15/10 kg, EZ, custom) + plates per side, or total with plate breakdown shown | bar + 2 × plates |
-| `DUMBBELL` | Weight of one implement (dumbbell, kettlebell, medicine ball); `bilateral` flag on the slot doubles volume | one implement |
+| `DUMBBELL` | Weight of one implement (dumbbell, kettlebell, medicine ball); `bilateral` flag on the slot doubles volume (§3.3, Volume) | one implement |
 | `MACHINE` | Either kg or stack position ("plate #7"), chosen per variant by the user; history is per variant so different machines never mix | kg, or plate index |
 | `BODYWEIGHT` | Added (+) or assisting (−) load | signed load |
 | `BAND` | Band level (user-defined labels/colours) | level id |
@@ -156,6 +156,28 @@ routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `
 **`SetLog`**: order, `kind` (`WARMUP`, `WORKING`, `DROP`, `FAILURE`), `reps?`, `load?`, `durationS?`, `distanceM?`, `rpe?`, `completed`, `completedAt?`.
 
 **Load storage**: `load` is a normalised value — grams as `Long` for weight (no floating point), plus a `loadDetail` JSON with what was entered (bar id + plates per side, plate index, band level, sign for assistance) so it is shown back exactly as typed. Unit preference (kg/lb) only affects display and entry.
+
+**Volume** (tonnage, gram-reps; one function: `TrainingMath.volume` in `domain:usecases`). Every screen that shows a
+volume sums with it: Progress overview, muscles, calendar day list and saved-session detail, exercise progression
+table and chart, and the "Session volume" record (Exercises detail, Progress, finish summary). The rule:
+
+- Σ load × reps over the completed sets that are not warm-ups (drop sets and sets to failure count).
+- The load is the stored total: bar + plates for a barbell, the machine weight, the added load of a bodyweight
+  exercise. Unloaded and assisted (negative) bodyweight sets, band levels and machine stack positions are not
+  weights and add nothing; timed and distance sets have no reps and add nothing.
+- `DUMBBELL` loads are stored per implement. The volume counts both implements only when the exercise was logged
+  from a routine slot with `bilateral` on (the slot editor turns it on for dumbbell slots); free sessions and
+  exercises added outside the plan count one implement. The flag is read when summing, never stored on the session,
+  so turning it off or on re-sums that slot's history everywhere at once.
+
+| Example (2 sets) | Volume |
+|---|---|
+| Barbell bench 100 kg × 5, × 5 | 1,000 kg |
+| Dumbbell press 24 kg × 10, × 8 from a bilateral slot | 864 kg (both hands) |
+| The same dumbbell sets in a free session, or a one-arm row slot | 432 kg |
+| Machine 50 kg × 10 / stack position 7 × 10 | 500 kg / 0 |
+| Pull-up +20 kg × 10 / assisted −20 kg × 8 / bodyweight × 12 | 200 kg / 0 / 0 |
+| Band level 3 × 15, plank 60 s, farmer's walk 32 kg × 40 s | 0 |
 
 The calendar is derived from `WorkoutSession` rows; there is no calendar table.
 

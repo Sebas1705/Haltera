@@ -20,6 +20,7 @@ import es.sebas1705.haltera.data.models.SlotSpec
 import es.sebas1705.haltera.data.models.WorkoutSession
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 
 // Repository contracts used by features and use cases. Implementations are internal to this module
 // and bound in `repositoryModule`. Times are epoch millis; loads are grams.
@@ -79,7 +80,13 @@ interface ExerciseRepository {
     suspend fun deleteCustom(id: String, removeFromRoutines: Boolean): DeleteOutcome =
         throw UnsupportedOperationException("deleteCustom")
 
-    /** Undoes a soft delete of the USER exercise [id]. */
+    /**
+     * The user's soft-deleted (hidden) custom exercises with their variants, live: what the Exercises tab lists
+     * under "Hidden" so any of them can be restored at any time (core design §3.1.1). Catalogue rows never appear.
+     */
+    fun observeHiddenCustom(): Flow<List<Exercise>> = flowOf(emptyList())
+
+    /** Undoes a soft delete of the USER exercise [id]: it syncs as an update and is searchable again at once. */
     suspend fun restoreCustom(id: String): Unit = throw UnsupportedOperationException("restoreCustom")
 
     /**

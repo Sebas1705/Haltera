@@ -64,6 +64,18 @@ import es.sebas1705.haltera.feature.exercises.resources.exercises_new
 import es.sebas1705.haltera.feature.exercises.resources.exercises_search_clear
 import es.sebas1705.haltera.feature.exercises.resources.exercises_search_hint
 import es.sebas1705.haltera.feature.exercises.ui.common.label
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import es.sebas1705.haltera.feature.exercises.resources.exercises_hidden_chip
+import es.sebas1705.haltera.feature.exercises.resources.exercises_hidden_text
+import es.sebas1705.haltera.feature.exercises.resources.exercises_hidden_title
+import es.sebas1705.haltera.feature.exercises.resources.exercises_restore
+import es.sebas1705.haltera.feature.exercises.resources.exercises_restore_failed
+import es.sebas1705.haltera.feature.exercises.resources.exercises_restore_named
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -79,10 +91,20 @@ internal fun ExercisesScreen(
     val language = Locale.current.language
     LaunchedEffect(language) { viewModel.onEvent(ExercisesIntent.SetLanguage(language)) }
 
+    val snackbar = remember { SnackbarHostState() }
+    val restoreFailed = stringResource(Res.string.exercises_restore_failed)
+    LaunchedEffect(state.restoreFailed) {
+        if (state.restoreFailed) {
+            snackbar.showSnackbar(restoreFailed)
+            viewModel.onEvent(ExercisesIntent.RestoreFailedShown)
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         // The shell's Scaffold already applies the system insets.
         contentWindowInsets = WindowInsets(0),
+        snackbarHost = { SnackbarHost(snackbar) },
         floatingActionButton = {
             FloatingActionButton(onClick = onCreateExercise) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(Res.string.exercises_new))
@@ -100,6 +122,11 @@ internal fun ExercisesScreen(
                 state.error -> ErrorScreen(
                     message = stringResource(Res.string.exercises_error),
                     onRetry = { viewModel.onEvent(ExercisesIntent.Retry) },
+                )
+                state.showingHidden -> HiddenList(
+                    items = state.hidden,
+                    onOpenExercise = onOpenExercise,
+                    onRestore = { viewModel.onEvent(ExercisesIntent.Restore(it)) },
                 )
                 state.loading && state.items.isEmpty() -> LoadingScreen()
                 state.items.isEmpty() -> EmptyState(
@@ -163,7 +190,63 @@ private fun FilterRow(state: ExercisesState, onIntent: (ExercisesIntent) -> Unit
         anyLabel = stringResource(Res.string.exercises_filter_any),
         clearLabel = stringResource(Res.string.exercises_filter_clear),
         onClear = { onIntent(ExercisesIntent.ClearFilters) },
+        leading = {
+            // Only while something is hidden: the way back to a deleted exercise that has history.
+            if (state.hidden.isNotEmpty()) {
+                FilterChip(
+                    selected = state.showingHidden,
+                    onClick = { onIntent(ExercisesIntent.ToggleHidden) },
+                    label = { Text(stringResource(Res.string.exercises_hidden_chip, state.hidden.size), maxLines = 1) },
+                )
+            }
+        },
     )
+}
+
+/** The hidden (soft-deleted) custom exercises, each with Restore; a tap opens its detail (with its own banner). */
+@Composable
+private fun HiddenList(items: List<ExerciseRow>, onOpenExercise: (String) -> Unit, onRestore: (String) -> Unit) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize().centeredContent(),
+        contentPadding = PaddingValues(bottom = 88.dp),
+    ) {
+        item(key = "hidden-header", contentType = "header") {
+            Column(
+                Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
+                Text(stringResource(Res.string.exercises_hidden_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(Res.string.exercises_hidden_text),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        items(items, key = { it.id }, contentType = { "hidden" }) { row ->
+            Row(
+                modifier = Modifier.fillMaxWidth().clickable {
+                    onOpenExercise(
+                        row.id
+                    )
+                }.padding(start = 16.dp, end = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = row.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f).padding(vertical = 14.dp),
+                )
+                val restoreLabel = stringResource(Res.string.exercises_restore_named, row.name)
+                TextButton(
+                    onClick = { onRestore(row.id) },
+                    modifier = Modifier.semantics { contentDescription = restoreLabel },
+                ) { Text(stringResource(Res.string.exercises_restore)) }
+            }
+        }
+    }
 }
 
 @Composable

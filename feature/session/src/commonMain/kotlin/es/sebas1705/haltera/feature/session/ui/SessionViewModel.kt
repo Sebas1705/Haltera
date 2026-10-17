@@ -496,6 +496,7 @@ class SessionViewModel(
             dayOf = catalog::localDay,
             previous = { variantId -> catalog.previousHistory(variantId, session.id) },
             increase = { slot, variantId -> catalog.earnedIncrease(slot, variantId, session.id) },
+            bilateralSlots = catalog.bilateralSlots(),
         )
     }
 

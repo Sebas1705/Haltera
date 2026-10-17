@@ -115,5 +115,14 @@
     <string name="today_nutrition_fat">Grasa</string>
     <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md) -->
     <string name="today_rest_week">Días de descanso esta semana: %1$d de %2$d</string>
+    <plurals name="today_rest_week_over">
+        <item quantity="one">%1$d día de descanso esta semana (objetivo: %2$d)</item>
+        <item quantity="other">%1$d días de descanso esta semana (objetivo: %2$d)</item>
+    </plurals>
+    <plurals name="today_rest_week_unplanned">
+        <item quantity="one">%1$d día de descanso esta semana (no tenías ninguno previsto)</item>
+        <item quantity="other">%1$d días de descanso esta semana (no tenías ninguno previsto)</item>
+    </plurals>
+    <string name="today_rest_week_none">Sin días de descanso previstos esta semana</string>
     <string name="today_rest_week_info">Solo informativo: una rutina flexible nunca se salta un entreno. El día siguiente es siempre el que va después de tu última sesión.</string>
 </resources>

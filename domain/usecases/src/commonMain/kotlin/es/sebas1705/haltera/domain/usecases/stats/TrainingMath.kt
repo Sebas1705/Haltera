@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.domain.usecases.stats
 
+import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.SessionExercise
 import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.models.SetLog
@@ -33,6 +34,7 @@ object TrainingMath {
     /**
      * Volume of one set (Metric.VOLUME): load × reps of a counted set, doubled for [bilateral] dumbbells.
      * Nothing for unloaded or assisted (negative) bodyweight sets, band levels and machine plate numbers.
+     * Part of the one volume rule, see [volume].
      */
     fun setVolume(set: SetLog, bilateral: Boolean = false): Long {
         if (!isCounted(set)) return 0
@@ -41,13 +43,36 @@ object TrainingMath {
         return if (bilateral) volume * 2 else volume
     }
 
+    /**
+     * Volume (tonnage) of one performed exercise, in gram-reps. This is the one volume rule of the app: the
+     * Progress overview, muscles, calendar and saved-session detail, the exercise progression table and charts,
+     * and the "Session volume" records (Exercises detail, Progress, finish summary) all sum through here
+     * (core design §3.3, "Volume").
+     *
+     * - Σ [setVolume]: completed sets that are not warm-ups, load × reps.
+     * - The load is what was stored: bar plus plates for a barbell, the machine weight, the added load of a
+     *   bodyweight exercise. Assisted (negative) and unloaded bodyweight sets, band levels and machine stack
+     *   positions are not weights and add nothing; timed and distance sets have no reps and add nothing.
+     * - A DUMBBELL load is stored per implement (one dumbbell). It counts twice only when the exercise was
+     *   logged from a routine slot flagged `bilateral` (one implement per hand; the slot editor turns the flag on
+     *   for dumbbell slots): its slot id is in [bilateralSlots], built with [bilateralSlots] from the routines.
+     *   Free sessions and exercises added outside the plan have no slot, so one implement is counted.
+     *
+     * Nothing stored changes: the flag is read when summing, so editing a slot's flag re-sums its history.
+     */
     fun volume(exercise: SessionExercise, bilateralSlots: Set<String> = emptySet()): Long {
         val bilateral = exercise.slotId != null && exercise.slotId in bilateralSlots
         return exercise.sets.sumOf { setVolume(it, bilateral) }
     }
 
+    /** Volume of a whole session: [volume] of each exercise. */
     fun volume(session: WorkoutSession, bilateralSlots: Set<String> = emptySet()): Long =
         session.exercises.sumOf { volume(it, bilateralSlots) }
+
+    /** The slots of every routine whose dumbbell volume counts both hands: the input of [volume]. */
+    fun bilateralSlots(routines: List<Routine>): Set<String> =
+        routines.flatMap { routine -> routine.days.flatMap { day -> day.slots.filter { it.bilateral }.map { it.id } } }
+            .toSet()
 
     fun effectiveSets(exercise: SessionExercise): Int = exercise.sets.count(::isEffective)
 

@@ -25,6 +25,8 @@ import es.sebas1705.haltera.data.repository.importer.ImportSummary
 import es.sebas1705.haltera.data.repository.importer.ImportWeightUnit
 import es.sebas1705.haltera.data.repository.importer.ParsedImport
 import es.sebas1705.haltera.data.repository.importer.UnmatchedExercise
+import es.sebas1705.haltera.data.repository.importer.ExerciseSuggestion
+import es.sebas1705.haltera.data.repository.importer.SuggestionConfidence
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -51,6 +53,7 @@ private class FakeImporter : HistoryImporter {
     var lastPreviewOptions: ImportOptions? = null
     var lastOptions: ImportOptions? = null
     var fail = false
+    var unmatched = listOf(UnmatchedExercise("cable fly", "Cable Fly", 1, 1))
 
     override suspend fun preview(parsed: ParsedImport, options: ImportOptions) = previewOf(parsed, options)
 
@@ -67,7 +70,7 @@ private class FakeImporter : HistoryImporter {
             existingSessions = 0,
             existingBodyWeights = 0,
             matchedExercises = 0,
-            unmatched = listOf(UnmatchedExercise("cable fly", "Cable Fly", 1, 1)),
+            unmatched = unmatched,
             skippedRows = parsed.skippedRows,
             needsUnitChoice = parsed.needsUnitChoice,
         )
@@ -245,6 +248,56 @@ class DataImportViewModelTest {
 
         assertTrue(importer.lastOptions?.decisions.orEmpty().isEmpty())
     }
+
+    @Test
+    fun `a high confidence suggestion is pre-selected and the user can still create a custom exercise`() {
+        importer.unmatched = listOf(
+            UnmatchedExercise("bench pres", "Bench Pres", 3, 1, suggestion("bench-press", SuggestionConfidence.HIGH)),
+            UnmatchedExercise("seated leg press", "Seated Leg Press", 2, 1, suggestion("leg-press", SuggestionConfidence.MEDIUM)),
+            UnmatchedExercise("zumba", "Zumba", 1, 1),
+        )
+        val vm = viewModel()
+        vm.onEvent(DataImportIntent.Pick)
+
+        val review = assertNotNull(vm.uiState.value.review)
+        // Only the high one is selected; the medium one and the name without a suggestion stay "create".
+        assertEquals(mapOf("bench pres" to MappedExercise("bench-press", "Bench Press")), review.mapped)
+
+        vm.onEvent(DataImportIntent.CreateCustom("bench pres"))
+        // Recomputing the preview (another policy) does not select it again.
+        vm.onEvent(DataImportIntent.SetExisting(ExistingPolicy.REPLACE))
+        assertTrue(vm.uiState.value.review!!.mapped.isEmpty())
+
+        vm.onEvent(DataImportIntent.AcceptSuggestion("seated leg press"))
+        vm.onEvent(DataImportIntent.AcceptSuggestion("bench pres"))
+        vm.onEvent(DataImportIntent.AcceptSuggestion("zumba")) // no suggestion: nothing happens
+        vm.onEvent(DataImportIntent.Confirm)
+        assertEquals(
+            mapOf(
+                "seated leg press" to ExerciseDecision.MapTo("leg-press"),
+                "bench pres" to ExerciseDecision.MapTo("bench-press"),
+            ),
+            importer.lastOptions?.decisions,
+        )
+    }
+
+    @Test
+    fun `a high suggestion is confirmed as is when the user does nothing`() {
+        importer.unmatched = listOf(
+            UnmatchedExercise("bench pres", "Bench Pres", 3, 1, suggestion("bench-press", SuggestionConfidence.HIGH)),
+        )
+        val vm = viewModel()
+        vm.onEvent(DataImportIntent.Pick)
+        vm.onEvent(DataImportIntent.Confirm)
+        assertEquals(mapOf("bench pres" to ExerciseDecision.MapTo("bench-press")), importer.lastOptions?.decisions)
+    }
+
+    private fun suggestion(id: String, confidence: SuggestionConfidence) =
+        ExerciseSuggestion(
+            id,
+            LocalizedText.same(if (id == "bench-press") "Bench Press" else "Leg Press"),
+            confidence
+        )
 
     @Test
     fun `a write failure is reported and the preview closes`() {

@@ -350,7 +350,7 @@
 
     <string name="progress_metric_volume_title">Volume</string>
     <string name="progress_metric_volume_summary">How much weight you moved: load times reps, added up.</string>
-    <string name="progress_metric_volume_formula">Σ load × reps over completed working, drop and to-failure sets. Dumbbell exercises from a routine exercise marked as using both hands count twice (one dumbbell per hand). Shown in your unit (kg or lb).</string>
+    <string name="progress_metric_volume_formula">Σ load × reps over completed working, drop and to-failure sets. Dumbbell exercises from a routine exercise marked as using both hands count twice (one dumbbell per hand). The calendar, the session detail and the records use this same number. Shown in your unit (kg or lb).</string>
     <string name="progress_metric_volume_counts">Bodyweight exercises count only added load: unloaded and assisted sets add 0 volume (they still count as effective sets). Warm-ups, unfinished sets, bands and machines logged by plate number add nothing.</string>
     <string name="progress_metric_volume_limits">Volume favours heavy compound lifts and high reps; it does not measure effort. A dumbbell exercise added outside a routine counts the load as you entered it.</string>
 
@@ -479,4 +479,5 @@
     <string name="progress_metric_compare_formula">Each line is the best estimated 1RM of each session of that variant, on the same scale.</string>
     <string name="progress_metric_compare_counts">The same rules as the estimated 1RM.</string>
     <string name="progress_metric_compare_limits">Different exercises have different strength levels: compare their shapes and trends more than their heights.</string>
+    <string name="progress_exercise_details">Exercise details</string>
 </resources>

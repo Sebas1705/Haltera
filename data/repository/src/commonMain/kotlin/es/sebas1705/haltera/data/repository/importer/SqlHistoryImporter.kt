@@ -40,7 +40,7 @@ internal class SqlHistoryImporter(
     ) {
         val existing = existingSessionIds(parsed.sessions.map { it.id })
         val relevant = relevantSessions(parsed, existing, options)
-        val resolution = resolve(relevant)
+        val resolution = resolve(relevant, suggest = true)
         ImportPreview(
             source = parsed.source,
             sessions = parsed.sessions.size,
@@ -108,7 +108,8 @@ internal class SqlHistoryImporter(
 
     // region matching
 
-    private suspend fun resolve(sessions: List<ImportedSession>): Resolution {
+    /** Matches every exercise name of [sessions]; with [suggest] the unmatched ones get an ExerciseSuggester proposal. */
+    private suspend fun resolve(sessions: List<ImportedSession>, suggest: Boolean = false): Resolution {
         val all = exercises.search(ExerciseFilter(), "en", Int.MAX_VALUE).first()
         val matcher = ExerciseMatcher(all)
         val known = knownVariants(sessions)
@@ -138,7 +139,15 @@ internal class SqlHistoryImporter(
                 )
             }
         }
-        return Resolution(Targets(byRef), matchedNames.size, unmatched.values.toList())
+        val listed = if (suggest) withSuggestions(unmatched.values.toList(), all) else unmatched.values.toList()
+        return Resolution(Targets(byRef), matchedNames.size, listed)
+    }
+
+    /** The unmatched names with a proposal of ExerciseSuggester (shown in the preview, applied only by the user). */
+    private fun withSuggestions(unmatched: List<UnmatchedExercise>, all: List<Exercise>): List<UnmatchedExercise> {
+        if (unmatched.isEmpty()) return unmatched
+        val suggester = ExerciseSuggester(all)
+        return unmatched.map { u -> suggester.suggest(u.name)?.let { u.copy(suggestion = it) } ?: u }
     }
 
     /** Variants named by a Haltera file's own ids that exist in this logbook (deprecated ones included). */

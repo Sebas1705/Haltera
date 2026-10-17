@@ -35,6 +35,12 @@ data class ImportPreview(
     /** Ids (in [file]) of embedded custom exercises already on this device: import reuses them. */
     val existingCustomIds: Set<String> = emptySet(),
 ) {
+    /** Embedded custom exercises that import will create (not on this device yet). */
+    val newCustomCount: Int get() = file.customExercises.count { it.id !in existingCustomIds }
+
+    /** Embedded custom exercises already on this device (also soft-deleted ones): import reuses them, restored. */
+    val reusedCustomCount: Int get() = file.customExercises.count { it.id in existingCustomIds }
+
     /** Distinct creators named by the embedded custom exercises. */
     val authors: List<String> get() = file.customExercises.mapNotNull { it.author }.distinct()
 }

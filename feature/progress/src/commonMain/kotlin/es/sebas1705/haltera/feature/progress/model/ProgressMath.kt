@@ -3,7 +3,7 @@ package es.sebas1705.haltera.feature.progress.model
 import es.sebas1705.haltera.data.models.BodyWeightEntry
 import es.sebas1705.haltera.domain.usecases.stats.ProgressionRow
 import es.sebas1705.haltera.data.models.WorkoutSession
-import es.sebas1705.haltera.domain.usecases.stats.Stats
+import es.sebas1705.haltera.domain.usecases.stats.TrainingMath
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 
@@ -42,7 +42,12 @@ internal object ProgressMath {
     const val TREND_DAYS = 30
     private const val MILLIS_PER_DAY = 86_400_000L
 
-    fun summarize(session: WorkoutSession, routineNames: Map<String, String>): SessionSummary = SessionSummary(
+    /** [bilateralSlots]: the routines' bilateral slots, so the volume is the one of the overview (TrainingMath.volume). */
+    fun summarize(
+        session: WorkoutSession,
+        routineNames: Map<String, String>,
+        bilateralSlots: Set<String> = emptySet(),
+    ): SessionSummary = SessionSummary(
         id = session.id,
         startedAt = session.startedAt,
         durationMillis = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) },
@@ -50,7 +55,7 @@ internal object ProgressMath {
         dayName = session.dayName,
         // Only exercises with at least one completed set: empty ones are left over from the plan.
         exerciseCount = session.exercises.count { exercise -> exercise.sets.any { it.completed } },
-        volumeGrams = session.exercises.sumOf { Stats.volume(it) },
+        volumeGrams = TrainingMath.volume(session, bilateralSlots),
     )
 
     /** Sessions grouped by the local day they started on, each day ordered by start time. */
@@ -58,9 +63,10 @@ internal object ProgressMath {
         sessions: List<WorkoutSession>,
         routineNames: Map<String, String>,
         timeZone: TimeZone,
+        bilateralSlots: Set<String> = emptySet(),
     ): Map<LocalDate, List<SessionSummary>> = sessions
         .sortedBy { it.startedAt }
-        .groupBy({ it.startedAt.toLocalDate(timeZone) }, { summarize(it, routineNames) })
+        .groupBy({ it.startedAt.toLocalDate(timeZone) }, { summarize(it, routineNames, bilateralSlots) })
 
     /** Points of the three exercise charts from progression [rows] (any order), oldest first; zero values are skipped. */
     fun exerciseCharts(rows: List<ProgressionRow>): ExerciseCharts {

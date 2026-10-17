@@ -175,7 +175,14 @@ private fun ShellNavHost(navController: NavHostController, modifier: Modifier) {
         routinesGraph(navController)
         exercisesGraph(navController)
         nutritionGraph(navController)
-        progressGraph(navController, onOpenSession = openSession)
+        progressGraph(
+            navController,
+            onOpenSession = openSession,
+            // The exercise name in a saved session and the exercise progress open its detail (and its Restore banner).
+            onOpenExerciseDetail = { exerciseId ->
+                navController.navigate(ExerciseDetailRoute(exerciseId)) { launchSingleTop = true }
+            },
+        )
         sessionGraph(
             navController,
             onFinished = { navController.popBackStack(TodayRoute, inclusive = false) },

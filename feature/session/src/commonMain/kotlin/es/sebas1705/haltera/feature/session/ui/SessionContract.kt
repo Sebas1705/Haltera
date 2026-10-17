@@ -98,7 +98,7 @@ sealed interface SessionDialog {
     /** Log mode: deleting a saved session. */
     data object ConfirmDelete : SessionDialog
 
-    /** Log mode: Save or back with no completed set; an empty session is not kept as a logged one. */
+    /** Save, back (log mode) or Finish (live) with no completed set: an empty session is not kept. */
     data object EmptyLog : SessionDialog
     data object AddExercise : SessionDialog
 }

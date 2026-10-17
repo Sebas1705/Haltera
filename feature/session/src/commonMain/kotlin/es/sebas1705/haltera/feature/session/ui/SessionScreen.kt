@@ -277,6 +277,7 @@ private fun SessionOverlays(state: SessionState, onEvent: (SessionIntent) -> Uni
             onEvent(SessionIntent.ConfirmDiscard)
         }, onDismiss = dismiss)
         SessionDialog.EmptyLog -> EmptyLogDialog(
+            logMode = state.logMode,
             onDelete = { onEvent(SessionIntent.ConfirmDiscard) },
             onKeepEditing = dismiss
         )

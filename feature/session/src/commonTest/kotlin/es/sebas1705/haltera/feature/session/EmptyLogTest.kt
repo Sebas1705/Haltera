@@ -82,8 +82,7 @@ class EmptyLogTest {
 
         // "Keep logging": tick a set, then Save works as before.
         vm.onEvent(SessionIntent.DismissDialog)
-        if (vm.uiState.value.cards.single().sets.isEmpty()) vm.onEvent(SessionIntent.AddSet("e-fly"))
-        vm.onEvent(SessionIntent.ToggleSet(vm.uiState.value.cards.single().sets.first().id))
+        logOneSet(vm)
         vm.onEvent(SessionIntent.Save)
         assertNull(vm.uiState.value.dialog)
         assertNotNull(vm.uiState.value.summary)
@@ -108,19 +107,44 @@ class EmptyLogTest {
         assertNotNull(sessions.getSession(SESSION_ID))
 
         vm.onEvent(SessionIntent.DismissDialog)
-        if (vm.uiState.value.cards.single().sets.isEmpty()) vm.onEvent(SessionIntent.AddSet("e-fly"))
-        vm.onEvent(SessionIntent.ToggleSet(vm.uiState.value.cards.single().sets.first().id))
+        logOneSet(vm)
         vm.onEvent(SessionIntent.RequestLeave)
         assertNull(vm.uiState.value.dialog)
         assertTrue(vm.uiState.value.closed)
     }
 
     @Test
-    fun aLiveSessionFinishesAsBefore() = runTest {
+    fun finishingALiveSessionWithNothingDoneAsksToKeepTrainingOrDiscard() = runTest {
         val vm = viewModel(WorkoutSession(SESSION_ID, startedAt = clock.now, exercises = listOf(fly())))
         assertFalse(vm.uiState.value.logMode)
         vm.onEvent(SessionIntent.RequestFinish)
+        assertEquals(SessionDialog.EmptyLog, vm.uiState.value.dialog)
+        // "Keep training", log a set: Finish asks as before.
+        vm.onEvent(SessionIntent.DismissDialog)
+        logOneSet(vm)
+        vm.onEvent(SessionIntent.RequestFinish)
         assertEquals(SessionDialog.ConfirmFinish, vm.uiState.value.dialog)
+    }
+
+    @Test
+    fun discardingAnEmptyLiveSessionDeletesIt() = runTest {
+        val vm = viewModel(WorkoutSession(SESSION_ID, startedAt = clock.now))
+        vm.onEvent(SessionIntent.RequestFinish)
+        assertEquals(SessionDialog.EmptyLog, vm.uiState.value.dialog)
+        vm.onEvent(SessionIntent.ConfirmDiscard)
+        assertTrue(vm.uiState.value.discarded)
+        assertNull(sessions.getSession(SESSION_ID))
+    }
+
+    /** Completes one fly set: a row without reps opens the editor on tick, which completes it when saved. */
+    private fun logOneSet(vm: SessionViewModel) {
+        if (vm.uiState.value.cards.single().sets.isEmpty()) vm.onEvent(SessionIntent.AddSet("e-fly"))
+        vm.onEvent(SessionIntent.ToggleSet(vm.uiState.value.cards.single().sets.first().id))
+        vm.uiState.value.editor?.let { editor ->
+            vm.onEvent(SessionIntent.ChangeDraft(editor.draft.copy(reps = 10, loadGrams = 12_000)))
+            vm.onEvent(SessionIntent.SaveDraft)
+        }
+        assertTrue(vm.uiState.value.cards.single().sets.any { it.completed })
     }
 
     private companion object {

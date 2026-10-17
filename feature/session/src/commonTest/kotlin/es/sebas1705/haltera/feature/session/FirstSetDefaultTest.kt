@@ -39,6 +39,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -338,23 +339,52 @@ class FirstSetDefaultTest {
     }
 
     @Test
-    fun aBarbellRowWithoutHistorySavesTheBarTheEditorShowedWhenOnlyTheRepsChange() = runTest {
-        // QA alpha.5 (Log past session, barbell): the sheet showed "Total 20 kg / bar only" but saved "— × 10".
+    fun aBarbellRowWithoutHistoryShowsAndSavesTheBarAndNeedsRepsToBeTicked() = runTest {
+        // QA alpha.5: the sheet showed "Total 20 kg / bar only" but saved "— × 10", and ticking a row saved "— × 0".
         val vm = viewModel(freeSession())
         vm.onEvent(SessionIntent.AddExercise(ROW_BARBELL))
-        val set = added(vm).sets.first { it.kind == SetKind.WORKING }
-        assertEquals(null, set.loadGrams)
-        vm.onEvent(SessionIntent.EditSet(set.id))
-        val draft = vm.uiState.value.editor!!.draft
         val bar = settings.settings.value.barWeightGrams
+        val set = added(vm).sets.first { it.kind == SetKind.WORKING }
+        assertEquals(bar, set.loadGrams, "the row shows the load its editor shows")
+        assertEquals(null, set.reps)
+
+        // No reps to count: ticking opens the editor instead of completing "— × 0"; saving it completes the set.
+        vm.onEvent(SessionIntent.ToggleSet(set.id))
+        assertFalse(added(vm).sets.first { it.id == set.id }.completed)
+        val draft = vm.uiState.value.editor!!.draft
         assertEquals(bar, draft.loadGrams)
-        vm.onEvent(SessionIntent.ChangeDraft(draft.copy(reps = 10)))
+        assertTrue(draft.completed)
+        vm.onEvent(SessionIntent.ChangeDraft(draft.copy(reps = 8)))
         vm.onEvent(SessionIntent.SaveDraft)
 
         val saved = added(vm).sets.first { it.id == set.id }
+        assertTrue(saved.completed)
         assertEquals(bar, saved.loadGrams)
-        assertEquals(10, saved.reps)
+        assertEquals(8, saved.reps)
         assertEquals(LoadDetail.Barbell(bar), LoadDetail.decode(saved.loadDetail))
+    }
+
+    @Test
+    fun tickingARowStoredWithoutALoadSavesTheBarItShows() = runTest {
+        // A row written before this fix (or by another phone) has reps but no load.
+        val row = SetLog("s-old", "e-row", 0, SetKind.WORKING, reps = 8)
+        val vm = viewModel(freeSession(SessionExercise("e-row", SESSION_ID, 0, ROW_BARBELL, sets = listOf(row))))
+        vm.onEvent(SessionIntent.ToggleSet("s-old"))
+        val saved = vm.uiState.value.cards.single().sets.single()
+        assertTrue(saved.completed)
+        assertEquals(settings.settings.value.barWeightGrams, saved.loadGrams)
+        assertEquals(8, saved.reps)
+    }
+
+    @Test
+    fun anEditorSavedWithoutRepsDoesNotCompleteTheSet() = runTest {
+        val vm = viewModel(freeSession())
+        vm.onEvent(SessionIntent.AddExercise(ROW_BARBELL))
+        val set = added(vm).sets.first { it.kind == SetKind.WORKING }
+        vm.onEvent(SessionIntent.EditSet(set.id))
+        vm.onEvent(SessionIntent.ChangeDraft(vm.uiState.value.editor!!.draft.copy(reps = 0, completed = true)))
+        vm.onEvent(SessionIntent.SaveDraft)
+        assertFalse(added(vm).sets.first { it.id == set.id }.completed)
     }
 
     @Test

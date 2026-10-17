@@ -193,7 +193,10 @@ object Prefill {
                 loadGrams = barGrams,
                 loadDetail = input.loadDetail ?: LoadDetail.encode(LoadDetail.Barbell(barGrams)),
             )
-            LoadType.BAND -> input.copy(loadGrams = 1, loadDetail = input.loadDetail ?: LoadDetail.encode(LoadDetail.Band))
+            LoadType.BAND -> input.copy(
+                loadGrams = 1,
+                loadDetail = input.loadDetail ?: LoadDetail.encode(LoadDetail.Band)
+            )
             LoadType.MACHINE -> if (isMachinePlate(input.loadDetail)) input.copy(loadGrams = 1) else input
             else -> input
         }

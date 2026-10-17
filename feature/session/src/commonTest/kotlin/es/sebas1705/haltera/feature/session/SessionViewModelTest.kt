@@ -31,7 +31,6 @@ import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
 import es.sebas1705.haltera.domain.usecases.session.Trend
 import es.sebas1705.haltera.domain.usecases.stats.RecordKind
-import es.sebas1705.haltera.feature.session.load.LoadDetail
 import es.sebas1705.haltera.feature.session.timer.RestTimerController
 import es.sebas1705.haltera.feature.session.timer.TimerMath
 import es.sebas1705.haltera.feature.session.timer.TimerPhase
@@ -425,27 +424,6 @@ class SessionViewModelTest {
         assertNull(vm.uiState.value.editor)
         assertEquals(70_000, sessions.set(set.id)!!.loadGrams)
         assertEquals(6, sessions.set(set.id)!!.reps)
-    }
-
-    @Test
-    fun savingAnEditedSetKeepsTheBarItShowedWhenOnlyTheRepsChanged() = runTest {
-        // QA alpha.5: no history, so the row has no load; the sheet showed "Total 20 kg / bar only".
-        val vm = viewModel()
-        val set = working(vm).first()
-        assertNull(sessions.set(set.id)!!.loadGrams)
-        vm.onEvent(SessionIntent.EditSet(set.id))
-        val draft = assertNotNull(vm.uiState.value.editor).draft
-        assertEquals(settings.settings.value.barWeightGrams, draft.loadGrams)
-        vm.onEvent(SessionIntent.ChangeDraft(draft.copy(reps = 10)))
-        vm.onEvent(SessionIntent.SaveDraft)
-
-        val saved = sessions.set(set.id)!!
-        assertEquals(settings.settings.value.barWeightGrams, saved.loadGrams)
-        assertEquals(10, saved.reps)
-        assertEquals(
-            LoadDetail.Barbell(settings.settings.value.barWeightGrams),
-            LoadDetail.decode(saved.loadDetail),
-        )
     }
 
     @Test

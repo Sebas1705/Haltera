@@ -26,6 +26,7 @@ import es.sebas1705.haltera.data.models.TrackingType
 import es.sebas1705.haltera.data.models.WorkoutSession
 import es.sebas1705.haltera.domain.usecases.progression.Suggestion
 import es.sebas1705.haltera.domain.usecases.session.SuggestNextLoad
+import es.sebas1705.haltera.feature.session.load.LoadDetail
 import es.sebas1705.haltera.feature.session.timer.RestTimerController
 import es.sebas1705.haltera.feature.session.ui.SessionCatalog
 import es.sebas1705.haltera.feature.session.ui.SessionIntent
@@ -334,6 +335,26 @@ class FirstSetDefaultTest {
         val vm = viewModel(freeSession())
         vm.onEvent(SessionIntent.AddExercise(FLY_DUMBBELL))
         assertEquals(List(3) { 12_000L }, workingLoads(vm))
+    }
+
+    @Test
+    fun aBarbellRowWithoutHistorySavesTheBarTheEditorShowedWhenOnlyTheRepsChange() = runTest {
+        // QA alpha.5 (Log past session, barbell): the sheet showed "Total 20 kg / bar only" but saved "— × 10".
+        val vm = viewModel(freeSession())
+        vm.onEvent(SessionIntent.AddExercise(ROW_BARBELL))
+        val set = added(vm).sets.first { it.kind == SetKind.WORKING }
+        assertEquals(null, set.loadGrams)
+        vm.onEvent(SessionIntent.EditSet(set.id))
+        val draft = vm.uiState.value.editor!!.draft
+        val bar = settings.settings.value.barWeightGrams
+        assertEquals(bar, draft.loadGrams)
+        vm.onEvent(SessionIntent.ChangeDraft(draft.copy(reps = 10)))
+        vm.onEvent(SessionIntent.SaveDraft)
+
+        val saved = added(vm).sets.first { it.id == set.id }
+        assertEquals(bar, saved.loadGrams)
+        assertEquals(10, saved.reps)
+        assertEquals(LoadDetail.Barbell(bar), LoadDetail.decode(saved.loadDetail))
     }
 
     @Test

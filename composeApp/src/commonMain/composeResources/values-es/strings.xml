@@ -165,6 +165,8 @@
     <string name="health_allow">Permitir</string>
     <string name="health_connect">Conectar Health Connect</string>
     <string name="health_denied">No se concedió ningún permiso, así que no se lee nada. Puedes volver a intentarlo.</string>
+    <string name="health_not_asked">Si Health Connect no ha mostrado su pantalla de permisos, ha dejado de preguntar. Permite Haltera en Health Connect, en Permisos de aplicaciones.</string>
+    <string name="health_open_settings">Abrir Health Connect</string>
     <string name="health_connected">Conectado</string>
     <string name="health_last_read">Conectado · última lectura %1$s</string>
     <string name="health_reading">Leyendo Health Connect…</string>

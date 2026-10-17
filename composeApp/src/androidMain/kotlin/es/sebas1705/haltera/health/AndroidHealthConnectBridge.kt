@@ -43,10 +43,11 @@ class AndroidHealthConnectBridge(private val context: Context) : HealthConnectBr
 
     override fun openManagePermissions() {
         if (Build.VERSION.SDK_INT < MIN_SDK) return
-        // Health Connect's "Data and access" (App permissions is one tap away). Its per-app page
+        // Health Connect's home screen, whose "App permissions" entry leads to Haltera's permissions. "Data and access"
+        // (the manage-data intent) has no way to them, so it is only the fallback. The per-app page
         // (MANAGE_HEALTH_PERMISSIONS) is reserved to the system and would throw a SecurityException.
-        if (!start(HealthConnectClient.getHealthConnectManageDataIntent(context))) {
-            start(Intent(HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS))
+        if (!start(Intent(HealthConnectClient.ACTION_HEALTH_CONNECT_SETTINGS))) {
+            start(HealthConnectClient.getHealthConnectManageDataIntent(context))
         }
     }
 

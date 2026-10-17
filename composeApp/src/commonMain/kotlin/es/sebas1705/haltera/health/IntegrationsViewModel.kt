@@ -16,6 +16,8 @@ import kotlinx.coroutines.flow.combine
  * Settings → Integrations → Health Connect.
  *
  * @property deniedAll The last Connect closed without any permission: nothing is read.
+ * @property nothingGranted The last permission request granted none of the types it asked for. After two denials
+ *   Health Connect stops showing its screen and answers "denied" at once, so the section then points to its settings.
  * @property goalInput Text of the open steps-goal dialog, null when closed.
  */
 data class IntegrationsState(
@@ -29,6 +31,7 @@ data class IntegrationsState(
     val lastError: HealthSyncError? = null,
     val lastReadAt: Long = 0,
     val deniedAll: Boolean = false,
+    val nothingGranted: Boolean = false,
     val confirmDisconnect: Boolean = false,
     val goalInput: String? = null,
     val goalInvalid: Boolean = false,
@@ -112,7 +115,7 @@ class IntegrationsViewModel(
             IntegrationsIntent.AskDisconnect -> updateState { it.copy(confirmDisconnect = true) }
             IntegrationsIntent.DismissDisconnect -> updateState { it.copy(confirmDisconnect = false) }
             IntegrationsIntent.ConfirmDisconnect -> {
-                updateState { it.copy(confirmDisconnect = false, deniedAll = false) }
+                updateState { it.copy(confirmDisconnect = false, deniedAll = false, nothingGranted = false) }
                 health.disconnect()
             }
             IntegrationsIntent.OpenGoal -> openGoal()
@@ -132,13 +135,14 @@ class IntegrationsViewModel(
 
     private suspend fun request(types: Set<HealthDataType>) {
         if (types.isEmpty() || currentState.requesting) return
-        updateState { it.copy(requesting = true, deniedAll = false) }
+        updateState { it.copy(requesting = true, deniedAll = false, nothingGranted = false) }
         try {
             bridge.requestPermissions(types)
             health.onPermissionsResult()
         } finally {
             val connected = store.settings.value.connected
-            updateState { it.copy(requesting = false, deniedAll = !connected) }
+            val nothingGranted = (types intersect health.status.value.granted).isEmpty()
+            updateState { it.copy(requesting = false, deniedAll = !connected, nothingGranted = nothingGranted) }
         }
     }
 

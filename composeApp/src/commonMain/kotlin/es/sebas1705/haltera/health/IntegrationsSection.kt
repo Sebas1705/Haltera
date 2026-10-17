@@ -95,6 +95,16 @@ private fun NotConnected(state: IntegrationsState, onEvent: (IntegrationsIntent)
             if (state.requesting) CircularProgressIndicator(Modifier.size(24.dp), strokeWidth = 2.dp)
         }
         if (state.deniedAll) Line(stringResource(Res.string.health_denied), MaterialTheme.colorScheme.error)
+        if (state.deniedAll && state.nothingGranted) NotAskedHint(onEvent)
+    }
+}
+
+/** Health Connect may have stopped asking (two denials): its own settings are then the only way to allow Haltera. */
+@Composable
+private fun NotAskedHint(onEvent: (IntegrationsIntent) -> Unit) {
+    Line(stringResource(Res.string.health_not_asked), MaterialTheme.colorScheme.onSurfaceVariant)
+    OutlinedButton(onClick = { onEvent(IntegrationsIntent.ManagePermissions) }) {
+        Text(stringResource(Res.string.health_open_settings))
     }
 }
 
@@ -125,6 +135,7 @@ private fun Connected(state: IntegrationsState, onEvent: (IntegrationsIntent) ->
             state.lastError == HealthSyncError.FAILED ->
                 Line(stringResource(Res.string.health_error_failed), MaterialTheme.colorScheme.error)
         }
+        if (state.nothingGranted && state.missing.isNotEmpty()) NotAskedHint(onEvent)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             OutlinedButton(onClick = { onEvent(IntegrationsIntent.ReadNow) }, enabled = !state.syncing) {
                 Text(stringResource(Res.string.health_read_now))

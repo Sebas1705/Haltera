@@ -152,6 +152,37 @@ class IntegrationsViewModelTest {
     }
 
     @Test
+    fun `an Allow that grants nothing points to Health Connect's settings until the type is allowed`() = runTest {
+        // After two denials Health Connect answers "denied" without showing its screen: Allow must not look dead.
+        platform.userAllows = setOf(HealthDataType.STEPS)
+        val vm = vm()
+        vm.onEvent(IntegrationsIntent.Connect)
+        assertFalse(vm.uiState.value.nothingGranted) // Steps was granted.
+        platform.userAllows = emptySet()
+        vm.onEvent(IntegrationsIntent.Allow(HealthDataType.CALORIES))
+        assertTrue(vm.uiState.value.nothingGranted)
+        assertTrue(HealthDataType.CALORIES in vm.uiState.value.missing)
+        vm.onEvent(IntegrationsIntent.ManagePermissions)
+        assertEquals(1, platform.manageOpened)
+        // Allowed there and back in the app: the next request that grants something clears the hint.
+        platform.userAllows = HealthDataType.entries.toSet()
+        vm.onEvent(IntegrationsIntent.Allow(HealthDataType.CALORIES))
+        assertFalse(vm.uiState.value.nothingGranted)
+    }
+
+    @Test
+    fun `a Connect that grants nothing offers Health Connect's settings, disconnect clears it`() = runTest {
+        platform.userAllows = emptySet()
+        val vm = vm()
+        vm.onEvent(IntegrationsIntent.Connect)
+        assertTrue(vm.uiState.value.deniedAll)
+        assertTrue(vm.uiState.value.nothingGranted)
+        vm.onEvent(IntegrationsIntent.AskDisconnect)
+        vm.onEvent(IntegrationsIntent.ConfirmDisconnect)
+        assertFalse(vm.uiState.value.nothingGranted)
+    }
+
+    @Test
     fun `once connected, switching a type on asks for its permission at once`() = runTest {
         val vm = vm()
         vm.onEvent(IntegrationsIntent.Connect)

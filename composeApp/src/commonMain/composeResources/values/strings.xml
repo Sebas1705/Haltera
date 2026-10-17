@@ -165,6 +165,8 @@
     <string name="health_allow">Allow</string>
     <string name="health_connect">Connect Health Connect</string>
     <string name="health_denied">No permission was granted, so nothing is read. You can try again.</string>
+    <string name="health_not_asked">If Health Connect did not show its permission screen, it has stopped asking. Allow Haltera in Health Connect, under App permissions.</string>
+    <string name="health_open_settings">Open Health Connect</string>
     <string name="health_connected">Connected</string>
     <string name="health_last_read">Connected · last read %1$s</string>
     <string name="health_reading">Reading Health Connect…</string>

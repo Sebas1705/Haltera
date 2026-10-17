@@ -136,6 +136,9 @@
     <string name="session_delete">Delete session</string>
     <string name="session_delete_title">Delete this session?</string>
     <string name="session_delete_text">Its exercises and sets are deleted for good.</string>
+    <string name="session_empty_log_title">Nothing logged yet</string>
+    <string name="session_empty_log_text">Complete at least one set to save this session, or delete it. An empty session is not kept in your logbook.</string>
+    <string name="session_empty_log_keep">Keep logging</string>
     <string name="session_log_date">%1$d %2$s %3$d · %4$s</string>
     <string-array name="session_months_short">
         <item>Jan</item>

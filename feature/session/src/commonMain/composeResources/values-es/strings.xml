@@ -136,6 +136,9 @@
     <string name="session_delete">Borrar sesión</string>
     <string name="session_delete_title">¿Borrar esta sesión?</string>
     <string name="session_delete_text">Sus ejercicios y series se borrarán definitivamente.</string>
+    <string name="session_empty_log_title">Todavía no has registrado nada</string>
+    <string name="session_empty_log_text">Completa al menos una serie para guardar esta sesión, o bórrala. Una sesión vacía no se guarda en tu registro.</string>
+    <string name="session_empty_log_keep">Seguir registrando</string>
     <string name="session_log_date">%1$d %2$s %3$d · %4$s</string>
     <string-array name="session_months_short">
         <item>ene</item>

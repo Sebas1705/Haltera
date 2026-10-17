@@ -5,6 +5,8 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.bundles.compose.core)
             implementation(libs.navigation.compose)
+            // BackHandler: log mode asks before leaving a session with nothing logged.
+            implementation(libs.compose.ui.backhandler)
             implementation(libs.lifecycle.viewmodel.compose)
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.kotlinx.serialization.json)

@@ -639,6 +639,7 @@ class SessionViewModelTest {
     @Test
     fun requestFinishInLogModeSavesWithoutAConfirmation() = runTest {
         val vm = viewModel(pastSession())
+        vm.onEvent(SessionIntent.ToggleSet(cardSets(vm).first().id))
         vm.onEvent(SessionIntent.RequestFinish)
         assertNull(vm.uiState.value.dialog)
         assertNotNull(vm.uiState.value.summary)
@@ -650,6 +651,7 @@ class SessionViewModelTest {
         val vm = viewModel(pastSession(startedAt = start, endedAt = null))
         assertTrue(vm.uiState.value.logMode)
 
+        vm.onEvent(SessionIntent.ToggleSet(cardSets(vm).first().id))
         vm.onEvent(SessionIntent.Save)
 
         assertEquals(

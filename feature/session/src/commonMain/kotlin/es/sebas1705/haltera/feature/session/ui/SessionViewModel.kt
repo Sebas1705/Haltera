@@ -121,12 +121,13 @@ class SessionViewModel(
             is SessionIntent.AdjustRest -> timer.adjustRest(intent.deltaSeconds)
             SessionIntent.SkipRest -> timer.skip()
             SessionIntent.RequestFinish -> if (isLogMode()) {
-                save()
+                if (nothingLogged()) emptyLog() else save()
             } else {
                 updateState { it.copy(dialog = SessionDialog.ConfirmFinish) }
             }
             SessionIntent.ConfirmFinish -> finish()
-            SessionIntent.Save -> save()
+            SessionIntent.Save -> if (nothingLogged()) emptyLog() else save()
+            SessionIntent.RequestLeave -> if (nothingLogged()) emptyLog() else updateState { it.copy(closed = true) }
             SessionIntent.RequestDiscard -> {
                 val dialog = if (isLogMode()) SessionDialog.ConfirmDelete else SessionDialog.ConfirmDiscard
                 updateState { it.copy(dialog = dialog) }
@@ -485,6 +486,12 @@ class SessionViewModel(
     }
 
     private fun isLogMode(): Boolean = logMode == true
+
+    /** No completed set on any exercise: a session logged after the fact holds nothing yet. */
+    private fun nothingLogged(): Boolean = currentState.cards.none { card -> card.sets.any { it.completed } }
+
+    /** Log mode with nothing logged: an empty session is not kept as a logged one (QA alpha.5). */
+    private fun emptyLog() = updateState { it.copy(dialog = SessionDialog.EmptyLog) }
 
     /**
      * A saved session that already holds completed sets is being edited ("Edit sets"); a session logged after

@@ -97,6 +97,9 @@ sealed interface SessionDialog {
 
     /** Log mode: deleting a saved session. */
     data object ConfirmDelete : SessionDialog
+
+    /** Log mode: Save or back with no completed set; an empty session is not kept as a logged one. */
+    data object EmptyLog : SessionDialog
     data object AddExercise : SessionDialog
 }
 
@@ -231,8 +234,14 @@ sealed interface SessionIntent : MVIBaseIntent {
 
     data object RequestFinish : SessionIntent
 
-    /** Log mode: keeps the completed sets and shows the summary (no confirmation). */
+    /**
+     * Log mode: keeps the completed sets and shows the summary (no confirmation). With no completed set it asks to
+     * log one or delete the session ([SessionDialog.EmptyLog]) instead.
+     */
     data object Save : SessionIntent
+
+    /** Log mode: back. Leaves, unless no set is completed ([SessionDialog.EmptyLog]). */
+    data object RequestLeave : SessionIntent
 
     data object ConfirmFinish : SessionIntent
     data object RequestDiscard : SessionIntent

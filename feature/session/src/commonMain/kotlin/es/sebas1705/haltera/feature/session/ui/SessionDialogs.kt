@@ -25,6 +25,9 @@ import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.feature.session.resources.Res
 import es.sebas1705.haltera.feature.session.resources.session_cancel
 import es.sebas1705.haltera.feature.session.resources.session_delete
+import es.sebas1705.haltera.feature.session.resources.session_empty_log_keep
+import es.sebas1705.haltera.feature.session.resources.session_empty_log_text
+import es.sebas1705.haltera.feature.session.resources.session_empty_log_title
 import es.sebas1705.haltera.feature.session.resources.session_delete_text
 import es.sebas1705.haltera.feature.session.resources.session_delete_title
 import es.sebas1705.haltera.feature.session.resources.session_discard
@@ -64,6 +67,16 @@ internal fun ConfirmDeleteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) =
     Res.string.session_delete,
     onConfirm,
     onDismiss,
+)
+
+/** Log mode with nothing logged: log a set or delete the session (an empty session is not kept). */
+@Composable
+internal fun EmptyLogDialog(onDelete: () -> Unit, onKeepEditing: () -> Unit) = AlertDialog(
+    onDismissRequest = onKeepEditing,
+    title = { Text(stringResource(Res.string.session_empty_log_title)) },
+    text = { Text(stringResource(Res.string.session_empty_log_text)) },
+    confirmButton = { TextButton(onClick = onKeepEditing) { Text(stringResource(Res.string.session_empty_log_keep)) } },
+    dismissButton = { TextButton(onClick = onDelete) { Text(stringResource(Res.string.session_delete)) } },
 )
 
 @Composable

@@ -52,7 +52,11 @@ internal class SqlRoutineRepository(
     }
 
     override suspend fun updateRoutine(id: String, name: String, description: String) = write {
-        db.routineEntityQueries.update(name = name, description = description, updatedAt = now(), id = id)
+        db.transaction {
+            db.routineEntityQueries.update(name = name, description = description, updatedAt = now(), id = id)
+            // Its sessions keep the new name, also if the routine is deleted later (core design §3.3).
+            db.workoutSessionEntityQueries.renameRoutine(name = name, routineId = id)
+        }
     }
 
     override suspend fun deleteRoutine(id: String) = write { db.routineEntityQueries.delete(id) }

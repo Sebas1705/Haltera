@@ -233,7 +233,8 @@ internal class SqlHistoryImporter(
 
     /** Inserts one session with its exercises and sets; returns the number of sets. */
     private fun write(session: ImportedSession, targets: Map<String, ExerciseMatch>, options: ImportOptions): Int {
-        val routineId = session.routineId?.takeIf { db.routineEntityQueries.selectById(it).executeAsOneOrNull() != null }
+        val routine = session.routineId?.let { db.routineEntityQueries.selectById(it).executeAsOneOrNull() }
+        val routineId = routine?.id
         val dayIndex = routineId?.let { id ->
             session.routineDayIndex?.takeIf { it < db.routineDayEntityQueries.countByRoutine(id).executeAsOne() }
         }
@@ -243,9 +244,11 @@ internal class SqlHistoryImporter(
             session.endedAt,
             routineId,
             dayIndex?.toLong(),
-            title(session, linked = routineId != null),
+            session.title,
             session.notes,
             session.bodyWeightGrams,
+            // Linked: the routine's name here; otherwise the name the file kept, so the title survives.
+            routine?.name ?: session.routineName,
         )
         var count = 0
         session.exercises.forEachIndexed { exerciseIndex, exercise ->
@@ -263,7 +266,7 @@ internal class SqlHistoryImporter(
             )
             exercise.sets.forEachIndexed { setIndex, set ->
                 db.setLogEntityQueries.insert(
-                    id = "$exerciseId:s$setIndex",
+                    id = setId(set, "$exerciseId:s$setIndex"),
                     sessionExerciseId = exerciseId,
                     position = setIndex.toLong(),
                     kind = set.kind.name,
@@ -283,18 +286,11 @@ internal class SqlHistoryImporter(
     }
 
     /**
-     * The stored title: the day name when the session is linked to its routine here (the routine name is shown from the
-     * routine); otherwise "<routine> · <day>" from the file, so a routine session that cannot be linked keeps its name.
+     * The id of an imported set: the file's own (Haltera exports) when it is not taken here, so replacing a session
+     * keeps its set ids and sync sees updates; otherwise the id derived from the session id (Hevy, Strong, FitNotes).
      */
-    private fun title(session: ImportedSession, linked: Boolean): String? =
-        if (linked) {
-            session.title
-        } else {
-            listOfNotNull(
-                session.routineName,
-                session.title
-            ).filter { it.isNotBlank() }.joinToString(" · ").ifEmpty { null }
-        }
+    private fun setId(set: ImportedSet, derived: String): String =
+        set.id?.takeIf { db.setLogEntityQueries.selectById(it).executeAsOneOrNull() == null } ?: derived
 
     /** The slot [slotId] when it exists here and belongs to [routineId]; null otherwise. */
     private fun slotOf(slotId: String?, routineId: String): RoutineSlotEntity? {

@@ -15,6 +15,11 @@ data class WorkoutSession(
     val notes: String = "",
     val bodyWeightGrams: Long? = null,
     val exercises: List<SessionExercise> = emptyList(),
+    /**
+     * Name of the routine the session was logged from: it follows renames while the routine exists and is kept when
+     * the routine is deleted ([routineId] is then null), so the title survives. Null for a free session.
+     */
+    val routineName: String? = null,
 ) {
     val inProgress: Boolean get() = endedAt == null
 }

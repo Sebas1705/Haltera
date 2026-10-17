@@ -149,7 +149,7 @@ routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `
 
 ### 3.3 Logging
 
-**`WorkoutSession`**: id, `startedAt`, `endedAt?` (null while in progress), `routineId?` + `routineDayIndex?` (null for a free session), notes, `bodyWeight?` (filled in F6).
+**`WorkoutSession`**: id, `startedAt`, `endedAt?` (null while in progress), `routineId?` + `routineDayIndex?` (null for a free session; both cleared when the routine is deleted), `dayName?` (snapshot of the day name), `routineName?` (the routine's name: renamed with it while it exists, kept when it is deleted, so the session keeps its title), notes, `bodyWeight?` (filled in F6).
 
 **`SessionExercise`**: order, `variantId` actually used, `slotId?` it came from (null if added ad hoc), notes, `bilateral` (the slot's "Both hands" flag when it was logged; see Volume).
 

@@ -47,6 +47,8 @@ data class ParseOptions(val timeZone: TimeZone = TimeZone.currentSystemDefault()
 
 /** One set read from a file. A load is either an exact [loadGrams] or a [weight] in [weightUnit] (null: ask). */
 data class ImportedSet(
+    /** Haltera exports: the set id of the file, kept on import so a replaced session updates its sets in place. */
+    val id: String? = null,
     val kind: SetKind = SetKind.WORKING,
     val reps: Int? = null,
     val weight: Double? = null,

@@ -49,10 +49,10 @@ them deliberately with `UPDATE_GOLDEN=1 ./gradlew :data:repository:testDebugUnit
 | `duration_s`, `distance_m` | Time and distance for timed/distance exercises |
 | `rpe` | Rate of perceived exertion, up to 2 decimals, if entered |
 | `completed_at` | UTC instant the set was ticked |
-| `set_id` | Set id |
+| `set_id` | Set id (kept by the importer, so re-importing replaces sets in place) |
 | `routine_id` | Version 2. Routine the session was started from; empty for a free session or a routine deleted since |
-| `routine_name` | Version 2. Its name at export time (informative; the importer keeps it as the title when the routine is not on the device) |
-| `routine_day_index` | Version 2. 0-based position of the routine day; empty when there is none |
+| `routine_name` | Version 2. The routine's name; for a deleted routine, the name the session kept (it is never lost with the routine). The importer keeps it on the session when the routine is not on the device |
+| `routine_day_index` | Version 2. 0-based position of the routine day; empty when there is none (always empty when `routine_id` is) |
 | `slot_id` | Version 2. Routine slot the exercise was logged from; empty when added outside the plan or the slot was removed |
 | `both_hands` | Version 2. `1` when the dumbbell volume of the exercise counts both hands (its "Both hands" snapshot, core design §3.3), else `0` |
 

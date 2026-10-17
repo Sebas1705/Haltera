@@ -146,14 +146,19 @@ SET dayId = :dayId, position = :position, target = :target, sets = :sets, warmup
 WHERE id = :id;
 
 insertSessionIfMissing:
-INSERT OR IGNORE INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
-VALUES (:id, :startedAt, :endedAt, :routineId, :routineDayIndex, :dayName, :notes, :bodyWeightGrams);
+INSERT OR IGNORE INTO WorkoutSessionEntity(
+    id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams, routineName
+) VALUES (:id, :startedAt, :endedAt, :routineId, :routineDayIndex, :dayName, :notes, :bodyWeightGrams, :routineName);
 
 updateSession:
 UPDATE WorkoutSessionEntity
 SET startedAt = :startedAt, endedAt = :endedAt, routineId = :routineId, routineDayIndex = :routineDayIndex,
-    dayName = :dayName, notes = :notes, bodyWeightGrams = :bodyWeightGrams
+    dayName = :dayName, notes = :notes, bodyWeightGrams = :bodyWeightGrams, routineName = :routineName
 WHERE id = :id;
+
+-- The name of a routine here (null when it does not exist): decodes a session payload written before schema 8.
+routineName:
+SELECT name FROM RoutineEntity WHERE id = :id;
 
 deleteSessionExercisesNotIn:
 DELETE FROM SessionExerciseEntity WHERE sessionId = :sessionId AND id NOT IN :keep;

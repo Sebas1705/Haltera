@@ -120,8 +120,8 @@ object ExportFormat {
     )
 
     /**
-     * One row per completed set of [session]; sessions without completed sets give none. [routineName] is the name of
-     * the session's routine (null for a free session or a routine that no longer exists).
+     * One row per completed set of [session]; sessions without completed sets give none. `routine_name` is [routineName]
+     * (the routine's current name) or, once the routine is gone, the name the session kept ([WorkoutSession.routineName]).
      */
     fun sessionRows(
         session: WorkoutSession,
@@ -151,7 +151,7 @@ object ExportFormat {
             )
             val link = listOf(
                 session.routineId.orEmpty(),
-                routineName.orEmpty(),
+                (routineName ?: session.routineName).orEmpty(),
                 session.routineDayIndex?.toString().orEmpty(),
                 exercise.slotId.orEmpty(),
                 if (exercise.bilateral) "1" else "0",

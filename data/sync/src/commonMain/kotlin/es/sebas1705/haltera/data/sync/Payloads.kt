@@ -78,6 +78,8 @@ internal data class SessionPayload(
     val notes: String = "",
     val bodyWeightGrams: Long? = null,
     val exercises: List<SessionExercisePayload> = emptyList(),
+    /** Schema 8: the routine name kept by the session; null in older documents (taken from the routine here). */
+    val routineName: String? = null,
 )
 
 @Serializable
@@ -263,6 +265,7 @@ internal fun RoutineSlotEntity.toPayload() = SlotPayload(
 internal fun WorkoutSessionEntity.toPayload(exercises: List<SessionExercisePayload>) = SessionPayload(
     id = id, startedAt = startedAt, endedAt = endedAt, routineId = routineId, routineDayIndex = routineDayIndex,
     dayName = dayName, notes = notes, bodyWeightGrams = bodyWeightGrams, exercises = exercises,
+    routineName = routineName,
 )
 
 internal fun SessionExerciseEntity.toPayload(sets: List<SetPayload>) =

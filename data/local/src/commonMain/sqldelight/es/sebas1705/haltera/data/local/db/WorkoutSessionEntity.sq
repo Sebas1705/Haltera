@@ -7,14 +7,25 @@ CREATE TABLE WorkoutSessionEntity (
     routineDayIndex INTEGER,
     dayName         TEXT,                        -- snapshot of the routine day name
     notes           TEXT NOT NULL DEFAULT '',
-    bodyWeightGrams INTEGER
+    bodyWeightGrams INTEGER,
+    -- Name of the routine the session was logged from: follows renames while the routine exists and is kept when
+    -- it is deleted (routineId is then cleared), so the session keeps its title. Null for a free session.
+    routineName     TEXT
 );
 
 CREATE INDEX WorkoutSessionEntity_startedAt ON WorkoutSessionEntity(startedAt);
 
+-- A deleted routine leaves its sessions without a routine, so they no longer point at one of its days either.
+CREATE TRIGGER RoutineEntity_clearSessionDays
+BEFORE DELETE ON RoutineEntity
+BEGIN
+    UPDATE WorkoutSessionEntity SET routineDayIndex = NULL WHERE routineId = old.id;
+END;
+
 insert:
-INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
-VALUES (?, ?, NULL, ?, ?, ?, '', NULL);
+INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams, routineName)
+VALUES (:id, :startedAt, NULL, :routineId, :routineDayIndex, :dayName, '', NULL,
+    (SELECT r.name FROM RoutineEntity r WHERE r.id = :routineId));
 
 finish:
 UPDATE WorkoutSessionEntity SET endedAt = :endedAt WHERE id = :id AND endedAt IS NULL;
@@ -57,8 +68,8 @@ LIMIT :limit;
 -- History import (docs/IMPORT-FORMATS.md): a finished session written whole, with a deterministic id, linked to a
 -- routine of this device when a Haltera export names one that exists.
 insertImported:
-INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, notes, bodyWeightGrams, routineName)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
 
 -- Which of :ids are already in the logbook.
 selectExistingIds:
@@ -75,3 +86,8 @@ UPDATE WorkoutSessionEntity SET routineDayIndex = -1 - routineDayIndex WHERE rou
 -- A session of a routine day that a conversion removed (an empty rest day) no longer points at a day.
 clearDayIndex:
 UPDATE WorkoutSessionEntity SET routineDayIndex = NULL WHERE routineId = :routineId AND routineDayIndex = :oldIndex;
+
+-- A routine was renamed on this phone: its sessions keep the new name (and upload it), so they keep it if the routine
+-- is deleted later.
+renameRoutine:
+UPDATE WorkoutSessionEntity SET routineName = :name WHERE routineId = :routineId AND routineName IS NOT :name;

@@ -39,6 +39,7 @@ internal class HistoryLoader(private val db: AppDatabase) {
                 dayName = row.dayName,
                 notes = row.notes,
                 bodyWeightGrams = row.bodyWeightGrams,
+                routineName = row.routineName,
                 exercises = withSets[row.id].orEmpty().sortedBy { it.position },
             )
         }

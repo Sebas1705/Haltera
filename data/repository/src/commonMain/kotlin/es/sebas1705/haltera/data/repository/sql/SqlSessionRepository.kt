@@ -235,8 +235,8 @@ internal class SqlSessionRepository(
             history.sessions(
                 db.workoutSessionEntityQueries.selectFinished(
                     limit.toLong()
-                ) { id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw ->
-                    WorkoutSessionEntity(id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw)
+                ) { id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw, routineName ->
+                    WorkoutSessionEntity(id, startedAt, endedAt, routineId, dayIndex, dayName, notes, bw, routineName)
                 }.executeAsList(),
             ).map { it.withoutEmptyExercises() }
         }

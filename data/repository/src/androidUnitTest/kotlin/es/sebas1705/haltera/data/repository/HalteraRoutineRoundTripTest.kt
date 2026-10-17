@@ -155,6 +155,8 @@ class HalteraRoutineRoundTripTest {
         val slots: List<String?>,
         val bothHands: List<Boolean>,
         val volume: Long,
+        val routineName: String?,
+        val setIds: List<String>,
     )
 
     private fun List<WorkoutSession>.shape() = map { s ->
@@ -166,7 +168,9 @@ class HalteraRoutineRoundTripTest {
             s.dayName,
             exercises.map { it.slotId },
             exercises.map { it.bilateral },
-            s.volume()
+            s.volume(),
+            s.routineName,
+            exercises.flatMap { e -> e.sets.sortedBy { it.position }.map { it.id } },
         )
     }
 
@@ -245,13 +249,51 @@ class HalteraRoutineRoundTripTest {
         fresh.importer.import(parsed, ImportOptions())
 
         val after = fresh.all().shape()
-        assertEquals(listOf("PPL · A", "PPL · B", null, "Flex · Full", "PPL · A"), after.map { it.dayName })
+        assertEquals(listOf("A", "B", null, "Full", "A"), after.map { it.dayName })
+        // The title is "<routine name> · <day>" from the name the session kept.
+        assertEquals(listOf("PPL", "PPL", null, "Flex", "PPL"), after.map { it.routineName })
         assertEquals(List(5) { null }, after.map { it.routineId })
         assertEquals(List(5) { null }, after.map { it.dayIndex })
         assertEquals(before.map { it.volume }, after.map { it.volume })
         assertEquals(before.map { it.bothHands }, after.map { it.bothHands })
         assertEquals(emptyList(), fresh.routines.observeRoutines().first())
         assertEquals(after.map { s -> s.slots.map { null } }, after.map { it.slots })
+    }
+
+    @Test
+    fun `a deleted routine keeps its name on the sessions, in the export and after importing`() = runTest {
+        val d = device()
+        val book = d.seed()
+        d.routines.updateRoutine(book.flex, "Flex 2", "")
+        d.routines.deleteRoutine(book.flex)
+
+        val flex = d.all().single { it.startedAt == at(day = 13) }
+        assertNull(flex.routineId)
+        assertNull(flex.routineDayIndex)
+        assertEquals("Flex 2", flex.routineName)
+        assertEquals("Full", flex.dayName)
+
+        val parsed = HistoryFileParser.parse(d.export(), utc)
+        val exported = parsed.sessions.single { it.startedAt == at(day = 13) }
+        assertNull(exported.routineId)
+        assertNull(exported.routineDayIndex)
+        assertEquals("Flex 2", exported.routineName)
+
+        // Replace on the same device gives back exactly what was there, set ids included.
+        val before = d.all().shape()
+        d.importer.import(parsed, ImportOptions(existing = ExistingPolicy.REPLACE))
+        assertEquals(before, d.all().shape())
+        val fresh = device()
+        fresh.importer.import(parsed, ImportOptions())
+        assertEquals("Flex 2", fresh.all().single { it.startedAt == at(day = 13) }.routineName)
+    }
+
+    @Test
+    fun `a renamed routine renames its sessions`() = runTest {
+        val d = device()
+        val book = d.seed()
+        d.routines.updateRoutine(book.ppl, "Push Pull", "")
+        assertEquals(listOf("Push Pull", "Push Pull", null, "Flex", "Push Pull"), d.all().map { it.routineName })
     }
 
     @Test
@@ -295,6 +337,7 @@ class HalteraRoutineRoundTripTest {
 
         val shape = d.all().shape()
         assertEquals(listOf("A", "B", null, "Full", "A"), shape.map { it.dayName })
+        assertEquals(List(5) { null }, shape.map { it.routineName })
         assertEquals(List(5) { null }, shape.map { it.routineId })
         assertEquals(List(5) { false }, shape.map { s -> s.bothHands.any { it } })
     }

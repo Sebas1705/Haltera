@@ -21,7 +21,7 @@ Everything under `users/{uid}/{collection}/{docId}`; the bundled exercise catalo
 | Collection | Doc id | Payload (JSON of the aggregate) |
 |---|---|---|
 | `routines` | routine id | routine + its days + their slots |
-| `sessions` | session id | session + its session exercises + their sets (schema 8 adds each exercise's optional `bilateral`, the "Both hands" snapshot of core design §3.3; a document without it is decoded with the flag of the receiver's copy of the slot, 0 without one, which is what older versions summed) |
+| `sessions` | session id | session + its session exercises + their sets (schema 8 adds each exercise's optional `bilateral`, the "Both hands" snapshot of core design §3.3, decoded when absent with the flag of the receiver's copy of the slot, 0 without one, which is what older versions summed; and the session's optional `routineName`, decoded when absent with the receiver's routine name, else the name the receiver already kept. A session whose routine does not exist on the receiver gets no routine and no day index) |
 | `bodyWeight` | entry id | one entry |
 | `exercises` | USER exercise id | a custom exercise + its variants (schema 6 adds the optional `author` and `originId`; core design §3.1.1) |
 | `settings` | `user` | user settings (units, bar, plates, toggles) and the active routine id |

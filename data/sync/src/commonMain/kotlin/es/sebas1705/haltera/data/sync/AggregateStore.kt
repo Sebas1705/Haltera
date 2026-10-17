@@ -154,26 +154,35 @@ internal class AggregateStore(
     private fun writeSession(s: SessionPayload) {
         // Links to a routine or slot that does not exist here (deleted, or not synced yet) are dropped,
         // as ON DELETE SET NULL would have done.
+        // Without its routine a session points at no day of it either.
         val routineId = s.routineId?.takeIf { q.routineExists(it).executeAsOne() > 0 }
+        val dayIndex = s.routineDayIndex?.takeIf { routineId != null }
+        // Documents written before schema 8 have no routine name: the routine's name here if it exists, else the name
+        // this phone already kept for the session (an older version never clears it).
+        val routineName = s.routineName
+            ?: routineId?.let { q.routineName(it).executeAsOneOrNull() }
+            ?: db.workoutSessionEntityQueries.selectById(s.id).executeAsOneOrNull()?.routineName
         q.insertSessionIfMissing(
             s.id,
             s.startedAt,
             s.endedAt,
             routineId,
-            s.routineDayIndex,
+            dayIndex,
             s.dayName,
             s.notes,
-            s.bodyWeightGrams
+            s.bodyWeightGrams,
+            routineName,
         )
         q.updateSession(
             s.startedAt,
             s.endedAt,
             routineId,
-            s.routineDayIndex,
+            dayIndex,
             s.dayName,
             s.notes,
             s.bodyWeightGrams,
-            s.id
+            routineName,
+            s.id,
         )
         q.deleteSessionExercisesNotIn(s.id, s.exercises.map { it.id })
         s.exercises.forEach { e ->

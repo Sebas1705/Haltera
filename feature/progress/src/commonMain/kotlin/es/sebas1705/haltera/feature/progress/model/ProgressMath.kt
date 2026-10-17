@@ -50,7 +50,8 @@ internal object ProgressMath {
         id = session.id,
         startedAt = session.startedAt,
         durationMillis = session.endedAt?.let { (it - session.startedAt).coerceAtLeast(0) },
-        routineName = session.routineId?.let { routineNames[it] },
+        // The routine's current name; the name the session kept once the routine is gone.
+        routineName = session.routineId?.let { routineNames[it] } ?: session.routineName,
         dayName = session.dayName,
         // Only exercises with at least one completed set: empty ones are left over from the plan.
         exerciseCount = session.exercises.count { exercise -> exercise.sets.any { it.completed } },

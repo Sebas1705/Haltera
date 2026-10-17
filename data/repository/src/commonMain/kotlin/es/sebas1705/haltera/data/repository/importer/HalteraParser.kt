@@ -94,6 +94,7 @@ internal object HalteraParser {
     }
 
     private fun set(row: CsvTable.Row, startedAt: Long) = ImportedSet(
+        id = row["set_id"].ifEmpty { null },
         kind = SetKind.fromDb(row["set_type"]),
         reps = ImportValues.integer(row["reps"]),
         loadGrams = row["load_grams"].takeIf { it.isNotEmpty() }

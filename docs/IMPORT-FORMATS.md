@@ -103,13 +103,15 @@ Routine sessions (export version 2: `routine_id`, `routine_name`, `routine_day_i
   linked to it again with its day (when that day index exists in the routine) and each exercise to its slot (when the
   slot exists and belongs to that routine). The routine's next day (Today, fixed and flexible routines) and the slot's
   progression history then see the session exactly as before the export.
-- Otherwise (a fresh device, a deleted routine) nothing is invented: the session is not linked and its title keeps
-  the names, `<routine name> · <day name>`, so it does not become an untitled free session.
+- Otherwise (a fresh device, a deleted routine) nothing is invented: the session is not linked, keeps `routine_name`
+  and `day_name` and is titled `<routine name> · <day name>` like before the export, not as an untitled free session.
 - `both_hands` is the "Both hands" snapshot of the exercise (core design §3.3) and is kept whether or not the slot is
   linked, so the dumbbell volume is the one of the exporting device.
 - Version 1 exports have none of these columns and import as before: unlinked, titled with the day name, one
   implement per dumbbell exercise.
-
+- Set ids (`set_id`) are kept when they are not already used on the device, so a session replaced from the file
+  updates its sets in place (sync sees edits, not deletions). Hevy, Strong and FitNotes sets get ids derived from the
+  session id.
 ## Exercise matching
 
 Each name is normalised (lower case, accents removed, punctuation and spacing ignored) and compared with the

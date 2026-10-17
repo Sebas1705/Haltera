@@ -248,7 +248,9 @@ internal class SqlHistoryImporter(
                 session.id,
                 exerciseIndex.toLong(),
                 match.variantId,
+                null,
                 exercise.notes,
+                0L,
             )
             exercise.sets.forEachIndexed { setIndex, set ->
                 db.setLogEntityQueries.insert(

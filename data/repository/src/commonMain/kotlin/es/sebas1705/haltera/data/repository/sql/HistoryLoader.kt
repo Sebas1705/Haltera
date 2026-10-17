@@ -22,8 +22,10 @@ internal class HistoryLoader(private val db: AppDatabase) {
     fun sessions(rows: List<WorkoutSessionEntity>): List<WorkoutSession> {
         if (rows.isEmpty()) return emptyList()
         val exercises = rows.map { it.id }.chunked(MAX_IN_ARGS).flatMap { ids ->
-            db.sessionExerciseEntityQueries.selectBySessions(ids) { id, sessionId, position, variantId, slotId, notes ->
-                SessionExercise(id, sessionId, position.toInt(), variantId, slotId, notes)
+            db.sessionExerciseEntityQueries.selectBySessions(
+                ids
+            ) { id, sessionId, position, variantId, slotId, notes, both ->
+                SessionExercise(id, sessionId, position.toInt(), variantId, slotId, notes, bilateral = both != 0L)
             }.executeAsList()
         }
         val withSets = withSets(exercises).groupBy { it.sessionId }
@@ -86,6 +88,7 @@ internal class HistoryLoader(private val db: AppDatabase) {
         return exercises.map { it.copy(sets = sets[it.id].orEmpty().sortedBy { set -> set.position }) }
     }
 
+    @Suppress("LongParameterList") // One parameter per column of the history queries (SQLDelight mapper).
     private class HistoryRow(
         id: String,
         sessionId: String,
@@ -93,9 +96,11 @@ internal class HistoryLoader(private val db: AppDatabase) {
         variantId: String,
         slotId: String?,
         notes: String,
+        bilateral: Long,
         val startedAt: Long,
     ) {
-        val exercise = SessionExercise(id, sessionId, position.toInt(), variantId, slotId, notes)
+        val exercise =
+            SessionExercise(id, sessionId, position.toInt(), variantId, slotId, notes, bilateral = bilateral != 0L)
     }
 
     private companion object {

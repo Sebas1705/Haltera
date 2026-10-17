@@ -1,0 +1,12 @@
+-- Version 7 -> 8: a logged exercise keeps whether its dumbbell volume counts both hands (core design §3.3, "Volume").
+-- Until now the volume read the "Both hands" flag of the routine slot at summing time, so removing the slot, deleting
+-- its routine or its custom exercise, or toggling the switch rewrote past volume. The flag is now a snapshot taken
+-- when the exercise is logged.
+-- Backfill: an exercise whose slot still exists takes the slot's current flag. An exercise without a slot (free
+-- session, added outside the plan, or a slot already removed: ON DELETE SET NULL cleared the link) keeps 0, one
+-- implement, which is what these versions showed for it.
+ALTER TABLE SessionExerciseEntity ADD COLUMN bilateral INTEGER NOT NULL DEFAULT 0;
+
+UPDATE SessionExerciseEntity SET bilateral = 1
+WHERE slotId IS NOT NULL
+  AND EXISTS (SELECT 1 FROM RoutineSlotEntity s WHERE s.id = SessionExerciseEntity.slotId AND s.bilateral = 1);

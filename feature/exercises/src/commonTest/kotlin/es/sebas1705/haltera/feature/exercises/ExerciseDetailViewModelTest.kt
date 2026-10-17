@@ -17,7 +17,6 @@ import es.sebas1705.haltera.feature.exercises.ui.detail.RecordRowKind
 import es.sebas1705.haltera.feature.exercises.ui.detail.TopSet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -189,13 +188,11 @@ class ExerciseDetailViewModelTest {
     }
 
     @Test
-    fun `the session volume record counts both dumbbells of a bilateral slot, like Progress`() = runTest {
+    fun `the session volume record counts both dumbbells of a both-hands exercise, like Progress`() = runTest {
         val logged = entry("s1", 1_000, "bench-press.dumbbell", 30_000L to 10, 30_000L to 8)
-        repository.history.value = mapOf(
-            "bench-press.dumbbell" to listOf(logged.copy(exercise = logged.exercise.copy(slotId = "slot-db"))),
-        )
-        val slots = MutableStateFlow(setOf("slot-db"))
-        val vm = ExerciseDetailViewModel("bench-press", repository, settings, dispatcher, slots).also {
+        val bothHands = logged.copy(exercise = logged.exercise.copy(slotId = "slot-db", bilateral = true))
+        repository.history.value = mapOf("bench-press.dumbbell" to listOf(bothHands))
+        val vm = ExerciseDetailViewModel("bench-press", repository, settings, dispatcher).also {
             it.onEvent(ExerciseDetailIntent.SetLanguage("en"))
             it.onEvent(ExerciseDetailIntent.SelectVariant("bench-press.dumbbell"))
         }
@@ -204,7 +201,14 @@ class ExerciseDetailViewModelTest {
         // (30 × 10 + 30 × 8) × 2 = 1,080 kg.
         assertEquals(LoadText(Weights.formatVolume(1_080_000L, WeightUnit.KG), isLevel = false), sessionVolume())
 
-        slots.value = emptySet()
+        // The slot removed later (link cleared): the snapshot still counts both hands.
+        repository.history.value = mapOf(
+            "bench-press.dumbbell" to listOf(bothHands.copy(exercise = bothHands.exercise.copy(slotId = null))),
+        )
+        advanceUntilIdle()
+        assertEquals(LoadText(Weights.formatVolume(1_080_000L, WeightUnit.KG), isLevel = false), sessionVolume())
+        // Logged from a slot without "Both hands": one dumbbell.
+        repository.history.value = mapOf("bench-press.dumbbell" to listOf(logged))
         advanceUntilIdle()
         assertEquals(LoadText(Weights.formatVolume(540_000L, WeightUnit.KG), isLevel = false), sessionVolume())
     }

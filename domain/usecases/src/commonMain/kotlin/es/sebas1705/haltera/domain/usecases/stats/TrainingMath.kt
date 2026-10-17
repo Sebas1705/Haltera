@@ -1,6 +1,5 @@
 package es.sebas1705.haltera.domain.usecases.stats
 
-import es.sebas1705.haltera.data.models.Routine
 import es.sebas1705.haltera.data.models.SessionExercise
 import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.models.SetLog
@@ -53,26 +52,18 @@ object TrainingMath {
      * - The load is what was stored: bar plus plates for a barbell, the machine weight, the added load of a
      *   bodyweight exercise. Assisted (negative) and unloaded bodyweight sets, band levels and machine stack
      *   positions are not weights and add nothing; timed and distance sets have no reps and add nothing.
-     * - A DUMBBELL load is stored per implement (one dumbbell). It counts twice only when the exercise was
-     *   logged from a routine slot flagged `bilateral` (one implement per hand; the slot editor turns the flag on
-     *   for dumbbell slots): its slot id is in [bilateralSlots], built with [bilateralSlots] from the routines.
-     *   Free sessions and exercises added outside the plan have no slot, so one implement is counted.
+     * - A DUMBBELL load is stored per implement (one dumbbell). It counts twice only when the exercise is
+     *   [SessionExercise.bilateral]: a snapshot of the routine slot's `bilateral` ("Both hands") flag taken when it was
+     *   logged (live session, past session, import). Free sessions and exercises added outside the plan have no
+     *   slot, so one implement is counted.
      *
-     * Nothing stored changes: the flag is read when summing, so editing a slot's flag re-sums its history.
+     * Only the snapshot is read: editing a slot's flag, removing the slot, deleting its routine or its custom exercise
+     * never changes past volume; a new flag applies to the sessions logged after it.
      */
-    fun volume(exercise: SessionExercise, bilateralSlots: Set<String> = emptySet()): Long {
-        val bilateral = exercise.slotId != null && exercise.slotId in bilateralSlots
-        return exercise.sets.sumOf { setVolume(it, bilateral) }
-    }
+    fun volume(exercise: SessionExercise): Long = exercise.sets.sumOf { setVolume(it, exercise.bilateral) }
 
     /** Volume of a whole session: [volume] of each exercise. */
-    fun volume(session: WorkoutSession, bilateralSlots: Set<String> = emptySet()): Long =
-        session.exercises.sumOf { volume(it, bilateralSlots) }
-
-    /** The slots of every routine whose dumbbell volume counts both hands: the input of [volume]. */
-    fun bilateralSlots(routines: List<Routine>): Set<String> =
-        routines.flatMap { routine -> routine.days.flatMap { day -> day.slots.filter { it.bilateral }.map { it.id } } }
-            .toSet()
+    fun volume(session: WorkoutSession): Long = session.exercises.sumOf { volume(it) }
 
     fun effectiveSets(exercise: SessionExercise): Int = exercise.sets.count(::isEffective)
 

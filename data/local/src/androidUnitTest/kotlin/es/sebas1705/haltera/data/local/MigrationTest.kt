@@ -235,6 +235,64 @@ class MigrationTest {
     }
 
     @Test
+    fun `migrating from version 7 snapshots both hands from the slots that still exist`() {
+        File("src/commonMain/sqldelight/databases/7.db").copyTo(file, overwrite = true)
+        driver().use { v7 ->
+            listOf(
+                "INSERT INTO ExerciseEntity(id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, " +
+                    "trackingType, level, primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, " +
+                    "updatedAt) VALUES ('user-1', 'USER', 'Press', 'Press', 'press', 'press', 'STRENGTH', 'WEIGHT_REPS', " +
+                    "'BEGINNER', 'CHEST', '', '[]', '[]', 0, 5)",
+                "INSERT INTO ExerciseVariantEntity(id, exerciseId, source, position, equipment, loadType, frames, " +
+                    "updatedAt) VALUES ('user-1.db', 'user-1', 'USER', 0, 'DUMBBELL', 'DUMBBELL', '[]', 5)",
+                "INSERT INTO RoutineEntity(id, name, description, isActive, nextDayIndex, createdAt, updatedAt) " +
+                    "VALUES ('r1', 'Upper', '', 1, 0, 10, 20)",
+                "INSERT INTO RoutineDayEntity(id, routineId, position, name, kind) VALUES ('d1', 'r1', 0, 'A', 'TRAINING')",
+                "INSERT INTO RoutineSlotEntity(id, dayId, position, target, sets, prescription, restBetweenSetsS, " +
+                    "restAfterS, bilateral, progression) VALUES ('both', 'd1', 0, '{}', 3, '{}', 90, 120, 1, '{}')",
+                "INSERT INTO RoutineSlotEntity(id, dayId, position, target, sets, prescription, restBetweenSetsS, " +
+                    "restAfterS, bilateral, progression) VALUES ('one', 'd1', 1, '{}', 3, '{}', 90, 120, 0, '{}')",
+                "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName) " +
+                    "VALUES ('s1', 1000, 2000, 'r1', 0, 'A')",
+                "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, dayName) VALUES ('s2', 3000, 4000, NULL)",
+                // From the "Both hands" slot, from a one-hand slot, added outside the plan.
+                "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId) VALUES ('e1', 's1', 0, 'user-1.db', 'both')",
+                "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId) VALUES ('e2', 's1', 1, 'user-1.db', 'one')",
+                "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId) VALUES ('e3', 's1', 2, 'user-1.db', NULL)",
+                // A free session, and an exercise whose slot was removed before the upgrade (the link is already NULL).
+                "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId) VALUES ('e4', 's2', 0, 'user-1.db', NULL)",
+                "UPDATE SyncState SET dirty = 0",
+            ).forEach { v7.execute(null, it, 0) }
+            AppDatabase.Schema.migrate(v7, 7, AppDatabase.Schema.version)
+        }
+
+        val db = AppDatabase(driver())
+        val flags = db.sessionExerciseEntityQueries.selectBySessions(listOf("s1", "s2")).executeAsList()
+            .associate { it.id to it.bilateral }
+        assertEquals(mapOf("e1" to 1L, "e2" to 0L, "e3" to 0L, "e4" to 0L), flags)
+        // The backfilled session is queued for the cloud with its snapshot; the untouched one is not.
+        assertEquals(1L, db.syncTrackingQueries.selectState("sessions", "s1").executeAsOne().dirty)
+        assertEquals(0L, db.syncTrackingQueries.selectState("sessions", "s2").executeAsOne().dirty)
+
+        // The snapshot survives the slot: removing it clears the link only.
+        db.routineSlotEntityQueries.delete("both")
+        val e1 = db.sessionExerciseEntityQueries.selectById("e1").executeAsOne()
+        assertNull(e1.slotId)
+        assertEquals(1L, e1.bilateral)
+        // New exercises snapshot the slot's flag when they are logged.
+        db.sessionExerciseEntityQueries.insert("e6", "s2", 2, "user-1.db", "one")
+        db.routineSlotEntityQueries.update(
+            target = "{}", sets = 3, warmupSets = 0, prescription = "{}", restBetweenSetsS = 90, restAfterS = 120,
+            supersetGroup = null, bilateral = 1, notes = "", progression = "{}", id = "one",
+        )
+        db.sessionExerciseEntityQueries.insert("e7", "s2", 3, "user-1.db", "one")
+        db.sessionExerciseEntityQueries.insert("e8", "s2", 4, "user-1.db", null)
+        assertEquals(0L, db.sessionExerciseEntityQueries.selectById("e6").executeAsOne().bilateral)
+        assertEquals(1L, db.sessionExerciseEntityQueries.selectById("e7").executeAsOne().bilateral)
+        assertEquals(0L, db.sessionExerciseEntityQueries.selectById("e8").executeAsOne().bilateral)
+    }
+
+    @Test
     fun `migrating from version 1 to the latest also creates the health tables`() {
         File("src/commonMain/sqldelight/databases/1.db").copyTo(file, overwrite = true)
         driver().use { v1 -> AppDatabase.Schema.migrate(v1, 1, AppDatabase.Schema.version) }
@@ -247,7 +305,8 @@ class MigrationTest {
     fun `the schema version is the shipped one plus the migrations`() {
         // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync
         // covers 1 -> 4); 4 -> 5: flexible rest days; 5 -> 6: author and origin of custom exercises;
-        // 6 -> 7: Health Connect cache and export ledger.
-        assertEquals(7L, AppDatabase.Schema.version)
+        // 6 -> 7: Health Connect cache and export ledger;
+        // 7 -> 8: the "Both hands" snapshot of logged exercises.
+        assertEquals(8L, AppDatabase.Schema.version)
     }
 }

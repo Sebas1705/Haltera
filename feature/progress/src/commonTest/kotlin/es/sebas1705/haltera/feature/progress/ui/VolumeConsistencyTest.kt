@@ -30,7 +30,8 @@ import kotlin.test.assertEquals
 
 /**
  * QA alpha.4: on 9 October the calendar showed 5,052 kg and the overview 5,604 kg for the same session, because only
- * the overview counted both dumbbells of a bilateral slot. Every screen now sums with TrainingMath.volume.
+ * the overview counted both dumbbells of a bilateral slot. Every screen now sums with TrainingMath.volume, which reads the
+ * "Both hands" snapshot of each logged exercise (taken from its slot when it was logged, e2 here), never the routine.
  */
 class VolumeConsistencyTest : MainDispatcherTest() {
     private val routine = Routine(
@@ -55,7 +56,11 @@ class VolumeConsistencyTest : MainDispatcherTest() {
                 "s1",
                 utc(2026, 10, 9),
                 performed("bench.barbell", set(100.0, 5), set(100.0, 5)).copy(id = "e1", slotId = "slot-bench"),
-                performed("press.dumbbell", set(24.0, 10), set(24.0, 8)).copy(id = "e2", slotId = "slot-db"),
+                performed(
+                    "press.dumbbell",
+                    set(24.0, 10),
+                    set(24.0, 8)
+                ).copy(id = "e2", slotId = "slot-db", bilateral = true),
                 // Added during the session (no slot): one dumbbell.
                 performed("curl.dumbbell", set(12.0, 12)).copy(id = "e3"),
                 routineId = "r",
@@ -105,7 +110,9 @@ class VolumeConsistencyTest : MainDispatcherTest() {
     }
 
     @Test
-    fun `turning the bilateral flag off re-sums the history everywhere`() = runTest(dispatcher) {
+    fun `toggling the flag, removing the slot or deleting the routine never changes past volume`() = runTest(
+        dispatcher
+    ) {
         val calendar = CalendarViewModel(
             sessions,
             routines,
@@ -123,13 +130,28 @@ class VolumeConsistencyTest : MainDispatcherTest() {
             StatsPeriodSelection()
         )
 
+        fun assertUnchanged() {
+            assertEquals(
+                expected,
+                calendar.uiState.value.sessionsByDay.getValue(LocalDate(2026, 10, 9)).single().volumeGrams
+            )
+            assertEquals(expected, detail.uiState.value.summary!!.volumeGrams)
+            assertEquals(864_000L, detail.uiState.value.exercises.single { it.id == "e2" }.volumeGrams)
+            assertEquals(expected.toDouble(), overview.uiState.value.stats!!.volume.current)
+        }
+        assertUnchanged()
+
+        // "Both hands" switched off: only sessions logged afterwards count one dumbbell.
         routines.routines.value = listOf(
             routine.copy(days = routine.days.map { d -> d.copy(slots = d.slots.map { it.copy(bilateral = false) }) }),
         )
+        assertUnchanged()
 
-        val single = 1_000_000L + 432_000L + 144_000L
-        assertEquals(single, calendar.uiState.value.sessionsByDay.getValue(LocalDate(2026, 10, 9)).single().volumeGrams)
-        assertEquals(single, detail.uiState.value.summary!!.volumeGrams)
-        assertEquals(single.toDouble(), overview.uiState.value.stats!!.volume.current)
+        // The slot removed and the routine deleted: ON DELETE SET NULL clears the links, the snapshot stays.
+        routines.routines.value = emptyList()
+        sessions.sessions.value = sessions.sessions.value.map { s ->
+            s.copy(routineId = null, exercises = s.exercises.map { it.copy(slotId = null) })
+        }
+        assertUnchanged()
     }
 }

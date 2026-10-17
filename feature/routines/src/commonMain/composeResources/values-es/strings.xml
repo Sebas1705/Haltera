@@ -132,7 +132,7 @@
     <string name="routines_superset_none">Ninguno</string>
     <string name="routines_superset_hint">Los ejercicios de un día en el mismo grupo alternan series y descansan tras cada ronda.</string>
     <string name="routines_bilateral">Ambas manos</string>
-    <string name="routines_bilateral_hint">La carga es una mancuerna; el volumen cuenta las dos.</string>
+    <string name="routines_bilateral_hint">La carga es una mancuerna; el volumen cuenta las dos. Un cambio se aplica a las sesiones que registres a partir de ahora.</string>
     <string name="routines_notes">Notas</string>
     <string name="routines_section_progression">Progresión</string>
     <string name="routines_progression_none">Ninguna</string>

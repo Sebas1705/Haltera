@@ -268,7 +268,7 @@ internal class SqlSessionRepository(
                     variant.id,
                     before,
                     1,
-                ) { _, _, _, _, _, _, at -> at }
+                ) { _, _, _, _, _, _, _, at -> at }
                     .executeAsOneOrNull()?.let { at -> variant.id to at }
             }.maxByOrNull { it.second }
             // No history in this slot: the allowed variant used most recently anywhere (free sessions, other

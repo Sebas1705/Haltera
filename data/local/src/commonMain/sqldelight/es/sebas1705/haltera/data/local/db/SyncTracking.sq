@@ -159,13 +159,19 @@ deleteSessionExercisesNotIn:
 DELETE FROM SessionExerciseEntity WHERE sessionId = :sessionId AND id NOT IN :keep;
 
 insertSessionExerciseIfMissing:
-INSERT OR IGNORE INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes)
-VALUES (:id, :sessionId, :position, :variantId, :slotId, :notes);
+INSERT OR IGNORE INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes, bilateral)
+VALUES (:id, :sessionId, :position, :variantId, :slotId, :notes, :bilateral);
 
 updateSessionExercise:
 UPDATE SessionExerciseEntity
-SET sessionId = :sessionId, position = :position, variantId = :variantId, slotId = :slotId, notes = :notes
+SET sessionId = :sessionId, position = :position, variantId = :variantId, slotId = :slotId, notes = :notes,
+    bilateral = :bilateral
 WHERE id = :id;
+
+-- The "Both hands" flag of a slot (null when the slot does not exist here): decodes a session payload written by
+-- a version without the per-exercise snapshot.
+slotBilateral:
+SELECT bilateral FROM RoutineSlotEntity WHERE id = :id;
 
 deleteSetsNotIn:
 DELETE FROM SetLogEntity WHERE sessionExerciseId = :sessionExerciseId AND id NOT IN :keep;

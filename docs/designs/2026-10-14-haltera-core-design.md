@@ -134,7 +134,7 @@ routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `
 | `prescription` | `RepRange(min, max)`, `Reps(n)`, `Duration(s)`, `Distance(m)` — consistent with the exercise `trackingType` |
 | `restBetweenSets`, `restAfter` | Seconds |
 | `supersetGroup` | Optional; slots sharing a group alternate sets and rest only after the round |
-| `bilateral` | For dumbbells: volume counts both hands |
+| `bilateral` | "Both hands", for dumbbells: volume counts both hands. Snapshotted on each exercise logged from the slot (§3.3), so a change applies to sessions logged afterwards only |
 | `notes` | Free text |
 | `progression` | `ProgressionRule` |
 
@@ -151,7 +151,7 @@ routines point at (`ExerciseRepository.updateCustom`, `usage`, `deleteCustom`, `
 
 **`WorkoutSession`**: id, `startedAt`, `endedAt?` (null while in progress), `routineId?` + `routineDayIndex?` (null for a free session), notes, `bodyWeight?` (filled in F6).
 
-**`SessionExercise`**: order, `variantId` actually used, `slotId?` it came from (null if added ad hoc), notes.
+**`SessionExercise`**: order, `variantId` actually used, `slotId?` it came from (null if added ad hoc), notes, `bilateral` (the slot's "Both hands" flag when it was logged; see Volume).
 
 **`SetLog`**: order, `kind` (`WARMUP`, `WORKING`, `DROP`, `FAILURE`), `reps?`, `load?`, `durationS?`, `distanceM?`, `rpe?`, `completed`, `completedAt?`.
 
@@ -166,15 +166,22 @@ table and chart, and the "Session volume" record (Exercises detail, Progress, fi
   exercise. Unloaded and assisted (negative) bodyweight sets, band levels and machine stack positions are not
   weights and add nothing; timed and distance sets have no reps and add nothing.
 - `DUMBBELL` loads are stored per implement. The volume counts both implements only when the exercise was logged
-  from a routine slot with `bilateral` on (the slot editor turns it on for dumbbell slots); free sessions and
-  exercises added outside the plan count one implement. The flag is read when summing, never stored on the session,
-  so turning it off or on re-sums that slot's history everywhere at once.
+  from a routine slot with `bilateral` ("Both hands") on (the slot editor turns it on for dumbbell slots); free
+  sessions and exercises added outside the plan count one implement.
+- The flag is a **snapshot**: `SessionExercise.bilateral` is copied from the slot when the exercise is logged (a live
+  session's start or an exercise added from a slot, "Log past session", a Haltera import that carries it, a sync
+  payload) and the volume reads only the snapshot. Changing the slot's switch affects the sessions logged after the
+  change; removing the slot, deleting its routine or deleting a custom exercise used in it clears the link
+  (`slotId`) but never the snapshot, so past volume never changes. Schema 8 (migration `7.sqm`) backfilled the
+  snapshot from the slots that still existed at the upgrade; exercises whose slot had already been removed, and
+  exercises without a slot, count one implement, as before.
 
 | Example (2 sets) | Volume |
 |---|---|
 | Barbell bench 100 kg × 5, × 5 | 1,000 kg |
-| Dumbbell press 24 kg × 10, × 8 from a bilateral slot | 864 kg (both hands) |
-| The same dumbbell sets in a free session, or a one-arm row slot | 432 kg |
+| Dumbbell press 24 kg × 10, × 8 from a "Both hands" slot | 864 kg (both hands) |
+| The same session after the slot's switch is turned off, the slot is removed or the routine is deleted | 864 kg (snapshot) |
+| The same sets logged after the switch was turned off, in a free session, or from a one-arm row slot | 432 kg |
 | Machine 50 kg × 10 / stack position 7 × 10 | 500 kg / 0 |
 | Pull-up +20 kg × 10 / assisted −20 kg × 8 / bodyweight × 12 | 200 kg / 0 / 0 |
 | Band level 3 × 15, plank 60 s, farmer's walk 32 kg × 40 s | 0 |

@@ -14,7 +14,6 @@ import es.sebas1705.haltera.domain.usecases.stats.OverviewStats
 import es.sebas1705.haltera.domain.usecases.stats.StatsPeriod
 import es.sebas1705.haltera.feature.progress.model.ProgressClock
 import es.sebas1705.haltera.feature.progress.model.StatsPeriodSelection
-import es.sebas1705.haltera.feature.progress.model.bilateralSlots
 import es.sebas1705.haltera.feature.progress.model.dated
 import es.sebas1705.haltera.feature.progress.model.toEpochDay
 import kotlinx.coroutines.Job
@@ -69,7 +68,7 @@ internal class OverviewViewModel(
             OverviewState(
                 loading = false,
                 period = period,
-                stats = Overview.build(period, today, dated, allRoutines.bilateralSlots(), active),
+                stats = Overview.build(period, today, dated, active),
                 heatmap = Heatmaps.build(dated, today, Heatmaps.weeksFor(period)),
                 hasHistory = dated.isNotEmpty(),
                 hasActiveRoutine = active != null,

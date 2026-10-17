@@ -43,11 +43,12 @@ class TrainingMathTest {
     }
 
     @Test
-    fun `bilateral slots double the exercise volume`() {
+    fun `a both-hands snapshot doubles the exercise volume, the slot id alone does not`() {
         val curls = move("curl.dumbbell", lift(12.0, 10), lift(12.0, 10), slotId = "slot-1")
         assertEquals(240_000L, TrainingMath.volume(curls))
-        assertEquals(480_000L, TrainingMath.volume(curls, bilateralSlots = setOf("slot-1")))
-        assertEquals(240_000L, TrainingMath.volume(curls.copy(slotId = null), bilateralSlots = setOf("slot-1")))
+        assertEquals(480_000L, TrainingMath.volume(curls.copy(bilateral = true)))
+        // The slot was removed later (its id cleared): the snapshot keeps both hands.
+        assertEquals(480_000L, TrainingMath.volume(curls.copy(slotId = null, bilateral = true)))
     }
 
     @Test

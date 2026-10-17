@@ -64,17 +64,16 @@ object Overview {
         period: StatsPeriod,
         today: Int,
         sessions: List<DatedSession>,
-        bilateralSlots: Set<String> = emptySet(),
         activeRoutine: Routine? = null,
     ): OverviewStats {
         val finished = sessions.filter { !it.session.inProgress }
         val current = Periods.current(period, today, finished.minOfOrNull { it.day })
         val previous = Periods.previous(period, current)
         val dayOfSession = finished.associate { it.session.id to it.day }
-        val prDays = PrDetector.eventsForSessions(finished.map { it.session }, bilateralSlots)
+        val prDays = PrDetector.eventsForSessions(finished.map { it.session })
             .mapNotNull { dayOfSession[it.sessionId] }
-        val now = totals(current, finished, bilateralSlots)
-        val before = previous?.let { totals(it, finished, bilateralSlots) }
+        val now = totals(current, finished)
+        val before = previous?.let { totals(it, finished) }
         fun compare(value: (StatsBucket) -> Double) = Comparison(value(now), before?.let(value))
         val size = Periods.bucketDays(current)
         return OverviewStats(
@@ -90,9 +89,9 @@ object Overview {
                 previous?.let { window -> prDays.count { it in window }.toDouble() },
             ),
             averageDurationMillis = now.averageDurationMillis?.let { Comparison(it, before?.averageDurationMillis) },
-            buckets = Periods.buckets(current, size).map { totals(it, finished, bilateralSlots) },
+            buckets = Periods.buckets(current, size).map { totals(it, finished) },
             previousBuckets = previous
-                ?.let { window -> Periods.buckets(window, size).map { totals(it, finished, bilateralSlots) } }
+                ?.let { window -> Periods.buckets(window, size).map { totals(it, finished) } }
                 .orEmpty(),
             adherence = activeRoutine?.let(::plannedPerWeek)?.let { planned ->
                 Adherence(planned, now.sessions / current.weeks)
@@ -101,13 +100,13 @@ object Overview {
     }
 
     /** Totals of the finished [sessions] whose day falls in [window]. */
-    fun totals(window: DayWindow, sessions: List<DatedSession>, bilateralSlots: Set<String> = emptySet()): StatsBucket {
+    fun totals(window: DayWindow, sessions: List<DatedSession>): StatsBucket {
         val inside = sessions.filter { it.day in window && !it.session.inProgress }.map { it.session }
         val durations = inside.mapNotNull(TrainingMath::durationMillis)
         return StatsBucket(
             window = window,
             sessions = inside.size,
-            volume = inside.sumOf { TrainingMath.volume(it, bilateralSlots) },
+            volume = inside.sumOf { TrainingMath.volume(it) },
             effectiveSets = inside.sumOf { TrainingMath.effectiveSets(it) },
             trainingTimeMillis = durations.sum(),
             timedSessions = durations.size,

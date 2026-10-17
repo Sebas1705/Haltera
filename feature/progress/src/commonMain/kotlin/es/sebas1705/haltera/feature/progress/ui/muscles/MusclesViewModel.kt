@@ -17,7 +17,6 @@ import es.sebas1705.haltera.domain.usecases.stats.StatsPeriod
 import es.sebas1705.haltera.feature.progress.model.ExerciseLookup
 import es.sebas1705.haltera.feature.progress.model.ProgressClock
 import es.sebas1705.haltera.feature.progress.model.StatsPeriodSelection
-import es.sebas1705.haltera.feature.progress.model.bilateralSlots
 import es.sebas1705.haltera.feature.progress.model.dated
 import es.sebas1705.haltera.feature.progress.model.toEpochDay
 import kotlinx.coroutines.Job
@@ -85,7 +84,7 @@ internal class MusclesViewModel(
                 period = period,
                 current = current,
                 previous = previous,
-                muscles = MuscleStats.compare(dated, muscles, current, previous, allRoutines.bilateralSlots()),
+                muscles = MuscleStats.compare(dated, muscles, current, previous),
                 balance = MuscleStats.balance(dated, muscles, current),
                 previousBalance = previous?.let { MuscleStats.balance(dated, muscles, it) }.orEmpty(),
                 unit = userSettings.unit,

@@ -178,8 +178,9 @@ internal class AggregateStore(
         q.deleteSessionExercisesNotIn(s.id, s.exercises.map { it.id })
         s.exercises.forEach { e ->
             val slotId = e.slotId?.takeIf { q.slotExists(it).executeAsOne() > 0 }
-            q.insertSessionExerciseIfMissing(e.id, s.id, e.position, e.variantId, slotId, e.notes)
-            q.updateSessionExercise(s.id, e.position, e.variantId, slotId, e.notes, e.id)
+            val bilateral = e.bilateral ?: legacyBilateral(e.slotId)
+            q.insertSessionExerciseIfMissing(e.id, s.id, e.position, e.variantId, slotId, e.notes, bilateral)
+            q.updateSessionExercise(s.id, e.position, e.variantId, slotId, e.notes, bilateral, e.id)
             q.deleteSetsNotIn(e.id, e.sets.map { it.id })
             e.sets.forEach { t ->
                 q.replaceSet(
@@ -189,6 +190,13 @@ internal class AggregateStore(
             }
         }
     }
+
+    /**
+     * The "Both hands" snapshot of an exercise from a payload written before schema 8 (no `bilateral`): the flag of
+     * its slot on this device, as those versions computed it when summing; 0 (one implement) without the slot.
+     */
+    private fun legacyBilateral(slotId: String?): Long =
+        slotId?.let { q.slotBilateral(it).executeAsOneOrNull() } ?: 0L
 
     // USER exercises
 

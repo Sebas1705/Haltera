@@ -219,7 +219,7 @@ internal class TodayViewModel(
         val routine = activeRoutine?.takeIf { it.id == plan.routineId }
         val week = routine?.let { FlexibleRest.week(it, weekSessions, clock.now(), clock.timeZone) }
         return plan.copy(
-            restWeek = week?.let { RestWeekUi(it.used, it.planned, it.restToday) },
+            restWeek = week?.let { RestWeekUi(it.used, it.planned, it.restToday, it.usedWithOtherTraining) },
             next = plan.next?.copy(restWeekday = week?.restToday == true),
         )
     }

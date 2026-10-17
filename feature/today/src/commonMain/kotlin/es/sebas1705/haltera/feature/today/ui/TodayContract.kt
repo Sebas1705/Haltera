@@ -43,8 +43,17 @@ internal data class PlanUi(
     val restWeek: RestWeekUi? = null,
 )
 
-/** "Rest days this week: [used] of [planned]"; [restToday] when today is a chosen rest weekday. */
-internal data class RestWeekUi(val used: Int, val planned: Int, val restToday: Boolean) {
+/**
+ * "Rest days from “<routine>” this week: [used] of [planned]"; [restToday] when today is a chosen rest weekday.
+ * [otherTraining] of the [used] days had a free session or another routine (said apart, so a week strip with
+ * more trained days than the line suggests is not read as a contradiction).
+ */
+internal data class RestWeekUi(
+    val used: Int,
+    val planned: Int,
+    val restToday: Boolean,
+    val otherTraining: Int = 0,
+) {
     /** Which sentence describes the week (docs/designs/2026-10-16-flexible-rest-days.md §1, "Wording"). */
     val wording: RestWeekWording
         get() = when {
@@ -57,16 +66,16 @@ internal data class RestWeekUi(val used: Int, val planned: Int, val restToday: B
 
 /** The weekly rest line of a flexible routine on Today. */
 internal enum class RestWeekWording {
-    /** "Rest days this week: 1 of 3" (within the target). */
+    /** "Rest days from “PPL” this week: 1 of 3" (within the target). */
     OF_TARGET,
 
-    /** "4 rest days this week (target 3)": over the target, never "4 of 3". */
+    /** "4 rest days from “PPL” this week (target 3)": over the target, never "4 of 3". */
     OVER_TARGET,
 
-    /** "2 rest days this week (none planned)": the routine plans 0 rest days. */
+    /** "2 rest days from “PPL” this week (none planned)": the routine plans 0 rest days. */
     UNPLANNED,
 
-    /** "No rest days planned this week": 0 planned and none taken yet. */
+    /** "No rest days from “PPL” planned this week": 0 planned and none taken yet. */
     NONE_PLANNED,
 }
 

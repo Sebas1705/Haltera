@@ -113,18 +113,23 @@
     <string name="today_nutrition_protein">Protein</string>
     <string name="today_nutrition_carbs">Carbs</string>
     <string name="today_nutrition_fat">Fat</string>
-    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md) -->
-    <string name="today_rest_week">Rest days this week: %1$d of %2$d</string>
+    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md): rest days of the routine named in “…”;
+         free sessions and other routines' sessions do not count as its training days. -->
+    <string name="today_rest_week">Rest days from “%3$s” this week: %1$d of %2$d</string>
     <plurals name="today_rest_week_over">
-        <item quantity="one">%1$d rest day this week (target %2$d)</item>
-        <item quantity="other">%1$d rest days this week (target %2$d)</item>
+        <item quantity="one">%1$d rest day from “%3$s” this week (target %2$d)</item>
+        <item quantity="other">%1$d rest days from “%3$s” this week (target %2$d)</item>
     </plurals>
     <plurals name="today_rest_week_unplanned">
-        <item quantity="one">%1$d rest day this week (none planned)</item>
-        <item quantity="other">%1$d rest days this week (none planned)</item>
+        <item quantity="one">%1$d rest day from “%2$s” this week (none planned)</item>
+        <item quantity="other">%1$d rest days from “%2$s” this week (none planned)</item>
     </plurals>
-    <string name="today_rest_week_none">No rest days planned this week</string>
-    <string name="today_rest_week_info">Information only: a flexible routine never skips a workout. The next day is always the one after your last session.</string>
+    <string name="today_rest_week_none">No rest days from “%1$s” planned this week</string>
+    <plurals name="today_rest_week_other_training">
+        <item quantity="one">You trained outside this routine on %1$d of those days.</item>
+        <item quantity="other">You trained outside this routine on %1$d of those days.</item>
+    </plurals>
+    <string name="today_rest_week_info">A rest day here is a day without a session of this routine: free sessions and other routines do not count as its training days. Information only: the next day is always the one after your last session of this routine.</string>
     <string name="today_steps_title">Steps</string>
     <string name="today_steps_value">%1$s / %2$s</string>
     <string name="today_steps_none">No steps yet today</string>

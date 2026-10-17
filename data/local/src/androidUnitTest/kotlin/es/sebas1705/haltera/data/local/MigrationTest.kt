@@ -235,8 +235,9 @@ class MigrationTest {
     }
 
     @Test
-    fun `migrating from version 7 snapshots both hands from the slots that still exist`() {
+    fun `migrating from version 7 snapshots both hands from the slots that still exist and repairs set times`() {
         File("src/commonMain/sqldelight/databases/7.db").copyTo(file, overwrite = true)
+        val setRow = "INSERT INTO SetLogEntity(id, sessionExerciseId, position, kind, completed, completedAt) VALUES "
         driver().use { v7 ->
             listOf(
                 "INSERT INTO ExerciseEntity(id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, " +
@@ -261,6 +262,10 @@ class MigrationTest {
                 "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId) VALUES ('e3', 's1', 2, 'user-1.db', NULL)",
                 // A free session, and an exercise whose slot was removed before the upgrade (the link is already NULL).
                 "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId) VALUES ('e4', 's2', 0, 'user-1.db', NULL)",
+                // Sets of a past session ticked days after it ended, one ticked during it, one before a moved start.
+                setRow + "('t1', 'e1', 0, 'WORKING', 1, 999999)",
+                setRow + "('t2', 'e4', 0, 'WORKING', 1, 3500)",
+                setRow + "('t3', 'e1', 1, 'WORKING', 1, 10)",
                 "UPDATE SyncState SET dirty = 0",
             ).forEach { v7.execute(null, it, 0) }
             AppDatabase.Schema.migrate(v7, 7, AppDatabase.Schema.version)
@@ -270,6 +275,10 @@ class MigrationTest {
         val flags = db.sessionExerciseEntityQueries.selectBySessions(listOf("s1", "s2")).executeAsList()
             .associate { it.id to it.bilateral }
         assertEquals(mapOf("e1" to 1L, "e2" to 0L, "e3" to 0L, "e4" to 0L), flags)
+        // Completion times of finished sessions are brought inside the session.
+        assertEquals(2000L, db.setLogEntityQueries.selectById("t1").executeAsOne().completedAt)
+        assertEquals(3500L, db.setLogEntityQueries.selectById("t2").executeAsOne().completedAt)
+        assertEquals(1000L, db.setLogEntityQueries.selectById("t3").executeAsOne().completedAt)
         // The backfilled session is queued for the cloud with its snapshot; the untouched one is not.
         assertEquals(1L, db.syncTrackingQueries.selectState("sessions", "s1").executeAsOne().dirty)
         assertEquals(0L, db.syncTrackingQueries.selectState("sessions", "s2").executeAsOne().dirty)

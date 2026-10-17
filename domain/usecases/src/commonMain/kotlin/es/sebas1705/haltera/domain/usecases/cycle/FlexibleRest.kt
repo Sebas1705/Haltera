@@ -17,12 +17,15 @@ import kotlin.time.Instant
 /**
  * The current week of a flexible routine, information only (never a block): [used] rest days so far this week
  * out of [planned]; [restToday] when today is a chosen rest weekday and the routine has not been trained today.
+ * [usedWithOtherTraining] of the [used] days had a free session or a session of another routine: they are rest
+ * days for this routine all the same, and Today says so (the week strip shows them as trained).
  */
 data class RestWeek(
     val used: Int,
     val planned: Int,
     val restToday: Boolean,
     val knowsWeekdays: Boolean,
+    val usedWithOtherTraining: Int = 0,
 )
 
 /** Rest days of flexible routines (docs/designs/2026-10-16-flexible-rest-days.md). Pure functions. */
@@ -50,14 +53,17 @@ object FlexibleRest {
         if (!policy.isFlexible) return null
         val today = dateOf(nowMillis, timeZone)
         val monday = mondayOf(today)
-        val trained = sessions.filter { it.routineId == routine.id }.map { dateOf(it.startedAt, timeZone) }.toSet()
+        val (mine, others) = sessions.partition { it.routineId == routine.id }
+        val trained = mine.map { dateOf(it.startedAt, timeZone) }.toSet()
+        val otherTraining = others.map { dateOf(it.startedAt, timeZone) }.toSet()
         val pastDays = today.dayOfWeek.isoDayNumber - 1
-        val used = (0 until pastDays).count { monday.plus(it, DateTimeUnit.DAY) !in trained }
+        val restDays = (0 until pastDays).map { monday.plus(it, DateTimeUnit.DAY) }.filter { it !in trained }
         return RestWeek(
-            used = used,
+            used = restDays.size,
             planned = policy.restDaysCount,
             restToday = isRestDay(policy, today) && today !in trained,
             knowsWeekdays = policy.knowsWeekdays,
+            usedWithOtherTraining = restDays.count { it in otherTraining },
         )
     }
 

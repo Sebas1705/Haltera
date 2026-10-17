@@ -10,3 +10,18 @@ ALTER TABLE SessionExerciseEntity ADD COLUMN bilateral INTEGER NOT NULL DEFAULT 
 UPDATE SessionExerciseEntity SET bilateral = 1
 WHERE slotId IS NOT NULL
   AND EXISTS (SELECT 1 FROM RoutineSlotEntity s WHERE s.id = SessionExerciseEntity.slotId AND s.bilateral = 1);
+
+-- Sets ticked on a past session logged later were stamped with the time they were ticked, days after the session
+-- ended. Completion times of finished sessions are brought inside [startedAt, endedAt] (data only, no schema change).
+UPDATE SetLogEntity
+SET completedAt = (
+    SELECT MAX(s.startedAt, MIN(s.endedAt, SetLogEntity.completedAt))
+    FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+    WHERE se.id = SetLogEntity.sessionExerciseId
+)
+WHERE completedAt IS NOT NULL
+  AND EXISTS (
+    SELECT 1 FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+    WHERE se.id = SetLogEntity.sessionExerciseId AND s.endedAt IS NOT NULL
+      AND (SetLogEntity.completedAt > s.endedAt OR SetLogEntity.completedAt < s.startedAt)
+  );

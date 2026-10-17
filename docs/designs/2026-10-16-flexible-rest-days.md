@@ -34,17 +34,19 @@ written by an older app version), `Cycle` skips it silently.
 ### Rest policy of a flexible routine
 
 - **A number** (`restDaysPerWeek`, 0–6; "I don't know which days"): the app never decides which days are rest.
-  Today shows the next training day every day and, as information only, *"Rest days this week: x of N"*.
+  Today shows the next training day every day and, as information only, *"Rest days from “PPL” this week: x of N"*.
 - **Fixed weekdays** (`restWeekdays`, a Monday-first bitmask, at most six days): on those weekdays Today says
   the plan is rest (with the next workout still one tap away); on the other days it shows the next training day.
   The weekly number is derived from the weekdays (`restDaysPerWeek` = number of weekdays chosen).
 
 **"x" (rest days used)** = days of the current week (Monday first, device time zone) **before today** without a
 session of this routine (by the local date of `startedAt`). Today is not counted yet: it can still be trained.
-A day with only a free session counts as rest for the routine. The count is shown even when it exceeds N, but
+A day with only a free session or only sessions of another routine counts as rest **for this routine** (by
+design: the count is about this routine's rotation, not about training in general). Those days are also counted
+apart (`RestWeek.usedWithOtherTraining`) so Today can say so. The count is shown even when it exceeds N, but
 never as "x of N" then (see Wording).
 
-### Wording (revised after the alpha.4 QA)
+### Wording (revised after the alpha.4 QA, and again after the pre-alpha.5 QA)
 
 The training days of a flexible routine are a rotation, not days of the week, so they are never put next to the
 weekly rest days as if they added up to a week ("3 training days · 5 rest days a week" read as 8 days):
@@ -52,13 +54,21 @@ weekly rest days as if they added up to a week ("3 training days · 5 rest days 
 | Where | Text |
 |---|---|
 | Routine list, editor header, import preview | *"3 workouts in rotation · 5 rest days a week"* (fixed routines keep *"4-day cycle · 3 training days"*) |
-| Today, x ≤ N | *"Rest days this week: 1 of 3"* |
-| Today, x > N | *"4 rest days this week (target 3)"*, never "4 of 3" |
-| Today, N = 0 and x > 0 | *"2 rest days this week (none planned)"* |
-| Today, N = 0 and x = 0 | *"No rest days planned this week"* |
+| Today, x ≤ N | *"Rest days from “PPL” this week: 1 of 3"* |
+| Today, x > N | *"4 rest days from “PPL” this week (target 3)"*, never "4 of 3" |
+| Today, N = 0 and x > 0 | *"2 rest days from “PPL” this week (none planned)"* |
+| Today, N = 0 and x = 0 | *"No rest days from “PPL” planned this week"* |
+| Today, some of the x days had other training | an extra line: *"You trained outside this routine on 2 of those days."* |
+| Today, always under the line | *"A rest day here is a day without a session of this routine: free sessions and other routines do not count as its training days. Information only: the next day is always the one after your last session of this routine."* |
+
+Today's lines name the routine (“PPL” stands for its name; Spanish uses «…», e.g. *"Días de descanso de «PPL»
+esta semana: 1 de 3"*). Before the pre-alpha.5 QA they said only "5 rest days this week", which read as a
+contradiction next to the week strip, since the strip counts every session of the week (free sessions and other
+routines included) and could show 3 trained days. The rule did not change, only the words: the rest days belong
+to the routine, and the days that had other training are said apart.
 
 Counts use plurals in both languages ("1 rest day", "1 workout"). The choice is `RestWeekUi.wording`
-(`feature:today`) and `routineSummary` (`feature:routines`).
+(`feature:today`, strings `today_rest_week*`) and `routineSummary` (`feature:routines`).
 
 Examples (Push · Pull · Legs · Upper, 3 rest days a week, today Thursday):
 
@@ -67,6 +77,7 @@ Examples (Push · Pull · Legs · Upper, 3 rest days a week, today Thursday):
 | Mon Push, Tue Pull | Day 3 of 4 · Legs | 1 of 3 (Wed) |
 | Mon Push, Wed Pull (logged on Thu as a past session) | Day 3 of 4 · Legs | 1 of 3 (Tue) |
 | Nothing, last session was Upper last Saturday | Day 1 of 4 · Push | 3 of 3 |
+| Mon Push, Tue a free session, Wed another routine | Day 2 of 4 · Pull | 2 of 3 (Tue, Wed) + "You trained outside this routine on 2 of those days." (the week strip shows 3 trained days) |
 
 With rest weekdays Wed + Sun: on Wednesday Today shows "The plan says rest today" above the next day (Start
 still works); on Thursday it shows the next day without the hint.
@@ -121,6 +132,6 @@ numbers come from the flexible rest days.
   weekday chips (Mon…Sun, at most six); off → a 0–6 stepper. Flexible routines hide the "Rest day" button and
   the training/rest switch of each day.
 - Today: the day label counts training days only ("Day 2 of 4 · Pull"); weekday rest shows the existing rest hint;
-  both flexible modes show the weekly rest line under it ("Rest days this week: x of N", or the forms of §1
+  both flexible modes show the weekly rest line under it ("Rest days from “PPL” this week: x of N", or the forms of §1
   "Wording" when x exceeds N or N is 0).
 - Famous routines stay fixed (none of the bundled templates is clearly flexible).

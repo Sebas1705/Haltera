@@ -91,3 +91,10 @@ LIMIT 1;
 -- names none or the slot does not exist here) and its "Both hands" snapshot from the file.
 insertImported:
 INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, notes, bilateral) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- The start and end of the session an exercise belongs to: a set ticked in a finished session gets a completion time
+-- inside it, never "now" (a past session logged days later).
+sessionTimes:
+SELECT s.startedAt, s.endedAt
+FROM SessionExerciseEntity se JOIN WorkoutSessionEntity s ON s.id = se.sessionId
+WHERE se.id = :id;

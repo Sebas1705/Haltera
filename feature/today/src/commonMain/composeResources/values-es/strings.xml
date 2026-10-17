@@ -113,18 +113,23 @@
     <string name="today_nutrition_protein">Proteína</string>
     <string name="today_nutrition_carbs">Hidratos</string>
     <string name="today_nutrition_fat">Grasa</string>
-    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md) -->
-    <string name="today_rest_week">Días de descanso esta semana: %1$d de %2$d</string>
+    <!-- Flexible rest days (docs/designs/2026-10-16-flexible-rest-days.md): rest days of the routine named in “…”;
+         free sessions and other routines' sessions do not count as its training days. -->
+    <string name="today_rest_week">Días de descanso de «%3$s» esta semana: %1$d de %2$d</string>
     <plurals name="today_rest_week_over">
-        <item quantity="one">%1$d día de descanso esta semana (objetivo: %2$d)</item>
-        <item quantity="other">%1$d días de descanso esta semana (objetivo: %2$d)</item>
+        <item quantity="one">%1$d día de descanso de «%3$s» esta semana (objetivo: %2$d)</item>
+        <item quantity="other">%1$d días de descanso de «%3$s» esta semana (objetivo: %2$d)</item>
     </plurals>
     <plurals name="today_rest_week_unplanned">
-        <item quantity="one">%1$d día de descanso esta semana (no tenías ninguno previsto)</item>
-        <item quantity="other">%1$d días de descanso esta semana (no tenías ninguno previsto)</item>
+        <item quantity="one">%1$d día de descanso de «%2$s» esta semana (no tenías ninguno previsto)</item>
+        <item quantity="other">%1$d días de descanso de «%2$s» esta semana (no tenías ninguno previsto)</item>
     </plurals>
-    <string name="today_rest_week_none">Sin días de descanso previstos esta semana</string>
-    <string name="today_rest_week_info">Solo informativo: una rutina flexible nunca se salta un entreno. El día siguiente es siempre el que va después de tu última sesión.</string>
+    <string name="today_rest_week_none">Sin días de descanso de «%1$s» previstos esta semana</string>
+    <plurals name="today_rest_week_other_training">
+        <item quantity="one">En %1$d de esos días entrenaste fuera de esta rutina.</item>
+        <item quantity="other">En %1$d de esos días entrenaste fuera de esta rutina.</item>
+    </plurals>
+    <string name="today_rest_week_info">Aquí, un día de descanso es un día sin sesión de esta rutina: las sesiones libres y las de otras rutinas no cuentan como entrenamientos suyos. Solo informativo: el día siguiente es siempre el que va después de tu última sesión de esta rutina.</string>
     <string name="today_steps_title">Pasos</string>
     <string name="today_steps_value">%1$s / %2$s</string>
     <string name="today_steps_none">Todavía no hay pasos hoy</string>

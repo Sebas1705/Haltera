@@ -8,7 +8,7 @@ import org.koin.dsl.module
 
 /** Koin bindings of the exercises feature (ViewModels, feature-local classes). Registered in composeApp. */
 val exercisesModule = module {
-    viewModel { ExercisesViewModel(exercises = get()) }
+    viewModel { ExercisesViewModel(exercises = get(), savedState = get()) }
     viewModel { params ->
         ExerciseDetailViewModel(
             exerciseId = params.get(),

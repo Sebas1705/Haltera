@@ -6,6 +6,8 @@ kotlin {
             implementation(libs.bundles.compose.core)
             implementation(libs.navigation.compose)
             implementation(libs.lifecycle.viewmodel.compose)
+            // SavedStateHandle: the search and filter chips survive process death.
+            implementation(libs.lifecycle.viewmodel.savedstate)
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)

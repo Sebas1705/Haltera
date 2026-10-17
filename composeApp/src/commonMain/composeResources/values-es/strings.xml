@@ -169,6 +169,25 @@
     <string name="health_open_settings">Abrir Health Connect</string>
     <string name="health_connected">Conectado</string>
     <string name="health_last_read">Conectado · última lectura %1$s</string>
+    <!-- When Health Connect was last read: LastReadFormat; time in 24 h like the rest of the app. -->
+    <string name="health_last_read_today">hoy, %1$s</string>
+    <string name="health_last_read_yesterday">ayer, %1$s</string>
+    <string name="health_last_read_date">%1$d %2$s, %3$s</string>
+    <string name="health_last_read_date_year">%1$d %2$s %3$d, %4$s</string>
+    <string-array name="health_months_short">
+        <item>ene</item>
+        <item>feb</item>
+        <item>mar</item>
+        <item>abr</item>
+        <item>may</item>
+        <item>jun</item>
+        <item>jul</item>
+        <item>ago</item>
+        <item>sep</item>
+        <item>oct</item>
+        <item>nov</item>
+        <item>dic</item>
+    </string-array>
     <string name="health_reading">Leyendo Health Connect…</string>
     <string name="health_error_permission">Se quitaron algunos permisos en Health Connect. El resto se sigue leyendo.</string>
     <string name="health_error_failed">No se pudo leer Health Connect. Haltera lo intentará de nuevo la próxima vez que la abras.</string>

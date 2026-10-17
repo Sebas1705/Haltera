@@ -1,6 +1,7 @@
 package es.sebas1705.haltera.feature.exercises.ui
 
 import androidx.compose.runtime.Immutable
+import androidx.lifecycle.SavedStateHandle
 import es.sebas1705.haltera.core.common.mvi.MVIBaseIntent
 import es.sebas1705.haltera.core.common.mvi.MVIBaseState
 import es.sebas1705.haltera.core.common.mvi.MVIBaseViewModel
@@ -79,21 +80,26 @@ sealed interface ExercisesIntent : MVIBaseIntent {
     data object RestoreFailedShown : ExercisesIntent
 }
 
-/** Exercise list with search and filter chips (spec §7 Exercises). */
+/**
+ * Exercise list with search and filter chips (spec §7 Exercises). The query, the chips and the "Hidden" chip are
+ * kept in [savedState], so they survive process death (Koin passes the navigation entry's handle).
+ */
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 class ExercisesViewModel(
     private val exercises: ExerciseRepository,
     private val dispatcher: CoroutineDispatcher = Dispatchers.Default,
-) : MVIBaseViewModel<ExercisesState, ExercisesIntent>(ExercisesState()) {
+    private val savedState: SavedStateHandle = SavedStateHandle(),
+) : MVIBaseViewModel<ExercisesState, ExercisesIntent>(ExercisesFilters.restore(savedState)) {
 
     private data class Params(val filter: ExerciseFilter, val language: String?)
 
-    private val params = MutableStateFlow(Params(ExerciseFilter(), language = null))
+    private val params = MutableStateFlow(Params(currentState.toFilter(), language = null))
     private var searchJob: Job? = null
 
     init {
         startSearch()
         observeHidden()
+        saveFilters()
     }
 
     override fun intentHandler(intent: ExercisesIntent): Job = execute {
@@ -184,6 +190,13 @@ class ExercisesViewModel(
             }
     }
 
+    /** Writes the filters to [savedState] whenever they change (the reducers stay free of side effects). */
+    private fun saveFilters() = execute {
+        uiState.map { ExercisesFilters.of(it) }
+            .distinctUntilChanged()
+            .collect { it.writeTo(savedState) }
+    }
+
     companion object {
         const val QUERY_DEBOUNCE_MS = 250L
 
@@ -193,6 +206,52 @@ class ExercisesViewModel(
 }
 
 private fun ExerciseFilter.normalized() = copy(query = query.trim())
+
+private fun ExercisesState.toFilter() =
+    ExerciseFilter(query = query, category = category, muscle = muscle, equipment = equipment)
+
+/** The part of [ExercisesState] that survives process death, stored as plain strings in a [SavedStateHandle]. */
+internal data class ExercisesFilters(
+    val query: String = "",
+    val category: ExerciseCategory? = null,
+    val muscle: Muscle? = null,
+    val equipment: Equipment? = null,
+    val hiddenSelected: Boolean = false,
+) {
+    fun writeTo(handle: SavedStateHandle) {
+        handle[KEY_QUERY] = query
+        handle[KEY_CATEGORY] = category?.name
+        handle[KEY_MUSCLE] = muscle?.name
+        handle[KEY_EQUIPMENT] = equipment?.name
+        handle[KEY_HIDDEN] = hiddenSelected
+    }
+
+    companion object {
+        private const val KEY_QUERY = "exercises.query"
+        private const val KEY_CATEGORY = "exercises.category"
+        private const val KEY_MUSCLE = "exercises.muscle"
+        private const val KEY_EQUIPMENT = "exercises.equipment"
+        private const val KEY_HIDDEN = "exercises.hidden"
+
+        fun of(state: ExercisesState) =
+            ExercisesFilters(state.query, state.category, state.muscle, state.equipment, state.hiddenSelected)
+
+        /**
+         * The initial state with the saved filters; values of an unexpected type or unknown enum names (another
+         * build) are dropped. "Hidden" stays selected only while something is hidden: the hidden list clears it when
+         * it loads empty.
+         */
+        fun restore(handle: SavedStateHandle) = ExercisesState(
+            query = handle.string(KEY_QUERY).orEmpty(),
+            category = handle.string(KEY_CATEGORY)?.let { n -> ExerciseCategory.entries.firstOrNull { it.name == n } },
+            muscle = handle.string(KEY_MUSCLE)?.let { n -> Muscle.entries.firstOrNull { it.name == n } },
+            equipment = handle.string(KEY_EQUIPMENT)?.let { n -> Equipment.entries.firstOrNull { it.name == n } },
+            hiddenSelected = handle.get<Any?>(KEY_HIDDEN) as? Boolean ?: false,
+        )
+
+        private fun SavedStateHandle.string(key: String): String? = get<Any?>(key) as? String
+    }
+}
 
 internal fun Exercise.toRow(language: String): ExerciseRow {
     val active = variants.filterNot { it.deprecated }.ifEmpty { variants }

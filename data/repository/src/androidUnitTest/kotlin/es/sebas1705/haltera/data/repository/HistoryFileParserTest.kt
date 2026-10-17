@@ -331,6 +331,22 @@ class HistoryFileParserTest {
         assertEquals("{\"type\":\"machinePlate\"}", plate.loadDetail)
     }
 
+    @Test
+    fun `a haltera session ends at ended_at even when its sets were completed later`() {
+        // A past session logged on Oct 17 for Oct 12: its sets carry the time they were ticked, days after the end.
+        val header = fixtureBytes("haltera-sessions.csv").decodeToString().lines().first()
+        val logged = "2026-10-12,s-past,2026-10-12T00:15:00Z,2026-10-12T01:15:00Z,Day 1,,,bench-press," +
+            "bench-press.barbell,Bench Press,barbell,1,,1,WORKING,8,60000,60,kg,,,,,2026-10-17T01:18:00Z,t-1"
+        val open = "2026-10-13,s-open,2026-10-13T10:00:00Z,,Day 1,,,bench-press," +
+            "bench-press.barbell,Bench Press,barbell,1,,1,WORKING,8,60000,60,kg,,,,,2026-10-13T10:40:00Z,t-2"
+
+        val sessions = HistoryFileParser.parse("$header\n$logged\n$open\n".encodeToByteArray(), utc).sessions
+
+        assertEquals(at("2026-10-12T01:15:00Z"), sessions.single { it.id == "s-past" }.endedAt)
+        // Without ended_at the last completed set is still the end.
+        assertEquals(at("2026-10-13T10:40:00Z"), sessions.single { it.id == "s-open" }.endedAt)
+    }
+
     // ----- more edge cases -----
 
     private val hevyHeader = "title,start_time,end_time,description,exercise_title,superset_id,exercise_notes,set_index," +

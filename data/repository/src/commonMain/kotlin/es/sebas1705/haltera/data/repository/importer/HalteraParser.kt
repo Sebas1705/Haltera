@@ -23,6 +23,7 @@ internal object HalteraParser {
     fun sessions(table: CsvTable, definitions: Map<String, SharedExercise>): ParsedImport {
         val acc = SessionAccumulator(ImportSource.HALTERA)
         var skipped = 0
+        val explicitEnd = mutableSetOf<String>()
         for (row in table.rows()) {
             val startedAt = instant(row["started_at"])
             val name = row["exercise"].ifEmpty { row["exercise_id"] }
@@ -44,8 +45,7 @@ internal object HalteraParser {
                     fixedId = id,
                 )
             }
-            group.endedAt = maxOf(group.endedAt ?: 0L, instant(row["ended_at"]) ?: 0L, instant(row["completed_at"]) ?: 0L)
-                .takeIf { it > 0 }
+            extendEnd(group, row, explicitEnd)
             if (group.notes.isEmpty()) group.notes = row["session_notes"]
             if (group.bodyWeightGrams == null) {
                 group.bodyWeightGrams = ImportValues.decimal(row["session_body_weight_kg"])
@@ -58,6 +58,22 @@ internal object HalteraParser {
             exercise.sets += set(row, startedAt)
         }
         return ParsedImport(ImportSource.HALTERA, acc.build(), skippedRows = skipped)
+    }
+
+    /**
+     * The end of [group] is `ended_at`; only a session without one ends at its last `completed_at`. The sets of a past
+     * session logged later are completed after the session ended and must not stretch it. [explicitEnd] holds the
+     * sessions that had an `ended_at`.
+     */
+    private fun extendEnd(group: SessionAccumulator.Group, row: CsvTable.Row, explicitEnd: MutableSet<String>) {
+        val id = group.startText
+        val endedAt = instant(row["ended_at"])
+        if (endedAt != null) {
+            group.endedAt = if (id in explicitEnd) maxOf(group.endedAt ?: 0L, endedAt) else endedAt
+            explicitEnd += id
+        } else if (id !in explicitEnd) {
+            group.endedAt = maxOf(group.endedAt ?: 0L, instant(row["completed_at"]) ?: 0L).takeIf { it > 0 }
+        }
     }
 
     private fun set(row: CsvTable.Row, startedAt: Long) = ImportedSet(

@@ -86,9 +86,9 @@
 
     <!-- Settings: Data, Export my data -->
     <string name="export_section">Data</string>
-    <string name="export_text">Save everything you logged (sessions, body weight, meals, routines) as CSV and JSON files in one zip, to keep or to open in a spreadsheet. Loads are always in kilograms. The exercise catalogue is not included.</string>
+    <string name="export_text">Save everything you logged (sessions, body weight, body measurements, meals, routines) as CSV and JSON files in one zip, to keep or to open in a spreadsheet. Loads are always in kilograms and measurements in centimetres. The exercise catalogue and your progress photos are not included.</string>
     <string name="export_action">Export my data</string>
-    <string name="export_done">Export saved. Sets: %1$d, body weight entries: %2$d, meal entries: %3$d.</string>
+    <string name="export_done">Export saved. Sets: %1$d, body weight entries: %2$d, meal entries: %3$d, body measurements: %4$d.</string>
     <string name="export_failed">The export could not be written. Try another location.</string>
     <string name="export_dismiss">OK</string>
     <string name="import_section">Import</string>
@@ -103,6 +103,7 @@
     <string name="import_summary">Sessions: %1$d, sets: %2$d</string>
     <string name="import_range">From %1$s to %2$s</string>
     <string name="import_body_weights">Body weight entries: %1$d</string>
+    <string name="import_body_measurements">Body measurements: %1$d</string>
     <plurals name="import_matched">
         <item quantity="one">%1$d exercise recognised automatically</item>
         <item quantity="other">%1$d exercises recognised automatically</item>
@@ -131,7 +132,7 @@
     <string name="import_cancel">Cancel</string>
     <string name="import_working">Importing...</string>
     <string name="import_dismiss">OK</string>
-    <string name="import_done">Import finished. Sessions added: %1$d, replaced: %2$d, skipped: %3$d. Sets: %4$d. Body weight entries: %5$d. New exercises: %6$d.</string>
+    <string name="import_done">Import finished. Sessions added: %1$d, replaced: %2$d, skipped: %3$d. Sets: %4$d. Body weight entries: %5$d. Body measurements: %7$d. New exercises: %6$d.</string>
     <string name="import_error_unrecognised">This file is not a Hevy, Strong, FitNotes or Haltera export. Nothing was imported.</string>
     <string name="import_error_no_data">The file has the right format but no usable sets. Nothing was imported.</string>
     <string name="import_error_compressed_zip">This zip is compressed. Extract it and pick sessions.csv instead. Nothing was imported.</string>

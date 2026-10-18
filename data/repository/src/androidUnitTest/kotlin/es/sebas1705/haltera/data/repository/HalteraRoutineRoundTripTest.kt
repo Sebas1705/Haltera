@@ -20,6 +20,7 @@ import es.sebas1705.haltera.data.repository.importer.SqlHistoryImporter
 import es.sebas1705.haltera.data.repository.off.OpenFoodFactsClient
 import es.sebas1705.haltera.data.repository.share.DefaultRoutineSharing
 import es.sebas1705.haltera.data.repository.sql.HistoryLoader
+import es.sebas1705.haltera.data.repository.sql.SqlBodyMeasurementRepository
 import es.sebas1705.haltera.data.repository.sql.SqlBodyWeightRepository
 import es.sebas1705.haltera.data.repository.sql.SqlExerciseRepository
 import es.sebas1705.haltera.data.repository.sql.SqlNutritionRepository
@@ -77,6 +78,7 @@ class HalteraRoutineRoundTripTest {
             exercises,
             nutrition,
             SqlBodyWeightRepository(db, dispatcher, clock),
+            SqlBodyMeasurementRepository(db, dispatcher, clock),
             routines,
             DefaultRoutineSharing(routines, exercises, clock),
             dispatcher,
@@ -185,7 +187,7 @@ class HalteraRoutineRoundTripTest {
             utc
         ).let { p -> p.copy(sessions = p.sessions.sortedBy { it.startedAt }) }
 
-        assertEquals(2, ExportFormat.VERSION)
+        assertEquals(3, ExportFormat.VERSION)
         val first = csv.sessions.first()
         assertEquals(book.ppl, first.routineId)
         assertEquals("PPL", first.routineName)

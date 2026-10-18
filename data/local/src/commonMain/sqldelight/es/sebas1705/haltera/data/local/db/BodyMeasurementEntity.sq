@@ -1,0 +1,29 @@
+-- Body measurements (schema 9, roadmap P6): waist, chest, hips, arm, thigh, neck, body fat and custom lengths.
+-- Lengths are whole millimetres, body fat is tenths of a percent; the unit is converted only for display.
+-- Synced as bodyMeasurements/{id} (SyncTracking.sq).
+CREATE TABLE BodyMeasurementEntity (
+    id          TEXT NOT NULL PRIMARY KEY,
+    measuredAt  INTEGER NOT NULL,              -- epoch millis
+    type        TEXT NOT NULL,                 -- WAIST | CHEST | HIPS | ARM | THIGH | NECK | BODY_FAT | CUSTOM
+    customName  TEXT NOT NULL DEFAULT '',      -- the user's name of a CUSTOM measurement, '' otherwise
+    value       INTEGER NOT NULL,              -- millimetres, or tenths of a percent for BODY_FAT
+    notes       TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX BodyMeasurementEntity_measuredAt ON BodyMeasurementEntity(measuredAt);
+
+upsert:
+INSERT OR REPLACE INTO BodyMeasurementEntity(id, measuredAt, type, customName, value, notes) VALUES (?, ?, ?, ?, ?, ?);
+
+delete:
+DELETE FROM BodyMeasurementEntity WHERE id = ?;
+
+selectAll:
+SELECT * FROM BodyMeasurementEntity ORDER BY measuredAt DESC, id;
+
+selectById:
+SELECT * FROM BodyMeasurementEntity WHERE id = ?;
+
+-- Which of :ids are already in the log (history import).
+selectExistingIds:
+SELECT id FROM BodyMeasurementEntity WHERE id IN :ids;

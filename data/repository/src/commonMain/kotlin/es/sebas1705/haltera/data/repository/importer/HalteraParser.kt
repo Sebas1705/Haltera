@@ -1,6 +1,8 @@
 package es.sebas1705.haltera.data.repository.importer
 
+import es.sebas1705.haltera.data.models.BodyMeasurements
 import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.MeasurementType
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.Muscle
 import es.sebas1705.haltera.data.models.SetKind
@@ -12,7 +14,7 @@ import kotlin.time.Instant
 
 private const val GRAMS_PER_KG = 1000.0
 
-/** Reader of the Haltera export files (docs/EXPORT-FORMAT.md): `sessions.csv` and `body_weight.csv`. */
+/** Reader of the Haltera export files (docs/EXPORT-FORMAT.md): `sessions.csv`, `body_weight.csv`, `body_measurements.csv`. */
 @OptIn(ExperimentalTime::class)
 internal object HalteraParser {
 
@@ -134,4 +136,37 @@ internal object HalteraParser {
             notes = row["notes"],
         )
     }.toList()
+
+    /**
+     * The measurements of `body_measurements.csv` (version 3). `raw_value` is what was stored; without it `value` (cm or
+     * percent) times ten. Rows without a time, with a value out of range, or custom rows without a name are dropped.
+     * A type this version does not know becomes a custom length named after it.
+     */
+    fun bodyMeasurements(table: CsvTable): List<ImportedBodyMeasurement> = table.rows().mapNotNull { row ->
+        val at = instant(row["measured_at"]) ?: return@mapNotNull null
+        val rawType = row["type"].trim()
+        val type = MeasurementType.fromDb(rawType)
+        val unknown = type == MeasurementType.CUSTOM && !rawType.equals(MeasurementType.CUSTOM.name, ignoreCase = true)
+        val name = BodyMeasurements.normalizeName(
+            row["custom_name"].ifBlank { if (unknown) rawType.lowercase().replace('_', ' ') else "" },
+        )
+        val value = row["raw_value"].toLongOrNull()
+            ?: ImportValues.decimal(row["value"])?.let { (it * TENTHS).roundToLong() }
+            ?: return@mapNotNull null
+        if (!BodyMeasurements.isValidValue(type, value)) return@mapNotNull null
+        if (type == MeasurementType.CUSTOM && name.isEmpty()) return@mapNotNull null
+        ImportedBodyMeasurement(
+            id = row["id"].ifEmpty {
+                ImportValues.stableId(ImportSource.HALTERA.name, "bm", at.toString(), type.name, name, value.toString())
+            },
+            measuredAt = at,
+            type = type,
+            value = value,
+            customName = if (type == MeasurementType.CUSTOM) name else "",
+            notes = row["notes"],
+        )
+    }.toList()
+
+    /** cm -> mm and percent -> tenths of a percent are both × 10. */
+    private const val TENTHS = 10.0
 }

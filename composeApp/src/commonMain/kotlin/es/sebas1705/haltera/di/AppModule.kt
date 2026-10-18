@@ -47,7 +47,7 @@ val appModule = module {
         )
     }
     viewModelOf(::SettingsViewModel)
-    single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get()) }
+    single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get(), get()) }
     viewModel { AccountViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { CloudPromptViewModel(get(), get(), get()) }
     single { IncomingRoutineChannel() }
@@ -58,7 +58,8 @@ val appModule = module {
 
 /**
  * Every shared module; the platform adds its `DatabaseDriverFactory`, `FirebaseConfig`,
- * `GoogleSignInLauncher`, `BarcodeScanner`, `AppVersionName`
+ * `GoogleSignInLauncher`, `BarcodeScanner`, `ProgressPhotoPicker`, `PhotoFiles` (where progress photos live),
+ * `AppVersionName`
  * and, on Android, the Health Connect `HealthGateway` and `HealthConnectBridge`.
  */
 val appModules = listOf(

@@ -34,6 +34,6 @@ internal fun RemoteDocument.toSync(collection: String, id: String) = SyncDocumen
 
 /** The user collections (design §3); clients cannot list subcollections, so deletion walks these. */
 internal val SYNCED_COLLECTIONS =
-    listOf("routines", "sessions", "bodyWeight", "exercises", "foods", "mealDays", "settings")
+    listOf("routines", "sessions", "bodyWeight", "bodyMeasurements", "exercises", "foods", "mealDays", "settings")
 
 internal const val USERS = "users"

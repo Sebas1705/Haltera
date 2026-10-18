@@ -1,6 +1,7 @@
 -- Sync change tracking (docs/designs/2026-10-14-sync-design.md §5). One SyncState row per aggregate root:
 -- routines/{routineId}, sessions/{sessionId}, bodyWeight/{id}, exercises/{USER exerciseId}, settings/user,
--- foods/{USER, RECIPE or logged OFF foodId} and mealDays/{yyyy-MM-dd} (schema 4, nutrition).
+-- foods/{USER, RECIPE or logged OFF foodId}, mealDays/{yyyy-MM-dd} (schema 4, nutrition) and bodyMeasurements/{id}
+-- (schema 9).
 -- The triggers at the end keep it up to date; they are skipped while remote changes are applied
 -- (Meta syncApplying = '1'). Catalogue rows (source = 'CATALOG') are never tracked.
 CREATE TABLE SyncState (
@@ -59,6 +60,10 @@ backfillBodyWeight:
 INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
 SELECT 'bodyWeight', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0 FROM BodyWeightEntity;
 
+backfillBodyMeasurements:
+INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
+SELECT 'bodyMeasurements', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0 FROM BodyMeasurementEntity;
+
 backfillExercises:
 INSERT OR IGNORE INTO SyncState(collection, id, updatedAt, dirty, deleted)
 SELECT 'exercises', id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
@@ -101,6 +106,9 @@ DELETE FROM SyncCursor;
 -- INSERT OR REPLACE: a REPLACE deletes the row first and would fire ON DELETE CASCADE / SET NULL on its children.
 selectBodyWeight:
 SELECT * FROM BodyWeightEntity WHERE id = ?;
+
+selectBodyMeasurement:
+SELECT * FROM BodyMeasurementEntity WHERE id = ?;
 
 routineExists:
 SELECT COUNT(*) FROM RoutineEntity WHERE id = ?;
@@ -369,6 +377,39 @@ BEGIN
     INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
     SELECT 'bodyWeight', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
     WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyWeight' AND s.id = old.id);
+END;
+
+CREATE TRIGGER BodyMeasurementEntity_syncInsert
+AFTER INSERT ON BodyMeasurementEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'bodyMeasurements' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyMeasurements', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyMeasurements' AND s.id = new.id);
+END;
+
+CREATE TRIGGER BodyMeasurementEntity_syncUpdate
+AFTER UPDATE ON BodyMeasurementEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'bodyMeasurements' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyMeasurements', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyMeasurements' AND s.id = new.id);
+END;
+
+CREATE TRIGGER BodyMeasurementEntity_syncDelete
+AFTER DELETE ON BodyMeasurementEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'bodyMeasurements' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyMeasurements', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyMeasurements' AND s.id = old.id);
 END;
 
 CREATE TRIGGER ExerciseEntity_syncInsert

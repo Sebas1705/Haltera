@@ -172,7 +172,7 @@ Installs that were already syncing before P3 keep their copy, which is why the d
 | Personal info → **Name** | Google display name (read from the provider) | **Optional** | Account management |
 | Health and fitness → **Health info** | Sex, birth year, height, nutrition goals (nutrition profile) | **Optional** | App functionality |
 | Health and fitness → **Fitness info** | Routines, sessions, sets, loads, durations, RPE | **Optional** (only if the cloud copy is on) | App functionality |
-| Health and fitness → body weight | Body weight entries and the weight stored in sessions. Declare under **Health info** (Play has no separate weight type) | **Optional** | App functionality |
+| Health and fitness → body weight and measurements | Body weight entries, the weight stored in sessions and body measurements (waist, arm… and body fat %, P6). Declare under **Health info** (Play has no separate weight or measurement type) | **Optional** | App functionality |
 | Health and fitness → nutrition | Foods, meals, calories and macros. Declare under **Fitness info** or **Health info** (no separate nutrition type) **[unverified which Play expects]** | **Optional** | App functionality |
 | App activity → **Other user-generated content** | Notes, routine and exercise names, custom foods | **Optional** | App functionality |
 | Health and fitness → **Fitness info** (Health Connect) | Daily steps, active and total calories burned **read from Health Connect** and kept on the phone; finished workouts **written to** Health Connect | **Optional** (only if the user connects Health Connect and switches the type on) | App functionality |
@@ -188,6 +188,8 @@ Notes:
   on**. So: tick Fitness info and Health info (already ticked for the cloud copy), keep them **Optional**, purpose
   **App functionality**, **not shared**, do not tick "processed ephemerally". Nothing from Health Connect is used for
   ads or analytics, sold, or used to decide eligibility for anything.
+- **Progress photos (P6) are not collected:** they stay in app-private storage on the phone (no upload, no export, no
+  backup) and are picked with the system photo picker, so "Photos and videos" stays unticked.
 - **Not collected:** location, contacts, photos or videos, audio, files, calendar, web history, financial info,
   messages, crash logs, diagnostics. Crash logs and diagnostics are **not** collected (no Crashlytics).
 - The IP address is processed by Google as part of Firebase; Play's guidance (Firebase disclosure page) lists what

@@ -8,6 +8,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 /** Upgrading a database created with the shipped schema (1.db) keeps its data. */
 class MigrationTest {
@@ -326,6 +327,87 @@ class MigrationTest {
         assertEquals("Upper", orphan.routineName)
     }
 
+    /** A version 8 database with data in every table a tester has, upgraded to the latest. */
+    private fun migratedFromV8(): AppDatabase {
+        File("src/commonMain/sqldelight/databases/8.db").copyTo(file, overwrite = true)
+        driver().use { v8 ->
+            listOf(
+                "INSERT INTO ExerciseEntity(id, source, nameEn, nameEs, nameEnSearch, nameEsSearch, category, " +
+                    "trackingType, level, primaryMuscles, secondaryMuscles, instructionsEn, instructionsEs, deprecated, " +
+                    "updatedAt) VALUES ('user-1', 'USER', 'Press', 'Press', 'press', 'press', 'STRENGTH', 'WEIGHT_REPS', " +
+                    "'BEGINNER', 'CHEST', '', '[]', '[]', 0, 5)",
+                "INSERT INTO ExerciseVariantEntity(id, exerciseId, source, position, equipment, loadType, frames, " +
+                    "updatedAt) VALUES ('user-1.db', 'user-1', 'USER', 0, 'DUMBBELL', 'DUMBBELL', '[]', 5)",
+                "INSERT INTO RoutineEntity(id, name, description, isActive, nextDayIndex, createdAt, updatedAt) " +
+                    "VALUES ('r1', 'Upper', '', 1, 0, 10, 20)",
+                "INSERT INTO RoutineDayEntity(id, routineId, position, name, kind) VALUES ('d1', 'r1', 0, 'A', 'TRAINING')",
+                "INSERT INTO RoutineSlotEntity(id, dayId, position, target, sets, prescription, restBetweenSetsS, " +
+                    "restAfterS, bilateral, progression) VALUES ('sl1', 'd1', 0, '{}', 3, '{}', 90, 120, 1, '{}')",
+                "INSERT INTO WorkoutSessionEntity(id, startedAt, endedAt, routineId, routineDayIndex, dayName, routineName) " +
+                    "VALUES ('s1', 1000, 2000, 'r1', 0, 'A', 'Upper')",
+                "INSERT INTO SessionExerciseEntity(id, sessionId, position, variantId, slotId, bilateral) " +
+                    "VALUES ('e1', 's1', 0, 'user-1.db', 'sl1', 1)",
+                "INSERT INTO SetLogEntity(id, sessionExerciseId, position, kind, reps, loadGrams, completed, completedAt) " +
+                    "VALUES ('t1', 'e1', 0, 'WORKING', 8, 20000, 1, 1500)",
+                "INSERT INTO BodyWeightEntity(id, measuredAt, weightGrams, notes) VALUES ('bw1', 5, 80000, 'am')",
+                "INSERT INTO FoodEntity(id, source, nameEn, nameEs, kcal, protein, carbs, fat, updatedAt) " +
+                    "VALUES ('f1', 'USER', 'Oats', 'Avena', 380, 13, 60, 7, 1)",
+                "INSERT INTO MealEntryEntity(id, date, meal, foodId, grams, position, createdAt) " +
+                    "VALUES ('m1', '2026-10-15', 'BREAKFAST', 'f1', 60, 0, 10)",
+                "INSERT INTO HealthDayEntity(date, steps, updatedAt) VALUES ('2026-10-15', 9000, 1)",
+                "INSERT INTO Meta(key, value) VALUES ('catalogVersion', '7')",
+                "UPDATE SyncState SET dirty = 0",
+            ).forEach { v8.execute(null, it, 0) }
+            AppDatabase.Schema.migrate(v8, 8, AppDatabase.Schema.version)
+        }
+        return AppDatabase(driver())
+    }
+
+    @Test
+    fun `migrating from version 8 keeps every table and queues nothing for the cloud`() {
+        val db = migratedFromV8()
+        assertEquals("Upper", db.routineEntityQueries.selectById("r1").executeAsOne().name)
+        val session = db.workoutSessionEntityQueries.selectById("s1").executeAsOne()
+        assertEquals(Triple(1000L, 2000L, "Upper"), Triple(session.startedAt, session.endedAt, session.routineName))
+        assertEquals(1L, db.sessionExerciseEntityQueries.selectById("e1").executeAsOne().bilateral)
+        assertEquals(20_000L, db.setLogEntityQueries.selectById("t1").executeAsOne().loadGrams)
+        assertEquals(80_000L, db.bodyWeightEntityQueries.selectLatest().executeAsOne().weightGrams)
+        assertEquals(60.0, db.mealEntryEntityQueries.selectByDate("2026-10-15").executeAsOne().grams)
+        assertEquals(1L, db.healthDayEntityQueries.countAll().executeAsOne())
+        assertEquals("7", db.metaQueries.get("catalogVersion").executeAsOne())
+        assertEquals(emptyList(), db.bodyMeasurementEntityQueries.selectAll().executeAsList())
+        assertEquals(0L, db.syncTrackingQueries.countDirty().executeAsOne())
+    }
+
+    @Test
+    fun `after the upgrade to version 9 measurements are stored and tracked for sync`() {
+        val db = migratedFromV8()
+        db.bodyMeasurementEntityQueries.upsert("bm1", 3_000, "WAIST", "", 825, "after breakfast")
+        db.bodyMeasurementEntityQueries.upsert("bm2", 4_000, "CUSTOM", "Calf", 380, "")
+        db.bodyMeasurementEntityQueries.upsert("bm3", 4_000, "BODY_FAT", "", 185, "")
+        val rows = db.bodyMeasurementEntityQueries.selectAll().executeAsList()
+        assertEquals(listOf("bm2", "bm3", "bm1"), rows.map { it.id }) // latest first, then by id
+        assertEquals("Calf", rows.first().customName)
+        assertEquals("after breakfast", db.bodyMeasurementEntityQueries.selectById("bm1").executeAsOne().notes)
+        val state = db.syncTrackingQueries.selectState("bodyMeasurements", "bm1").executeAsOne()
+        assertEquals(1L to 0L, state.dirty to state.deleted)
+
+        db.syncTrackingQueries.clearDirty("bodyMeasurements", "bm1", state.updatedAt)
+        db.bodyMeasurementEntityQueries.delete("bm1")
+        val tombstone = db.syncTrackingQueries.selectState("bodyMeasurements", "bm1").executeAsOne()
+        assertEquals(1L to 1L, tombstone.dirty to tombstone.deleted)
+        assertTrue(tombstone.updatedAt > state.updatedAt)
+
+        // While remote changes are applied the triggers stay quiet, as for every other synced table.
+        db.metaQueries.put("syncApplying", "1")
+        db.bodyMeasurementEntityQueries.upsert("bm9", 5_000, "NECK", "", 390, "")
+        db.metaQueries.put("syncApplying", "0")
+        assertNull(db.syncTrackingQueries.selectState("bodyMeasurements", "bm9").executeAsOneOrNull())
+        // The backfill (first sync, or a merge into another account) picks up rows written without tracking.
+        db.syncTrackingQueries.backfillBodyMeasurements()
+        assertEquals(1L, db.syncTrackingQueries.selectState("bodyMeasurements", "bm9").executeAsOne().dirty)
+    }
+
     @Test
     fun `migrating from version 1 to the latest also creates the health tables`() {
         File("src/commonMain/sqldelight/databases/1.db").copyTo(file, overwrite = true)
@@ -340,7 +422,7 @@ class MigrationTest {
         // 1 -> 2: nextDayIndexSetAt; 2 -> 3: sync change tracking; 3 -> 4: nutrition (SyncMigrationTest in data:sync
         // covers 1 -> 4); 4 -> 5: flexible rest days; 5 -> 6: author and origin of custom exercises;
         // 6 -> 7: Health Connect cache and export ledger;
-        // 7 -> 8: the "Both hands" snapshot of logged exercises.
-        assertEquals(8L, AppDatabase.Schema.version)
+        // 7 -> 8: the "Both hands" snapshot of logged exercises; 8 -> 9: body measurements.
+        assertEquals(9L, AppDatabase.Schema.version)
     }
 }

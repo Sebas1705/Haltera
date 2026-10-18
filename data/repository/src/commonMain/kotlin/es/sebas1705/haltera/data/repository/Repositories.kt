@@ -1,6 +1,10 @@
 package es.sebas1705.haltera.data.repository
 
+import es.sebas1705.haltera.data.models.BodyMeasurement
+import es.sebas1705.haltera.data.models.BodyMeasurements
 import es.sebas1705.haltera.data.models.BodyWeightEntry
+import es.sebas1705.haltera.data.models.MeasurementType
+import es.sebas1705.haltera.data.models.ProgressPhoto
 import es.sebas1705.haltera.data.models.CatalogImportResult
 import es.sebas1705.haltera.data.models.CatalogSummary
 import es.sebas1705.haltera.data.models.DayKind
@@ -320,6 +324,63 @@ interface SessionRepository {
     companion object {
         const val DEFAULT_LIMIT = 200
     }
+}
+
+/**
+ * Body measurements (roadmap P6): any date, edit and delete like body weight. Synced as `bodyMeasurements` when the
+ * cloud copy is on, exported as `body_measurements.csv`.
+ */
+interface BodyMeasurementRepository {
+    /** All measurements of every type, latest first. */
+    fun observeAll(): Flow<List<BodyMeasurement>>
+
+    /**
+     * Logs a measurement and returns its id. [value] is millimetres (or tenths of a percent for body fat) and must be
+     * valid ([BodyMeasurements.isValidValue]); [customName] is required for a custom type and ignored for the others.
+     * [measuredAt] defaults to now.
+     */
+    suspend fun add(
+        type: MeasurementType,
+        value: Long,
+        measuredAt: Long? = null,
+        customName: String = "",
+        notes: String = "",
+    ): String
+
+    /** Replaces the measurement with [measurement]'s id, with the same rules as [add]. */
+    suspend fun update(measurement: BodyMeasurement)
+
+    suspend fun delete(id: String)
+}
+
+/**
+ * Progress photos (roadmap P6), kept as files in app-private storage on this device only: never synced, never
+ * exported, excluded from the platform backups. Each photo has its date and an optional note.
+ */
+interface ProgressPhotoRepository {
+    /** Every photo, latest [ProgressPhoto.takenAt] first (then latest added). */
+    fun observeAll(): Flow<List<ProgressPhoto>>
+
+    /**
+     * Stores a picked photo ([image] and its small [thumbnail], both JPEG) dated [takenAt] and returns its id. Nothing
+     * is stored when a write fails.
+     */
+    suspend fun add(image: ByteArray, thumbnail: ByteArray, takenAt: Long, notes: String = ""): String
+
+    /** Changes the date and note of a photo (the image itself never changes). Unknown ids are ignored. */
+    suspend fun update(photo: ProgressPhoto)
+
+    /** Deletes the photo and its files. */
+    suspend fun delete(id: String)
+
+    /** The full image, or null when the photo does not exist (or its file is gone). */
+    suspend fun image(id: String): ByteArray?
+
+    /** The small image for lists, falling back to the full image. */
+    suspend fun thumbnail(id: String): ByteArray?
+
+    /** Deletes every photo and file ("Also erase data on this device"). */
+    suspend fun deleteAll()
 }
 
 interface BodyWeightRepository {

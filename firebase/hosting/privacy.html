@@ -20,27 +20,28 @@
 </header>
 <main id="content">
   <h1>Privacy policy</h1>
-  <p class="updated">Effective date: 16 October 2026. Language: English. <a href="/privacidad" hreflang="es" lang="es">Versión en español</a>.</p>
+  <p class="updated">Effective date: 18 October 2026. Language: English. <a href="/privacidad" hreflang="es" lang="es">Versión en español</a>.</p>
   <p>Haltera is a free, open-source gym logbook, nutrition log and progress app for Android and iOS (<a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>, MIT licence). It has no ads, no in-app purchases and no analytics, and your data is not sold or used to profile you. This page explains exactly what the app does with your data.</p>
 
   <h2 id="controller">1. Who is responsible</h2>
   <p>The controller is Sebastián Ramiro Entrerrios García (GitHub: Sebas1705), an individual developer based in Spain. Contact is through GitHub Issues: <a href="https://github.com/Sebas1705/Haltera/issues">github.com/Sebas1705/Haltera/issues</a>. Issues are public, so never put personal data in one (see <a href="#rights">your rights</a>).</p>
 
   <h2 id="data">2. What data the app handles</h2>
-  <p><strong>On your phone</strong> the app stores what you log: routines, workout sessions (dates, exercises, sets, repetitions, loads, effort, notes), body weight entries, custom exercises, foods and recipes, meals you log, and your settings (units, bar and plates, rest timer options, nutrition goals). For nutrition goals you may also enter sex, birth year, height, activity level and objective; all optional.</p>
+  <p><strong>On your phone</strong> the app stores what you log: routines, workout sessions (dates, exercises, sets, repetitions, loads, effort, notes), body weight entries, body measurements (waist, chest, hips, arm, thigh, neck, body fat or one you name, with a date and an optional note), custom exercises, foods and recipes, meals you log, and your settings (units, bar and plates, rest timer options, nutrition goals). For nutrition goals you may also enter sex, birth year, height, activity level and objective; all optional.</p>
+  <p><strong>Progress photos</strong> you add stay on your phone only. The app keeps a smaller copy of the photo you pick (without its location or camera details), its date and an optional note in its own private storage. They are never uploaded, never included in the cloud copy or in the data export, and are left out of device backups. You pick them with the system photo picker, so the app needs no access to your photo library or camera. Deleting a photo in the app deletes it; uninstalling the app or erasing its data deletes them all.</p>
   <p><strong>In the cloud</strong> the app can keep a copy of that logbook so it is not lost if you lose or change your phone. This cloud copy is <strong>optional and off by default</strong>. The first time you open the app it asks once (&ldquo;Yes&rdquo; or &ldquo;Not now&rdquo;), and you can change your mind at any time in <strong>Settings → Account → Back up to the cloud</strong>. Until you turn it on, the app does not create an account and sends nothing to Firebase: your logbook, including the nutrition profile (sex, birth year, height), stays on your phone. When you turn it on, the app creates an anonymous account (no email or password needed) and uploads the data below, including what you logged before. Installs that were already backing up before this option existed keep doing so, were shown a one-time notice, and can turn it off the same way. With the cloud copy on, the cloud holds:</p>
   <div class="table-wrap">
   <table>
     <thead><tr><th scope="col">Data</th><th scope="col">When</th></tr></thead>
     <tbody>
       <tr><td>An anonymous account identifier (Firebase Authentication)</td><td>Only once you turn the cloud copy on</td></tr>
-      <tr><td>Your routines, sessions with sets and loads, body weight, custom exercises, foods, meals, settings and nutrition goals (including sex, birth year and height if you entered them)</td><td>Only while the cloud copy is on: when you turn it on, while you are online, and again after every change</td></tr>
+      <tr><td>Your routines, sessions with sets and loads, body weight, body measurements, custom exercises, foods, meals, settings and nutrition goals (including sex, birth year and height if you entered them)</td><td>Only while the cloud copy is on: when you turn it on, while you are online, and again after every change</td></tr>
       <tr><td>Your Google account email, name and account identifier</td><td>Only if you choose to link or sign in with Google</td></tr>
       <tr><td>Technical data of each request, such as your IP address</td><td>Only while the cloud copy is on or you sign in; handled by Google as part of providing Firebase</td></tr>
     </tbody>
   </table>
   </div>
-  <p>Some of this can be health-related (body weight, nutrition, training). You decide whether to enter it. The app does not need your location, contacts, microphone or camera, and does not read other apps, except Health Connect if you connect it (next section).</p>
+  <p>Some of this can be health-related (body weight, body measurements such as body fat, nutrition, training). You decide whether to enter it. The app does not need your location, contacts, microphone or camera, and does not read other apps, except Health Connect if you connect it (next section).</p>
 
   <h2 id="health-connect">3. Health Connect (Android)</h2>
   <p>Health Connect is Android's on-device store for health and fitness data. Haltera can use it, but <strong>only if you connect it</strong> in <strong>Settings → Integrations → Health Connect</strong>. Nothing is read or written before you tap <strong>Connect Health Connect</strong>, and each type of data has its own switch: only the types you switch on are requested, through Health Connect's own permission screen, and you can refuse any of them.</p>

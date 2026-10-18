@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 /** A synced aggregate as stored remotely. `payload` is "" when deleted. */
 data class SyncDocument(
-    val collection: String, // "routines" | "sessions" | "bodyWeight" | "exercises" | "foods" | "mealDays" | "settings"
+    val collection: String, // "routines" | "sessions" | "bodyWeight" | "bodyMeasurements" | "exercises" | "foods" | "mealDays" | "settings"
     val id: String,
     val updatedAt: Long,
     val deleted: Boolean,
@@ -118,6 +118,9 @@ object SyncCollections {
     const val SESSIONS = "sessions"
     const val BODY_WEIGHT = "bodyWeight"
 
+    /** Waist, chest, body fat… one document per measurement (schema 9). Progress photos are never synced. */
+    const val BODY_MEASUREMENTS = "bodyMeasurements"
+
     /** USER and RECIPE foods (with their items) and the Open Food Facts products that were logged (schema 4). */
     const val FOODS = "foods"
 
@@ -128,5 +131,14 @@ object SyncCollections {
     /** The only document id of [SETTINGS]. */
     const val SETTINGS_ID = "user"
 
-    val ALL: List<String> = listOf(EXERCISES, ROUTINES, SESSIONS, BODY_WEIGHT, FOODS, MEAL_DAYS, SETTINGS)
+    val ALL: List<String> = listOf(
+        EXERCISES,
+        ROUTINES,
+        SESSIONS,
+        BODY_WEIGHT,
+        BODY_MEASUREMENTS,
+        FOODS,
+        MEAL_DAYS,
+        SETTINGS
+    )
 }

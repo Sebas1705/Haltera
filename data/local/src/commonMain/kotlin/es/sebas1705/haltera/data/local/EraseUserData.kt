@@ -6,8 +6,8 @@ private const val META_SYNC_APPLYING = "syncApplying"
 private const val META_SYNC_UID = "syncUid"
 
 /**
- * Wipes the data the user created or logged (routines, sessions, sets, body weight, custom exercises, foods
- * and meals, the cached health totals and the health export ledger) and the sync bookkeeping, keeping the
+ * Wipes the data the user created or logged (routines, sessions, sets, body weight, body measurements, custom
+ * exercises, foods and meals, the cached health totals and the health export ledger) and the sync bookkeeping, keeping the
  * bundled catalogue. One transaction; the change-tracking triggers are muted so no tombstones are queued for an
  * account that is being deleted.
  */
@@ -24,6 +24,7 @@ fun AppDatabase.eraseUserData() {
             eraseUserVariants()
             eraseUserExercises()
             eraseBodyWeight()
+            eraseBodyMeasurements()
             eraseMealEntries()
             eraseRecipeItems()
             eraseNonCatalogFoods()

@@ -1,0 +1,6 @@
+﻿date,measured_at,type,custom_name,value,unit,raw_value,notes,id
+2026-10-01,2026-10-01T07:05:00Z,WAIST,,84,cm,840,,bm-001
+2026-10-15,2026-10-15T07:05:00Z,WAIST,,82.5,cm,825,"navel, relaxed",bm-002
+2026-10-15,2026-10-15T07:05:00Z,ARM,,0.1,cm,1,,bm-005
+2026-10-15,2026-10-15T07:06:00Z,BODY_FAT,,18.5,percent,185,,bm-003
+2026-10-16,2026-10-15T22:30:00Z,CUSTOM,"Gemelo, izq.",37.1,cm,371,"""tape""",bm-004

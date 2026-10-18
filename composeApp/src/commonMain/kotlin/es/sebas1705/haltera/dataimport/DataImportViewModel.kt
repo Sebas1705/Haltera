@@ -48,11 +48,12 @@ data class ImportReview(
     val declined: Set<String> = emptySet(),
     val working: Boolean = false,
 ) {
-    /** Skipping existing sessions leaves nothing to write: every session and body weight is already here. */
+    /** Skipping existing sessions leaves nothing to write: every session, body weight and measurement is already here. */
     val nothingNew: Boolean
         get() = existing == ExistingPolicy.SKIP &&
             preview.sessions - preview.existingSessions <= 0 &&
-            preview.bodyWeights - preview.existingBodyWeights <= 0
+            preview.bodyWeights - preview.existingBodyWeights <= 0 &&
+            preview.bodyMeasurements - preview.existingBodyMeasurements <= 0
 
     /**
      * The "n exercises recognised automatically" line, or null when it says nothing: matching only concerns the

@@ -46,6 +46,7 @@ import es.sebas1705.haltera.resources.import_suggested
 import es.sebas1705.haltera.data.repository.importer.SuggestionConfidence
 import es.sebas1705.haltera.core.units.appLanguage
 import es.sebas1705.haltera.resources.import_action
+import es.sebas1705.haltera.resources.import_body_measurements
 import es.sebas1705.haltera.resources.import_body_weights
 import es.sebas1705.haltera.resources.import_cancel
 import es.sebas1705.haltera.resources.import_confirm
@@ -129,6 +130,7 @@ fun DataImportSection(viewModel: DataImportViewModel = koinViewModel()) {
                     outcome.summary.sets,
                     outcome.summary.bodyWeights,
                     outcome.summary.exercisesCreated,
+                    outcome.summary.bodyMeasurements,
                 ),
                 MaterialTheme.colorScheme.primary,
             ) { viewModel.onEvent(DataImportIntent.DismissOutcome) }
@@ -235,6 +237,9 @@ private fun Summary(preview: ImportPreview, matched: Int?) {
         val last = preview.lastStartedAt
         if (first != null && last != null) Text(stringResource(Res.string.import_range, dateOf(first), dateOf(last)))
         if (preview.bodyWeights > 0) Text(stringResource(Res.string.import_body_weights, preview.bodyWeights))
+        if (preview.bodyMeasurements > 0) {
+            Text(stringResource(Res.string.import_body_measurements, preview.bodyMeasurements))
+        }
         if (matched != null) Text(pluralStringResource(Res.plurals.import_matched, matched, matched))
         if (preview.skippedRows > 0) {
             Text(

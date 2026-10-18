@@ -200,6 +200,13 @@ internal fun Metric.text(): MetricText = when (this) {
         Res.string.progress_metric_bw_rate_counts,
         Res.string.progress_metric_bw_rate_limits,
     )
+    Metric.BODY_MEASUREMENT_CHANGE -> MetricText(
+        Res.string.progress_metric_m_change_title,
+        Res.string.progress_metric_m_change_summary,
+        Res.string.progress_metric_m_change_formula,
+        Res.string.progress_metric_m_change_counts,
+        Res.string.progress_metric_m_change_limits,
+    )
     Metric.COMPARE -> MetricText(
         Res.string.progress_metric_compare_title,
         Res.string.progress_metric_compare_summary,

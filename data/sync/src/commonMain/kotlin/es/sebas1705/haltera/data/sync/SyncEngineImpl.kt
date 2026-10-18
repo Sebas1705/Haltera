@@ -154,6 +154,7 @@ class SyncEngineImpl(
         q.backfillRoutines()
         q.backfillSessions()
         q.backfillBodyWeight()
+        q.backfillBodyMeasurements()
         q.backfillExercises()
         q.backfillFoods()
         q.backfillMealDays()

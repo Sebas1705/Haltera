@@ -1,9 +1,10 @@
-# Export format (`haltera-export` v2)
+# Export format (`haltera-export` v3)
 
 Settings → Data → **Export my data** writes one zip, `haltera-export-YYYY-MM-DD.zip` (the date is the local date of
 the device). It holds everything the user logged and nothing that ships with the app: the bundled exercise
-catalogue and the bundled food database are not exported; they are referenced by their stable ids. Settings → Data →
-Import workouts reads the same files back ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)).
+catalogue and the bundled food database are not exported; they are referenced by their stable ids. **Progress photos
+are not exported either**: they stay on the device only (docs/play/DATA-INVENTORY.md), so the zip never carries an
+image. Settings → Data → Import workouts reads the same files back ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)).
 
 Code: `data/repository/.../export/` (`ExportFormat` = columns and row formatting, `DataExporter`, `ZipWriter`).
 Golden files for every file below live in `data/repository/src/androidUnitTest/resources/export/`; regenerate
@@ -60,6 +61,23 @@ them deliberately with `UPDATE_GOLDEN=1 ./gradlew :data:repository:testDebugUnit
 
 `date`, `measured_at`, `weight_kg`, `weight_grams`, `unit` (always `kg`), `notes`, `id`. Oldest first.
 
+## `body_measurements.csv` (version 3)
+
+One row per body measurement, oldest first (then by id): `date`, `measured_at`, `type`, `custom_name`, `value`, `unit`,
+`raw_value`, `notes`, `id`.
+
+| Column | Meaning |
+|---|---|
+| `type` | `WAIST`, `CHEST`, `HIPS`, `ARM`, `THIGH`, `NECK`, `BODY_FAT` or `CUSTOM` (a type added by a later version is written as it is stored) |
+| `custom_name` | The name the user gave a `CUSTOM` measurement; empty for the others |
+| `value` | Centimetres (one decimal) for every length, percent (one decimal) for `BODY_FAT`, whatever unit the app shows. Exact: it is `raw_value` / 10 |
+| `unit` | `cm` or `percent` |
+| `raw_value` | What is stored: whole millimetres for a length, tenths of a percent for body fat. Readers should prefer it |
+
+The importer reads `raw_value` (or `value` × 10 when it is missing), drops rows without a time, with a value of zero
+or out of range (more than 5 m, more than 100 %) and custom rows without a name, and keeps the `id` so importing the
+same file twice does not duplicate.
+
 ## `meal_entries.csv`
 
 One row per logged food. `date`, `meal` (`BREAKFAST`, `LUNCH`, `DINNER`, `SNACK`), `position`, `entry_id`,
@@ -83,9 +101,9 @@ resolved. Catalogue exercises never appear here.
 
 ## `manifest.json`
 
-`format` (`haltera-export`), `version` (2), `appVersion`, `schemaVersion` (database schema), `exportedAt`
+`format` (`haltera-export`), `version` (3), `appVersion`, `schemaVersion` (database schema), `exportedAt`
 (UTC instant), `timeZone`, `counts` (`sessions` with at least one row, `sets`, `bodyWeightEntries`, `mealEntries`,
-`routines`, `customExercises`) and `files`. It is the last entry of the zip.
+`routines`, `customExercises`, and from version 3 `bodyMeasurements`) and `files`. It is the last entry of the zip.
 
 ## Notes for readers
 
@@ -97,5 +115,6 @@ resolved. Catalogue exercises never appear here.
   name, never by position.
 - Version history: 1 (alpha.1–alpha.4) had the first 25 columns of `sessions.csv`. 2 (schema 8) appends
   `routine_id`, `routine_name`, `routine_day_index`, `slot_id` and `both_hands`, so re-importing an export keeps
-  routine sessions linked and dumbbell volume right ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)). The importer reads
-  both; a file with a `version` newer than the app's is refused.
+  routine sessions linked and dumbbell volume right ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)). 3 (schema 9) adds
+  `body_measurements.csv` and the `bodyMeasurements` count. The importer reads all three; a file with a `version`
+  newer than the app's is refused, so a version 2 app asks to update instead of silently dropping the measurements.

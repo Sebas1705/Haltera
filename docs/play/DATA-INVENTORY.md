@@ -19,6 +19,8 @@ behaviour that cannot be read from this repository.
 | Routines (name, description, days, slots, targets, rest times, progression rules) | SQLite `ironlog.db` (becomes the Haltera database name; see the rename) | `data/local` `.sq` files |
 | Workout sessions: dates, exercises, sets, reps, loads (grams), RPE, durations, notes, body weight at the time | same | `WorkoutSessionEntity`, `SetLogEntity` |
 | Body weight entries (date, weight, note) | same | `BodyWeightEntity` |
+| **Body measurements** (P6): date, kind (waist, chest, hips, arm, thigh, neck, body fat % or a name the user types), value (millimetres or tenths of a percent), note | same | `BodyMeasurementEntity` (schema 9). Synced as `bodyMeasurements` **only while the cloud copy is on**; exported in `body_measurements.csv` |
+| **Progress photos** (P6): the image (re-encoded JPEG, at most 1600 px, no EXIF metadata, so no location or camera details), a thumbnail, the date the user gives it and an optional note | App-private files: Android `filesDir/progress_photos/`, iOS `Application Support/progress_photos/` (`FileProgressPhotoRepository`). **Not in the database** | **Device-only: never synced, never uploaded, never exported, excluded from Android Auto Backup / device transfer (not in `backup_rules.xml` or `data_extraction_rules.xml`) and from iCloud backups (`NSURLIsExcludedFromBackupKey`).** Picked with the system photo picker (Android `PickVisualMedia`, iOS `PHPickerViewController`): no storage, photo library or camera permission. The original photo in the gallery is never touched. Deleted one by one in the app, all together by "Also erase data on this device", and with the app |
 | Custom exercises and variants; for one imported from a shared routine, its **creator name** (as typed by whoever shared it) and origin id | same | `ExerciseEntity.author`, `originId` (schema 6); synced with the exercise in `exercises` while the cloud copy is on |
 | Nutrition: custom foods and recipes, foods logged from Open Food Facts (name, brand, barcode, macros), meal entries per day | same | `FoodEntity`, `MealEntryEntity` |
 | Settings: units, bar weight, plates, keep screen on, rest sound and vibration, nutrition goals | DataStore preferences | `SettingsPrefs` |
@@ -31,7 +33,7 @@ behaviour that cannot be read from this repository.
 | Health Connect choices: connected, switched-on types, steps goal (default 8 000), last read time, import watermark, export start | Settings file, keys `health.*` (`HealthSettingsStore`) | Device-only, never synced (like the cloud-copy choice) |
 
 Android Auto Backup is on (`allowBackup="true"` with `data_extraction_rules.xml` and `backup_rules.xml`): the database
-and the preferences file are included in Google's own device backup, which is the user's Google account backup, not
+(body measurements included) and the preferences file are included; progress photos are not in Google's own device backup, which is the user's Google account backup, not
 a transfer to the developer (docs/play/audit-decisions.md). **Verified** (manifest and decisions file).
 
 ## 2. What leaves the device, and to whom
@@ -68,7 +70,7 @@ Below, "sent when" means: only while the cloud copy is on.
 |---|---|---|
 | Firebase Auth anonymous user id (uid) | when the cloud copy is turned on | Firebase Auth |
 | Google account email, display name, Google account id, profile photo URL (held by Firebase Auth when the provider is linked; the app only reads email and display name) | only if the user links or signs in with Google | Firebase Auth |
-| `users/{uid}/routines`, `sessions` (with exercises and sets, loads, notes, `bodyWeightGrams`), `bodyWeight`, `exercises` (custom), `settings/user` (preferences and nutrition goals including sex, birth year, height), `foods`, `mealDays` | while the cloud copy is on: when it is turned on, then continuously while online, on every change | Firestore, as documents `{payload (JSON string), updatedAt, deleted, schema}` |
+| `users/{uid}/routines`, `sessions` (with exercises and sets, loads, notes, `bodyWeightGrams`), `bodyWeight`, `bodyMeasurements` (date, kind, custom name, value, note; schema 9), `exercises` (custom), `settings/user` (preferences and nutrition goals including sex, birth year, height), `foods`, `mealDays` | while the cloud copy is on: when it is turned on, then continuously while online, on every change | Firestore, as documents `{payload (JSON string), updatedAt, deleted, schema}` |
 | IP address and technical metadata of the requests | every request made while the cloud copy is on | Google (Auth, Firestore). Processed by Google as processor; not stored by the developer. |
 
 Security rules (`firebase/firestore.rules`): a signed-in user reads and writes only `users/{their uid}/**`.
@@ -79,7 +81,7 @@ Turning the cloud copy off or signing out keeps the local data and stops syncing
 user in every synced collection (`RemoteStore.deleteAll`, batches of 450), delete the Firebase Auth user
 (re-authenticating with Google once if Firebase asks, an anonymous user is just signed out because its cloud data is
 already gone), and, only if the box "Also erase data on this device" is ticked (default off), wipe the user tables,
-settings and load steps on the phone (`LocalDataEraser`). The bundled catalogue stays. **Verified.**
+settings, load steps and progress photos on the phone (`LocalDataEraser`). The bundled catalogue stays. **Verified.**
 
 Tombstones: while the account exists, deleting one item in the app writes a tombstone document (`deleted = true`,
 empty payload) rather than removing the document; they disappear with the account deletion. **Verified** (design §3).
@@ -199,7 +201,7 @@ share**, to whoever they give them to; the receiver's app stores it as the creat
    say so honestly and give the in-app route as the real one. Suggested improvement: show the uid (selectable text
    or a copy button) in Settings → Account.
 3. **Sensitive-ish fields are synced only with the cloud copy on:** sex, birth year and height of the nutrition
-   profile, body weight, and free text notes. The policy lists them; none of this is shared with anyone.
+   profile, body weight, body measurements (including body fat %), and free text notes. The policy lists them; none of this is shared with anyone.
 4. **Identity cannot be verified for a request outside the app.** The developer cannot tell who owns an
    anonymous uid or an email posted in a GitHub issue. The deletion page describes what is actually possible.
 5. **Manual backups of Firestore** exist outside the repo during the migration (section 2.5).
@@ -208,3 +210,9 @@ share**, to whoever they give them to; the receiver's app stores it as the creat
    device-only. Play requires the Health Connect permissions declaration (PLAY-CONSOLE-GUIDE.md 3.8.1) before a
    release with these permissions can go out; the privacy pages have a Health Connect section. Imported body weight is
    the only Health Connect data that can reach the cloud, and only with the cloud copy on.
+8. **Body measurements and progress photos (P6).** Measurements are health data like body weight: stored on the
+   device, uploaded only with the cloud copy on, exported with the rest of the log. **Data safety:** they are "Health
+   info" collected **optionally**, the type already declared for body weight (PLAY-CONSOLE-GUIDE.md), so no new data
+   type is ticked; only the description of the existing answer grows. Progress photos never leave the device (no
+   upload, no export, no backup), so they are not "collected" in the Play sense: "Photos and videos" stays unticked
+   and no permission is added.

@@ -23,6 +23,7 @@ Everything under `users/{uid}/{collection}/{docId}`; the bundled exercise catalo
 | `routines` | routine id | routine + its days + their slots |
 | `sessions` | session id | session + its session exercises + their sets (schema 8 adds each exercise's optional `bilateral`, the "Both hands" snapshot of core design §3.3, decoded when absent with the flag of the receiver's copy of the slot, 0 without one, which is what older versions summed; and the session's optional `routineName`, decoded when absent with the receiver's routine name, else the name the receiver already kept. A session whose routine does not exist on the receiver gets no routine and no day index) |
 | `bodyWeight` | entry id | one entry |
+| `bodyMeasurements` | measurement id | one body measurement: `measuredAt`, `type` (kept as written, so a type a later version adds survives), `value` (mm, or tenths of a percent for body fat), `customName`, `notes` (schema 9, roadmap P6). Progress photos are never synced |
 | `exercises` | USER exercise id | a custom exercise + its variants (schema 6 adds the optional `author` and `originId`; core design §3.1.1) |
 | `settings` | `user` | user settings (units, bar, plates, toggles) and the active routine id |
 

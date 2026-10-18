@@ -2,7 +2,8 @@
 
 Settings → Data → **Import workouts** reads a history file from another app (or from Haltera itself), shows what it
 holds, and writes it only after the user confirms. Sources: **Hevy**, **Strong**, **FitNotes** (CSV) and the
-**Haltera export** ([EXPORT-FORMAT.md](EXPORT-FORMAT.md): the zip, or its `sessions.csv` / `body_weight.csv`).
+**Haltera export** ([EXPORT-FORMAT.md](EXPORT-FORMAT.md): the zip, or its `sessions.csv` / `body_weight.csv` /
+`body_measurements.csv`).
 
 Code: `data/repository/.../importer/` (`HistoryFileParser` = pure parsing, `ExerciseMatcher` + `ImportAliases`,
 `ExerciseSuggester`, `SqlHistoryImporter` = preview and write), UI in `composeApp/.../dataimport/`. Fixtures: `data/repository/src/androidUnitTest/resources/import/`
@@ -35,6 +36,7 @@ Column names are compared in lower case; the delimiter (comma, semicolon or tab)
 |---|---|---|
 | Haltera sessions | `session_id`, `exercise_id`, `set_type` | the 30 columns of `sessions.csv` (25 in version 1 exports) |
 | Haltera body weight | `measured_at`, `weight_grams` | `body_weight.csv` |
+| Haltera body measurements | `measured_at`, `raw_value`, `type` | `body_measurements.csv` (export version 3) |
 | Hevy | `exercise_title`, `start_time` | `title,start_time,end_time,description,exercise_title,superset_id,exercise_notes,set_index,set_type,weight_kg,reps,distance_km,duration_seconds,rpe` |
 | Strong | `exercise name`, `set order`, `date` | iOS: `Date,Workout Name,Duration,Exercise Name,Set Order,Weight,Reps,Distance,Seconds,Notes,Workout Notes,RPE`. Android (semicolons): adds `Workout #`, and `Duration (sec)`, `Weight (kg)`, `Distance (meters)`, optionally `Weight Unit` |
 | FitNotes | `exercise`, `date`, `reps` and `category` or a `weight...` column | Android: `Date,Exercise,Category,Weight (kgs),Reps,Distance,Distance Unit,Time,Comment` (newer: `Weight,Weight Unit`). FitNotes 2: `Date,Exercise,Category,Weight (kg),Weight (lbs),Reps,Distance,Distance Unit,Time,Notes,Kind` |
@@ -91,7 +93,8 @@ Rules that apply to every source:
 
 `sessions.csv` is read as written by [Export my data](EXPORT-FORMAT.md): session ids, set order, kinds, exact
 `load_grams` (also for `plate` and `level` units, with their `load_detail`), RPE and completion times round-trip.
-`body_weight.csv` entries keep their ids. When the zip has `manifest.json` it must say `haltera-export` and a
+`body_weight.csv` entries keep their ids, and so do the `body_measurements.csv` rows (version 3; see EXPORT-FORMAT.md
+for the rows that are dropped). When the zip has `manifest.json` it must say `haltera-export` and a
 version this app knows. `exercises.json` lets a user exercise that does not exist on this device be recreated with
 its category, tracking type, muscles and equipment. The zip reader handles the stored entries "Export my data"
 writes; a zip that was recompressed by another tool is refused with a message to extract `sessions.csv`. Meals and

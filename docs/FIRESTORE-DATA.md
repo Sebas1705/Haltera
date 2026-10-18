@@ -11,7 +11,8 @@ their documents here until they choose "Also delete my cloud data" or Delete acc
 users/{uid}/{collection}/{docId}
 ```
 
-Collections: `routines`, `sessions`, `bodyWeight`, `exercises`, `settings`, `foods`, `mealDays`.
+Collections: `routines`, `sessions`, `bodyWeight`, `bodyMeasurements` (schema 9), `exercises`, `settings`, `foods`,
+`mealDays`. Progress photos are never in Firestore: they stay on the device.
 Every document has the fields `payload`, `updatedAt`, `deleted` (tombstone) and `schema`.
 Security rules only let a signed-in user read and write `users/{their uid}`.
 

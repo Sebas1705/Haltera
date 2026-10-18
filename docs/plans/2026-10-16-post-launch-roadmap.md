@@ -112,6 +112,11 @@ Android Glance widget: "Start today's workout" and "Resume session" with the run
 
 **Done when.** A measurement round-trips through sync (when on) and a photo pair can be compared offline.
 
+**Status (2026-10-18).** Built: schema 9 (`BodyMeasurementEntity`, `migrations/8.sqm`), sync collection
+`bodyMeasurements`, export format 3 (`body_measurements.csv`), Progress → Body (Weight / Measurements / Photos).
+Photos are files in app-private storage, outside the database, the backups, the export and the cloud. iOS picks
+photos with PHPickerViewController (compiled in CI, not run on a device yet).
+
 ### P7. Finish iOS: QR and barcode scanners — impact medium, effort M
 
 Replace the iOS stubs with AVFoundation (or VisionKit `DataScannerViewController`) scanners behind the existing interfaces so routine QR import and Open Food Facts barcode lookup work on iOS. Nutrition by barcode on iOS is otherwise half a product.

@@ -8,7 +8,10 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
-import androidx.compose.material3.Text
+import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import es.sebas1705.haltera.feature.progress.resources.Res
 import es.sebas1705.haltera.feature.progress.resources.progress_body_measurements
 import es.sebas1705.haltera.feature.progress.resources.progress_body_photos
@@ -40,7 +44,7 @@ internal fun BodyTab() {
     var selected by rememberSaveable { mutableIntStateOf(0) }
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         SingleChoiceSegmentedButtonRow(
-            Modifier.fillMaxWidth().widthIn(max = 560.dp).padding(start = 16.dp, end = 16.dp, top = 12.dp),
+            Modifier.padding(start = 16.dp, end = 16.dp, top = 12.dp).widthIn(max = 560.dp).fillMaxWidth(),
         ) {
             BodySection.entries.forEachIndexed { index, section ->
                 SegmentedButton(
@@ -48,7 +52,19 @@ internal fun BodyTab() {
                     onClick = { selected = index },
                     shape = SegmentedButtonDefaults.itemShape(index, BodySection.entries.size),
                     icon = {},
-                ) { Text(stringResource(section.label), maxLines = 1, overflow = TextOverflow.Ellipsis) }
+                ) {
+                    // Long labels ("Measurements" on a small phone) shrink to fit instead of being cut.
+                    BasicText(
+                        stringResource(section.label),
+                        style = MaterialTheme.typography.labelLarge.copy(color = LocalContentColor.current),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        autoSize = TextAutoSize.StepBased(
+                            minFontSize = 10.sp,
+                            maxFontSize = MaterialTheme.typography.labelLarge.fontSize,
+                        ),
+                    )
+                }
             }
         }
         when (BodySection.entries[selected]) {

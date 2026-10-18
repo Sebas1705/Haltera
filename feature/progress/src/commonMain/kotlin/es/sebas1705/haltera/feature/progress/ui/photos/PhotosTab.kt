@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -82,6 +84,9 @@ import kotlin.math.abs
 
 private val THUMB_MIN = 104.dp
 private const val THUMB_CACHE = 48
+private val DETAIL_MAX_HEIGHT = 520.dp
+private val DETAIL_PLACEHOLDER_HEIGHT = 240.dp
+private val CHOOSER_TILE_WIDTH = 104.dp
 private const val LOAD_FACTOR = 0.75f
 
 /** Decoded thumbnails kept while the tab is shown, so scrolling back does not decode them again. */
@@ -213,6 +218,8 @@ private fun PhotoImage(
     load: suspend (String) -> ByteArray?,
     modifier: Modifier,
     scale: ContentScale,
+    /** The size of the box shown while the image loads (the image itself sizes to its aspect ratio). */
+    placeholder: Modifier = modifier,
 ) {
     val bitmap by produceState(cache?.get(id), id) {
         if (value == null) {
@@ -223,7 +230,7 @@ private fun PhotoImage(
     }
     val image = bitmap
     if (image == null) {
-        Box(modifier.background(MaterialTheme.colorScheme.surfaceVariant))
+        Box(placeholder.background(MaterialTheme.colorScheme.surfaceVariant))
     } else {
         Image(image, contentDescription = null, modifier = modifier, contentScale = scale)
     }
@@ -321,10 +328,10 @@ private fun DetailDialog(
                 null,
                 load,
                 Modifier.fillMaxWidth().heightIn(
-                    max = 520.dp
-                ).aspectRatio(THUMB_ASPECT, matchHeightConstraintsFirst = true)
-                    .align(Alignment.CenterHorizontally).semantics { contentDescription = description },
+                    max = DETAIL_MAX_HEIGHT
+                ).semantics { contentDescription = description },
                 ContentScale.Fit,
+                placeholder = Modifier.fillMaxWidth().height(DETAIL_PLACEHOLDER_HEIGHT),
             )
             Text(stringResource(Res.string.progress_p_edit), style = MaterialTheme.typography.titleMedium)
             DateField(detail.dateUtcMillis, state.maxDateUtcMillis) { onEvent(PhotosIntent.DetailDateChanged(it)) }
@@ -403,7 +410,7 @@ private fun ComparisonDialog(
                     contentPadding = PaddingValues(bottom = 12.dp)
                 ) {
                     items(state.photos, key = { it.id }) { photo ->
-                        Column(Modifier.size(width = 88.dp, height = 140.dp)) {
+                        Column(Modifier.width(CHOOSER_TILE_WIDTH)) {
                             PhotoTile(photo, dates, cache, thumb) { onEvent(PhotosIntent.PickForSide(photo.id)) }
                         }
                     }

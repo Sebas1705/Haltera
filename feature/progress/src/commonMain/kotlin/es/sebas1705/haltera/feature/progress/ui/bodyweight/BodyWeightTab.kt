@@ -12,24 +12,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.contentDescription
@@ -49,6 +40,7 @@ import es.sebas1705.haltera.feature.progress.resources.*
 import es.sebas1705.haltera.feature.progress.ui.components.ChartEmpty
 import es.sebas1705.haltera.feature.progress.ui.components.ChartLegend
 import es.sebas1705.haltera.feature.progress.ui.components.ComparisonTile
+import es.sebas1705.haltera.feature.progress.ui.components.DateField
 import es.sebas1705.haltera.feature.progress.ui.components.DateFormat
 import es.sebas1705.haltera.feature.progress.ui.components.LineChart
 import es.sebas1705.haltera.feature.progress.ui.components.LineSeries
@@ -56,7 +48,6 @@ import es.sebas1705.haltera.feature.progress.ui.components.StatCard
 import es.sebas1705.haltera.feature.progress.ui.components.StatsGrid
 import es.sebas1705.haltera.feature.progress.ui.components.TileGrid
 import es.sebas1705.haltera.feature.progress.ui.components.UnitFormat
-import es.sebas1705.haltera.feature.progress.ui.components.formatDate
 import es.sebas1705.haltera.feature.progress.ui.components.formatNumber
 import es.sebas1705.haltera.feature.progress.ui.components.formatWeight
 import es.sebas1705.haltera.feature.progress.ui.components.fullWidth
@@ -66,7 +57,6 @@ import es.sebas1705.haltera.feature.progress.ui.components.rememberUnitFormat
 import es.sebas1705.haltera.feature.progress.ui.components.signed
 import es.sebas1705.haltera.feature.progress.ui.components.unitLabel
 import es.sebas1705.haltera.feature.progress.model.ChartPoint
-import es.sebas1705.haltera.feature.progress.model.PastSessionTime
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
@@ -326,7 +316,7 @@ private fun WeightDialogContent(state: BodyWeightState, onEvent: (BodyWeightInte
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal, imeAction = ImeAction.Done),
                 )
-                WeightDateField(state.dateUtcMillis, state.maxDateUtcMillis) {
+                DateField(state.dateUtcMillis, state.maxDateUtcMillis) {
                     onEvent(BodyWeightIntent.DateChanged(it))
                 }
             }
@@ -347,40 +337,4 @@ private fun WeightDialogContent(state: BodyWeightState, onEvent: (BodyWeightInte
             }
         },
     )
-}
-
-/** "Date: 14 Oct 2026" with a date picker; [maxDateUtcMillis] (today) is the latest selectable date. */
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun WeightDateField(dateUtcMillis: Long, maxDateUtcMillis: Long, onPick: (Long) -> Unit) {
-    var picking by rememberSaveable { mutableStateOf(false) }
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            stringResource(Res.string.progress_bw_date),
-            style = MaterialTheme.typography.bodyLarge,
-            modifier = Modifier.weight(1f),
-        )
-        OutlinedButton(onClick = { picking = true }) {
-            Text(formatDate(PastSessionTime.dateOf(dateUtcMillis), withYear = true))
-        }
-    }
-    if (!picking) return
-    val state = rememberDatePickerState(
-        initialSelectedDateMillis = dateUtcMillis,
-        selectableDates = object : SelectableDates {
-            override fun isSelectableDate(utcTimeMillis: Long): Boolean = utcTimeMillis <= maxDateUtcMillis
-        },
-    )
-    DatePickerDialog(
-        onDismissRequest = { picking = false },
-        confirmButton = {
-            TextButton(onClick = {
-                state.selectedDateMillis?.let(onPick)
-                picking = false
-            }) { Text(stringResource(Res.string.progress_ok)) }
-        },
-        dismissButton = {
-            TextButton(onClick = { picking = false }) { Text(stringResource(Res.string.progress_cancel)) }
-        },
-    ) { DatePicker(state = state) }
 }

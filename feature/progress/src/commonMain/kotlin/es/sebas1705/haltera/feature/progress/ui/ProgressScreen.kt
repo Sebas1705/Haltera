@@ -15,13 +15,13 @@ import androidx.compose.ui.unit.dp
 import es.sebas1705.haltera.feature.progress.model.SessionSummary
 import es.sebas1705.haltera.feature.progress.resources.Res
 import es.sebas1705.haltera.feature.progress.resources.progress_tab_activity
-import es.sebas1705.haltera.feature.progress.resources.progress_tab_body_weight
+import es.sebas1705.haltera.feature.progress.resources.progress_tab_body
 import es.sebas1705.haltera.feature.progress.resources.progress_tab_calendar
 import es.sebas1705.haltera.feature.progress.resources.progress_tab_exercises
 import es.sebas1705.haltera.feature.progress.resources.progress_tab_muscles
 import es.sebas1705.haltera.feature.progress.resources.progress_tab_overview
 import es.sebas1705.haltera.feature.progress.ui.activity.ActivityTab
-import es.sebas1705.haltera.feature.progress.ui.bodyweight.BodyWeightTab
+import es.sebas1705.haltera.feature.progress.ui.body.BodyTab
 import es.sebas1705.haltera.feature.progress.ui.calendar.CalendarTab
 import es.sebas1705.haltera.feature.progress.ui.exercise.ExerciseProgressTab
 import es.sebas1705.haltera.feature.progress.ui.muscles.MusclesTab
@@ -34,12 +34,14 @@ private enum class ProgressTab(val label: StringResource) {
     CALENDAR(Res.string.progress_tab_calendar),
     EXERCISES(Res.string.progress_tab_exercises),
     MUSCLES(Res.string.progress_tab_muscles),
-    BODY_WEIGHT(Res.string.progress_tab_body_weight),
+    BODY(Res.string.progress_tab_body),
     ACTIVITY(Res.string.progress_tab_activity),
 }
 
-/** Root of the Progress tab (the shell draws the top bar): overview, calendar, exercises, muscles, body weight and
- * activity (Health Connect). */
+/**
+ * Root of the Progress tab (the shell draws the top bar): overview, calendar, exercises, muscles, body (weight,
+ * measurements and photos) and activity (Health Connect).
+ */
 @Composable
 internal fun ProgressScreen(
     onOpenSession: (SessionSummary) -> Unit,
@@ -63,7 +65,7 @@ internal fun ProgressScreen(
             ProgressTab.CALENDAR -> CalendarTab(onOpenSession, onLogged = onOpenSessionId)
             ProgressTab.EXERCISES -> ExerciseProgressTab(onOpenExerciseDetail)
             ProgressTab.MUSCLES -> MusclesTab()
-            ProgressTab.BODY_WEIGHT -> BodyWeightTab()
+            ProgressTab.BODY -> BodyTab()
             ProgressTab.ACTIVITY -> ActivityTab()
         }
     }

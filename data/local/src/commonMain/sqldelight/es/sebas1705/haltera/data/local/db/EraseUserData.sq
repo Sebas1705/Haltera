@@ -28,6 +28,9 @@ DELETE FROM ExerciseEntity WHERE source = 'USER';
 eraseBodyWeight:
 DELETE FROM BodyWeightEntity;
 
+eraseBodyMeasurements:
+DELETE FROM BodyMeasurementEntity;
+
 eraseMealEntries:
 DELETE FROM MealEntryEntity;
 

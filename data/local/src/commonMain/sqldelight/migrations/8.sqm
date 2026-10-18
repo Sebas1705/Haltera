@@ -1,0 +1,47 @@
+-- Version 8 -> 9: body measurements (roadmap P6, BodyMeasurementEntity.sq) and their sync tracking (SyncTracking.sq,
+-- collection bodyMeasurements). The table is new, so there is nothing to backfill. Progress photos are not in the
+-- database: they are files on the device only (ProgressPhotoRepository), never synced and never backed up.
+
+CREATE TABLE BodyMeasurementEntity (
+    id          TEXT NOT NULL PRIMARY KEY,
+    measuredAt  INTEGER NOT NULL,
+    type        TEXT NOT NULL,
+    customName  TEXT NOT NULL DEFAULT '',
+    value       INTEGER NOT NULL,
+    notes       TEXT NOT NULL DEFAULT ''
+);
+
+CREATE INDEX BodyMeasurementEntity_measuredAt ON BodyMeasurementEntity(measuredAt);
+
+CREATE TRIGGER BodyMeasurementEntity_syncInsert
+AFTER INSERT ON BodyMeasurementEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'bodyMeasurements' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyMeasurements', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyMeasurements' AND s.id = new.id);
+END;
+
+CREATE TRIGGER BodyMeasurementEntity_syncUpdate
+AFTER UPDATE ON BodyMeasurementEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 0
+    WHERE collection = 'bodyMeasurements' AND id = new.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyMeasurements', new.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 0
+    WHERE new.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyMeasurements' AND s.id = new.id);
+END;
+
+CREATE TRIGGER BodyMeasurementEntity_syncDelete
+AFTER DELETE ON BodyMeasurementEntity
+WHEN (SELECT value FROM Meta WHERE key = 'syncApplying') IS NOT '1'
+BEGIN
+    UPDATE SyncState SET updatedAt = MAX(CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), updatedAt + 1), dirty = 1, deleted = 1
+    WHERE collection = 'bodyMeasurements' AND id = old.id;
+    INSERT INTO SyncState(collection, id, updatedAt, dirty, deleted)
+    SELECT 'bodyMeasurements', old.id, CAST((julianday('now') - 2440587.5) * 86400000 AS INTEGER), 1, 1
+    WHERE old.id IS NOT NULL AND NOT EXISTS (SELECT 1 FROM SyncState s WHERE s.collection = 'bodyMeasurements' AND s.id = old.id);
+END;

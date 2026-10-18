@@ -85,3 +85,71 @@ data class BodyWeightEntry(
     val weightGrams: Long,
     val notes: String = "",
 )
+
+/** What a body measurement measures (roadmap P6). Lengths are millimetres; [BODY_FAT] is tenths of a percent. */
+enum class MeasurementType {
+    WAIST, CHEST, HIPS, ARM, THIGH, NECK, BODY_FAT,
+
+    /** A length the user names ("Calf", "Left arm"); the name is [BodyMeasurement.customName]. */
+    CUSTOM;
+
+    /** True for the lengths (millimetres); false for [BODY_FAT] (tenths of a percent). */
+    val isLength: Boolean get() = this != BODY_FAT
+
+    companion object {
+        /** A type written by a newer version becomes a custom length (its row keeps the stored name). */
+        fun fromDb(value: String?): MeasurementType = lenientEnum(value, CUSTOM)
+    }
+}
+
+/**
+ * One body measurement. [value] is whole millimetres for a length and tenths of a percent for body fat
+ * ([MeasurementType.isLength]); [customName] is set only for [MeasurementType.CUSTOM] (empty otherwise).
+ */
+data class BodyMeasurement(
+    val id: String,
+    val measuredAt: Long,
+    val type: MeasurementType,
+    val value: Long,
+    val customName: String = "",
+    val notes: String = "",
+) {
+    /** The chart a measurement belongs to: its type, or the custom name (case and spacing do not matter). */
+    val seriesKey: String
+        get() = if (type == MeasurementType.CUSTOM) "CUSTOM:${BodyMeasurements.nameKey(customName)}" else type.name
+}
+
+/** Rules shared by the editor, the repository, sync and import. */
+object BodyMeasurements {
+    /** Longest custom name kept; longer names are cut. */
+    const val MAX_NAME_LENGTH = 40
+
+    /** 5 m: anything longer is a typo, not a body measurement. */
+    const val MAX_LENGTH_MM = 5_000L
+
+    /** 100 %. */
+    const val MAX_BODY_FAT_TENTHS = 1_000L
+
+    private val SPACES = Regex("\\s+")
+
+    /** The name as stored: trimmed, inner runs of spaces collapsed, at most [MAX_NAME_LENGTH] characters. */
+    fun normalizeName(name: String): String = name.trim().replace(SPACES, " ").take(MAX_NAME_LENGTH).trimEnd()
+
+    /** Two custom names are the same series when they only differ in case or spacing (accents do count). */
+    fun nameKey(name: String): String = normalizeName(name).lowercase()
+
+    /** Largest value accepted for [type]. */
+    fun maxValue(type: MeasurementType): Long = if (type.isLength) MAX_LENGTH_MM else MAX_BODY_FAT_TENTHS
+
+    /** A value is valid when it is above zero and at most [maxValue]. */
+    fun isValidValue(type: MeasurementType, value: Long): Boolean = value in 1..maxValue(type)
+}
+
+/** A progress photo kept on this device only (never synced or exported). [takenAt] is the date the user gave it. */
+data class ProgressPhoto(
+    val id: String,
+    val takenAt: Long,
+    val notes: String = "",
+    /** When it was added to Haltera, epoch millis (orders photos of the same day). */
+    val addedAt: Long = takenAt,
+)

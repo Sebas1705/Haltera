@@ -31,9 +31,11 @@ class RemoteDocumentTest {
     @Test
     fun syncedCollectionsMatchTheDesign() {
         assertEquals(
-            listOf("routines", "sessions", "bodyWeight", "exercises", "foods", "mealDays", "settings"),
+            listOf("routines", "sessions", "bodyWeight", "bodyMeasurements", "exercises", "foods", "mealDays", "settings"),
             SYNCED_COLLECTIONS,
         )
+        // Account deletion walks these: a synced collection missing here would be left behind in the cloud.
+        assertEquals(es.sebas1705.haltera.data.sync.SyncCollections.ALL.toSet(), SYNCED_COLLECTIONS.toSet())
     }
 
     @Test

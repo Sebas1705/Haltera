@@ -1,6 +1,7 @@
 package es.sebas1705.haltera.data.sync
 
 import es.sebas1705.haltera.data.local.db.AppDatabase
+import es.sebas1705.haltera.data.sync.SyncCollections.BODY_MEASUREMENTS
 import es.sebas1705.haltera.data.sync.SyncCollections.BODY_WEIGHT
 import es.sebas1705.haltera.data.sync.SyncCollections.EXERCISES
 import es.sebas1705.haltera.data.sync.SyncCollections.FOODS
@@ -31,6 +32,8 @@ internal class AggregateStore(
         SESSIONS -> readSession(id)?.let { SyncJson.encodeToString(SessionPayload.serializer(), it) }
         BODY_WEIGHT -> q.selectBodyWeight(id).executeAsOneOrNull()
             ?.let { SyncJson.encodeToString(BodyWeightPayload.serializer(), it.toPayload()) }
+        BODY_MEASUREMENTS -> q.selectBodyMeasurement(id).executeAsOneOrNull()
+            ?.let { SyncJson.encodeToString(BodyMeasurementPayload.serializer(), it.toPayload()) }
         EXERCISES -> readExercise(id)?.let { SyncJson.encodeToString(ExercisePayload.serializer(), it) }
         FOODS -> readFood(id)?.let { SyncJson.encodeToString(FoodPayload.serializer(), it) }
         MEAL_DAYS -> readMealDay(id)?.let { SyncJson.encodeToString(MealDayPayload.serializer(), it) }
@@ -62,6 +65,7 @@ internal class AggregateStore(
             ROUTINES -> db.routineEntityQueries.delete(id)
             SESSIONS -> db.workoutSessionEntityQueries.delete(id)
             BODY_WEIGHT -> db.bodyWeightEntityQueries.delete(id)
+            BODY_MEASUREMENTS -> db.bodyMeasurementEntityQueries.delete(id)
             EXERCISES -> deleteExercise(id)
             FOODS -> q.deleteSyncedFood(id) // recipe items cascade
             MEAL_DAYS -> q.deleteMealEntriesNotIn(id, emptyList())
@@ -76,6 +80,10 @@ internal class AggregateStore(
             SESSIONS -> writeSession(SyncJson.decodeFromString(SessionPayload.serializer(), doc.payload))
             BODY_WEIGHT -> SyncJson.decodeFromString(BodyWeightPayload.serializer(), doc.payload).let {
                 db.bodyWeightEntityQueries.upsert(it.id, it.measuredAt, it.weightGrams, it.notes)
+            }
+            // The row as it was written on the other phone: a type this version does not know is kept as it is.
+            BODY_MEASUREMENTS -> SyncJson.decodeFromString(BodyMeasurementPayload.serializer(), doc.payload).let {
+                db.bodyMeasurementEntityQueries.upsert(it.id, it.measuredAt, it.type, it.customName, it.value, it.notes)
             }
             EXERCISES -> writeExercise(SyncJson.decodeFromString(ExercisePayload.serializer(), doc.payload))
             FOODS -> writeFood(SyncJson.decodeFromString(FoodPayload.serializer(), doc.payload))

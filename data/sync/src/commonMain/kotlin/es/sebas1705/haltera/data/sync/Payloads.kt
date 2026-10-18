@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.data.sync
 
+import es.sebas1705.haltera.data.local.db.BodyMeasurementEntity
 import es.sebas1705.haltera.data.local.db.BodyWeightEntity
 import es.sebas1705.haltera.data.local.db.ExerciseEntity
 import es.sebas1705.haltera.data.local.db.ExerciseVariantEntity
@@ -117,6 +118,17 @@ internal data class BodyWeightPayload(
     val id: String,
     val measuredAt: Long,
     val weightGrams: Long,
+    val notes: String = "",
+)
+
+/** bodyMeasurements/{id} (schema 9): [value] is millimetres, or tenths of a percent for BODY_FAT. */
+@Serializable
+internal data class BodyMeasurementPayload(
+    val id: String,
+    val measuredAt: Long,
+    val type: String,
+    val value: Long,
+    val customName: String = "",
     val notes: String = "",
 )
 
@@ -286,6 +298,15 @@ internal fun SetLogEntity.toPayload() = SetPayload(
 
 internal fun BodyWeightEntity.toPayload() =
     BodyWeightPayload(id = id, measuredAt = measuredAt, weightGrams = weightGrams, notes = notes)
+
+internal fun BodyMeasurementEntity.toPayload() = BodyMeasurementPayload(
+    id = id,
+    measuredAt = measuredAt,
+    type = type,
+    value = value_,
+    customName = customName,
+    notes = notes,
+)
 
 internal fun ExerciseEntity.toPayload(variants: List<VariantPayload>) = ExercisePayload(
     id = id, nameEn = nameEn, nameEs = nameEs, nameEnSearch = nameEnSearch, nameEsSearch = nameEsSearch,

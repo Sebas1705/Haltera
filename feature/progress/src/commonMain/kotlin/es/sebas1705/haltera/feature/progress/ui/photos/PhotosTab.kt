@@ -87,11 +87,19 @@ private const val THUMB_CACHE = 48
 private val DETAIL_MAX_HEIGHT = 520.dp
 private val DETAIL_PLACEHOLDER_HEIGHT = 240.dp
 private val CHOOSER_TILE_WIDTH = 104.dp
-private const val LOAD_FACTOR = 0.75f
 
 /** Decoded thumbnails kept while the tab is shown, so scrolling back does not decode them again. */
-private class ThumbnailCache : LinkedHashMap<String, ImageBitmap>(THUMB_CACHE, LOAD_FACTOR, true) {
-    override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, ImageBitmap>?): Boolean = size > THUMB_CACHE
+private class ThumbnailCache {
+    // Insertion-ordered: re-inserting on every hit keeps the least recently used first (common code, no JVM LRU).
+    private val entries = LinkedHashMap<String, ImageBitmap>()
+
+    fun get(id: String): ImageBitmap? = entries.remove(id)?.also { entries[id] = it }
+
+    fun put(id: String, bitmap: ImageBitmap) {
+        entries.remove(id)
+        entries[id] = bitmap
+        while (entries.size > THUMB_CACHE) entries.remove(entries.keys.first())
+    }
 }
 
 /** Progress photos: a grid by date (latest first), add with the system picker, open to edit or delete, compare two. */

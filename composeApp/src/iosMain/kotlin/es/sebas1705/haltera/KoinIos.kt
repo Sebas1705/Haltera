@@ -10,6 +10,10 @@ import es.sebas1705.haltera.data.repository.di.AppVersionName
 import es.sebas1705.haltera.di.appModules
 import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
 import es.sebas1705.haltera.feature.nutrition.scan.NoBarcodeScanner
+import es.sebas1705.haltera.feature.progress.photos.ProgressPhotoPicker
+import es.sebas1705.haltera.data.repository.photos.IosPhotoFiles
+import es.sebas1705.haltera.data.repository.photos.PhotoFiles
+import es.sebas1705.haltera.photos.IosProgressPhotoPicker
 import platform.Foundation.NSBundle
 import es.sebas1705.haltera.dataimport.ImportFileBridge
 import es.sebas1705.haltera.dataimport.IosImportFileBridge
@@ -47,6 +51,9 @@ fun startHalteraKoin(googleSignIn: GoogleSignInBridge?) {
                 single<HealthConnectBridge> { NoHealthConnectBridge }
                 // Product barcode scanning is not available on iOS yet (an AVFoundation scanner is future work).
                 single<BarcodeScanner> { NoBarcodeScanner }
+                // Progress photos: Application Support, excluded from backups; picked with PHPickerViewController.
+                single<PhotoFiles> { IosPhotoFiles() }
+                single<ProgressPhotoPicker> { IosProgressPhotoPicker() }
                 single {
                     AppInfo(
                         versionName = NSBundle.mainBundle.objectForInfoDictionaryKey("CFBundleShortVersionString") as? String ?: "dev",

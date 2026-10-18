@@ -25,6 +25,8 @@ class ImportReviewWordingTest {
         matched: Int = 2,
         unmatched: Int = 1,
         policy: ExistingPolicy = ExistingPolicy.SKIP,
+        measurements: Int = 0,
+        existingMeasurements: Int = 0,
     ) = ImportReview(
         fileName = "strong.csv",
         preview = ImportPreview(
@@ -40,6 +42,8 @@ class ImportReviewWordingTest {
             unmatched = List(unmatched) { UnmatchedExercise("k$it", "Name $it", 1, 1) },
             skippedRows = 0,
             needsUnitChoice = false,
+            bodyMeasurements = measurements,
+            existingBodyMeasurements = existingMeasurements,
         ),
         unit = ImportWeightUnit.KG,
         existing = policy,
@@ -65,6 +69,13 @@ class ImportReviewWordingTest {
         assertTrue(r.nothingNew)
         assertNull(r.matchedLine)
         assertFalse(r.unmatchedShown)
+    }
+
+    @Test
+    fun `a file whose only new rows are body measurements still has something new`() {
+        assertFalse(review(sessions = 0, measurements = 2, existingMeasurements = 1).nothingNew)
+        assertTrue(review(sessions = 0, measurements = 2, existingMeasurements = 2).nothingNew)
+        assertTrue(review(sessions = 0, measurements = 0).nothingNew)
     }
 
     @Test

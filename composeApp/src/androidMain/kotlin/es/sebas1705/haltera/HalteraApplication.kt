@@ -14,6 +14,10 @@ import es.sebas1705.haltera.data.remote.isFirebaseConfigured
 import es.sebas1705.haltera.data.repository.di.AppVersionName
 import es.sebas1705.haltera.di.appModules
 import es.sebas1705.haltera.feature.nutrition.scan.BarcodeScanner
+import es.sebas1705.haltera.feature.progress.photos.ProgressPhotoPicker
+import es.sebas1705.haltera.data.repository.photos.DirectoryPhotoFiles
+import es.sebas1705.haltera.data.repository.photos.PhotoFiles
+import es.sebas1705.haltera.photos.AndroidProgressPhotoPicker
 import es.sebas1705.haltera.dataimport.AndroidImportFileBridge
 import es.sebas1705.haltera.dataimport.ImportFileBridge
 import es.sebas1705.haltera.export.AndroidExportFileBridge
@@ -29,6 +33,7 @@ import es.sebas1705.haltera.share.AndroidRoutineShareBridge
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import java.io.File
 
 class HalteraApplication : Application() {
     override fun onCreate() {
@@ -54,6 +59,9 @@ class HalteraApplication : Application() {
                     single<HealthGateway> { HealthConnectGateway(androidContext()) }
                     single<HealthConnectBridge> { AndroidHealthConnectBridge(androidContext()) }
                     single<BarcodeScanner> { AndroidBarcodeScanner() }
+                    // Progress photos: app-private files, outside Auto Backup (backup_rules.xml), picked with the system picker.
+                    single<PhotoFiles> { DirectoryPhotoFiles(File(filesDir, "progress_photos")) }
+                    single<ProgressPhotoPicker> { AndroidProgressPhotoPicker(androidContext()) }
                     single { AppVersionName(versionName()) }
                     single { appInfo() }
                 },

@@ -60,6 +60,8 @@ kotlin {
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.test)
         }
+        // LocalDataEraser against a real in-memory database.
+        androidUnitTest.dependencies { implementation(libs.sqldelight.jvm.driver) }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.koin.android)

@@ -86,9 +86,9 @@
 
     <!-- Ajustes: Datos, Exportar mis datos -->
     <string name="export_section">Datos</string>
-    <string name="export_text">Guarda todo lo que has registrado (sesiones, peso corporal, comidas, rutinas) como archivos CSV y JSON en un zip, para conservarlo o abrirlo en una hoja de cálculo. Las cargas van siempre en kilogramos. No incluye el catálogo de ejercicios.</string>
+    <string name="export_text">Guarda todo lo que has registrado (sesiones, peso corporal, medidas corporales, comidas, rutinas) como archivos CSV y JSON en un zip, para conservarlo o abrirlo en una hoja de cálculo. Las cargas van siempre en kilogramos y las medidas en centímetros. No incluye el catálogo de ejercicios ni tus fotos de progreso.</string>
     <string name="export_action">Exportar mis datos</string>
-    <string name="export_done">Exportación guardada. Series: %1$d, registros de peso corporal: %2$d, registros de comidas: %3$d.</string>
+    <string name="export_done">Exportación guardada. Series: %1$d, registros de peso corporal: %2$d, registros de comidas: %3$d, medidas corporales: %4$d.</string>
     <string name="export_failed">No se pudo escribir la exportación. Prueba con otra ubicación.</string>
     <string name="export_dismiss">Aceptar</string>
     <string name="import_section">Importar</string>
@@ -103,6 +103,7 @@
     <string name="import_summary">Sesiones: %1$d, series: %2$d</string>
     <string name="import_range">Del %1$s al %2$s</string>
     <string name="import_body_weights">Registros de peso corporal: %1$d</string>
+    <string name="import_body_measurements">Medidas corporales: %1$d</string>
     <plurals name="import_matched">
         <item quantity="one">%1$d ejercicio reconocido automáticamente</item>
         <item quantity="other">%1$d ejercicios reconocidos automáticamente</item>
@@ -131,7 +132,7 @@
     <string name="import_cancel">Cancelar</string>
     <string name="import_working">Importando...</string>
     <string name="import_dismiss">Aceptar</string>
-    <string name="import_done">Importación terminada. Sesiones añadidas: %1$d, reemplazadas: %2$d, omitidas: %3$d. Series: %4$d. Registros de peso corporal: %5$d. Ejercicios nuevos: %6$d.</string>
+    <string name="import_done">Importación terminada. Sesiones añadidas: %1$d, reemplazadas: %2$d, omitidas: %3$d. Series: %4$d. Registros de peso corporal: %5$d. Medidas corporales: %7$d. Ejercicios nuevos: %6$d.</string>
     <string name="import_error_unrecognised">Este archivo no es una exportación de Hevy, Strong, FitNotes ni Haltera. No se importó nada.</string>
     <string name="import_error_no_data">El archivo tiene el formato correcto pero ninguna serie utilizable. No se importó nada.</string>
     <string name="import_error_compressed_zip">Este zip está comprimido. Extráelo y elige sessions.csv. No se importó nada.</string>

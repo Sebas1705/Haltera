@@ -58,6 +58,7 @@ fun DataExportSection(viewModel: DataExportViewModel = koinViewModel()) {
                     outcome.counts.sets,
                     outcome.counts.bodyWeightEntries,
                     outcome.counts.mealEntries,
+                    outcome.counts.bodyMeasurements,
                 ),
                 MaterialTheme.colorScheme.primary,
             ) { viewModel.onEvent(DataExportIntent.DismissOutcome) }

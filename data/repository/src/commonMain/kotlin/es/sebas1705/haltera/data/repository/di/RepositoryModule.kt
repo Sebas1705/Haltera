@@ -3,7 +3,11 @@ package es.sebas1705.haltera.data.repository.di
 import es.sebas1705.haltera.data.local.catalog.CatalogImporter
 import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.local.foods.FoodImporter
+import es.sebas1705.haltera.data.repository.BodyMeasurementRepository
 import es.sebas1705.haltera.data.repository.BodyWeightRepository
+import es.sebas1705.haltera.data.repository.ProgressPhotoRepository
+import es.sebas1705.haltera.data.repository.photos.FileProgressPhotoRepository
+import es.sebas1705.haltera.data.repository.photos.PhotoFiles
 import es.sebas1705.haltera.data.repository.CatalogRepository
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.export.DataExporter
@@ -20,6 +24,7 @@ import es.sebas1705.haltera.data.repository.SessionRepository
 import es.sebas1705.haltera.data.repository.share.DefaultRoutineSharing
 import es.sebas1705.haltera.data.repository.share.RoutineSharing
 import es.sebas1705.haltera.data.repository.sql.HistoryLoader
+import es.sebas1705.haltera.data.repository.sql.SqlBodyMeasurementRepository
 import es.sebas1705.haltera.data.repository.sql.SqlBodyWeightRepository
 import es.sebas1705.haltera.data.repository.sql.SqlCatalogRepository
 import es.sebas1705.haltera.data.repository.sql.SqlExerciseRepository
@@ -42,7 +47,7 @@ private val IoDispatcher = named("io")
 /** The app version name, for the Open Food Facts User-Agent; bound by the app ("dev" when absent). */
 data class AppVersionName(val value: String)
 
-/** Binds every repository. Needs an [AppDatabase] from the app module. */
+/** Binds every repository. Needs an [AppDatabase] from the app module and the platform [PhotoFiles]. */
 @OptIn(ExperimentalTime::class)
 val repositoryModule = module {
     single<CoroutineDispatcher>(IoDispatcher) { Dispatchers.IO }
@@ -54,6 +59,9 @@ val repositoryModule = module {
     single<RoutineRepository> { SqlRoutineRepository(get(), FamousRoutines.all, get(IoDispatcher), get(named("now"))) }
     single<SessionRepository> { SqlSessionRepository(get(), get(), get(IoDispatcher), get(named("now"))) }
     single<BodyWeightRepository> { SqlBodyWeightRepository(get(), get(IoDispatcher), get(named("now"))) }
+    single<BodyMeasurementRepository> { SqlBodyMeasurementRepository(get(), get(IoDispatcher), get(named("now"))) }
+    // Progress photos: files in app-private storage only (the platform binds where, PhotoFiles).
+    single<ProgressPhotoRepository> { FileProgressPhotoRepository(get(), get(IoDispatcher), get(named("now"))) }
     single<RoutineSharing> { DefaultRoutineSharing(get(), get(), get(named("now"))) }
     single { FoodImporter(get<AppDatabase>(), now = get(named("now"))) }
     single {

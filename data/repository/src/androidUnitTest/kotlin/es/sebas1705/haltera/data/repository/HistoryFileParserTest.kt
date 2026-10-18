@@ -2,6 +2,7 @@ package es.sebas1705.haltera.data.repository
 
 import es.sebas1705.haltera.data.repository.export.ExportFormat
 import es.sebas1705.haltera.data.models.ExerciseCategory
+import es.sebas1705.haltera.data.models.MeasurementType
 import es.sebas1705.haltera.data.models.SetKind
 import es.sebas1705.haltera.data.repository.importer.HistoryFileParser
 import es.sebas1705.haltera.data.repository.importer.ImportError
@@ -477,6 +478,77 @@ class HistoryFileParserTest {
         assertEquals("w-001", entry.id)
         assertEquals(80_450L, entry.weightGrams)
         assertEquals("morning, fasted", entry.notes)
+    }
+
+    @Test
+    fun `a haltera body measurements csv imports alone and drops rows it cannot trust`() {
+        val csv = "﻿date,measured_at,type,custom_name,value,unit,raw_value,notes,id\r\n" +
+            "2026-10-15,2026-10-15T07:05:00Z,WAIST,,82.5,cm,825,\"navel, relaxed\",bm-1\r\n" +
+            "2026-10-15,2026-10-15T07:06:00Z,BODY_FAT,,18.5,percent,185,,bm-2\r\n" +
+            // raw_value missing: value × 10 (cm -> mm, percent -> tenths), a decimal comma is fine.
+            "2026-10-15,2026-10-15T07:07:00Z,CHEST,,\"101,3\",cm,,,bm-3\r\n" +
+            "2026-10-15,2026-10-15T07:08:00Z,CUSTOM,\"  Gemelo   izq. \",37.1,cm,371,,bm-4\r\n" +
+            // A type from a newer version: a custom length named after it.
+            "2026-10-15,2026-10-15T07:09:00Z,LEFT_CALF,,37,cm,370,,bm-5\r\n" +
+            // Dropped: no time, zero, too long, body fat over 100 %, a custom one without a name, no value.
+            "2026-10-15,not a time,WAIST,,80,cm,800,,bad-1\r\n" +
+            "2026-10-15,2026-10-15T07:00:00Z,WAIST,,0,cm,0,,bad-2\r\n" +
+            "2026-10-15,2026-10-15T07:00:00Z,WAIST,,600,cm,6000,,bad-3\r\n" +
+            "2026-10-15,2026-10-15T07:00:00Z,BODY_FAT,,100.1,percent,1001,,bad-4\r\n" +
+            "2026-10-15,2026-10-15T07:00:00Z,CUSTOM,,30,cm,300,,bad-5\r\n" +
+            "2026-10-15,2026-10-15T07:00:00Z,NECK,,,cm,,,bad-6\r\n"
+
+        val parsed = HistoryFileParser.parse(csv.encodeToByteArray(), utc)
+
+        assertEquals(ImportSource.HALTERA, parsed.source)
+        assertTrue(parsed.sessions.isEmpty() && parsed.bodyWeights.isEmpty())
+        val byId = parsed.bodyMeasurements.associateBy { it.id }
+        assertEquals(listOf("bm-1", "bm-2", "bm-3", "bm-4", "bm-5"), byId.keys.toList())
+        assertEquals(825L to "navel, relaxed", byId.getValue("bm-1").let { it.value to it.notes })
+        assertEquals(at("2026-10-15T07:05:00Z"), byId.getValue("bm-1").measuredAt)
+        assertEquals(MeasurementType.BODY_FAT to 185L, byId.getValue("bm-2").let { it.type to it.value })
+        assertEquals(1_013L, byId.getValue("bm-3").value)
+        assertEquals("Gemelo izq.", byId.getValue("bm-4").customName)
+        assertEquals(MeasurementType.CUSTOM to "left calf", byId.getValue("bm-5").let { it.type to it.customName })
+        assertEquals("", byId.getValue("bm-1").customName)
+    }
+
+    @Test
+    fun `measurement rows without an id get a stable one`() {
+        val csv = "date,measured_at,type,custom_name,value,unit,raw_value,notes,id\n" +
+            "2026-10-15,2026-10-15T07:05:00Z,WAIST,,82.5,cm,825,,\n"
+        val first = HistoryFileParser.parse(csv.encodeToByteArray(), utc).bodyMeasurements.single().id
+        val second = HistoryFileParser.parse(csv.encodeToByteArray(), utc).bodyMeasurements.single().id
+        assertEquals(first, second)
+        val other = csv.replace("825", "826")
+        assertNotEquals(first, HistoryFileParser.parse(other.encodeToByteArray(), utc).bodyMeasurements.single().id)
+    }
+
+    @Test
+    fun `an export zip with only measurements is an export, and a header with no usable row is no data`() {
+        val header = "date,measured_at,type,custom_name,value,unit,raw_value,notes,id\n"
+        val parsed = HistoryFileParser.parse(
+            zipOf(
+                "body_measurements.csv" to header + "2026-10-15,2026-10-15T07:05:00Z,ARM,,35,cm,350,,bm-1\n",
+                "manifest.json" to "{\"format\":\"haltera-export\",\"version\":3}",
+            ),
+            utc,
+        )
+        assertEquals(350L, parsed.bodyMeasurements.single().value)
+        assertEquals(ImportError.NO_DATA, failure(header.encodeToByteArray()))
+    }
+
+    @Test
+    fun `older export versions still import`() {
+        val sessions = fixtureBytes("haltera-sessions.csv").decodeToString()
+        for (version in 1..ExportFormat.VERSION) {
+            val parsed = HistoryFileParser.parse(
+                zipOf("sessions.csv" to sessions, "manifest.json" to "{\"format\":\"haltera-export\",\"version\":$version}"),
+                utc,
+            )
+            assertEquals("s-001", parsed.sessions.single().id, "version $version")
+            assertTrue(parsed.bodyMeasurements.isEmpty())
+        }
     }
 
     @Test

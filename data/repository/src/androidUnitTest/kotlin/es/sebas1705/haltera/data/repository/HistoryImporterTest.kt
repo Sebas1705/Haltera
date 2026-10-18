@@ -4,7 +4,9 @@ import com.russhwolf.settings.MapSettings
 import es.sebas1705.haltera.core.datastore.KeyValueSettingsRepository
 import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.local.foods.FoodImporter
+import es.sebas1705.haltera.data.models.BodyMeasurements
 import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.MeasurementType
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.ExerciseFilter
 import es.sebas1705.haltera.data.models.LocalizedText
@@ -37,6 +39,7 @@ import es.sebas1705.haltera.data.repository.importer.ImportWeightUnit
 import es.sebas1705.haltera.data.repository.importer.ParseOptions
 import es.sebas1705.haltera.data.repository.importer.SqlHistoryImporter
 import es.sebas1705.haltera.data.repository.sql.HistoryLoader
+import es.sebas1705.haltera.data.repository.sql.SqlBodyMeasurementRepository
 import es.sebas1705.haltera.data.repository.sql.SqlBodyWeightRepository
 import es.sebas1705.haltera.data.repository.sql.SqlExerciseRepository
 import es.sebas1705.haltera.data.repository.sql.SqlSessionRepository
@@ -54,6 +57,30 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 import kotlin.time.TimeSource
+import java.io.ByteArrayOutputStream
+import java.util.zip.CRC32
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
+
+/** A zip of text files, stored (not compressed) as the exporter writes them. */
+private fun storedZip(vararg files: Pair<String, String>): ByteArray {
+    val out = ByteArrayOutputStream()
+    ZipOutputStream(out).use { zip ->
+        for ((name, text) in files) {
+            val bytes = text.encodeToByteArray()
+            val entry = ZipEntry(name).apply {
+                method = ZipEntry.STORED
+                size = bytes.size.toLong()
+                compressedSize = bytes.size.toLong()
+                crc = CRC32().also { it.update(bytes) }.value
+            }
+            zip.putNextEntry(entry)
+            zip.write(bytes)
+            zip.closeEntry()
+        }
+    }
+    return out.toByteArray()
+}
 
 @OptIn(ExperimentalTime::class)
 class HistoryImporterTest {
@@ -66,6 +93,7 @@ class HistoryImporterTest {
         val sessions: SqlSessionRepository,
         val exercises: SqlExerciseRepository,
         val bodyWeights: SqlBodyWeightRepository,
+        val bodyMeasurements: SqlBodyMeasurementRepository,
     )
 
     private fun TestScope.env(): Env {
@@ -77,6 +105,7 @@ class HistoryImporterTest {
             SqlSessionRepository(db, history, dispatcher, clock),
             exercises,
             SqlBodyWeightRepository(db, dispatcher, clock),
+            SqlBodyMeasurementRepository(db, dispatcher, clock),
         )
     }
 
@@ -385,6 +414,65 @@ class HistoryImporterTest {
     }
 
     @Test
+    fun `body measurements round-trip through an export, twice without duplicates`() = runTest {
+        val source = inMemoryDatabase().withTestCatalog()
+        val original = SqlBodyMeasurementRepository(source, UnconfinedTestDispatcher(testScheduler), clock)
+        original.add(MeasurementType.WAIST, 825, measuredAt = at("2026-10-15T07:05:00Z"), notes = "navel, relaxed")
+        original.add(MeasurementType.BODY_FAT, 185, measuredAt = at("2026-10-15T07:06:00Z"))
+        original.add(MeasurementType.CUSTOM, 371, measuredAt = at("2026-10-15T22:30:00Z"), customName = "Gemelo, izq.")
+        original.add(MeasurementType.NECK, BodyMeasurements.MAX_LENGTH_MM, measuredAt = at("2026-10-01T07:00:00Z"))
+        val zip = exportZip(source, this)
+
+        val parsed = HistoryFileParser.parse(zip, utc)
+        assertEquals(4, parsed.bodyMeasurements.size)
+        val e = env()
+        val preview = e.importer.preview(parsed, ImportOptions())
+        assertEquals(4, preview.bodyMeasurements)
+        assertEquals(0, preview.existingBodyMeasurements)
+        val summary = e.importer.import(parsed, ImportOptions())
+        assertEquals(4, summary.bodyMeasurements)
+
+        assertEquals(original.observeAll().first(), e.bodyMeasurements.observeAll().first())
+
+        // Again: skipped by default (nothing new), replaced in place when asked.
+        val againPreview = e.importer.preview(parsed, ImportOptions())
+        assertEquals(4, againPreview.existingBodyMeasurements)
+        assertEquals(0, e.importer.import(parsed, ImportOptions()).bodyMeasurements)
+        assertEquals(4, e.importer.import(parsed, ImportOptions(existing = ExistingPolicy.REPLACE)).bodyMeasurements)
+        assertEquals(original.observeAll().first(), e.bodyMeasurements.observeAll().first())
+    }
+
+    @Test
+    fun `imported measurements are tracked for sync like logged ones`() = runTest {
+        val csv = "date,measured_at,type,custom_name,value,unit,raw_value,notes,id\n" +
+            "2026-10-15,2026-10-15T07:05:00Z,HIPS,,98,cm,980,,bm-1\n"
+        val e = env()
+        e.importer.import(HistoryFileParser.parse(csv.encodeToByteArray(), utc), ImportOptions())
+        assertEquals(1L, db.syncTrackingQueries.selectState("bodyMeasurements", "bm-1").executeAsOne().dirty)
+    }
+
+    @Test
+    fun `a version 2 export without measurements still imports`() = runTest {
+        // What a version 2 export holds: the same files without body_measurements.csv, manifest version 2.
+        val sessions = fixtureBytes("haltera-sessions.csv").decodeToString()
+        val v2 = HistoryFileParser.parse(
+            storedZip(
+                "sessions.csv" to sessions,
+                "body_weight.csv" to "date,measured_at,weight_kg,weight_grams,unit,notes,id\n" +
+                    "2026-10-15,2026-10-15T07:00:00Z,80.45,80450,kg,,w-001\n",
+                "manifest.json" to """{"format":"haltera-export","version":2}""",
+            ),
+            utc,
+        )
+        assertTrue(v2.bodyMeasurements.isEmpty())
+        assertEquals(1, v2.bodyWeights.size)
+        val e = env()
+        val summary = e.importer.import(v2, ImportOptions())
+        assertEquals(1, summary.sessionsWritten)
+        assertEquals(0, summary.bodyMeasurements)
+    }
+
+    @Test
     fun `a single sessions csv of the export imports too`() = runTest {
         val e = env()
         val parsed = parse("haltera-sessions.csv")
@@ -628,6 +716,7 @@ class HistoryImporterTest {
             exercises,
             nutrition,
             SqlBodyWeightRepository(source, dispatcher, clock),
+            SqlBodyMeasurementRepository(source, dispatcher, clock),
             routines,
             DefaultRoutineSharing(routines, exercises, clock),
             dispatcher,

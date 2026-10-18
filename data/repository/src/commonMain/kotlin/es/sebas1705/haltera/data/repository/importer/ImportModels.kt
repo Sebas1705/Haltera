@@ -1,6 +1,7 @@
 package es.sebas1705.haltera.data.repository.importer
 
 import es.sebas1705.haltera.data.models.Equipment
+import es.sebas1705.haltera.data.models.MeasurementType
 import es.sebas1705.haltera.data.models.ExerciseCategory
 import es.sebas1705.haltera.data.models.Muscle
 import es.sebas1705.haltera.data.models.SetKind
@@ -98,6 +99,16 @@ data class ImportedSession(
 
 data class ImportedBodyWeight(val id: String, val measuredAt: Long, val weightGrams: Long, val notes: String)
 
+/** A row of `body_measurements.csv` (Haltera export v3). [value] is mm, or tenths of a percent for body fat. */
+data class ImportedBodyMeasurement(
+    val id: String,
+    val measuredAt: Long,
+    val type: MeasurementType,
+    val value: Long,
+    val customName: String = "",
+    val notes: String = "",
+)
+
 /** The content of a file, parsed but not yet written. */
 data class ParsedImport(
     val source: ImportSource,
@@ -107,8 +118,13 @@ data class ParsedImport(
     val skippedRows: Int = 0,
     /** True when loads have no unit in the file, so the user must say which unit they were logged in. */
     val needsUnitChoice: Boolean = false,
+    /** Haltera export v3: `body_measurements.csv`. */
+    val bodyMeasurements: List<ImportedBodyMeasurement> = emptyList(),
 ) {
     val setCount: Int get() = sessions.sumOf { it.setCount }
+
+    /** Nothing at all to write. */
+    val isEmpty: Boolean get() = sessions.isEmpty() && bodyWeights.isEmpty() && bodyMeasurements.isEmpty()
 }
 
 /** An exercise name of the file that matches nothing in the logbook. */
@@ -135,6 +151,8 @@ data class ImportPreview(
     val unmatched: List<UnmatchedExercise>,
     val skippedRows: Int,
     val needsUnitChoice: Boolean,
+    val bodyMeasurements: Int = 0,
+    val existingBodyMeasurements: Int = 0,
 )
 
 /** What to do with an unmatched exercise name. The default is [CreateCustom]. */
@@ -158,4 +176,5 @@ data class ImportSummary(
     val sets: Int,
     val bodyWeights: Int,
     val exercisesCreated: Int,
+    val bodyMeasurements: Int = 0,
 )

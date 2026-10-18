@@ -42,12 +42,13 @@ internal class CsvTable private constructor(private val reader: CsvReader, val c
 }
 
 /** The file kinds this importer knows, told apart by their header row (docs/IMPORT-FORMATS.md). */
-internal enum class HistoryFileKind { HEVY, STRONG, FITNOTES, HALTERA_SESSIONS, HALTERA_BODY_WEIGHT }
+internal enum class HistoryFileKind { HEVY, STRONG, FITNOTES, HALTERA_SESSIONS, HALTERA_BODY_WEIGHT, HALTERA_BODY_MEASUREMENTS }
 
 internal object HistoryFileDetector {
     fun detect(columns: Set<String>): HistoryFileKind? = when {
         "session_id" in columns && "exercise_id" in columns && "set_type" in columns -> HistoryFileKind.HALTERA_SESSIONS
         "measured_at" in columns && "weight_grams" in columns -> HistoryFileKind.HALTERA_BODY_WEIGHT
+        "measured_at" in columns && "raw_value" in columns && "type" in columns -> HistoryFileKind.HALTERA_BODY_MEASUREMENTS
         "exercise_title" in columns && "start_time" in columns -> HistoryFileKind.HEVY
         "exercise name" in columns && "set order" in columns && "date" in columns -> HistoryFileKind.STRONG
         "exercise" in columns && "date" in columns && "reps" in columns &&

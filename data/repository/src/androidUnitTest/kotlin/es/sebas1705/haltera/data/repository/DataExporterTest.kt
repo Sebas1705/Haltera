@@ -18,6 +18,7 @@ import es.sebas1705.haltera.data.repository.share.DefaultRoutineSharing
 import es.sebas1705.haltera.data.repository.share.RoutineDecodeResult
 import es.sebas1705.haltera.data.repository.share.RoutineExport
 import es.sebas1705.haltera.data.repository.sql.HistoryLoader
+import es.sebas1705.haltera.data.repository.sql.SqlBodyMeasurementRepository
 import es.sebas1705.haltera.data.repository.sql.SqlBodyWeightRepository
 import es.sebas1705.haltera.data.repository.sql.SqlExerciseRepository
 import es.sebas1705.haltera.data.repository.sql.SqlNutritionRepository
@@ -94,6 +95,7 @@ class DataExporterTest {
             exercises,
             nutrition,
             SqlBodyWeightRepository(db, dispatcher, clock),
+            SqlBodyMeasurementRepository(db, dispatcher, clock),
             routines,
             DefaultRoutineSharing(routines, exercises, clock),
             dispatcher,
@@ -214,6 +216,7 @@ class DataExporterTest {
     private fun bodyWeightAndMealFixture() {
         db.bodyWeightEntityQueries.upsert("w-001", at("2026-10-15T07:00:00Z"), 80_450, "morning, fasted")
         db.bodyWeightEntityQueries.upsert("w-000", at("2026-10-01T07:00:00Z"), 81_000, "")
+        measurementFixture()
 
         db.mealEntryEntityQueries.insert(
             "m-001",
@@ -267,6 +270,15 @@ class DataExporterTest {
         )
     }
 
+    private fun measurementFixture() {
+        val q = db.bodyMeasurementEntityQueries
+        q.upsert("bm-002", at("2026-10-15T07:05:00Z"), "WAIST", "", 825, "navel, relaxed")
+        q.upsert("bm-001", at("2026-10-01T07:05:00Z"), "WAIST", "", 840, "")
+        q.upsert("bm-003", at("2026-10-15T07:06:00Z"), "BODY_FAT", "", 185, "")
+        q.upsert("bm-004", at("2026-10-15T22:30:00Z"), "CUSTOM", "Gemelo, izq.", 371, "\"tape\"")
+        q.upsert("bm-005", at("2026-10-15T07:05:00Z"), "ARM", "", 1, "")
+    }
+
     private suspend fun TestScope.routineFixture() {
         val routines = SqlRoutineRepository(db, FamousRoutines.all, UnconfinedTestDispatcher(testScheduler), clock)
         val id = routines.createRoutine("Upper, Lower", "Two days")
@@ -298,6 +310,7 @@ class DataExporterTest {
 
         golden("sessions.csv", archive.text("sessions.csv"))
         golden("body_weight.csv", archive.text("body_weight.csv"))
+        golden("body_measurements.csv", archive.text("body_measurements.csv"))
         golden("meal_entries.csv", archive.text("meal_entries.csv"))
         golden("routines.json", archive.text("routines.json"))
         golden("exercises.json", archive.text("exercises.json"))
@@ -313,6 +326,7 @@ class DataExporterTest {
             listOf(
                 "sessions.csv",
                 "body_weight.csv",
+                "body_measurements.csv",
                 "meal_entries.csv",
                 "routines.json",
                 "exercises.json",
@@ -322,7 +336,7 @@ class DataExporterTest {
         )
         val manifest = Json.parseToJsonElement(archive.text("manifest.json")).jsonObject
         assertEquals("haltera-export", manifest.getValue("format").jsonPrimitive.content)
-        assertEquals(2, manifest.getValue("version").jsonPrimitive.int)
+        assertEquals(3, manifest.getValue("version").jsonPrimitive.int)
         assertEquals(APP_VERSION, manifest.getValue("appVersion").jsonPrimitive.content)
         assertEquals(AppDatabase.Schema.version, manifest.getValue("schemaVersion").jsonPrimitive.content.toLong())
         assertEquals("2026-10-16T09:15:30Z", manifest.getValue("exportedAt").jsonPrimitive.content)
@@ -335,10 +349,15 @@ class DataExporterTest {
                 "mealEntries" to 5,
                 "routines" to 1,
                 "customExercises" to 1,
+                "bodyMeasurements" to 5,
             ),
             counts.mapValues { it.value.jsonPrimitive.int },
         )
-        assertEquals(ExportCounts(2, 7, 2, 5, 1, 1), archive.counts)
+        assertEquals(ExportCounts(2, 7, 2, 5, 1, 1, bodyMeasurements = 5), archive.counts)
+        assertEquals(
+            listOf("sessions.csv", "body_weight.csv", "body_measurements.csv", "meal_entries.csv", "routines.json", "exercises.json"),
+            manifest.getValue("files").jsonArray.map { it.jsonPrimitive.content },
+        )
     }
 
     @Test
@@ -395,6 +414,10 @@ class DataExporterTest {
             archive.text("sessions.csv").trim().removePrefix("﻿")
         )
         assertEquals("[]\n", archive.text("routines.json"))
+        assertEquals(
+            ExportFormat.BODY_MEASUREMENT_COLUMNS.joinToString(","),
+            archive.text("body_measurements.csv").trim().removePrefix("\uFEFF"),
+        )
         assertTrue(Json.parseToJsonElement(archive.text("manifest.json")) is JsonObject)
     }
 
@@ -405,7 +428,14 @@ class DataExporterTest {
         val whole = exporter().exportArchive()
         val paged = exporter(pageSize = 1).exportArchive()
 
-        listOf("sessions.csv", "body_weight.csv", "meal_entries.csv", "routines.json", "exercises.json").forEach {
+        listOf(
+            "sessions.csv",
+            "body_weight.csv",
+            "body_measurements.csv",
+            "meal_entries.csv",
+            "routines.json",
+            "exercises.json",
+        ).forEach {
             assertEquals(whole.text(it), paged.text(it), it)
         }
     }
@@ -431,6 +461,7 @@ class DataExporterTest {
         }
         // Decimal points, not commas, in the numbers.
         assertTrue(",80.45," in english.text("body_weight.csv"))
+        assertTrue(",82.5,cm,825," in english.text("body_measurements.csv"))
     }
 
     @Test

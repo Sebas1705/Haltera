@@ -1,6 +1,9 @@
 package es.sebas1705.haltera.data.repository
 
+import es.sebas1705.haltera.data.models.BodyMeasurement
 import es.sebas1705.haltera.data.models.LoadType
+import es.sebas1705.haltera.data.models.MeasurementType
+import kotlinx.datetime.TimeZone
 import es.sebas1705.haltera.data.repository.export.ByteArrayOutput
 import es.sebas1705.haltera.data.repository.export.CsvWriter
 import es.sebas1705.haltera.data.repository.export.ExportFormat
@@ -66,5 +69,26 @@ class ExportFormatTest {
             out.toByteArray().decodeToString(),
         )
         assertEquals(3, csv.rows)
+    }
+
+    @Test
+    fun `a measurement row is centimetres or percent, exact, with the stored value and the local date`() {
+        val zone = TimeZone.of("Europe/Madrid")
+        // Already the 16th in Madrid.
+        val at = java.time.Instant.parse("2026-10-15T23:30:00Z").toEpochMilli()
+        assertEquals(
+            listOf("2026-10-16", "2026-10-15T23:30:00Z", "WAIST", "", "82.5", "cm", "825", "note", "m1"),
+            ExportFormat.bodyMeasurementRow(BodyMeasurement("m1", at, MeasurementType.WAIST, 825, notes = "note"), zone),
+        )
+        assertEquals(
+            listOf("18.5", "percent", "185"),
+            ExportFormat.bodyMeasurementRow(BodyMeasurement("m2", at, MeasurementType.BODY_FAT, 185), zone).subList(4, 7),
+        )
+        assertEquals(
+            listOf("CUSTOM", "Calf", "38", "cm", "380"),
+            ExportFormat.bodyMeasurementRow(BodyMeasurement("m3", at, MeasurementType.CUSTOM, 380, "Calf"), zone).subList(2, 7),
+        )
+        assertEquals("0.1", ExportFormat.bodyMeasurementRow(BodyMeasurement("m4", at, MeasurementType.ARM, 1), zone)[4])
+        assertEquals("500", ExportFormat.bodyMeasurementRow(BodyMeasurement("m5", at, MeasurementType.ARM, 5_000), zone)[4])
     }
 }

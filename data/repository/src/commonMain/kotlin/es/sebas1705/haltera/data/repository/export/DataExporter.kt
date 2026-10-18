@@ -4,6 +4,7 @@ import es.sebas1705.haltera.data.local.db.AppDatabase
 import es.sebas1705.haltera.data.models.Exercise
 import es.sebas1705.haltera.data.models.ExerciseSource
 import es.sebas1705.haltera.data.models.ExerciseVariant
+import es.sebas1705.haltera.data.repository.BodyMeasurementRepository
 import es.sebas1705.haltera.data.repository.BodyWeightRepository
 import es.sebas1705.haltera.data.repository.ExerciseRepository
 import es.sebas1705.haltera.data.repository.NutritionRepository
@@ -35,12 +36,15 @@ data class ExportCounts(
     val mealEntries: Int = 0,
     val routines: Int = 0,
     val customExercises: Int = 0,
+    /** Version 3. */
+    val bodyMeasurements: Int = 0,
 )
 
 /**
  * Writes everything the user logged as a zip (docs/EXPORT-FORMAT.md): `sessions.csv`, `body_weight.csv`,
- * `meal_entries.csv`, `routines.json`, `exercises.json` (the user's own exercises) and `manifest.json`.
- * The bundled catalogue and food database are not exported; exercises are referenced by their stable ids.
+ * `body_measurements.csv`, `meal_entries.csv`, `routines.json`, `exercises.json` (the user's own exercises) and `manifest.json`.
+ * The bundled catalogue and food database are not exported; exercises are referenced by their stable ids. Progress
+ * photos stay on the device: they are never part of the export.
  */
 interface DataExporter {
     /**
@@ -87,6 +91,7 @@ internal class SqlDataExporter(
     private val exercises: ExerciseRepository,
     private val nutrition: NutritionRepository,
     private val bodyWeight: BodyWeightRepository,
+    private val bodyMeasurements: BodyMeasurementRepository,
     private val routines: RoutineRepository,
     private val sharing: RoutineSharing,
     private val dispatcher: CoroutineDispatcher,
@@ -118,6 +123,13 @@ internal class SqlDataExporter(
         }
         zip.entry(ExportFormat.BODY_WEIGHT_FILE, weights)
 
+        val measurements = ByteArrayOutput()
+        val measurementsCsv = CsvWriter(measurements, ExportFormat.BODY_MEASUREMENT_COLUMNS)
+        bodyMeasurements.observeAll().first().sortedWith(compareBy({ it.measuredAt }, { it.id })).forEach {
+            measurementsCsv.row(ExportFormat.bodyMeasurementRow(it, timeZone))
+        }
+        zip.entry(ExportFormat.BODY_MEASUREMENTS_FILE, measurements)
+
         val meals = ByteArrayOutput()
         val mealsCsv = CsvWriter(meals, ExportFormat.MEAL_COLUMNS)
         writeMeals(mealsCsv)
@@ -136,6 +148,7 @@ internal class SqlDataExporter(
             sessions = sessionCount,
             sets = sessionsCsv.rows,
             bodyWeightEntries = weightsCsv.rows,
+            bodyMeasurements = measurementsCsv.rows,
             mealEntries = mealsCsv.rows,
             routines = routineFiles.size,
             customExercises = custom.size,
@@ -149,6 +162,7 @@ internal class SqlDataExporter(
             files = listOf(
                 ExportFormat.SESSIONS_FILE,
                 ExportFormat.BODY_WEIGHT_FILE,
+                ExportFormat.BODY_MEASUREMENTS_FILE,
                 ExportFormat.MEAL_ENTRIES_FILE,
                 ExportFormat.ROUTINES_FILE,
                 ExportFormat.EXERCISES_FILE,

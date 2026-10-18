@@ -59,13 +59,15 @@ object HistoryFileParser {
             HistoryFileKind.HALTERA_SESSIONS -> HalteraParser.sessions(table, emptyMap())
             HistoryFileKind.HALTERA_BODY_WEIGHT ->
                 ParsedImport(ImportSource.HALTERA, emptyList(), HalteraParser.bodyWeights(table))
+            HistoryFileKind.HALTERA_BODY_MEASUREMENTS ->
+                ParsedImport(ImportSource.HALTERA, emptyList(), bodyMeasurements = HalteraParser.bodyMeasurements(table))
             null -> throw ImportFormatException(ImportError.UNRECOGNISED, "unknown header")
         }
         return requireData(parsed)
     }
 
     private fun requireData(parsed: ParsedImport): ParsedImport {
-        if (parsed.sessions.isEmpty() && parsed.bodyWeights.isEmpty()) throw ImportFormatException(ImportError.NO_DATA)
+        if (parsed.isEmpty) throw ImportFormatException(ImportError.NO_DATA)
         return parsed
     }
 
@@ -74,7 +76,11 @@ object HistoryFileParser {
         zip.find(ExportFormat.MANIFEST_FILE)?.let { checkManifest(it.decodeToString()) }
         val sessionsFile = zip.find(ExportFormat.SESSIONS_FILE)
         val weightFile = zip.find(ExportFormat.BODY_WEIGHT_FILE)
-        if (sessionsFile == null && weightFile == null) throw ImportFormatException(ImportError.NOT_AN_EXPORT)
+        // Version 3; older exports have no such file.
+        val measurementsFile = zip.find(ExportFormat.BODY_MEASUREMENTS_FILE)
+        if (sessionsFile == null && weightFile == null && measurementsFile == null) {
+            throw ImportFormatException(ImportError.NOT_AN_EXPORT)
+        }
         val definitions = zip.find(ExportFormat.EXERCISES_FILE)?.let(::customExercises).orEmpty()
         val sessions = sessionsFile?.let { file ->
             val table = CsvTable.open(file.decodeToString())
@@ -85,8 +91,17 @@ object HistoryFileParser {
         val weights = weightFile?.let { file ->
             CsvTable.open(file.decodeToString())?.let(HalteraParser::bodyWeights)
         }.orEmpty()
+        val measurements = measurementsFile?.let { file ->
+            CsvTable.open(file.decodeToString())?.let(HalteraParser::bodyMeasurements)
+        }.orEmpty()
         return requireData(
-            ParsedImport(ImportSource.HALTERA, sessions?.sessions.orEmpty(), weights, sessions?.skippedRows ?: 0),
+            ParsedImport(
+                ImportSource.HALTERA,
+                sessions?.sessions.orEmpty(),
+                weights,
+                sessions?.skippedRows ?: 0,
+                bodyMeasurements = measurements,
+            ),
         )
     }
 

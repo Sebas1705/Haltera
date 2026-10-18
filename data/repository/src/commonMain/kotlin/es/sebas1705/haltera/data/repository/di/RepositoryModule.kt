@@ -74,7 +74,7 @@ val repositoryModule = module {
     single<NutritionRepository> {
         SqlNutritionRepository(get(), get(), get(), get(), get(IoDispatcher), get(named("now")))
     }
-    single<DataExporter> { SqlDataExporter(get(), get(), get(), get(), get(), get(), get(), get(IoDispatcher)) }
+    single<DataExporter> { SqlDataExporter(get(), get(), get(), get(), get(), get(), get(), get(), get(IoDispatcher)) }
     single<HistoryImporter> { SqlHistoryImporter(get(), get(), get(IoDispatcher)) }
     // The platform binds its HealthGateway (Health Connect on Android); without one the integration is unsupported.
     single<HealthRepository> {

@@ -1,5 +1,6 @@
 package es.sebas1705.haltera.data.repository.export
 
+import es.sebas1705.haltera.data.models.BodyMeasurement
 import es.sebas1705.haltera.data.models.BodyWeightEntry
 import es.sebas1705.haltera.data.models.LoadType
 import es.sebas1705.haltera.data.models.MealEntry
@@ -27,12 +28,14 @@ object ExportFormat {
 
     /**
      * 2 (schema 8): `sessions.csv` gains `routine_id`, `routine_name`, `routine_day_index`, `slot_id` and `both_hands`,
-     * so importing an export keeps routine sessions linked and dumbbell volume right. Version 1 files still import.
+     * so importing an export keeps routine sessions linked and dumbbell volume right.
+     * 3 (schema 9): adds `body_measurements.csv`. Version 1 and 2 files still import.
      */
-    const val VERSION = 2
+    const val VERSION = 3
 
     const val SESSIONS_FILE = "sessions.csv"
     const val BODY_WEIGHT_FILE = "body_weight.csv"
+    const val BODY_MEASUREMENTS_FILE = "body_measurements.csv"
     const val MEAL_ENTRIES_FILE = "meal_entries.csv"
     const val ROUTINES_FILE = "routines.json"
     const val EXERCISES_FILE = "exercises.json"
@@ -53,6 +56,16 @@ object ExportFormat {
     )
 
     val BODY_WEIGHT_COLUMNS = listOf("date", "measured_at", "weight_kg", "weight_grams", "unit", "notes", "id")
+
+    /** Version 3. `value` is in `unit` (cm or percent); `raw_value` is what is stored (mm, tenths of a percent). */
+    val BODY_MEASUREMENT_COLUMNS =
+        listOf("date", "measured_at", "type", "custom_name", "value", "unit", "raw_value", "notes", "id")
+
+    /** Unit of a length measurement in `body_measurements.csv`, whatever unit the app shows. */
+    const val UNIT_CM = "cm"
+
+    /** Unit of the body fat measurement in `body_measurements.csv`. */
+    const val UNIT_PERCENT = "percent"
 
     val MEAL_COLUMNS = listOf(
         "date", "meal", "position", "entry_id", "food_id", "food", "brand", "barcode", "food_source",
@@ -191,6 +204,30 @@ object ExportFormat {
         entry.id,
     )
 
+    /**
+     * One measurement: lengths in centimetres (millimetres / 10, exact) and body fat in percent (tenths / 10, exact),
+     * plus the stored integer. `custom_name` is empty except for custom measurements.
+     */
+    fun bodyMeasurementRow(measurement: BodyMeasurement, timeZone: TimeZone): List<String> = listOf(
+        localDate(measurement.measuredAt, timeZone),
+        instant(measurement.measuredAt),
+        measurement.type.name,
+        measurement.customName,
+        tenths(measurement.value),
+        if (measurement.type.isLength) UNIT_CM else UNIT_PERCENT,
+        measurement.value.toString(),
+        measurement.notes,
+        measurement.id,
+    )
+
+    /** [value] / 10 with at most one decimal: `825` is `82.5`, `800` is `80`. Exact. */
+    private fun tenths(value: Long): String {
+        val negative = value < 0
+        val magnitude = if (negative) -(value + 1) + 1 else value
+        val fraction = magnitude % TEN
+        return (if (negative) "-" else "") + (magnitude / TEN) + if (fraction == 0L) "" else ".$fraction"
+    }
+
     fun mealRow(entry: MealEntry): List<String> {
         val food = entry.food
         val nutrients = food?.let { entry.nutrients }
@@ -218,6 +255,7 @@ object ExportFormat {
         )
     }
 
+    private const val TEN = 10L
     private const val GRAMS_PER_KG = 1000L
     private const val KG_DECIMALS = 3
     private const val RPE_DECIMALS = 2

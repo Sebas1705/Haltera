@@ -56,6 +56,8 @@ internal class SqlHistoryImporter(
             unmatched = resolution.unmatched,
             skippedRows = parsed.skippedRows,
             needsUnitChoice = parsed.needsUnitChoice,
+            bodyMeasurements = parsed.bodyMeasurements.size,
+            existingBodyMeasurements = existingMeasurementIds(parsed.bodyMeasurements.map { it.id }).size,
         )
     }
 
@@ -74,8 +76,10 @@ internal class SqlHistoryImporter(
             }
         }
         val existingWeights = existingBodyWeightIds(parsed.bodyWeights.map { it.id })
+        val existingMeasurements = existingMeasurementIds(parsed.bodyMeasurements.map { it.id })
         var sets = 0
         var weights = 0
+        var measurements = 0
         db.transaction {
             for (session in relevant) {
                 if (session.id in existing) db.workoutSessionEntityQueries.delete(session.id)
@@ -86,6 +90,11 @@ internal class SqlHistoryImporter(
                 db.bodyWeightEntityQueries.upsert(entry.id, entry.measuredAt, entry.weightGrams, entry.notes)
                 weights++
             }
+            for (m in parsed.bodyMeasurements) {
+                if (m.id in existingMeasurements && options.existing == ExistingPolicy.SKIP) continue
+                db.bodyMeasurementEntityQueries.upsert(m.id, m.measuredAt, m.type.name, m.customName, m.value, m.notes)
+                measurements++
+            }
         }
         ImportSummary(
             sessionsWritten = relevant.size - relevant.count { it.id in existing },
@@ -94,6 +103,7 @@ internal class SqlHistoryImporter(
             sets = sets,
             bodyWeights = weights,
             exercisesCreated = created.values.map { it.exerciseId }.toSet().size,
+            bodyMeasurements = measurements,
         )
     }
 
@@ -106,6 +116,10 @@ internal class SqlHistoryImporter(
 
     private fun existingBodyWeightIds(ids: List<String>): Set<String> = ids.chunked(MAX_IN_ARGS).flatMapTo(HashSet()) {
         db.bodyWeightEntityQueries.selectExistingIds(it).executeAsList()
+    }
+
+    private fun existingMeasurementIds(ids: List<String>): Set<String> = ids.chunked(MAX_IN_ARGS).flatMapTo(HashSet()) {
+        db.bodyMeasurementEntityQueries.selectExistingIds(it).executeAsList()
     }
 
     // region matching

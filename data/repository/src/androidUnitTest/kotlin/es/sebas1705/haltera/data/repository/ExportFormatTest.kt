@@ -78,17 +78,29 @@ class ExportFormatTest {
         val at = java.time.Instant.parse("2026-10-15T23:30:00Z").toEpochMilli()
         assertEquals(
             listOf("2026-10-16", "2026-10-15T23:30:00Z", "WAIST", "", "82.5", "cm", "825", "note", "m1"),
-            ExportFormat.bodyMeasurementRow(BodyMeasurement("m1", at, MeasurementType.WAIST, 825, notes = "note"), zone),
+            ExportFormat.bodyMeasurementRow(
+                BodyMeasurement("m1", at, MeasurementType.WAIST, 825, notes = "note"),
+                zone
+            ),
         )
         assertEquals(
             listOf("18.5", "percent", "185"),
-            ExportFormat.bodyMeasurementRow(BodyMeasurement("m2", at, MeasurementType.BODY_FAT, 185), zone).subList(4, 7),
+            ExportFormat.bodyMeasurementRow(
+                BodyMeasurement("m2", at, MeasurementType.BODY_FAT, 185),
+                zone
+            ).subList(4, 7),
         )
         assertEquals(
             listOf("CUSTOM", "Calf", "38", "cm", "380"),
-            ExportFormat.bodyMeasurementRow(BodyMeasurement("m3", at, MeasurementType.CUSTOM, 380, "Calf"), zone).subList(2, 7),
+            ExportFormat.bodyMeasurementRow(
+                BodyMeasurement("m3", at, MeasurementType.CUSTOM, 380, "Calf"),
+                zone
+            ).subList(2, 7),
         )
         assertEquals("0.1", ExportFormat.bodyMeasurementRow(BodyMeasurement("m4", at, MeasurementType.ARM, 1), zone)[4])
-        assertEquals("500", ExportFormat.bodyMeasurementRow(BodyMeasurement("m5", at, MeasurementType.ARM, 5_000), zone)[4])
+        assertEquals(
+            "500",
+            ExportFormat.bodyMeasurementRow(BodyMeasurement("m5", at, MeasurementType.ARM, 5_000), zone)[4]
+        )
     }
 }

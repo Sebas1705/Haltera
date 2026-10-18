@@ -91,7 +91,10 @@ internal class FileProgressPhotoRepository(
         edit { list ->
             val current = list.firstOrNull { it.id == photo.id } ?: return@edit list to Unit
             val updated = current.copy(takenAt = photo.takenAt, notes = photo.notes.trim())
-            files.write(metaName(updated.id), encode(PhotoMeta(updated.id, updated.takenAt, updated.notes, updated.addedAt)))
+            files.write(
+                metaName(updated.id),
+                encode(PhotoMeta(updated.id, updated.takenAt, updated.notes, updated.addedAt))
+            )
             list.map { if (it.id == updated.id) updated else it } to Unit
         }
     }
@@ -146,13 +149,14 @@ internal class FileProgressPhotoRepository(
         val loaded = names.filter { it.endsWith(META_SUFFIX) }.mapNotNull { name ->
             val meta = files.read(name)?.let(::decode)
             val id = name.removeSuffix(META_SUFFIX)
-            if (meta == null || meta.id != id || !isSafeId(id) || imageName(id) !in names) {
+            val usable = meta != null && meta.id == id && isSafeId(id)
+            if (!usable || imageName(id) !in names) {
                 // Unreadable metadata, or an image that is gone: the photo cannot be shown.
                 files.delete(name)
                 files.delete(thumbName(id))
                 null
             } else {
-                meta.toModel()
+                meta?.toModel()
             }
         }
         val known = loaded.mapTo(HashSet()) { it.id }
@@ -163,9 +167,14 @@ internal class FileProgressPhotoRepository(
     }
 
     private fun sorted(list: List<ProgressPhoto>) =
-        list.sortedWith(compareByDescending<ProgressPhoto> { it.takenAt }.thenByDescending { it.addedAt }.thenBy { it.id })
+        list.sortedWith(
+            compareByDescending<ProgressPhoto> { it.takenAt }.thenByDescending { it.addedAt }.thenBy { it.id }
+        )
 
-    private fun encode(meta: PhotoMeta): ByteArray = json.encodeToString(PhotoMeta.serializer(), meta).encodeToByteArray()
+    private fun encode(meta: PhotoMeta): ByteArray = json.encodeToString(
+        PhotoMeta.serializer(),
+        meta
+    ).encodeToByteArray()
 
     private fun decode(bytes: ByteArray): PhotoMeta? = try {
         json.decodeFromString(PhotoMeta.serializer(), bytes.decodeToString())

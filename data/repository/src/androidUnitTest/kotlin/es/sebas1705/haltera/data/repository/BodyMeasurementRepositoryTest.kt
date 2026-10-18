@@ -58,7 +58,12 @@ class BodyMeasurementRepositoryTest {
         val repo = repo()
         assertFailsWith<IllegalArgumentException> { repo.add(MeasurementType.WAIST, 0) }
         assertFailsWith<IllegalArgumentException> { repo.add(MeasurementType.WAIST, -1) }
-        assertFailsWith<IllegalArgumentException> { repo.add(MeasurementType.CHEST, BodyMeasurements.MAX_LENGTH_MM + 1) }
+        assertFailsWith<IllegalArgumentException> {
+            repo.add(
+                MeasurementType.CHEST,
+                BodyMeasurements.MAX_LENGTH_MM + 1
+            )
+        }
         assertFailsWith<IllegalArgumentException> { repo.add(MeasurementType.BODY_FAT, 1_001) }
         assertEquals(emptyList(), repo.observeAll().first())
         // The boundaries themselves are fine.

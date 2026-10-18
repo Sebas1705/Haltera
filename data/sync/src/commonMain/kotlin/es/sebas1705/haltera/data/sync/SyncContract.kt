@@ -131,5 +131,14 @@ object SyncCollections {
     /** The only document id of [SETTINGS]. */
     const val SETTINGS_ID = "user"
 
-    val ALL: List<String> = listOf(EXERCISES, ROUTINES, SESSIONS, BODY_WEIGHT, BODY_MEASUREMENTS, FOODS, MEAL_DAYS, SETTINGS)
+    val ALL: List<String> = listOf(
+        EXERCISES,
+        ROUTINES,
+        SESSIONS,
+        BODY_WEIGHT,
+        BODY_MEASUREMENTS,
+        FOODS,
+        MEAL_DAYS,
+        SETTINGS
+    )
 }

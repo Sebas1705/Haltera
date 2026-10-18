@@ -123,12 +123,7 @@ internal class SqlDataExporter(
         }
         zip.entry(ExportFormat.BODY_WEIGHT_FILE, weights)
 
-        val measurements = ByteArrayOutput()
-        val measurementsCsv = CsvWriter(measurements, ExportFormat.BODY_MEASUREMENT_COLUMNS)
-        bodyMeasurements.observeAll().first().sortedWith(compareBy({ it.measuredAt }, { it.id })).forEach {
-            measurementsCsv.row(ExportFormat.bodyMeasurementRow(it, timeZone))
-        }
-        zip.entry(ExportFormat.BODY_MEASUREMENTS_FILE, measurements)
+        val measurementsCsv = writeMeasurements(zip, timeZone)
 
         val meals = ByteArrayOutput()
         val mealsCsv = CsvWriter(meals, ExportFormat.MEAL_COLUMNS)
@@ -174,6 +169,17 @@ internal class SqlDataExporter(
         )
         zip.finish()
         counts
+    }
+
+    /** `body_measurements.csv`, oldest first (then by id). */
+    private suspend fun writeMeasurements(zip: ZipWriter, timeZone: TimeZone): CsvWriter {
+        val out = ByteArrayOutput()
+        val csv = CsvWriter(out, ExportFormat.BODY_MEASUREMENT_COLUMNS)
+        bodyMeasurements.observeAll().first().sortedWith(compareBy({ it.measuredAt }, { it.id })).forEach {
+            csv.row(ExportFormat.bodyMeasurementRow(it, timeZone))
+        }
+        zip.entry(ExportFormat.BODY_MEASUREMENTS_FILE, out)
+        return csv
     }
 
     /** Writes the sets page by page (oldest session first); returns the number of sessions with rows. */

@@ -75,6 +75,9 @@ enum class Metric {
     /** Body weight change per week over the last 28 days: [BodyWeightStats.ratePerWeek]. */
     BODY_WEIGHT_RATE,
 
+    /** A body measurement against the oldest of the same measurement within 30 days (progress `MeasurementMath.change`). */
+    BODY_MEASUREMENT_CHANGE,
+
     /** Two variants or exercises on one chart. */
     COMPARE,
 

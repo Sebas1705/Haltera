@@ -543,7 +543,10 @@ class HistoryFileParserTest {
         val sessions = fixtureBytes("haltera-sessions.csv").decodeToString()
         for (version in 1..ExportFormat.VERSION) {
             val parsed = HistoryFileParser.parse(
-                zipOf("sessions.csv" to sessions, "manifest.json" to "{\"format\":\"haltera-export\",\"version\":$version}"),
+                zipOf(
+                    "sessions.csv" to sessions,
+                    "manifest.json" to "{\"format\":\"haltera-export\",\"version\":$version}"
+                ),
                 utc,
             )
             assertEquals("s-001", parsed.sessions.single().id, "version $version")

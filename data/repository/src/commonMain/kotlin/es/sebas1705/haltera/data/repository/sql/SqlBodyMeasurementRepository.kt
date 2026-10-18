@@ -20,7 +20,9 @@ internal class SqlBodyMeasurementRepository(
 ) : BodyMeasurementRepository {
 
     override fun observeAll(): Flow<List<BodyMeasurement>> =
-        db.bodyMeasurementEntityQueries.selectAll().asFlow().mapToList(dispatcher).map { rows -> rows.map { it.toModel() } }
+        db.bodyMeasurementEntityQueries.selectAll().asFlow().mapToList(
+            dispatcher
+        ).map { rows -> rows.map { it.toModel() } }
 
     override suspend fun add(
         type: MeasurementType,
@@ -45,7 +47,14 @@ internal class SqlBodyMeasurementRepository(
     }
 
     @Suppress("LongParameterList") // The columns of one row.
-    private fun write(id: String, measuredAt: Long, type: MeasurementType, value: Long, customName: String, notes: String) {
+    private fun write(
+        id: String,
+        measuredAt: Long,
+        type: MeasurementType,
+        value: Long,
+        customName: String,
+        notes: String
+    ) {
         val row = validated(id, measuredAt, type, value, customName, notes)
         db.bodyMeasurementEntityQueries.upsert(row.id, row.measuredAt, row.type, row.customName, row.value_, row.notes)
     }

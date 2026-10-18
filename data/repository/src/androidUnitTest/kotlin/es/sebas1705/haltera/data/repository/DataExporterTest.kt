@@ -355,7 +355,14 @@ class DataExporterTest {
         )
         assertEquals(ExportCounts(2, 7, 2, 5, 1, 1, bodyMeasurements = 5), archive.counts)
         assertEquals(
-            listOf("sessions.csv", "body_weight.csv", "body_measurements.csv", "meal_entries.csv", "routines.json", "exercises.json"),
+            listOf(
+                "sessions.csv",
+                "body_weight.csv",
+                "body_measurements.csv",
+                "meal_entries.csv",
+                "routines.json",
+                "exercises.json"
+            ),
             manifest.getValue("files").jsonArray.map { it.jsonPrimitive.content },
         )
     }

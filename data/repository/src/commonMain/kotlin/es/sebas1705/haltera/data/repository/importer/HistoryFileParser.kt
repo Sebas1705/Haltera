@@ -60,7 +60,11 @@ object HistoryFileParser {
             HistoryFileKind.HALTERA_BODY_WEIGHT ->
                 ParsedImport(ImportSource.HALTERA, emptyList(), HalteraParser.bodyWeights(table))
             HistoryFileKind.HALTERA_BODY_MEASUREMENTS ->
-                ParsedImport(ImportSource.HALTERA, emptyList(), bodyMeasurements = HalteraParser.bodyMeasurements(table))
+                ParsedImport(
+                    ImportSource.HALTERA,
+                    emptyList(),
+                    bodyMeasurements = HalteraParser.bodyMeasurements(table)
+                )
             null -> throw ImportFormatException(ImportError.UNRECOGNISED, "unknown header")
         }
         return requireData(parsed)

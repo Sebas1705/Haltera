@@ -110,7 +110,10 @@ class BodyMeasurementSyncTest {
             BODY_MEASUREMENTS,
             listOf(
                 SyncDocument(
-                    BODY_MEASUREMENTS, "bm1", local.updatedAt, deleted = false,
+                    BODY_MEASUREMENTS,
+                    "bm1",
+                    local.updatedAt,
+                    deleted = false,
                     payload = SyncJson.encodeToString(
                         BodyMeasurementPayload.serializer(),
                         BodyMeasurementPayload("bm1", 1_000, "WAIST", 700),

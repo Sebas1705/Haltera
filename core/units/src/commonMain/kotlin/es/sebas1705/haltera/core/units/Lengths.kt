@@ -44,7 +44,12 @@ object Lengths {
 
     /** [mm] in [unit], no trailing zeros, in the app [language]: 825 mm -> "82.5" (cm) / "32.48" (in). */
     fun format(mm: Long, unit: LengthUnit, language: String = appLanguage(), grouping: Boolean = true): String =
-        Numbers.format(fromMillimetres(mm, unit), maxDecimals = decimals(unit), language = language, grouping = grouping)
+        Numbers.format(
+            fromMillimetres(mm, unit),
+            maxDecimals = decimals(unit),
+            language = language,
+            grouping = grouping
+        )
 
     /** Parses a typed length ("82,5" or "82.5") in [unit] to millimetres, or null when it is not a number. */
     fun parse(text: String, unit: LengthUnit): Long? =

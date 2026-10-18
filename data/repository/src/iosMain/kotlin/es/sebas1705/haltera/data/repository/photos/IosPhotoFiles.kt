@@ -55,7 +55,12 @@ class IosPhotoFiles(private val directoryPath: String = defaultDirectory()) : Ph
 
     private fun ensureDirectory() {
         if (manager.fileExistsAtPath(directoryPath)) return
-        manager.createDirectoryAtPath(directoryPath, withIntermediateDirectories = true, attributes = null, error = null)
+        manager.createDirectoryAtPath(
+            directoryPath,
+            withIntermediateDirectories = true,
+            attributes = null,
+            error = null
+        )
         NSURL.fileURLWithPath(directoryPath).setResourceValue(true, forKey = NSURLIsExcludedFromBackupKey, error = null)
     }
 

@@ -37,7 +37,7 @@ tracked file outside this list. The list lives in the script.
 - Whole files that describe the old name on purpose: this file, `docs/RELEASE.md` (legacy package and apps),
   `docs/FIRESTORE-DATA.md` (rename runbook), `README.md` (the "formerly" line),
   `docs/designs/2026-10-14-haltera-core-design.md` (share format),
-  `composeApp/src/androidMain/AndroidManifest.xml` (`.ironlog` intent filter), and the share decoders with their test:
+  `androidApp/src/main/AndroidManifest.xml` (`.ironlog` intent filter), and the share decoders with their test:
   `RoutineExport.kt`, `RoutineShareCode.kt`, `RoutineSharingTest.kt`.
 - The four public pages under `firebase/hosting` (privacy and account deletion, English and Spanish) and
   `scripts/hosting-pages.test.mjs`, which caps how often they mention it: users of the earlier Ironlog test builds

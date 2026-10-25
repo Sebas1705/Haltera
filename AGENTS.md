@@ -43,7 +43,7 @@ Conversations with the owner may be in Spanish; anything committed is in English
 
 ## Firebase (account and sync)
 
-- `composeApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist` come from Doppler
+- `androidApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist` come from Doppler
   (`scripts/doppler-sync-local.sh`) and are git-ignored: never commit them. The app must build and run
   without them (sync off); run the required checks both ways when touching Firebase wiring.
 - After changing `firebase/firestore.rules`, run the rules tests
@@ -78,7 +78,7 @@ Toolchain, environment variables and pinned versions: [docs/plans/README.md](doc
 ## Required checks before finishing
 
 ```sh templetry:checks
-./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :composeApp:assembleDebug
+./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :androidApp:assembleDebug
 ```
 
 After changing `brand/` or `scripts/brand.mjs`, also run `node scripts/brand.mjs --check`.

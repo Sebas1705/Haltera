@@ -39,7 +39,8 @@ Haltera follows your real training and never forces a schedule. Any session can 
 Clean Architecture on a layered Kotlin Multiplatform module graph (details in [ARCHITECTURE.md](ARCHITECTURE.md), full inventory in [MODULE_MAP.md](MODULE_MAP.md)):
 
 ```
-composeApp / iosApp                      entry points, five-tab shell, DI, Settings
+androidApp / iosApp                      Android and iOS entry points (manifest, icons, signing / Xcode)
+composeApp                               shared app: five-tab shell, DI, Settings
 feature:today | routines | exercises | nutrition | progress | session    UI + MVI ViewModels
 domain:usecases                          progression engine, cycle, stats, routine scorer, nutrition
 data:repository | local | sync | remote | health | routines | models     SQLDelight, Firebase, Health Connect
@@ -57,8 +58,8 @@ Kotlin 2.4 · Compose Multiplatform 1.11 (Material 3) · navigation-compose with
 Requirements: JDK 21 (`JAVA_HOME`), Android SDK (`ANDROID_HOME`), Node 22 for `scripts/`. iOS builds in CI (macOS); locally you need a Mac with XcodeGen.
 
 ```sh
-./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :composeApp:assembleDebug   # what CI runs
-./gradlew :composeApp:installDebug                              # install on a device/emulator
+./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :androidApp:assembleDebug   # what CI runs
+./gradlew :androidApp:installDebug                              # install on a device/emulator
 cd iosApp && xcodegen generate                                   # iOS project (Mac)
 ```
 

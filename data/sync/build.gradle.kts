@@ -12,7 +12,7 @@ kotlin {
             implementation(libs.koin.core)
             implementation(libs.kermit)
         }
-        androidUnitTest.dependencies {
+        androidHostTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.sqldelight.jvm.driver)
             implementation(libs.kotlinx.coroutines.test)

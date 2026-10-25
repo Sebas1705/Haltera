@@ -18,7 +18,7 @@ kotlin {
         }
         androidMain.dependencies { implementation(libs.ktor.client.okhttp) }
         iosMain.dependencies { implementation(libs.ktor.client.darwin) }
-        androidUnitTest.dependencies {
+        androidHostTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.sqldelight.jvm.driver)
             implementation(libs.kotlinx.coroutines.test)

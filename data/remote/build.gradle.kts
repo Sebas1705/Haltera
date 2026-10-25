@@ -10,7 +10,7 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.koin.core)
         }
-        androidUnitTest.dependencies {
+        androidHostTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }

@@ -57,7 +57,7 @@ Kotlin 2.4 · Compose Multiplatform 1.11 (Material 3) · navigation-compose with
 Requirements: JDK 21 (`JAVA_HOME`), Android SDK (`ANDROID_HOME`), Node 22 for `scripts/`. iOS builds in CI (macOS); locally you need a Mac with XcodeGen.
 
 ```sh
-./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug   # what CI runs
+./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :composeApp:assembleDebug   # what CI runs
 ./gradlew :composeApp:installDebug                              # install on a device/emulator
 cd iosApp && xcodegen generate                                   # iOS project (Mac)
 ```

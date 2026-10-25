@@ -66,10 +66,10 @@ All build config lives in `build-logic/` so module `build.gradle.kts` files stay
 
 | Plugin ID | Use for |
 |-----------|---------|
-| `haltera.kmp.library` | Any library module |
+| `haltera.kmp.library` | Any library module (`com.android.kotlin.multiplatform.library`: no build types, JVM tests in `src/androidHostTest`, run with `testAndroidHostTest`) |
 | `haltera.kmp.feature` | Feature modules (+ Compose) |
 | `haltera.kmp.data` | Data modules (SQLDelight applied per module) |
 | `haltera.kmp.domain` | Domain/use-case modules |
 | `haltera.kmp.core` | Core modules |
-| `haltera.kmp.app` | composeApp |
+| `haltera.kmp.app` | composeApp (`com.android.application` + `androidTarget()`; needs the `android.builtInKotlin=false` / `android.newDsl=false` opt-outs in `gradle.properties` until the Android app moves to its own module) |
 | `haltera.detekt` | Detekt (applied by the conventions above) |

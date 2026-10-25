@@ -15,9 +15,9 @@ internal const val MIN_SDK = 24
 
 /**
  * The targets shared by every module: iOS frameworks and the common compiler flags.
- * The Android target is configured by [configureAndroidApp] or [configureAndroidLibrary], because
- * since AGP 9 the app (`com.android.application` + `androidTarget()`) and the libraries
- * (`com.android.kotlin.multiplatform.library`, `androidLibrary {}`) use different DSLs.
+ * The Android target of every KMP module is configured by [configureAndroidLibrary]
+ * (`com.android.kotlin.multiplatform.library`, `androidLibrary {}`); the application module is pure Android
+ * ([configureAndroidApp]) and depends on composeApp.
  */
 internal fun Project.configureKmp(
     block: KotlinMultiplatformExtension.() -> Unit = {},
@@ -36,13 +36,11 @@ internal fun Project.configureKmp(
     }
 }
 
-/** composeApp: the KMP `androidTarget()` next to `com.android.application`. */
+/**
+ * androidApp: `com.android.application` with built-in Kotlin (AGP 9), so no Kotlin plugin is applied and the
+ * Kotlin jvmTarget follows `compileOptions.targetCompatibility`.
+ */
 internal fun Project.configureAndroidApp(namespace: String, applicationId: String) {
-    extensions.configure<KotlinMultiplatformExtension> {
-        androidTarget {
-            compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
-        }
-    }
     extensions.configure<ApplicationExtension> {
         this.namespace = namespace
         compileSdk = COMPILE_SDK

@@ -47,9 +47,9 @@ gradlePlugin {
             id = "haltera.kmp.core"
             implementationClass = "KmpCoreConventionPlugin"
         }
-        register("kmpApp") {
-            id = "haltera.kmp.app"
-            implementationClass = "KmpAppConventionPlugin"
+        register("androidApp") {
+            id = "haltera.android.app"
+            implementationClass = "AndroidAppConventionPlugin"
         }
         register("halteraDetekt") {
             id = "haltera.detekt"

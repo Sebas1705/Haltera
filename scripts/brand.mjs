@@ -120,7 +120,7 @@ const appIconSet = `{
 }
 `;
 
-const res = "composeApp/src/androidMain/res";
+const res = "androidApp/src/main/res";
 const assets = "iosApp/iosApp/Assets.xcassets";
 const files = {
   "brand/logo.svg": logoSvg,

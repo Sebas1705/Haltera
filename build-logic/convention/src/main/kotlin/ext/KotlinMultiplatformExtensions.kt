@@ -79,8 +79,12 @@ internal fun Project.configureAndroidLibrary(namespace: String) {
             compileSdk = COMPILE_SDK
             minSdk = MIN_SDK
             compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
-            // Off by default in this plugin; only modules with src/androidMain/res (notification strings, icons) need it.
-            androidResources { enable = file("src/androidMain/res").isDirectory }
+            // Off by default in this plugin. Modules with src/androidMain/res (notification strings, icons) need it,
+            // and so do modules with Compose resources: the plugin only packages assets (where Compose Multiplatform
+            // puts a library's resources) into the AAR when Android resources are enabled.
+            androidResources {
+                enable = file("src/androidMain/res").isDirectory || file("src/commonMain/composeResources").isDirectory
+            }
             withHostTest {}
         }
     }

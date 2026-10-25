@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-java@v6
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v6
-      - run: ./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :composeApp:assembleDebug --continue
+      - run: ./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :androidApp:assembleDebug --continue
       - uses: actions/upload-artifact@v7
         if: always()
         with:

@@ -1,23 +1,20 @@
 import ext.configureAndroidApp
-import ext.configureKmp
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 
 /**
- * Application-module convention for composeApp.
- * Applies: android application + KMP + Compose + serialization.
+ * Convention for androidApp, the pure-Android application module (`com.android.application` with AGP's
+ * built-in Kotlin and the new DSL; no KMP plugin). It holds the manifest, launcher resources, signing and
+ * the Android entry points, and depends on composeApp, the KMP library with the shared UI.
+ * Applies: android application + Compose compiler + detekt.
  */
-class KmpAppConventionPlugin : Plugin<Project> {
+class AndroidAppConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) = with(target) {
-        apply(plugin = "org.jetbrains.kotlin.multiplatform")
         apply(plugin = "com.android.application")
-        apply(plugin = "org.jetbrains.compose")
         apply(plugin = "org.jetbrains.kotlin.plugin.compose")
-        apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         apply(plugin = "haltera.detekt")
 
-        configureKmp()
         configureAndroidApp(namespace = "es.sebas1705.haltera", applicationId = "es.sebas1705.haltera")
     }
 }

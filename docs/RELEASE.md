@@ -6,7 +6,7 @@ The same Firebase project backs the account and sync feature (Authentication + F
 [Firebase in the app](#firebase-in-the-app) and docs/designs/2026-10-14-sync-design.md).
 
 The app testers get is always the same: `es.sebas1705.haltera`, signed with the release (upload) key.
-Debug builds (`es.sebas1705.haltera.debug`, `./gradlew :composeApp:installDebug`) are for local
+Debug builds (`es.sebas1705.haltera.debug`, `./gradlew :androidApp:installDebug`) are for local
 development only and install alongside it.
 
 ## Legacy package
@@ -37,7 +37,7 @@ repository, and GitHub only stores `DOPPLER_TOKEN`, a read-only Doppler service 
 manually from Actions (`workflow_dispatch`):
 
 1. `.github/actions/build-release` checks that Doppler has every secret, decodes the keystore to
-   the runner's temp dir, writes `composeApp/google-services.json` from `GOOGLE_SERVICES_JSON` and builds the release APK and AAB with
+   the runner's temp dir, writes `androidApp/google-services.json` from `GOOGLE_SERVICES_JSON` and builds the release APK and AAB with
    `VERSION_CODE` = commit count of `main` and `VERSION_NAME` = `main-<count>`.
 2. The APK is uploaded to App Distribution, group `testers`, with the commit subject as release notes.
 3. The keystore and the service account key are removed from the runner.
@@ -46,7 +46,7 @@ manually from Actions (`workflow_dispatch`):
 the previous one. Testers get an email from App Distribution with the download link (the first time
 they accept the invitation and install from the browser or the *Firebase App Tester* app).
 
-Locally, without those variables, `./gradlew :composeApp:assembleRelease` builds a release APK
+Locally, without those variables, `./gradlew :androidApp:assembleRelease` builds a release APK
 (R8 on) signed with the debug key and the version from the convention plugin. To build one signed
 with the real key:
 
@@ -54,7 +54,7 @@ with the real key:
 doppler run --project ironlog --config prd -- bash -c \
   'printf "%s" "$SIGNING_KEYSTORE_BASE64" | base64 -d > "$TEMP/ironlog-release.jks"'
 SIGNING_KEYSTORE_PATH="$TEMP/ironlog-release.jks" \
-  doppler run --project ironlog --config prd -- bash -c './gradlew :composeApp:assembleRelease'
+  doppler run --project ironlog --config prd -- bash -c './gradlew :androidApp:assembleRelease'
 rm -f "$TEMP/ironlog-release.jks"
 ```
 
@@ -87,11 +87,11 @@ Account and sync (F8) use Firebase Authentication (Anonymous + Google) and Cloud
 through GitLive Firebase KMP. The config files are **not** in the repository (git-ignored):
 
 ```bash
-scripts/doppler-sync-local.sh   # writes composeApp/google-services.json and iosApp/iosApp/GoogleService-Info.plist
+scripts/doppler-sync-local.sh   # writes androidApp/google-services.json and iosApp/iosApp/GoogleService-Info.plist
 ```
 
 Without them the app builds and runs with sync off (`AccountSession.NotConfigured`): that is how the CI
-checks build. The google-services Gradle plugin is applied only when `composeApp/google-services.json`
+checks build. The google-services Gradle plugin is applied only when `androidApp/google-services.json`
 exists; iOS calls `FirebaseApp.configure()` only when the plist is bundled.
 
 - Firebase apps: Android `es.sebas1705.haltera` (release key SHA-1/256, `1:695669078657:android:de14739670cfc7ad962b80`),

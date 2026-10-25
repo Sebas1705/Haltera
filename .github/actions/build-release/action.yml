@@ -1,10 +1,10 @@
 name: Build signed release
 description: >
-  Builds the release APK and AAB of composeApp (es.sebas1705.haltera) signed with the release
+  Builds the release APK and AAB of androidApp (es.sebas1705.haltera) signed with the release
   (upload) keystore. Every secret comes from Doppler ironlog/prd (the job exports DOPPLER_TOKEN and
   checks out the repo with full history first). The Firebase config (google-services.json, both
   Android apps) is written from GOOGLE_SERVICES_JSON so release builds sign in and sync.
-  Outputs land in composeApp/build/outputs/{apk,bundle}/release/.
+  Outputs land in androidApp/build/outputs/{apk,bundle}/release/.
 
 inputs:
   version-name:
@@ -57,7 +57,7 @@ runs:
       run: |
         doppler run -- bash -c 'umask 077; printf "%s" "$SIGNING_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"'
         echo "SIGNING_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
-        doppler run -- bash -c 'printf "%s" "$GOOGLE_SERVICES_JSON" > composeApp/google-services.json'
+        doppler run -- bash -c 'printf "%s" "$GOOGLE_SERVICES_JSON" > androidApp/google-services.json'
 
     # Signing passwords reach Gradle as environment variables through `doppler run`.
     - name: Build APK and AAB
@@ -67,4 +67,4 @@ runs:
         VERSION_NAME: ${{ inputs.version-name }}
       run: |
         chmod +x gradlew
-        doppler run -- ./gradlew :composeApp:assembleRelease :composeApp:bundleRelease --no-daemon --stacktrace
+        doppler run -- ./gradlew :androidApp:assembleRelease :androidApp:bundleRelease --no-daemon --stacktrace

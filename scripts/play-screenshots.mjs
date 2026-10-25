@@ -3,7 +3,7 @@
 //   fastlane/metadata/android/<locale>/images/{phoneScreenshots,sevenInchScreenshots,tenInchScreenshots}/N.png
 // No frames, no captions: Play shows what the app shows.
 //
-//   ./gradlew :composeApp:assembleDebug
+//   ./gradlew :androidApp:assembleDebug
 //   node scripts/play-screenshots.mjs --phone emulator-5560 --tablet emulator-5554 [--only phone|seven|ten] [--locale en-US]
 //
 // Per device and locale it installs the debug APK, wipes it, lets the app create its database, loads
@@ -28,7 +28,7 @@ const SDK = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT || join(pro
 const ADB = join(SDK, "platform-tools", process.platform === "win32" ? "adb.exe" : "adb");
 const PKG = "es.sebas1705.haltera.debug";
 const ACTIVITY = `${PKG}/es.sebas1705.haltera.MainActivity`;
-const APK = join(root, "composeApp/build/outputs/apk/debug/composeApp-debug.apk");
+const APK = join(root, "androidApp/build/outputs/apk/debug/androidApp-debug.apk");
 const SEED = join(root, "scripts/play-screenshots/seed.sql");
 const tmp = join(tmpdir(), "haltera-shots");
 mkdirSync(tmp, { recursive: true });
@@ -50,7 +50,7 @@ function collect(dir) {
     }
   }
 }
-for (const d of ["composeApp", "feature", "core"]) collect(join(root, d));
+for (const d of ["androidApp", "composeApp", "feature", "core"]) collect(join(root, d));
 
 // ---------------------------------------------------------------- adb
 class Device {

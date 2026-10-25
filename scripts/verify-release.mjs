@@ -22,10 +22,10 @@ import { inflateRawSync } from "node:zlib";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const args = new Set(process.argv.slice(2));
 const win = process.platform === "win32";
-const out = join(root, "composeApp/build/outputs");
+const out = join(root, "androidApp/build/outputs");
 const files = {
-  apk: join(out, "apk/release/composeApp-release.apk"),
-  aab: join(out, "bundle/release/composeApp-release.aab"),
+  apk: join(out, "apk/release/androidApp-release.apk"),
+  aab: join(out, "bundle/release/androidApp-release.aab"),
   mapping: join(out, "mapping/release/mapping.txt"),
 };
 const EXPECT = { targetSdk: 36, minSdk: 24, applicationId: "es.sebas1705.haltera" };
@@ -36,7 +36,7 @@ const fail = (msg) => failures.push(msg);
 if (!args.has("--skip-build")) {
   console.log("Building the release AAB and APK...");
   const gradle = join(root, win ? "gradlew.bat" : "gradlew");
-  const run = spawnSync(gradle, [":composeApp:bundleRelease", ":composeApp:assembleRelease", "--stacktrace"], {
+  const run = spawnSync(gradle, [":androidApp:bundleRelease", ":androidApp:assembleRelease", "--stacktrace"], {
     cwd: root, stdio: "inherit", shell: win,
   });
   if (run.status !== 0) { console.error("Gradle failed"); process.exit(1); }
@@ -133,7 +133,7 @@ if (za) {
 
 // ---------------------------------------------------------------- merged manifest
 function findManifest() {
-  const base = join(root, "composeApp/build/intermediates/merged_manifests/release");
+  const base = join(root, "androidApp/build/intermediates/merged_manifests/release");
   const stack = [base];
   while (stack.length) {
     const d = stack.pop();
@@ -256,9 +256,9 @@ ${failures.length ? failures.map((f) => `- **FAIL**: ${f}`).join("\n") : "All au
 ## Build outputs
 
 ${table(["Output", "Path", "Size"], [
-  ["AAB", "`composeApp/build/outputs/bundle/release/composeApp-release.aab`", mb(files.aab)],
-  ["APK (universal)", "`composeApp/build/outputs/apk/release/composeApp-release.apk`", mb(files.apk)],
-  ["R8 mapping", `\`composeApp/build/outputs/mapping/release/mapping.txt\``, `${mb(files.mapping)}, ${mappingLines} lines`],
+  ["AAB", "`androidApp/build/outputs/bundle/release/androidApp-release.aab`", mb(files.aab)],
+  ["APK (universal)", "`androidApp/build/outputs/apk/release/androidApp-release.apk`", mb(files.apk)],
+  ["R8 mapping", `\`androidApp/build/outputs/mapping/release/mapping.txt\``, `${mb(files.mapping)}, ${mappingLines} lines`],
 ])}
 
 Locally the release build is signed with the debug key (no keystore variables); CI signs with the upload key.

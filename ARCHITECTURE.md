@@ -7,7 +7,7 @@ It follows **Clean Architecture** with a layered module graph. Network-backed da
 
 ```
 ┌──────────────────────────────────────────────────────────────────┐
-│                composeApp / iosApp                               │  ← Entry points, shell, DI
+│  androidApp / iosApp  →  composeApp (shared shell, DI)           │  ← Entry points, shell, DI
 ├──────────────────────────────────────────────────────────────────┤
 │  feature:today │ routines │ exercises │ nutrition │ progress │ session │  ← UI + MVI
 ├──────────────────────────────────────────────────────────────────┤
@@ -23,7 +23,7 @@ It follows **Clean Architecture** with a layered module graph. Network-backed da
 
 | Layer | Modules | Can depend on |
 |-------|---------|---------------|
-| App   | `composeApp`, `iosApp` | feature, domain, data, core |
+| App   | `androidApp`, `iosApp` (platform entry points) → `composeApp` (shared shell) | feature, domain, data, core |
 | Feature | `feature:*` | `domain:usecases` (re-exports `data:models` and the `data:repository` interfaces), `core:*` |
 | Domain | `domain:usecases` | `data:models`, `data:repository` (interfaces), `core:common` |
 | Data | `data:repository`, `data:local`, `data:routines`, `data:models` | `data:*` below them, `core` |
@@ -71,5 +71,5 @@ All build config lives in `build-logic/` so module `build.gradle.kts` files stay
 | `haltera.kmp.data` | Data modules (SQLDelight applied per module) |
 | `haltera.kmp.domain` | Domain/use-case modules |
 | `haltera.kmp.core` | Core modules |
-| `haltera.kmp.app` | composeApp (`com.android.application` + `androidTarget()`; needs the `android.builtInKotlin=false` / `android.newDsl=false` opt-outs in `gradle.properties` until the Android app moves to its own module) |
+| `haltera.android.app` | androidApp, the only pure-Android module (`com.android.application` with AGP's built-in Kotlin and the new DSL: no KMP plugin, no `gradle.properties` opt-outs). composeApp itself is a library (`haltera.kmp.feature`) that androidApp and iosApp depend on |
 | `haltera.detekt` | Detekt (applied by the conventions above) |

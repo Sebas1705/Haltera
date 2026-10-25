@@ -70,8 +70,8 @@ jobs:
           NAME="$(node scripts/lib/app-name.mjs)"
           APK="$NAME-$TAG.apk"
           AAB="$NAME-$TAG.aab"
-          cp composeApp/build/outputs/apk/release/composeApp-release.apk "$RUNNER_TEMP/$APK"
-          cp composeApp/build/outputs/bundle/release/composeApp-release.aab "$RUNNER_TEMP/$AAB"
+          cp androidApp/build/outputs/apk/release/androidApp-release.apk "$RUNNER_TEMP/$APK"
+          cp androidApp/build/outputs/bundle/release/androidApp-release.aab "$RUNNER_TEMP/$AAB"
           (cd "$RUNNER_TEMP" && sha256sum "$APK" "$AAB" > "$NAME-$TAG.sha256")
           echo "apk=$RUNNER_TEMP/$APK" >> "$GITHUB_OUTPUT"
           echo "aab=$RUNNER_TEMP/$AAB" >> "$GITHUB_OUTPUT"
@@ -114,7 +114,7 @@ jobs:
             umask 077
             printf "%s" "$FIREBASE_SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/firebase-sa.json"
             export GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/firebase-sa.json"
-            npx --yes firebase-tools@15.32.1 appdistribution:distribute composeApp/build/outputs/apk/release/composeApp-release.apk \
+            npx --yes firebase-tools@15.32.1 appdistribution:distribute androidApp/build/outputs/apk/release/androidApp-release.apk \
               --app "$FIREBASE_ANDROID_APP_ID" \
               --groups "$TESTER_GROUP" \
               --release-notes "$NOTES"'
@@ -139,8 +139,8 @@ jobs:
           args: >-
             --aab ${{ steps.assets.outputs.aab }} --track ${{ vars.PLAY_TRACK }} --release_status ${{ vars.PLAY_RELEASE_STATUS || 'completed' }}
             --metadata_path fastlane/metadata/android --skip_upload_metadata true --skip_upload_images true
-            --skip_upload_screenshots true --mapping composeApp/build/outputs/mapping/release/mapping.txt
+            --skip_upload_screenshots true --mapping androidApp/build/outputs/mapping/release/mapping.txt
 
       - name: Remove credentials from the runner
         if: always()
-        run: rm -f "$RUNNER_TEMP/release.jks" "$RUNNER_TEMP/firebase-sa.json" composeApp/google-services.json
+        run: rm -f "$RUNNER_TEMP/release.jks" "$RUNNER_TEMP/firebase-sa.json" androidApp/google-services.json

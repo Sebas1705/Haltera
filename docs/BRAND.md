@@ -30,12 +30,12 @@ never inside working screens.
 | `brand/logo.svg` | Logo with rounded corners (documents, web) |
 | `brand/icon.svg` | Full-bleed square, source of the store and iOS icons (they round it themselves) |
 | `brand/icon-512.png` | Google Play listing icon |
-| `composeApp/src/androidMain/res/mipmap-anydpi-v26/ic_launcher{,_round}.xml` | Adaptive icon (Android 8+): graphite background, foreground and monochrome layers |
-| `composeApp/src/androidMain/res/drawable/ic_launcher_foreground.xml` | Adaptive foreground, also the Android 12+ splash icon |
-| `composeApp/src/androidMain/res/drawable/ic_launcher_monochrome.xml` | Themed icon (Android 13+): the same shapes in one colour |
-| `composeApp/src/androidMain/res/mipmap-{mdpi…xxxhdpi}/ic_launcher{,_round}.png` | PNG icons: Android 7 (no adaptive icons) and **Firebase App Distribution / App Tester, which cannot read adaptive icons** |
-| `composeApp/src/androidMain/res/values/ic_launcher_colors.xml` | `ic_launcher_background` (graphite) |
-| `composeApp/src/androidMain/res/values{,-v31}/themes.xml` | `Theme.Haltera`; on Android 12+ it sets the splash screen (`windowSplashScreenBackground` graphite, `windowSplashScreenAnimatedIcon` the foreground) |
+| `androidApp/src/main/res/mipmap-anydpi-v26/ic_launcher{,_round}.xml` | Adaptive icon (Android 8+): graphite background, foreground and monochrome layers |
+| `androidApp/src/main/res/drawable/ic_launcher_foreground.xml` | Adaptive foreground, also the Android 12+ splash icon |
+| `androidApp/src/main/res/drawable/ic_launcher_monochrome.xml` | Themed icon (Android 13+): the same shapes in one colour |
+| `androidApp/src/main/res/mipmap-{mdpi…xxxhdpi}/ic_launcher{,_round}.png` | PNG icons: Android 7 (no adaptive icons) and **Firebase App Distribution / App Tester, which cannot read adaptive icons** |
+| `androidApp/src/main/res/values/ic_launcher_colors.xml` | `ic_launcher_background` (graphite) |
+| `androidApp/src/main/res/values{,-v31}/themes.xml` | `Theme.Haltera`; on Android 12+ it sets the splash screen (`windowSplashScreenBackground` graphite, `windowSplashScreenAnimatedIcon` the foreground) |
 | `iosApp/iosApp/Assets.xcassets/AppIcon.appiconset` | iOS icon, 1024 px opaque; `iosApp/project.yml` sets `ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon` |
 
 **Adaptive-icon scale.** The drawing reaches 47.2 units from the centre (the outer corner of a

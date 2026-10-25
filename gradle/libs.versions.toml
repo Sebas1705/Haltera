@@ -26,6 +26,7 @@ gitlive-firebase        = "2.7.0"
 google-services         = "4.5.0"
 credentials             = "1.6.0"
 googleid                = "1.2.1"
+activity-compose        = "1.12.4"
 
 detekt                  = "1.23.8"
 detekt-kotlin           = "2.0.21"
@@ -101,6 +102,7 @@ kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
 
 gitlive-firebase-auth      = { module = "dev.gitlive:firebase-auth",      version.ref = "gitlive-firebase" }
 gitlive-firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive-firebase" }
+androidx-activity-compose  = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 androidx-credentials       = { module = "androidx.credentials:credentials",                    version.ref = "credentials" }
 androidx-credentials-play  = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 google-identity-googleid   = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }
@@ -154,5 +156,5 @@ kmp-feature     = { id = "haltera.kmp.feature" }
 kmp-data        = { id = "haltera.kmp.data" }
 kmp-domain      = { id = "haltera.kmp.domain" }
 kmp-core        = { id = "haltera.kmp.core" }
-kmp-app         = { id = "haltera.kmp.app" }
+android-app     = { id = "haltera.android.app" }
 haltera-detekt = { id = "haltera.detekt" }

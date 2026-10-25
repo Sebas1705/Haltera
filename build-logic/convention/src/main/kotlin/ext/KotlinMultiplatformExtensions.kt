@@ -9,7 +9,7 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-internal const val COMPILE_SDK = 36
+internal const val COMPILE_SDK = 37
 internal const val TARGET_SDK = 36
 internal const val MIN_SDK = 24
 

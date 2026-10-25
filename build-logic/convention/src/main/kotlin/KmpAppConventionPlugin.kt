@@ -1,13 +1,8 @@
-import ext.COMPILE_SDK
-import ext.MIN_SDK
-import ext.TARGET_SDK
+import ext.configureAndroidApp
 import ext.configureKmp
-import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import com.android.build.api.dsl.ApplicationExtension
 
 /**
  * Application-module convention for composeApp.
@@ -23,31 +18,6 @@ class KmpAppConventionPlugin : Plugin<Project> {
         apply(plugin = "haltera.detekt")
 
         configureKmp()
-
-        extensions.configure<ApplicationExtension> {
-            namespace  = "es.sebas1705.haltera"
-            compileSdk = COMPILE_SDK
-            defaultConfig {
-                applicationId = "es.sebas1705.haltera"
-                minSdk        = MIN_SDK
-                targetSdk     = TARGET_SDK
-                versionCode   = 1
-                versionName   = "1.0.0"
-            }
-            compileOptions {
-                sourceCompatibility = JavaVersion.VERSION_17
-                targetCompatibility = JavaVersion.VERSION_17
-            }
-            buildTypes {
-                debug   { isDebuggable = true }
-                release {
-                    isMinifyEnabled = true
-                    proguardFiles(
-                        getDefaultProguardFile("proguard-android-optimize.txt"),
-                        "proguard-rules.pro",
-                    )
-                }
-            }
-        }
+        configureAndroidApp(namespace = "es.sebas1705.haltera", applicationId = "es.sebas1705.haltera")
     }
 }

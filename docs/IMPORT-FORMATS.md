@@ -5,7 +5,7 @@ holds, and writes it only after the user confirms. Sources: **Hevy**, **Strong**
 **Haltera export** ([EXPORT-FORMAT.md](EXPORT-FORMAT.md): the zip, or its `sessions.csv` / `body_weight.csv`).
 
 Code: `data/repository/.../importer/` (`HistoryFileParser` = pure parsing, `ExerciseMatcher` + `ImportAliases`,
-`ExerciseSuggester`, `SqlHistoryImporter` = preview and write), UI in `composeApp/.../dataimport/`. Fixtures: `data/repository/src/androidUnitTest/resources/import/`
+`ExerciseSuggester`, `SqlHistoryImporter` = preview and write), UI in `composeApp/.../dataimport/`. Fixtures: `data/repository/src/androidHostTest/resources/import/`
 (small, synthetic, anonymised; never commit a real export).
 
 ## Flow

@@ -78,7 +78,7 @@ Toolchain, environment variables and pinned versions: [docs/plans/README.md](doc
 ## Required checks before finishing
 
 ```sh templetry:checks
-./gradlew detekt testDebugUnitTest verifySqlDelightMigration :composeApp:assembleDebug
+./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :composeApp:assembleDebug
 ```
 
 After changing `brand/` or `scripts/brand.mjs`, also run `node scripts/brand.mjs --check`.

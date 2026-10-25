@@ -1,8 +1,24 @@
 build:
   maxIssues: 0
 
+# Detekt's defaults skip test sources for the rules below, but its list of test directories predates
+# the Android KMP library plugin, whose JVM tests live in src/androidHostTest.
+testExcludes: &testExcludes
+  - "**/test/**"
+  - "**/androidTest/**"
+  - "**/commonTest/**"
+  - "**/jvmTest/**"
+  - "**/androidUnitTest/**"
+  - "**/androidHostTest/**"
+  - "**/androidInstrumentedTest/**"
+  - "**/androidDeviceTest/**"
+  - "**/jsTest/**"
+  - "**/iosTest/**"
+
 config:
   validation: true
+  # testExcludes above is an anchor, not a rule set.
+  excludes: "testExcludes"
   warningsAsErrors: false
 
 processors:
@@ -25,10 +41,12 @@ comments:
 complexity:
   active: true
   # MVI intent handlers dispatch with one-line `when` branches: those do not add complexity.
-  CyclomaticComplexMethod: { active: true, threshold: 15, ignoreSimpleWhenEntries: true }
-  LongMethod: { active: true, threshold: 60 }
-  LongParameterList: { active: true, functionThreshold: 8, constructorThreshold: 8, ignoreAnnotated: ["Composable"], ignoreDataClasses: true }
-  TooManyFunctions: { active: true, thresholdInFiles: 20, thresholdInClasses: 15 }
+  CyclomaticComplexMethod: { active: true, threshold: 15, ignoreSimpleWhenEntries: true, excludes: *testExcludes }
+  LargeClass: { active: true, excludes: *testExcludes }
+  NestedBlockDepth: { active: true, excludes: *testExcludes }
+  LongMethod: { active: true, threshold: 60, excludes: *testExcludes }
+  LongParameterList: { active: true, functionThreshold: 8, constructorThreshold: 8, ignoreAnnotated: ["Composable"], ignoreDataClasses: true, excludes: *testExcludes }
+  TooManyFunctions: { active: true, thresholdInFiles: 20, thresholdInClasses: 15, excludes: *testExcludes }
 
 coroutines:
   active: true
@@ -43,6 +61,7 @@ exceptions:
   active: true
   TooGenericExceptionCaught: { active: true }
   TooGenericExceptionThrown: { active: true }
+  ThrowingExceptionsWithoutMessageOrCause: { active: true, excludes: *testExcludes }
 
 formatting:
   active: true
@@ -78,13 +97,13 @@ potential-bugs:
   LateinitUsage: { active: false }
   NullableToStringCall: { active: true }
   UnreachableCode: { active: true }
-  UnsafeCallOnNullableType: { active: true }
+  UnsafeCallOnNullableType: { active: true, excludes: *testExcludes }
   UnsafeCast: { active: true }
 
 style:
   active: true
   ForbiddenComment: { active: true, comments: ["FIXME:", "STOPSHIP:"], allowedPatterns: "" }
-  MagicNumber: { active: true, ignoreAnnotated: ["Composable"], ignorePropertyDeclaration: true, ignoreEnums: true, ignoreNumbers: ["-1", "0", "1", "2", "100", "1000"] }
+  MagicNumber: { active: true, ignoreAnnotated: ["Composable"], ignorePropertyDeclaration: true, ignoreEnums: true, ignoreNumbers: ["-1", "0", "1", "2", "100", "1000"], excludes: *testExcludes }
   MaxLineLength: { active: true, maxLineLength: 140, excludeImportStatements: true }
   ReturnCount: { active: true, max: 4, excludeGuardClauses: true }
   UnusedImports: { active: true }

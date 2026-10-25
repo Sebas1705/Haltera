@@ -5,7 +5,7 @@ kotlin {
         commonMain.dependencies {
             api(project(":data:models"))
         }
-        androidUnitTest.dependencies {
+        androidHostTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.serialization.json)
         }

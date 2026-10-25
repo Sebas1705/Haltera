@@ -87,7 +87,7 @@ weight 500 as 400.
 2. Run `node scripts/brand.mjs --png`: it rewrites the text files and renders the PNGs with a
    headless Edge or Chrome. Without `--png` only the text files are written.
 3. Update `BrandColors.kt` (colours) or `LogoGeometry` in `HalteraLogo.kt` (logo) to match;
-   `./gradlew :core:ui:testDebugUnitTest` (`BrandTokensTest`) shows what differs.
+   `./gradlew :core:ui:testAndroidHostTest` (`BrandTokensTest`) shows what differs.
 
 CI (`catalog` job) runs `node scripts/brand.mjs --check`: it fails when a generated text file is out
 of date or a PNG is missing. PNG content is not compared (browser rendering is not byte-stable), so

@@ -6,8 +6,8 @@ catalogue and the bundled food database are not exported; they are referenced by
 Import workouts reads the same files back ([IMPORT-FORMATS.md](IMPORT-FORMATS.md)).
 
 Code: `data/repository/.../export/` (`ExportFormat` = columns and row formatting, `DataExporter`, `ZipWriter`).
-Golden files for every file below live in `data/repository/src/androidUnitTest/resources/export/`; regenerate
-them deliberately with `UPDATE_GOLDEN=1 ./gradlew :data:repository:testDebugUnitTest --tests '*DataExporterTest*'`.
+Golden files for every file below live in `data/repository/src/androidHostTest/resources/export/`; regenerate
+them deliberately with `UPDATE_GOLDEN=1 ./gradlew :data:repository:testAndroidHostTest --tests '*DataExporterTest*'`.
 
 ## Rules that hold for every file
 

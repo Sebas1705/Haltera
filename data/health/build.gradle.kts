@@ -11,7 +11,7 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.androidx.health.connect.client)
         }
-        androidUnitTest.dependencies {
+        androidHostTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.kotlinx.coroutines.test)
         }

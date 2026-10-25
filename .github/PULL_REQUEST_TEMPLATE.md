@@ -10,7 +10,7 @@
 
 - [ ] Convention plugin used (no raw plugin blocks in module build.gradle.kts)
 - [ ] No suspend inside `updateState {}` lambda
-- [ ] Detekt, tests and schema check pass (`./gradlew detekt testDebugUnitTest verifySqlDelightMigration`)
+- [ ] Detekt, tests and schema check pass (`./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration`)
 - [ ] Schema changed → `1.db` regenerated (AGENTS.md "Changing the database schema")
 - [ ] New module added to `settings.gradle.kts` and `MODULE_MAP.md`
 - [ ] UI strings added in English and Spanish

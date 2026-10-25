@@ -12,7 +12,7 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
-        androidUnitTest.dependencies {
+        androidHostTest.dependencies {
             implementation(kotlin("test"))
         }
     }

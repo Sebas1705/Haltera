@@ -30,7 +30,7 @@ const allowedFiles = new Set([
   // Backward-compatible decoders of the former share formats, and their tests.
   "data/repository/src/commonMain/kotlin/es/sebas1705/haltera/data/repository/share/RoutineExport.kt",
   "data/repository/src/commonMain/kotlin/es/sebas1705/haltera/data/repository/share/RoutineShareCode.kt",
-  "data/repository/src/androidUnitTest/kotlin/es/sebas1705/haltera/data/repository/RoutineSharingTest.kt",
+  "data/repository/src/androidHostTest/kotlin/es/sebas1705/haltera/data/repository/RoutineSharingTest.kt",
   "composeApp/src/androidMain/AndroidManifest.xml", // .ironlog intent filter
   // Public pages: users of the earlier Ironlog test builds must find their data and deletion route.
   "firebase/hosting/privacy.html",

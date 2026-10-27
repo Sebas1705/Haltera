@@ -1,0 +1,11 @@
+{
+  "accent": "#FF5A1F",
+  "icon_alt": {
+    "en": "Haltera app icon: an orange barbell shaped like the letter I with white plates, on a graphite rounded square",
+    "es": "Icono de la app Haltera: una barra naranja con forma de letra I y discos blancos, sobre un cuadrado redondeado grafito"
+  },
+  "banner_alt": {
+    "en": "Haltera banner: the app icon, the tagline \"Free gym logbook for Android and iOS\" and the stack (KMP, Compose MP, SQLDelight, Firebase), next to a screenshot of the app",
+    "es": "Banner de Haltera: el icono de la app, el lema \"Registro de gimnasio gratuito para Android e iOS\" y el stack (KMP, Compose MP, SQLDelight, Firebase), junto a una captura de la app"
+  }
+}

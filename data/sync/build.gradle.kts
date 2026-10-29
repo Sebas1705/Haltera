@@ -15,6 +15,7 @@ kotlin {
         androidHostTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.sqldelight.jvm.driver)
+            implementation(libs.sqlite.jdbc)
             implementation(libs.kotlinx.coroutines.test)
             implementation(libs.multiplatform.settings)
             implementation(libs.multiplatform.settings.test)

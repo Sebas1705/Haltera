@@ -95,7 +95,7 @@ class SyncEngineTest {
         d2.engine.syncNow()
 
         d1.db.routineEntityQueries.update("Older", "", 2, "r1")
-        tick()
+        cloud.tick()
         d2.db.routineEntityQueries.update("Newer", "", 3, "r1")
         d1.engine.syncNow() // uploads Older
         d2.engine.syncNow() // Older is older than its dirty Newer: kept, then uploaded
@@ -162,7 +162,7 @@ class SyncEngineTest {
     fun `an edit during the upload stays dirty`() = runTest {
         d1.bodyWeight()
         val read = d1.state(BODY_WEIGHT, "bw1")!!
-        tick()
+        cloud.tick()
         d1.bodyWeight(grams = 82_000)
         d1.db.syncTrackingQueries.clearDirty(BODY_WEIGHT, "bw1", read.updatedAt)
         assertEquals(1L, d1.state(BODY_WEIGHT, "bw1")!!.dirty)
@@ -195,8 +195,8 @@ class SyncEngineTest {
         d1.engine.syncNow()
         // The Google account already has a newer routine from another phone.
         val remoteRoutine = d1.read(ROUTINES, "r1")!!.replace("Push Pull Legs", "From Google")
-        tick()
-        cloud.put("google", SyncDocument(ROUTINES, "r1", System.currentTimeMillis() + 1_000, false, remoteRoutine))
+        cloud.tick()
+        cloud.put("google", SyncDocument(ROUTINES, "r1", cloud.clock.now() + 1_000, false, remoteRoutine))
 
         d1.account.set(AccountSession.SignedIn("google", isAnonymous = false, email = "a@b.c"))
         d1.engine.syncNow()

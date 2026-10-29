@@ -37,7 +37,7 @@ class RoutineNameSyncTest {
         assertEquals("Push Pull Legs", d2.row().routineName)
 
         // Deleted on the first phone: the session loses the routine and its day, keeps the name, everywhere.
-        tick()
+        cloud.tick()
         d1.db.routineEntityQueries.delete("r1")
         assertNull(d1.row().routineDayIndex)
         d1.engine.syncNow()

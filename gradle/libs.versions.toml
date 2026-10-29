@@ -91,6 +91,8 @@ sqldelight-coroutines     = { module = "app.cash.sqldelight:coroutines-extension
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver",        version.ref = "sqldelight" }
 sqldelight-native-driver  = { module = "app.cash.sqldelight:native-driver",         version.ref = "sqldelight" }
 sqldelight-jvm-driver     = { module = "app.cash.sqldelight:sqlite-driver",         version.ref = "sqldelight" }
+# What sqlite-driver brings at runtime; sync tests use its function API to give SQLite a fake clock.
+sqlite-jdbc               = { module = "org.xerial:sqlite-jdbc",                    version = "3.53.4.0" }
 
 datastore-preferences-core = { module = "androidx.datastore:datastore-preferences-core", version.ref = "datastore" }
 datastore-preferences      = { module = "androidx.datastore:datastore-preferences",      version.ref = "datastore" }

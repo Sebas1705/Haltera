@@ -28,6 +28,7 @@ behaviour that cannot be read from this repository.
 | **Health Connect daily totals** (P4): steps, active and total calories burned, resting heart rate, sleep minutes per local day | SQLite table `HealthDayEntity` | Only for the types the user switched on and Health Connect allows; last 30 days at connect, then new days. **Device-only: no sync triggers, never uploaded.** Deleted on Disconnect, when a type is switched off or its permission is revoked, and by "Also erase data on this device" |
 | **Health Connect export ledger**: which workouts and body-weight entries Haltera wrote to Health Connect (local id, fingerprint of start/end/title or time/weight, write time) | SQLite table `HealthExportEntity` | Device-only, never uploaded; deleted on Disconnect and by "Also erase data on this device" |
 | **Body weight imported from Health Connect** | `BodyWeightEntity` (id `hc-<Health Connect record id>`) | Becomes an ordinary body-weight entry: editable, deletable, exported, and **synced like any other entry while the cloud copy is on** |
+| "Send crash reports" switch (Settings → Privacy, Android) | Settings file, key `privacy.crashReports` (`CrashReportsStore`) | Device-local, never synced, default on; kept by "Also erase data on this device" |
 | Health Connect choices: connected, switched-on types, steps goal (default 8 000), last read time, import watermark, export start | Settings file, keys `health.*` (`HealthSettingsStore`) | Device-only, never synced (like the cloud-copy choice) |
 
 Android Auto Backup is on (`allowBackup="true"` with `data_extraction_rules.xml` and `backup_rules.xml`): the database
@@ -83,6 +84,26 @@ settings and load steps on the phone (`LocalDataEraser`). The bundled catalogue 
 
 Tombstones: while the account exists, deleting one item in the app writes a tombstone document (`deleted = true`,
 empty payload) rather than removing the document; they disappear with the account deletion. **Verified** (design §3).
+
+### 2.1b Firebase Crashlytics (Google; Android release builds only)
+
+**Verified in code** (`androidApp/build.gradle.kts`, `AndroidManifest.xml`, `HalteraApplication`, `CrashReportsStore`):
+
+- Only the Android app, only release builds (`firebase_crashlytics_collection_enabled` is `false` in debug builds and
+  `true` in release), and only when the build has the Firebase config. The iOS app has no Crashlytics.
+- **Independent of the cloud copy**: crash reports are sent even while the cloud copy is off and no account exists.
+- **On by default, opt-out**: Settings → Privacy → "Send crash reports" (`CrashReportsStore`, device-local). The
+  switch is applied with `setCrashlyticsCollectionEnabled` at every start and whenever it changes; Crashlytics persists
+  it, so a user who turned it off sends nothing from then on, including crashes during startup.
+- **Only fatal crashes.** The app records no non-fatal errors, custom keys, logs or user ids, and never calls
+  `setUserId`: a report holds no logbook data and is not linked to the Firebase Auth uid by the app.
+- What a report contains (Crashlytics SDK, **Uncertain** in detail: Google's behaviour): the stack trace and thread
+  state, app version, device model, OS version, orientation, free RAM and disk, rooted flag, the time, and the
+  Crashlytics installation UUID (plus the Firebase installation ID used by the SDK). Sent over HTTPS when the app next
+  starts. Kept by Crashlytics for 90 days.
+- The release R8 mapping file is uploaded at build time by the Crashlytics Gradle plugin (no user data).
+
+Legal basis stated in the policy: legitimate interest (art. 6.1.f) with the switch as the right to object.
 
 ### 2.2 Open Food Facts (Open Food Facts association, France; `world.openfoodfacts.org`)
 
@@ -164,7 +185,7 @@ share**, to whoever they give them to; the receiver's app stores it as the creat
 | Claim | How it was verified |
 |---|---|
 | No ads, no advertising ID | No ads SDK in `gradle/libs.versions.toml`, `composeApp/build.gradle.kts` or any module build file; no `com.google.android.gms.permission.AD_ID` in the merged release manifest (RELEASE-AUDIT, permissions list). |
-| No analytics, no Crashlytics, no performance monitoring, no remote config, no FCM | `grep -riE "crashlytics\|analytics\|firebase-messaging\|remote-config\|performance"` over `*.kts`, `*.toml`, manifests returns nothing relevant. Firebase components in the merged manifest: only `ComponentDiscoveryService`, `FirebaseInitProvider`, auth activities; no `AppMeasurement*`, no Crashlytics provider. Only `firebase-auth` and `firebase-firestore` (GitLive 2.7.0) are dependencies. |
+| No analytics, no performance monitoring, no remote config, no FCM. Crashlytics only as in section 2.1b | `grep -riE "analytics\|firebase-messaging\|remote-config\|performance"` over `*.kts`, `*.toml`, manifests returns nothing relevant. Firebase components in the merged manifest: `ComponentDiscoveryService`, `FirebaseInitProvider`, auth activities and the Crashlytics registrar; no `AppMeasurement*`. Dependencies: `firebase-auth`, `firebase-firestore` (GitLive 2.7.0) and, in `androidApp` only, `firebase-crashlytics`. |
 | No location | No `ACCESS_*_LOCATION` in the merged manifest. |
 | No contacts, SMS, calendar, microphone, storage permission | Not in the merged manifest (permissions: ACCESS_NETWORK_STATE, FOREGROUND_SERVICE, FOREGROUND_SERVICE_SPECIAL_USE, INTERNET, POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM, USE_BIOMETRIC, USE_FINGERPRINT, VIBRATE, READ_GSERVICES, the app's own dynamic receiver permission). |
 | No camera permission | Not in the manifest; scanning uses the Google code scanner. |

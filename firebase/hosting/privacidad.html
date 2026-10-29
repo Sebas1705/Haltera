@@ -20,7 +20,7 @@
 </header>
 <main id="content">
   <h1>Política de privacidad</h1>
-  <p class="updated">Fecha de entrada en vigor: 16 de octubre de 2026. Idioma: español. <a href="/privacy" hreflang="en" lang="en">English version</a>.</p>
+  <p class="updated">Fecha de entrada en vigor: 29 de octubre de 2026. Idioma: español. <a href="/privacy" hreflang="en" lang="en">English version</a>.</p>
   <p>Haltera es un diario de gimnasio, registro de nutrición y app de progreso, gratuita y de código abierto, para Android e iOS (<a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>, licencia MIT). No tiene anuncios, compras dentro de la app ni analíticas, y tus datos no se venden ni se usan para elaborar perfiles. Esta página explica con precisión qué hace la app con tus datos.</p>
 
   <h2 id="controller">1. Responsable</h2>
@@ -40,6 +40,7 @@
     </tbody>
   </table>
   </div>
+  <p id="crash-reports"><strong>Informes de errores (Android).</strong> Si la app de Android falla, envía un informe técnico del fallo a Firebase Crashlytics para poder encontrar y corregir el error: la traza del error (qué parte del código de la app falló), la versión de la app, el modelo del teléfono, la versión de Android y otros datos del estado del dispositivo en ese momento (memoria y almacenamiento libres, orientación), la hora del fallo y un identificador aleatorio de instalación que crea Crashlytics. Nunca contiene tu diario, tu cuenta ni nada que hayas escrito. Los informes están <strong>activados por defecto</strong> y puedes desactivarlos en <strong>Ajustes → Privacidad → Enviar informes de errores</strong>; desde el siguiente inicio no se envía nada más. Funciona igual con la copia en la nube activada o no. La app de iOS no envía informes de errores.</p>
   <p>Parte de estos datos puede estar relacionada con la salud (peso corporal, nutrición, entrenamiento). Tú decides si los introduces. La app no necesita tu ubicación, contactos, micrófono ni cámara, y no lee otras aplicaciones, salvo Health Connect si lo conectas (siguiente apartado).</p>
 
   <h2 id="health-connect">3. Health Connect (Android)</h2>
@@ -56,16 +57,18 @@
 
   <h2 id="purposes">4. Para qué y con qué base jurídica</h2>
   <ul>
-    <li><strong>Prestar la copia opcional en la nube</strong> (guardar tu diario, recuperarlo en un móvil nuevo, sincronizar entre dispositivos): ejecución del servicio que solicitas al activarla (RGPD art. 6.1.b). Sin ella, la app funciona por completo en tu móvil y no se envían datos personales al desarrollador ni a Firebase.</li>
+    <li><strong>Prestar la copia opcional en la nube</strong> (guardar tu diario, recuperarlo en un móvil nuevo, sincronizar entre dispositivos): ejecución del servicio que solicitas al activarla (RGPD art. 6.1.b). Sin ella, la app funciona por completo en tu móvil y nada de tu diario ni de tu cuenta llega al desarrollador ni a Firebase; lo único que puede salir del móvil es un informe de errores (siguiente punto).</li>
+    <li><strong>Informes de errores</strong> (encontrar y corregir los fallos que cierran la app): interés legítimo en que la app funcione (art. 6.1.f). El informe no contiene datos de tu diario y puedes oponerte en cualquier momento con el interruptor <strong>Enviar informes de errores</strong> de Ajustes → Privacidad.</li>
     <li><strong>Datos relacionados con la salud que decides registrar</strong> (peso, nutrición, entrenamiento): tu consentimiento explícito al introducirlos (art. 9.2.a) y, si activas la copia en la nube, al activarla (incluye esos registros y el perfil opcional de nutrición). Puedes retirarlo en cualquier momento desactivando la copia en la nube, borrando los registros o tu cuenta.</li>
     <li><strong>Health Connect</strong>: tu consentimiento explícito (art. 9.2.a), que das al conectarlo y permitir cada tipo de dato; lo retiras desactivando el tipo, desconectando o quitando el acceso en Health Connect.</li>
     <li><strong>Vincular una cuenta de Google</strong>: tu consentimiento, que das al pulsar el botón y puedes revocar cerrando sesión o borrando tu cuenta (art. 6.1.a).</li>
     <li><strong>Seguridad y prevención de abusos</strong> del servidor (reglas de Firebase, límites de uso): interés legítimo (art. 6.1.f).</li>
-    <li>No hay publicidad, ni elaboración de perfiles, ni decisiones automatizadas, ni servicio de analíticas o de informes de fallos.</li>
+    <li>No hay publicidad, ni elaboración de perfiles, ni decisiones automatizadas, ni servicio de analíticas. Los informes de errores solo se usan para corregir fallos.</li>
   </ul>
 
   <h2 id="recipients">5. Quién recibe datos</h2>
   <ul>
+    <li><strong>Google (Firebase Crashlytics)</strong> recibe los informes de errores de Android descritos arriba, como encargado, salvo que los hayas desactivado. Google puede tratarlos fuera del EEE conforme a sus propios términos de tratamiento de datos y cláusulas contractuales tipo. Viajan cifrados (HTTPS/TLS).</li>
     <li><strong>Google (Firebase Authentication y Cloud Firestore)</strong> actúa como encargado que guarda tu cuenta y tu copia en la nube, solo si activas la copia en la nube. La base de datos está en la Unión Europea (eur3). Google puede transferir datos fuera del EEE conforme a sus propios términos de tratamiento de datos y cláusulas contractuales tipo. Los datos viajan cifrados (HTTPS/TLS).</li>
     <li><strong>Servicios de Google Play</strong> proporcionan el inicio de sesión con Google (solo si lo usas) y el escáner de códigos de barras y QR, que funciona en tu dispositivo. La app no recibe permiso de cámara y ninguna imagen llega al desarrollador.</li>
     <li><strong>Open Food Facts</strong> (openfoodfacts.org): cuando escaneas o escribes un código de barras, la app les pide el producto. Reciben el código y tu dirección IP, no tu cuenta.</li>
@@ -80,6 +83,7 @@
   <ul>
     <li>En tu móvil: hasta que borres los datos en la app, los borres al eliminar tu cuenta o desinstales la app. Los totales diarios copiados de Health Connect: hasta que desactives ese tipo, quites su acceso o desconectes.</li>
     <li>En la nube (solo si activaste la copia en la nube): mientras exista tu cuenta. Desactivar la copia en la nube detiene la sincronización y conserva lo que ya está en la nube, salvo que elijas <strong>Borrar también mis datos de la nube</strong>; puedes reanudarla más tarde o borrarla. Al borrar tu cuenta en la app se eliminan todos tus documentos en la nube y tu cuenta (consulta <a href="/borrar-cuenta">cómo borrar tu cuenta</a>). Mientras la cuenta existe, un elemento que borras puede quedar como una marca vacía en la nube para que otros dispositivos se enteren; esas marcas desaparecen con la cuenta.</li>
+    <li>Informes de errores: Firebase Crashlytics los guarda 90 días y después los borra.</li>
     <li>Los datos borrados pueden permanecer un tiempo limitado en los sistemas de copia de Google según sus propios plazos.</li>
   </ul>
 

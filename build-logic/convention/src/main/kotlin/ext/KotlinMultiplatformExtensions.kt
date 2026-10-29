@@ -59,6 +59,9 @@ internal fun Project.configureAndroidApp(namespace: String, applicationId: Strin
             debug { isDebuggable = true }
             release {
                 isMinifyEnabled = true
+                // Drops Android resources nothing references after R8 (androidApp/src/main/res/raw/keep.xml lists the
+                // ones looked up by name). Compose Multiplatform resources are assets, which the shrinker leaves alone.
+                isShrinkResources = true
                 proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro",

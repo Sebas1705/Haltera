@@ -177,7 +177,9 @@ Installs that were already syncing before P3 keep their copy, which is why the d
 | App activity → **Other user-generated content** | Notes, routine and exercise names, custom foods | **Optional** | App functionality |
 | Health and fitness → **Fitness info** (Health Connect) | Daily steps, active and total calories burned **read from Health Connect** and kept on the phone; finished workouts **written to** Health Connect | **Optional** (only if the user connects Health Connect and switches the type on) | App functionality |
 | Health and fitness → **Health info** (Health Connect) | Body weight, resting heart rate and sleep duration **read from Health Connect**; body weight written to it | **Optional** (same) | App functionality |
-| Device or other IDs | **Not collected by the app.** Firebase installation IDs are not used for analytics here. Do not tick unless the Console's Firebase disclosure page says Auth/Firestore need it | — | — |
+| App info and performance → **Crash logs** | Crashlytics crash traces (Android release builds) | **Optional** (on by default; Settings → Privacy → "Send crash reports" turns it off) **[judgement: Play treats a user opt-out as optional; Owlsplit, which has no switch, declares Required]** | Analytics |
+| App info and performance → **Diagnostics** | Crashlytics: device and app state at crash time (model, OS version, free memory and disk) | **Optional** (same switch) | Analytics |
+| Device or other IDs → **Device or other IDs** | Crashlytics installation UUID / Firebase installation ID sent with each crash report | **Optional** (same switch) | Analytics |
 
 Notes:
 - **Health Connect data (P4) and Data safety:** Data safety defines "collected" as transmitted off the device, but the
@@ -189,7 +191,9 @@ Notes:
   **App functionality**, **not shared**, do not tick "processed ephemerally". Nothing from Health Connect is used for
   ads or analytics, sold, or used to decide eligibility for anything.
 - **Not collected:** location, contacts, photos or videos, audio, files, calendar, web history, financial info,
-  messages, crash logs, diagnostics. Crash logs and diagnostics are **not** collected (no Crashlytics).
+  messages. Crash logs, diagnostics and the installation ID **are** collected by Crashlytics since the crash reports
+  change (Android only, opt-out in Settings → Privacy; DATA-INVENTORY.md 2.1b): update the form before the first release
+  that contains it.
 - The IP address is processed by Google as part of Firebase; Play's guidance (Firebase disclosure page) lists what
   each Firebase SDK collects; compare with it before submitting **[unverified: re-read the Firebase page in Sources]**.
 - Android Auto Backup is Google's own device backup, not collection by the developer.

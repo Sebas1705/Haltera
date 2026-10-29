@@ -13,11 +13,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import org.sqlite.Function
+import java.sql.Connection
 import java.util.Properties
 
-/** In-memory database with the schema created and foreign keys on, as on the device, plus a tiny catalogue. */
-fun testDatabase(): AppDatabase = AppDatabase(
+/**
+ * In-memory database with the schema created and foreign keys on, as on the device, plus a tiny catalogue.
+ * Its triggers read [clock] instead of the system time (see [TestClock]).
+ */
+fun testDatabase(clock: TestClock = TestClock()): AppDatabase = AppDatabase(
     JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY, Properties().apply { put("foreign_keys", "true") })
+        .also { clock.install(it.getConnection()) }
         .also { AppDatabase.Schema.create(it) },
 ).also { CatalogImporter(it, now = { 0L }).importIfNewer(TEST_CATALOG) }
 
@@ -35,7 +41,10 @@ val TEST_CATALOG = """
 """.trimIndent()
 
 /** Shared in-memory "cloud": `users/{uid}/{collection}/{id}`, with live listeners and an offline switch. */
-class FakeCloud : RemoteStore {
+class FakeCloud(
+    /** The wall clock of the test: every device on this cloud reads it. */
+    val clock: TestClock = TestClock(),
+) : RemoteStore {
     private val docs = MutableStateFlow<Map<Triple<String, String, String>, SyncDocument>>(emptyMap())
     val online = MutableStateFlow(true)
     var pushes = 0
@@ -58,6 +67,9 @@ class FakeCloud : RemoteStore {
     override suspend fun deleteAll(uid: String) {
         docs.value = docs.value.filterKeys { it.first != uid }
     }
+
+    /** Moves the shared clock forward, so the next tracked change is later than the previous one. */
+    fun tick() = clock.tick()
 
     fun doc(uid: String, collection: String, id: String): SyncDocument? = docs.value[Triple(uid, collection, id)]
 
@@ -92,11 +104,14 @@ internal class Device(
     val account: FakeAccount = FakeAccount(),
     /** The cloud copy switch of this phone. */
     val cloudOn: MutableStateFlow<Boolean> = MutableStateFlow(true),
+    /** What the engine talks to: the cloud itself unless a test wraps it. */
+    remote: RemoteStore = cloud,
+    batchSize: Int = SyncEngineImpl.BATCH_SIZE,
 ) {
-    val db = testDatabase()
+    val db = testDatabase(cloud.clock)
     val settings = KeyValueSettingsRepository(MapSettings())
     val bridge = SettingsSyncBridge(settings, db)
-    val engine = SyncEngineImpl(db, cloud, account, bridge, io, now = { System.currentTimeMillis() }, enabled = cloudOn)
+    val engine = SyncEngineImpl(db, remote, account, bridge, io, now = cloud.clock::now, batchSize, cloudOn)
     val store = AggregateStore(db, bridge)
 
     fun state(collection: String, id: String): SyncState? =
@@ -151,5 +166,39 @@ internal class Device(
     }
 }
 
-/** Waits a few milliseconds so the next tracked change gets a later `updatedAt` than the previous one. */
-fun tick() = Thread.sleep(3)
+/**
+ * The wall clock of a test. The engine's `now` and the SQLite triggers that stamp `updatedAt`
+ * (`julianday('now')`) both read it, so timestamps are deterministic and [tick] needs no sleep.
+ */
+class TestClock(private var millis: Long = START_MILLIS) {
+    fun now(): Long = millis
+
+    fun tick(by: Long = TICK_MILLIS) {
+        millis += by
+    }
+
+    /** Replaces SQLite's `julianday` on [connection] with one that answers `julianday('now')` from this clock. */
+    fun install(connection: Connection) {
+        Function.create(
+            connection,
+            "julianday",
+            object : Function() {
+                override fun xFunc() {
+                    check(args() == 1 && value_text(0) == "now") { "TestClock only fakes julianday('now')" }
+                    // Half a millisecond in: the triggers truncate back to exactly [millis].
+                    result((millis + HALF_MILLI) / MILLIS_PER_DAY + UNIX_EPOCH_JULIAN_DAY)
+                }
+            },
+            1,
+            0,
+        )
+    }
+
+    private companion object {
+        const val START_MILLIS = 1_800_000_000_000L
+        const val TICK_MILLIS = 1_000L
+        const val HALF_MILLI = 0.5
+        const val MILLIS_PER_DAY = 86_400_000.0
+        const val UNIX_EPOCH_JULIAN_DAY = 2_440_587.5
+    }
+}

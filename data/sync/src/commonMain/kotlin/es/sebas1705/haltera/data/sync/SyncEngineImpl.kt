@@ -6,7 +6,9 @@ import co.touchlab.kermit.Logger
 import es.sebas1705.haltera.data.local.db.AppDatabase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -201,10 +204,16 @@ class SyncEngineImpl(
     }
 
     private suspend fun uploadLoop(uid: String) {
+        val loop = currentCoroutineContext().job // cancelled only when sync stops (sign-out, cloud copy off)
         q.countDirty().asFlow().mapToOne(io).collectLatest { pending ->
             if (pending == 0L) return@collectLatest
             var attempt = 0
-            while (!upload(uid)) delay(backoff(attempt++))
+            // Every acknowledged batch clears dirty flags, which changes the count and makes collectLatest cancel
+            // this block while the next batch awaits its ack; so does every set logged meanwhile. The server keeps
+            // a write it already accepted, so a cancelled pass re-pushes it, and steady logging starved the upload.
+            // A pass therefore always finishes (each push has its own timeout) and stops between batches only when
+            // sync stops; just the backoff wait is cancelled by a new count (docs/adr/0001).
+            while (!withContext(NonCancellable) { upload(uid) { loop.isActive } }) delay(backoff(attempt++))
         }
     }
 
@@ -229,12 +238,14 @@ class SyncEngineImpl(
         q.putCursor(collection, cursor)
     }
 
-    /** Uploads every dirty root. False on failure (the caller backs off). */
-    internal suspend fun upload(uid: String): Boolean = lock.withLock {
+    /**
+     * Uploads every dirty root, checking [keepGoing] before each batch. False on failure (the caller backs off).
+     */
+    internal suspend fun upload(uid: String, keepGoing: () -> Boolean = { true }): Boolean = lock.withLock {
         if (uid == forgotten.value) return@withLock true
         try {
             var rounds = 0
-            while (rounds++ < MAX_ROUNDS) {
+            while (rounds++ < MAX_ROUNDS && keepGoing() && uid != forgotten.value) {
                 val dirty = q.selectDirty(batchSize.toLong()).executeAsList()
                 if (dirty.isEmpty()) break
                 state.value = SyncStatus.Syncing(pending())

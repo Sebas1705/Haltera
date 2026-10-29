@@ -6,7 +6,7 @@ import org.gradle.kotlin.dsl.apply
 
 /**
  * Base KMP library convention.
- * Applies: kotlin.multiplatform, com.android.kotlin.multiplatform.library, kotlin.serialization, detekt.
+ * Applies: kotlin.multiplatform, com.android.kotlin.multiplatform.library, kotlin.serialization, detekt, kover.
  * Configures: Android + iOS targets, jvmTarget = 17, minSdk = 24, JVM tests in `src/androidHostTest`.
  *
  * Use this on every non-app module. Specialised conventions (feature, data, etc.)
@@ -18,6 +18,8 @@ class KmpLibraryConventionPlugin : Plugin<Project> {
         apply(plugin = "com.android.kotlin.multiplatform.library")
         apply(plugin = "org.jetbrains.kotlin.plugin.serialization")
         apply(plugin = "haltera.detekt")
+        // Every library module collects coverage of its host tests; the root project merges the reports.
+        apply(plugin = "org.jetbrains.kotlinx.kover")
 
         val namespace = "es.sebas1705.haltera" +
             project.path.replace(":", ".").let { if (it.startsWith(".")) it else ".$it" }

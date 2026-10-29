@@ -24,11 +24,11 @@ import es.sebas1705.haltera.export.DataExportViewModel
 import es.sebas1705.haltera.health.HealthConnectBridge
 import es.sebas1705.haltera.health.IntegrationsViewModel
 import es.sebas1705.haltera.health.NoHealthConnectBridge
+import es.sebas1705.haltera.settings.CrashReportsAvailability
 import es.sebas1705.haltera.settings.SettingsViewModel
 import es.sebas1705.haltera.share.IncomingRoutineChannel
 import es.sebas1705.haltera.startup.StartupViewModel
 import org.koin.core.module.dsl.viewModel
-import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val appModule = module {
@@ -46,7 +46,14 @@ val appModule = module {
             },
         )
     }
-    viewModelOf(::SettingsViewModel)
+    // The platform binds CrashReportsAvailability when it has a crash reporter (Android); otherwise the switch is hidden.
+    viewModel {
+        SettingsViewModel(
+            get(),
+            get(),
+            getOrNull<CrashReportsAvailability>() ?: CrashReportsAvailability(available = false),
+        )
+    }
     single<LocalDataEraser> { DatabaseLocalDataEraser(get(), get(), get()) }
     viewModel { AccountViewModel(get(), get(), get(), get(), get(), get()) }
     viewModel { CloudPromptViewModel(get(), get(), get()) }

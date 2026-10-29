@@ -20,7 +20,7 @@
 </header>
 <main id="content">
   <h1>Privacy policy</h1>
-  <p class="updated">Effective date: 16 October 2026. Language: English. <a href="/privacidad" hreflang="es" lang="es">Versión en español</a>.</p>
+  <p class="updated">Effective date: 29 October 2026. Language: English. <a href="/privacidad" hreflang="es" lang="es">Versión en español</a>.</p>
   <p>Haltera is a free, open-source gym logbook, nutrition log and progress app for Android and iOS (<a href="https://github.com/Sebas1705/Haltera">github.com/Sebas1705/Haltera</a>, MIT licence). It has no ads, no in-app purchases and no analytics, and your data is not sold or used to profile you. This page explains exactly what the app does with your data.</p>
 
   <h2 id="controller">1. Who is responsible</h2>
@@ -40,6 +40,7 @@
     </tbody>
   </table>
   </div>
+  <p id="crash-reports"><strong>Crash reports (Android).</strong> If the Android app crashes, it sends a technical crash report to Firebase Crashlytics so the bug can be found and fixed: the error trace (which part of the app's code failed), the app version, the phone model, Android version and similar device state at the time of the crash (free memory and storage, orientation), the time of the crash, and a random installation identifier created by Crashlytics. It never contains your logbook, your account or anything you typed. Reports are <strong>on by default</strong> and you can turn them off in <strong>Settings → Privacy → Send crash reports</strong>; from the next launch nothing more is sent. This works whether or not the cloud copy is on. The iOS app does not send crash reports.</p>
   <p>Some of this can be health-related (body weight, nutrition, training). You decide whether to enter it. The app does not need your location, contacts, microphone or camera, and does not read other apps, except Health Connect if you connect it (next section).</p>
 
   <h2 id="health-connect">3. Health Connect (Android)</h2>
@@ -56,16 +57,18 @@
 
   <h2 id="purposes">4. Why, and on what legal basis</h2>
   <ul>
-    <li><strong>Provide the optional cloud copy</strong> (store your logbook, restore it on a new phone, sync between your devices): performance of the service you ask for by turning it on (GDPR art. 6.1.b). Without it, the app works fully on your phone and no personal data is sent to the developer or to Firebase.</li>
+    <li><strong>Provide the optional cloud copy</strong> (store your logbook, restore it on a new phone, sync between your devices): performance of the service you ask for by turning it on (GDPR art. 6.1.b). Without it, the app works fully on your phone and nothing from your logbook or account is sent to the developer or to Firebase; the only thing that can leave the phone is a crash report (next point).</li>
+    <li><strong>Crash reports</strong> (find and fix the bugs that make the app crash): legitimate interest in keeping the app working (art. 6.1.f). The report holds no logbook data, and you can object at any time with the <strong>Send crash reports</strong> switch in Settings → Privacy.</li>
     <li><strong>Health-related data you choose to log</strong> (weight, nutrition, training): your explicit consent by entering it (art. 9.2.a), and, if you turn on the cloud copy, by turning it on (it includes these entries and the optional nutrition profile). You can withdraw it at any time by turning the cloud copy off, deleting the entries, or deleting your account.</li>
     <li><strong>Health Connect</strong>: your explicit consent (art. 9.2.a), given by connecting it and allowing each type of data; you withdraw it by switching the type off, disconnecting, or removing access in Health Connect.</li>
     <li><strong>Linking a Google account</strong>: your consent, which you give by tapping the button and can revoke by signing out or deleting your account (art. 6.1.a).</li>
     <li><strong>Security and abuse prevention</strong> of the backend (Firebase rules, rate limiting): legitimate interest (art. 6.1.f).</li>
-    <li>No advertising, no profiling, no automated decisions, and no analytics or crash-reporting service.</li>
+    <li>No advertising, no profiling, no automated decisions, and no analytics service. Crash reports are used only to fix bugs.</li>
   </ul>
 
   <h2 id="recipients">5. Who receives data</h2>
   <ul>
+    <li><strong>Google (Firebase Crashlytics)</strong> receives the Android crash reports described above, as a processor, unless you turned them off. Google may process them outside the EEA under its own data processing terms and standard contractual clauses. They travel encrypted (HTTPS/TLS).</li>
     <li><strong>Google (Firebase Authentication and Cloud Firestore)</strong> acts as the processor that stores your account and cloud copy, only if you turn the cloud copy on. The database is located in the European Union (eur3). Google may transfer data outside the EEA under its own data processing terms and standard contractual clauses. Data is encrypted in transit (HTTPS/TLS).</li>
     <li><strong>Google Play services</strong> provide Google sign-in (only if you use it) and the barcode and QR scanner, which runs on your device. The app does not receive camera permission and no image is sent to the developer.</li>
     <li><strong>Open Food Facts</strong> (openfoodfacts.org): when you scan or type a product barcode, the app asks them for the product. They receive the barcode and your IP address, not your account.</li>
@@ -80,6 +83,7 @@
   <ul>
     <li>On your phone: until you delete the data in the app, erase it when deleting your account, or uninstall the app. Daily totals copied from Health Connect: until you switch that type off, remove its access, or disconnect.</li>
     <li>In the cloud (only if you turned the cloud copy on): for as long as your account exists. Turning the cloud copy off stops the sync and keeps what is already in the cloud unless you choose <strong>Also delete my cloud data</strong>; you can resume it later or delete it. When you delete your account in the app, all your cloud documents and your account are deleted (see <a href="/delete-account">how to delete your account</a>). While the account exists, an item you delete may remain as an empty marker in the cloud so other devices learn about the deletion; these markers go away with the account.</li>
+    <li>Crash reports: Firebase Crashlytics keeps them for 90 days and then deletes them.</li>
     <li>Deleted data may remain for a limited time in Google's own backup systems under Google's retention terms.</li>
   </ul>
 

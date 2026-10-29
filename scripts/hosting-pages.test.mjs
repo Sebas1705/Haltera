@@ -85,6 +85,19 @@ test("the Health Connect section says what is read, that it stays on the phone, 
   }
 });
 
+test("both policies disclose the Android crash reports and how to turn them off", () => {
+  const facts = {
+    "privacy.html": [/Firebase Crashlytics/, /Settings → Privacy → Send crash reports/, /installation identifier/, /90 days/],
+    "privacidad.html": [/Firebase Crashlytics/, /Ajustes → Privacidad → Enviar informes de errores/, /identificador aleatorio de instalación/, /90 días/],
+  };
+  for (const [page, patterns] of Object.entries(facts)) {
+    const html = read(page);
+    assert.match(html, /id="crash-reports"/, `${page} lacks the crash reports paragraph`);
+    for (const pattern of patterns) assert.match(html, pattern, `${page}: lacks ${pattern}`);
+    assert.doesNotMatch(html, /crash-reporting service|informes de fallos./, `${page} still says there is no crash reporting`);
+  }
+});
+
 test("account deletion pages have the required sections", () => {
   for (const page of ["delete-account.html", "borrar-cuenta.html"]) {
     const html = read(page);

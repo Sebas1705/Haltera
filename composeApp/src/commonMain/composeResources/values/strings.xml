@@ -140,6 +140,9 @@
     <string name="import_error_corrupt">The file is damaged and could not be read. Nothing was imported.</string>
     <string name="import_error_read">The file could not be read or written. Nothing was imported.</string>
     <string name="settings_integrations">Integrations</string>
+    <string name="settings_privacy">Privacy</string>
+    <string name="settings_crash_reports">Send crash reports</string>
+    <string name="settings_crash_reports_hint">If the app crashes, a technical report (phone model, Android and app version, a random installation ID and where the error happened) goes to Firebase Crashlytics so it can be fixed. It never includes your logbook. Applies from the next launch.</string>
     <string name="health_title">Health Connect</string>
     <string name="health_text">Read your steps and other activity from Health Connect for the Activity statistics, and write your finished workouts there. Only the data you switch on is requested, and only while Haltera is open. It stays on this phone, is never shared and is never used for ads. You can disconnect at any time.</string>
     <string name="health_unsupported">Health Connect is not available on this device.</string>

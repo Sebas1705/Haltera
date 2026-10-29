@@ -59,9 +59,14 @@ Requirements: JDK 21 (`JAVA_HOME`), Android SDK (`ANDROID_HOME`), Node 22 for `s
 
 ```sh
 ./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :androidApp:assembleDebug   # what CI runs
+./gradlew koverHtmlReport                                       # coverage report: build/reports/kover/html/index.html
 ./gradlew :androidApp:installDebug                              # install on a device/emulator
 cd iosApp && xcodegen generate                                   # iOS project (Mac)
 ```
+
+Host-test line coverage is 49.7 % (Kover, every KMP module, measured 2026-10-29). CI publishes the report on every run and fails if it drops below 45 % (`koverVerify`).
+
+Crash reports: the Android release build sends crashes to Firebase Crashlytics (off in debug builds; users can turn it off in Settings → Privacy). The R8 mapping is uploaded by the Crashlytics Gradle plugin when `androidApp/google-services.json` is present.
 
 CI ([ci.yml](.github/workflows/ci.yml)) also builds the iOS app for the simulator, runs the Firestore rules tests against the emulator, and checks that the exercise catalogue, foods and brand files are up to date (`scripts/catalog`, `scripts/nutrition`, `scripts/brand.mjs`).
 

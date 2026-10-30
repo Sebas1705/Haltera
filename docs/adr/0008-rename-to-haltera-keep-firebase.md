@@ -6,8 +6,8 @@
 
 ## Context
 
-The app was called Ironlog until 2026-10. The repository does not record why the name changed. What it does record
-is which identifiers could not follow: Firebase project ids cannot be changed, and Auth users and Firestore data
+The app was called Ironlog until 2026-10. The name changed because Ironlog clashed with existing apps or brands. Some
+identifiers could not follow: Firebase project ids cannot be changed, and Auth users and Firestore data
 live in the project; a registered Play upload key cannot be replaced; CI secrets and old installs depend on
 the old names.
 

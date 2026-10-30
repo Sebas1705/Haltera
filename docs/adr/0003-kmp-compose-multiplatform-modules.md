@@ -8,7 +8,8 @@
 
 Haltera targets Android and iOS from one codebase (core design §1-§2). The design says it uses "the same proven
 stack as Owlsplit", started fresh from the Templetry `kmp/modular-features` template, and ports Owlsplit pieces
-only when a phase needs them. Why Compose Multiplatform over native UIs is not recorded beyond that.
+only when a phase needs them. Compose Multiplatform was chosen over native UIs for one shared UI: a single developer maintains the app, and one
+interface costs far less to keep up than two.
 
 ## Decision
 

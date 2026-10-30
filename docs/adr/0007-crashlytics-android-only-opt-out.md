@@ -7,8 +7,8 @@
 ## Context
 
 Until then the app had no crash reporting. The core design only mentions that a failed catalogue import is logged,
-"Crashlytics in release". The repository does not record why Crashlytics was chosen over another tool, or why
-iOS is excluded; the data inventory states the facts below.
+"Crashlytics in release". Crashlytics was chosen because Owlsplit already uses it and Firebase is
+already in the project. iOS is excluded because it is not distributed yet. The data inventory states the facts below.
 
 ## Decision
 

@@ -19,7 +19,7 @@ Haltera was formerly called Ironlog (see [docs/NAMING.md](docs/NAMING.md)). Code
 
 ## A logbook, not a coach
 
-Haltera follows your real training and never forces a schedule. Any session can be logged after the fact, on any date, as a routine day or a free session, and everything stays editable afterwards: date and time, duration, exercises, sets and loads. Cycle position and progression are derived from the dates you actually trained. Routine analysis gives advice only; it never blocks or changes your routine.
+Haltera follows your real training and never forces a schedule. Any session can be logged after the fact, on any date, as a routine day or a free session, and everything stays editable afterwards: date and time, duration, exercises, sets and loads. The next routine day follows your most recent logged session, and progression is ordered by the real date of each session. Routine analysis gives advice only; it never blocks or changes your routine.
 
 ## Features
 

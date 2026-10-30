@@ -8,8 +8,8 @@
 
 The original sync design signed in anonymously on first launch and synced from the start. The commit that changed it
 also updated the privacy and delete-account pages, the data inventory and the Play Console guide, and a follow-up
-(#28) changed the store descriptions to say the backup is optional. The commit message states the behaviour
-("nothing leaves the device until the user opts in") but not the motivation.
+(#28) changed the store descriptions to say the backup is optional. The reason is privacy: this is health and
+training data, so nothing leaves the device until the user chooses it.
 
 ## Decision
 

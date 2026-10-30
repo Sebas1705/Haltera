@@ -72,6 +72,7 @@ CI ([ci.yml](.github/workflows/ci.yml)) also builds the iOS app for the simulato
 
 - Design: [docs/designs/2026-10-14-haltera-core-design.md](docs/designs/2026-10-14-haltera-core-design.md)
 - Plans: [docs/plans/README.md](docs/plans/README.md)
+- Architecture decisions: [docs/adr/README.md](docs/adr/README.md)
 - Releases and Play listing: [docs/RELEASE.md](docs/RELEASE.md)
 - Contributing rules: [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
 

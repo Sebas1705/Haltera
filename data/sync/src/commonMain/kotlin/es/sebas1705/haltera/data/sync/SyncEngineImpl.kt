@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -29,7 +30,8 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * While the account is SignedIn: a first pass downloads every collection from its cursor (in foreign-key
  * order) and then uploads the dirty roots; after it, one live listener per collection applies remote changes
- * and the upload loop pushes local changes as they appear, with exponential backoff on failure.
+ * and the upload loop pushes local changes as they appear, with exponential backoff on failure. Nothing is
+ * uploaded in a session until every collection has been downloaded once (docs/adr/0010).
  *
  * Conflicts: a remote document is applied only when it is newer than the local root (last writer wins by
  * `updatedAt`); an older or equal one is our own echo or stale. A dirty root is cleared only when its
@@ -58,6 +60,15 @@ class SyncEngineImpl(
     private var lastSyncedAt: Long? = null
     private var failures = 0
     private val forgotten = MutableStateFlow<String?>(null)
+
+    /** Remote documents that could not be applied yet, by collection and id: retried by [receive]. */
+    private val unappliable = mutableMapOf<String, MutableMap<String, SyncDocument>>()
+
+    /**
+     * The collections whose current state this session has downloaded. The upload loop waits for all of them: a push is
+     * a plain set, so uploading before knowing what the cloud holds could overwrite a newer document (docs/adr/0010).
+     */
+    private val caughtUp = MutableStateFlow<Set<String>>(emptySet())
 
     override fun start(scope: CoroutineScope) {
         if (started) return
@@ -94,6 +105,8 @@ class SyncEngineImpl(
     }
 
     private suspend fun run(uid: String) = coroutineScope {
+        unappliable.clear() // held documents belong to the previous session
+        caughtUp.value = emptySet()
         prepare(uid)
         currentUid = uid
         state.value = SyncStatus.Syncing(pending())
@@ -124,6 +137,7 @@ class SyncEngineImpl(
         forgotten.value = currentUid ?: (account.session.value as? AccountSession.SignedIn)?.uid
         withContext(io) {
             lock.withLock {
+                unappliable.clear()
                 db.transaction {
                     q.clearAllDirty()
                     q.resetCursors()
@@ -180,6 +194,7 @@ class SyncEngineImpl(
                     ) { remote.changes(uid, collection, since(collection)).first() }
                     receive(collection, first ?: throw RemoteTimeoutException(collection))
                 }
+                caughtUp.value = SyncCollections.ALL.toSet()
             } catch (e: CancellationException) {
                 throw e
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -197,6 +212,7 @@ class SyncEngineImpl(
                 remote.changes(uid, collection, since(collection)).collect { docs ->
                     attempt = 0
                     lock.withLock { receive(collection, docs) }
+                    caughtUp.update { it + collection }
                 }
                 return
             } catch (e: CancellationException) {
@@ -212,6 +228,7 @@ class SyncEngineImpl(
         val loop = currentCoroutineContext().job // cancelled only when sync stops (sign-out, cloud copy off)
         q.countDirty().asFlow().mapToOne(io).collectLatest { pending ->
             if (pending == 0L) return@collectLatest
+            caughtUp.first { it.containsAll(SyncCollections.ALL) } // cancelled with the pass if sync stops
             var attempt = 0
             // Every acknowledged batch clears dirty flags, which changes the count and makes collectLatest cancel
             // this block while the next batch awaits its ack; so does every set logged meanwhile. The server keeps
@@ -225,25 +242,65 @@ class SyncEngineImpl(
     /**
      * Applies remote documents newer than the local roots and advances the cursor to the latest `pushedAt` seen (the
      * cursor table is still called `sinceUpdatedAt`: renaming a column would need a migration for no gain).
+     *
+     * A document that cannot be applied (typically a foreign key: a session whose USER variant has not arrived)
+     * is held back and retried, and never blocks the rest of the collection. The cursor stays just before the
+     * oldest held document, so it is fetched again after a restart; held documents are also retried in memory
+     * whenever something else is applied, which is what delivers a dependency that arrives later (docs/adr/0011).
      */
     internal fun receive(collection: String, docs: List<SyncDocument>) {
+        val held = unappliable.getOrPut(collection) { mutableMapOf() }
+        // A newer version of a held document replaces it; an older one is never worth retrying.
+        docs.forEach { held.remove(it.id) }
+        var applied = applyAll(collection, docs + held.values, held)
+        // What was just applied may be what held documents of any collection were waiting for.
+        while (applied) {
+            applied = unappliable.entries.filter { (_, pending) -> pending.isNotEmpty() }
+                .map { (other, pending) -> applyAll(other, pending.values.toList(), pending) }
+                .any { it }
+        }
+    }
+
+    /**
+     * Applies [docs] oldest first, retrying the failures while that makes progress; what still fails is left in
+     * [held]. True if any document was applied.
+     */
+    private fun applyAll(
+        collection: String,
+        docs: List<SyncDocument>,
+        held: MutableMap<String, SyncDocument>
+    ): Boolean {
         var cursor = q.selectCursor(collection).executeAsOneOrNull() ?: 0L
-        for (doc in docs.sortedBy { it.updatedAt }) {
-            val local = q.selectState(doc.collection, doc.id).executeAsOneOrNull()
-            if (local == null || doc.updatedAt > local.updatedAt) {
+        var appliedAny = false
+        var pending = docs.sortedBy { it.updatedAt }
+        held.clear()
+        do {
+            val failed = mutableListOf<SyncDocument>()
+            var progress = false
+            for (doc in pending) {
+                val local = q.selectState(doc.collection, doc.id).executeAsOneOrNull()
+                if (local != null && doc.updatedAt <= local.updatedAt) {
+                    cursor = maxOf(cursor, doc.pushedAt)
+                    continue
+                }
                 try {
                     store.apply(doc)
+                    progress = true
+                    appliedAny = true
+                    cursor = maxOf(cursor, doc.pushedAt)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    // E.g. a session whose USER variant has not arrived: retried from this cursor next pass.
-                    Logger.w(e) { "Sync: could not apply ${doc.collection}/${doc.id}" }
-                    break
+                    Logger.w(e) { "Sync: could not apply ${doc.collection}/${doc.id}, will retry" }
+                    failed += doc
                 }
             }
-            cursor = maxOf(cursor, doc.pushedAt)
-        }
-        q.putCursor(collection, cursor)
+            pending = failed
+        } while (progress && pending.isNotEmpty())
+        pending.forEach { held[it.id] = it }
+        val oldestHeld = pending.minOfOrNull { it.pushedAt }
+        q.putCursor(collection, if (oldestHeld == null) cursor else minOf(cursor, oldestHeld - 1))
+        return appliedAny
     }
 
     /**

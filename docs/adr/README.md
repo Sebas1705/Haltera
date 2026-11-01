@@ -18,3 +18,5 @@ the repository is not invented: an ADR says so instead.
 | [0007](0007-crashlytics-android-only-opt-out.md) | Crashlytics on Android only, with a user opt-out | Accepted | 2026-10-29 |
 | [0008](0008-rename-to-haltera-keep-firebase.md) | Rename Ironlog to Haltera and keep the Firebase project | Accepted | 2026-10-16 |
 | [0009](0009-sync-downloads-follow-the-upload-time.md) | Sync downloads follow the upload time, not `updatedAt` | Accepted | 2026-11-01 |
+| [0010](0010-upload-waits-for-the-first-download.md) | Uploads wait until the session has downloaded every collection | Accepted | 2026-11-01 |
+| [0011](0011-unappliable-remote-document-is-held-not-blocking.md) | A remote document that cannot be applied is held back, not blocking | Accepted | 2026-11-01 |

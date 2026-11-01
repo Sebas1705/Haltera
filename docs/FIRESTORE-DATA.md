@@ -12,7 +12,7 @@ users/{uid}/{collection}/{docId}
 ```
 
 Collections: `routines`, `sessions`, `bodyWeight`, `exercises`, `settings`, `foods`, `mealDays`.
-Every document has the fields `payload`, `updatedAt`, `deleted` (tombstone) and `schema`.
+Every document has the fields `payload`, `updatedAt`, `deleted` (tombstone) and `schema`, and since [ADR 0009](adr/0009-sync-downloads-follow-the-upload-time.md) `pushedAt`: the uploader's clock (ms) when it wrote the document. `updatedAt` is when the user changed the data and decides conflicts; `pushedAt` is what devices use to find what is new. Documents written before that have no `pushedAt`; a device downloads them once, with an unfiltered query, when it starts using `pushedAt`.
 Security rules only let a signed-in user read and write `users/{their uid}`.
 
 The `users/{uid}` parent documents usually do not exist (only their subcollections do); the tools below handle that.
@@ -34,7 +34,7 @@ All need `npx firebase-tools login` as the project owner, and Node 22. They neve
 | `node scripts/firestore-migrate-user.mjs --from <uid> --to <uid>` | Dry run: reports would copy / skip newer / identical / conflicts. |
 | `... --from <uid> --to <uid> --apply` | Same, and writes. Never deletes; never overwrites a newer destination document. |
 
-Merge rule per document: last writer wins on `updatedAt`. A newer destination is kept, a newer source is copied,
+Merge rule per document: last writer wins on `updatedAt`. Copied documents get `pushedAt` = now, so devices that already synced the destination uid download them. A newer destination is kept, a newer source is copied,
 tombstones (`deleted`) are ordinary documents and follow the same rule. Equal `updatedAt` with different content is
 reported as a conflict and the destination is kept.
 

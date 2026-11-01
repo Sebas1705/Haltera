@@ -152,6 +152,11 @@ class SyncEngineImpl(
     /** First run: tracks the data logged before sync existed. Another uid: merges everything into it. */
     internal fun prepare(uid: String) {
         db.transaction {
+            // Cursors written by versions that followed `updatedAt` mean nothing now: download everything once.
+            if (db.metaQueries.get(META_CURSOR_KIND).executeAsOneOrNull() != CURSOR_KIND_PUSHED_AT) {
+                q.resetCursors()
+                db.metaQueries.put(META_CURSOR_KIND, CURSOR_KIND_PUSHED_AT)
+            }
             if (db.metaQueries.get(META_BACKFILLED).executeAsOneOrNull() != "1") {
                 backfill()
                 db.metaQueries.put(META_BACKFILLED, "1")
@@ -235,7 +240,8 @@ class SyncEngineImpl(
     }
 
     /**
-     * Applies remote documents newer than the local roots and advances the cursor.
+     * Applies remote documents newer than the local roots and advances the cursor to the latest `pushedAt` seen (the
+     * cursor table is still called `sinceUpdatedAt`: renaming a column would need a migration for no gain).
      *
      * A document that cannot be applied (typically a foreign key: a session whose USER variant has not arrived)
      * is held back and retried, and never blocks the rest of the collection. The cursor stays just before the
@@ -274,14 +280,14 @@ class SyncEngineImpl(
             for (doc in pending) {
                 val local = q.selectState(doc.collection, doc.id).executeAsOneOrNull()
                 if (local != null && doc.updatedAt <= local.updatedAt) {
-                    cursor = maxOf(cursor, doc.updatedAt)
+                    cursor = maxOf(cursor, doc.pushedAt)
                     continue
                 }
                 try {
                     store.apply(doc)
                     progress = true
                     appliedAny = true
-                    cursor = maxOf(cursor, doc.updatedAt)
+                    cursor = maxOf(cursor, doc.pushedAt)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -292,7 +298,7 @@ class SyncEngineImpl(
             pending = failed
         } while (progress && pending.isNotEmpty())
         pending.forEach { held[it.id] = it }
-        val oldestHeld = pending.minOfOrNull { it.updatedAt }
+        val oldestHeld = pending.minOfOrNull { it.pushedAt }
         q.putCursor(collection, if (oldestHeld == null) cursor else minOf(cursor, oldestHeld - 1))
         return appliedAny
     }
@@ -308,6 +314,7 @@ class SyncEngineImpl(
                 val dirty = q.selectDirty(batchSize.toLong()).executeAsList()
                 if (dirty.isEmpty()) break
                 state.value = SyncStatus.Syncing(pending())
+                val pushedAt = now()
                 val docs = dirty.map { s ->
                     val payload = if (s.deleted == 1L) null else store.read(s.collection, s.id)
                     SyncDocument(
@@ -315,7 +322,8 @@ class SyncEngineImpl(
                         s.id,
                         s.updatedAt,
                         deleted = payload == null,
-                        payload = payload.orEmpty()
+                        payload = payload.orEmpty(),
+                        pushedAt = pushedAt,
                     )
                 }
                 remote.push(uid, docs)
@@ -346,7 +354,7 @@ class SyncEngineImpl(
 
     private fun pending(): Long = q.countDirty().executeAsOne()
 
-    /** The cursor, minus a look-back window: a device that was offline may push documents dated earlier. */
+    /** The cursor (latest `pushedAt` seen), minus a look-back window for the clock differences between phones. */
     private fun since(collection: String): Long =
         q.selectCursor(collection).executeAsOneOrNull()?.let { (it - CURSOR_LOOKBACK_MILLIS).coerceAtLeast(0) } ?: 0L
 
@@ -357,6 +365,8 @@ class SyncEngineImpl(
         const val BATCH_SIZE = 100
         const val META_BACKFILLED = "syncBackfilled"
         const val META_UID = "syncUid"
+        const val META_CURSOR_KIND = "syncCursorKind"
+        const val CURSOR_KIND_PUSHED_AT = "pushedAt"
         const val CURSOR_LOOKBACK_MILLIS = 7L * 24 * 60 * 60 * 1_000
         private const val MAX_ROUNDS = 1_000
         private const val ERROR_AFTER_FAILURES = 5

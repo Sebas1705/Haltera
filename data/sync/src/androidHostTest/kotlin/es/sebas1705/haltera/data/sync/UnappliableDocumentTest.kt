@@ -49,7 +49,8 @@ class UnappliableDocumentTest {
             id,
             state(collection, id)!!.updatedAt,
             deleted = false,
-            payload = read(collection, id)!!
+            payload = read(collection, id)!!,
+            pushedAt = state(collection, id)!!.updatedAt // uploaded when it was changed: the cursor follows this
         )
 
     private fun Device.cursor(collection: String) =

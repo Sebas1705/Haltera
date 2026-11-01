@@ -19,7 +19,7 @@ Haltera was formerly called Ironlog (see [docs/NAMING.md](docs/NAMING.md)). Code
 
 ## A logbook, not a coach
 
-Haltera follows your real training and never forces a schedule. Any session can be logged after the fact, on any date, as a routine day or a free session, and everything stays editable afterwards: date and time, duration, exercises, sets and loads. Cycle position and progression are derived from the dates you actually trained. Routine analysis gives advice only; it never blocks or changes your routine.
+Haltera follows your real training and never forces a schedule. Any session can be logged after the fact, on any date, as a routine day or a free session, and everything stays editable afterwards: date and time, duration, exercises, sets and loads. The next routine day follows your most recent logged session, and progression is ordered by the real date of each session. Routine analysis gives advice only; it never blocks or changes your routine.
 
 ## Features
 
@@ -59,14 +59,20 @@ Requirements: JDK 21 (`JAVA_HOME`), Android SDK (`ANDROID_HOME`), Node 22 for `s
 
 ```sh
 ./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :androidApp:assembleDebug   # what CI runs
+./gradlew koverHtmlReport                                       # coverage report: build/reports/kover/html/index.html
 ./gradlew :androidApp:installDebug                              # install on a device/emulator
 cd iosApp && xcodegen generate                                   # iOS project (Mac)
 ```
+
+Host-test line coverage is 49.7 % (Kover, every KMP module, measured 2026-10-29). CI publishes the report on every run and fails if it drops below 45 % (`koverVerify`).
+
+Crash reports: the Android release build sends crashes to Firebase Crashlytics (off in debug builds; users can turn it off in Settings → Privacy). The R8 mapping is uploaded by the Crashlytics Gradle plugin when `androidApp/google-services.json` is present.
 
 CI ([ci.yml](.github/workflows/ci.yml)) also builds the iOS app for the simulator, runs the Firestore rules tests against the emulator, and checks that the exercise catalogue, foods and brand files are up to date (`scripts/catalog`, `scripts/nutrition`, `scripts/brand.mjs`).
 
 - Design: [docs/designs/2026-10-14-haltera-core-design.md](docs/designs/2026-10-14-haltera-core-design.md)
 - Plans: [docs/plans/README.md](docs/plans/README.md)
+- Architecture decisions: [docs/adr/README.md](docs/adr/README.md)
 - Releases and Play listing: [docs/RELEASE.md](docs/RELEASE.md)
 - Contributing rules: [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md)
 

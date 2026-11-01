@@ -92,3 +92,7 @@ weight 500 as 400.
 CI (`catalog` job) runs `node scripts/brand.mjs --check`: it fails when a generated text file is out
 of date or a PNG is missing. PNG content is not compared (browser rendering is not byte-stable), so
 re-run `--png` whenever the logo or its colours change.
+
+## Share image
+
+`firebase/hosting/og-image.png` (1200x630, under 300 KB) is the Open Graph / Twitter card image of every hosting page. It is `.github/portfolio/banner.png` cropped 30 px from each side and scaled to 1200x630, so refresh it from the banner whenever the banner changes.

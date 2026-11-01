@@ -59,6 +59,9 @@ class SyncEngineImpl(
     private var failures = 0
     private val forgotten = MutableStateFlow<String?>(null)
 
+    /** Remote documents that could not be applied yet, by collection and id: retried by [receive]. */
+    private val unappliable = mutableMapOf<String, MutableMap<String, SyncDocument>>()
+
     override fun start(scope: CoroutineScope) {
         if (started) return
         started = true
@@ -94,6 +97,7 @@ class SyncEngineImpl(
     }
 
     private suspend fun run(uid: String) = coroutineScope {
+        unappliable.clear() // held documents belong to the previous session
         prepare(uid)
         currentUid = uid
         state.value = SyncStatus.Syncing(pending())
@@ -124,6 +128,7 @@ class SyncEngineImpl(
         forgotten.value = currentUid ?: (account.session.value as? AccountSession.SignedIn)?.uid
         withContext(io) {
             lock.withLock {
+                unappliable.clear()
                 db.transaction {
                     q.clearAllDirty()
                     q.resetCursors()
@@ -217,25 +222,67 @@ class SyncEngineImpl(
         }
     }
 
-    /** Applies remote documents newer than the local roots and advances the cursor. */
+    /**
+     * Applies remote documents newer than the local roots and advances the cursor.
+     *
+     * A document that cannot be applied (typically a foreign key: a session whose USER variant has not arrived)
+     * is held back and retried, and never blocks the rest of the collection. The cursor stays just before the
+     * oldest held document, so it is fetched again after a restart; held documents are also retried in memory
+     * whenever something else is applied, which is what delivers a dependency that arrives later (docs/adr/0011).
+     */
     internal fun receive(collection: String, docs: List<SyncDocument>) {
+        val held = unappliable.getOrPut(collection) { mutableMapOf() }
+        // A newer version of a held document replaces it; an older one is never worth retrying.
+        docs.forEach { held.remove(it.id) }
+        var applied = applyAll(collection, docs + held.values, held)
+        // What was just applied may be what held documents of any collection were waiting for.
+        while (applied) {
+            applied = unappliable.entries.filter { (_, pending) -> pending.isNotEmpty() }
+                .map { (other, pending) -> applyAll(other, pending.values.toList(), pending) }
+                .any { it }
+        }
+    }
+
+    /**
+     * Applies [docs] oldest first, retrying the failures while that makes progress; what still fails is left in
+     * [held]. True if any document was applied.
+     */
+    private fun applyAll(
+        collection: String,
+        docs: List<SyncDocument>,
+        held: MutableMap<String, SyncDocument>
+    ): Boolean {
         var cursor = q.selectCursor(collection).executeAsOneOrNull() ?: 0L
-        for (doc in docs.sortedBy { it.updatedAt }) {
-            val local = q.selectState(doc.collection, doc.id).executeAsOneOrNull()
-            if (local == null || doc.updatedAt > local.updatedAt) {
+        var appliedAny = false
+        var pending = docs.sortedBy { it.updatedAt }
+        held.clear()
+        do {
+            val failed = mutableListOf<SyncDocument>()
+            var progress = false
+            for (doc in pending) {
+                val local = q.selectState(doc.collection, doc.id).executeAsOneOrNull()
+                if (local != null && doc.updatedAt <= local.updatedAt) {
+                    cursor = maxOf(cursor, doc.updatedAt)
+                    continue
+                }
                 try {
                     store.apply(doc)
+                    progress = true
+                    appliedAny = true
+                    cursor = maxOf(cursor, doc.updatedAt)
                 } catch (e: CancellationException) {
                     throw e
                 } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
-                    // E.g. a session whose USER variant has not arrived: retried from this cursor next pass.
-                    Logger.w(e) { "Sync: could not apply ${doc.collection}/${doc.id}" }
-                    break
+                    Logger.w(e) { "Sync: could not apply ${doc.collection}/${doc.id}, will retry" }
+                    failed += doc
                 }
             }
-            cursor = maxOf(cursor, doc.updatedAt)
-        }
-        q.putCursor(collection, cursor)
+            pending = failed
+        } while (progress && pending.isNotEmpty())
+        pending.forEach { held[it.id] = it }
+        val oldestHeld = pending.minOfOrNull { it.updatedAt }
+        q.putCursor(collection, if (oldestHeld == null) cursor else minOf(cursor, oldestHeld - 1))
+        return appliedAny
     }
 
     /**

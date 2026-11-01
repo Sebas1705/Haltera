@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -29,7 +30,8 @@ import kotlin.coroutines.cancellation.CancellationException
  *
  * While the account is SignedIn: a first pass downloads every collection from its cursor (in foreign-key
  * order) and then uploads the dirty roots; after it, one live listener per collection applies remote changes
- * and the upload loop pushes local changes as they appear, with exponential backoff on failure.
+ * and the upload loop pushes local changes as they appear, with exponential backoff on failure. Nothing is
+ * uploaded in a session until every collection has been downloaded once (docs/adr/0010).
  *
  * Conflicts: a remote document is applied only when it is newer than the local root (last writer wins by
  * `updatedAt`); an older or equal one is our own echo or stale. A dirty root is cleared only when its
@@ -61,6 +63,12 @@ class SyncEngineImpl(
 
     /** Remote documents that could not be applied yet, by collection and id: retried by [receive]. */
     private val unappliable = mutableMapOf<String, MutableMap<String, SyncDocument>>()
+
+    /**
+     * The collections whose current state this session has downloaded. The upload loop waits for all of them: a push is
+     * a plain set, so uploading before knowing what the cloud holds could overwrite a newer document (docs/adr/0010).
+     */
+    private val caughtUp = MutableStateFlow<Set<String>>(emptySet())
 
     override fun start(scope: CoroutineScope) {
         if (started) return
@@ -98,6 +106,7 @@ class SyncEngineImpl(
 
     private suspend fun run(uid: String) = coroutineScope {
         unappliable.clear() // held documents belong to the previous session
+        caughtUp.value = emptySet()
         prepare(uid)
         currentUid = uid
         state.value = SyncStatus.Syncing(pending())
@@ -180,6 +189,7 @@ class SyncEngineImpl(
                     ) { remote.changes(uid, collection, since(collection)).first() }
                     receive(collection, first ?: throw RemoteTimeoutException(collection))
                 }
+                caughtUp.value = SyncCollections.ALL.toSet()
             } catch (e: CancellationException) {
                 throw e
             } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
@@ -197,6 +207,7 @@ class SyncEngineImpl(
                 remote.changes(uid, collection, since(collection)).collect { docs ->
                     attempt = 0
                     lock.withLock { receive(collection, docs) }
+                    caughtUp.update { it + collection }
                 }
                 return
             } catch (e: CancellationException) {
@@ -212,6 +223,7 @@ class SyncEngineImpl(
         val loop = currentCoroutineContext().job // cancelled only when sync stops (sign-out, cloud copy off)
         q.countDirty().asFlow().mapToOne(io).collectLatest { pending ->
             if (pending == 0L) return@collectLatest
+            caughtUp.first { it.containsAll(SyncCollections.ALL) } // cancelled with the pass if sync stops
             var attempt = 0
             // Every acknowledged batch clears dirty flags, which changes the count and makes collectLatest cancel
             // this block while the next batch awaits its ack; so does every set logged meanwhile. The server keeps

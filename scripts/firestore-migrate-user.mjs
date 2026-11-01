@@ -43,7 +43,9 @@ for (const [col, docs] of Object.entries(source)) {
     perCollection[col][verdict]++;
     if (verdict === "copy") {
       const target = mapPath(doc.name, from, to);
-      writes.push({ update: { name: `${DOCS_ROOT}/${target}`, fields: doc.fields ?? {} } });
+      // pushedAt = now: phones that already synced this uid only download what was uploaded after their cursor.
+      const fields = { ...(doc.fields ?? {}), pushedAt: { integerValue: String(Date.now()) } };
+      writes.push({ update: { name: `${DOCS_ROOT}/${target}`, fields } });
     }
   }
 }

@@ -36,7 +36,7 @@ object NotConfiguredAccountService : AccountService {
 object NotConfiguredRemoteStore : RemoteStore {
     override suspend fun push(uid: String, documents: List<SyncDocument>) = error(NOT_CONFIGURED)
 
-    override fun changes(uid: String, collection: String, sinceUpdatedAt: Long): Flow<List<SyncDocument>> =
+    override fun changes(uid: String, collection: String, sincePushedAt: Long): Flow<List<SyncDocument>> =
         emptyFlow()
 
     override suspend fun deleteAll(uid: String) = Unit

@@ -128,7 +128,7 @@ class NutritionSyncTest {
         d2.engine.syncNow()
 
         d1.db.mealEntryEntityQueries.updateAmount(grams = 50.0, servings = null, id = "e1")
-        tick()
+        cloud.tick()
         d2.db.mealEntryEntityQueries.updateAmount(grams = 70.0, servings = null, id = "e1")
         d1.engine.syncNow()
         d2.engine.syncNow()

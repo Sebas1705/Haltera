@@ -15,9 +15,12 @@ class RemoteDocumentTest {
 
     @Test
     fun documentRoundTripsThroughTheRemoteShape() {
-        val doc = SyncDocument("routines", "r1", updatedAt = 42, deleted = false, payload = "{\"a\":1}")
+        val doc = SyncDocument("routines", "r1", updatedAt = 42, deleted = false, payload = "{\"a\":1}", pushedAt = 99)
         val remote = doc.toRemote()
-        assertEquals(RemoteDocument(payload = "{\"a\":1}", updatedAt = 42, deleted = false, schema = 1), remote)
+        assertEquals(
+            RemoteDocument(payload = "{\"a\":1}", updatedAt = 42, deleted = false, schema = 1, pushedAt = 99),
+            remote
+        )
         assertEquals(doc, remote.toSync("routines", "r1"))
     }
 

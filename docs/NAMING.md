@@ -34,7 +34,7 @@ tracked file outside this list. The list lives in the script.
 
 - Anywhere, only as part of the identifiers above: `ironlog-sebas1705`, `ironlog-release.jks`, `ironlog-ci`,
   `ironlog/prd`, the Doppler project `ironlog` and the keystore alias.
-- Whole files that describe the old name on purpose: this file, `docs/RELEASE.md` (legacy package and apps),
+- Whole files that describe the old name on purpose: this file, `docs/adr/0008-rename-to-haltera-keep-firebase.md` and its row in `docs/adr/README.md`, `docs/RELEASE.md` (legacy package and apps),
   `docs/FIRESTORE-DATA.md` (rename runbook), `README.md` (the "formerly" line),
   `docs/designs/2026-10-14-haltera-core-design.md` (share format),
   `androidApp/src/main/AndroidManifest.xml` (`.ironlog` intent filter), and the share decoders with their test:

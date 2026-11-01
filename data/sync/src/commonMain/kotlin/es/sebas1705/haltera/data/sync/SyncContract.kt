@@ -13,6 +13,12 @@ data class SyncDocument(
     val updatedAt: Long,
     val deleted: Boolean,
     val payload: String,
+    /**
+     * When the document was uploaded (the uploader's clock, ms), set by the engine on push. `updatedAt` is when the user
+     * changed it and decides conflicts; a phone that was offline uploads old changes late, so downloads follow
+     * `pushedAt` instead. 0 on a document written before this field existed (docs/adr/0009).
+     */
+    val pushedAt: Long = 0,
 )
 
 /** Remote side, implemented with Firestore in `data:remote` (workstream A). */
@@ -21,10 +27,11 @@ interface RemoteStore {
     suspend fun push(uid: String, documents: List<SyncDocument>)
 
     /**
-     * Emits batches of documents of [collection] changed after [sinceUpdatedAt], live. The first emission is
+     * Emits batches of documents of [collection] uploaded after [sincePushedAt], live. The first emission is
      * the current matching set, even when empty: the engine waits for it to finish its catch-up pass.
+     * With [sincePushedAt] 0 it is every document, including those written before `pushedAt` existed.
      */
-    fun changes(uid: String, collection: String, sinceUpdatedAt: Long): Flow<List<SyncDocument>>
+    fun changes(uid: String, collection: String, sincePushedAt: Long): Flow<List<SyncDocument>>
 
     /** Deletes every document of the user (account deletion). */
     suspend fun deleteAll(uid: String)

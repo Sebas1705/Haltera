@@ -1,16 +1,18 @@
 import { readFileSync } from 'node:fs';
-import { afterAll, beforeAll, beforeEach, describe, test } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, test } from 'vitest';
 import { assertFails, assertSucceeds, initializeTestEnvironment } from '@firebase/rules-unit-testing';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where, writeBatch } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc, where, writeBatch } from 'firebase/firestore';
 
+// emulators:exec exports where it listens (firebase.json: 8080); read it so another port works locally.
+const [emulatorHost, emulatorPort] = (process.env.FIRESTORE_EMULATOR_HOST ?? '127.0.0.1:8080').split(':');
 let env;
 beforeAll(async () => {
   env = await initializeTestEnvironment({
     projectId: 'demo-haltera',
     firestore: {
       rules: readFileSync(new URL('../../firestore.rules', import.meta.url), 'utf8'),
-      host: '127.0.0.1',
-      port: 8080,
+      host: emulatorHost,
+      port: Number(emulatorPort),
     },
   });
 });
@@ -25,6 +27,8 @@ beforeEach(async () => {
 
 /** A synced document as the app writes it (data:remote RemoteDocument). */
 const synced = (updatedAt, deleted = false) => ({ payload: deleted ? '' : '{"id":"x"}', updatedAt, deleted, schema: 1 });
+/** The same with the upload time the engine adds (data:remote RemoteDocument.pushedAt). */
+const pushed = (updatedAt, pushedAt) => ({ ...synced(updatedAt), pushedAt });
 const as = (uid) => env.authenticatedContext(uid).firestore();
 const anonymous = (uid) => env.authenticatedContext(uid, { firebase: { sign_in_provider: 'anonymous' } }).firestore();
 const nobody = () => env.unauthenticatedContext().firestore();
@@ -77,5 +81,58 @@ describe('other users and outsiders', () => {
   test('anything outside users/ is denied', async () => {
     await assertFails(setDoc(doc(as('ana'), 'catalog/e1'), { name: 'Bench' }));
     await assertFails(getDoc(doc(as('ana'), 'catalog/e1')));
+  });
+});
+
+// The queries FirestoreRemoteStore.changes runs, and the write semantics the sync relies on (docs/adr/0009).
+describe('sync queries and writes', () => {
+  const ids = (snapshot) => snapshot.docs.map((d) => d.id).sort();
+  const colRef = () => collection(as('ana'), 'users/ana/exercises');
+  const DAY = 24 * 3_600_000;
+  const cursor = 19.5 * DAY; // what a phone that synced `recent` has seen
+
+  beforeEach(async () => {
+    await env.withSecurityRulesDisabled(async (ctx) => {
+      const db = ctx.firestore();
+      await setDoc(doc(db, 'users/ana/exercises/legacy'), synced(1_000)); // written before pushedAt existed
+      await setDoc(doc(db, 'users/ana/exercises/old'), pushed(1_000, 20 * DAY)); // changed on day 0 by a phone that was offline, uploaded on day 20
+      await setDoc(doc(db, 'users/ana/exercises/recent'), pushed(19 * DAY, 19.2 * DAY));
+    });
+  });
+
+  test('the cursor query on pushedAt finds a document uploaded late although it was changed long ago', async () => {
+    const byPushedAt = await assertSucceeds(
+      getDocs(query(colRef(), where('pushedAt', '>', cursor), orderBy('pushedAt', 'asc'))),
+    );
+    expect(ids(byPushedAt)).toEqual(['old']);
+    // The query it replaces does not: this is the bug.
+    const byUpdatedAt = await assertSucceeds(
+      getDocs(query(colRef(), where('updatedAt', '>', cursor - 7 * DAY), orderBy('updatedAt', 'asc'))),
+    );
+    expect(ids(byUpdatedAt)).not.toContain('old');
+  });
+
+  test('a filter on pushedAt skips documents without the field, the unfiltered query from 0 returns them', async () => {
+    expect(ids(await getDocs(query(colRef(), where('pushedAt', '>', 0), orderBy('pushedAt', 'asc'))))).toEqual([
+      'old',
+      'recent',
+    ]);
+    const all = await assertSucceeds(getDocs(query(colRef(), orderBy('updatedAt', 'asc'))));
+    expect(ids(all)).toEqual(['legacy', 'old', 'recent']);
+  });
+
+  test('a push replaces the whole document: nothing of the previous version survives', async () => {
+    const ref = doc(as('ana'), 'users/ana/exercises/old');
+    await setDoc(ref, { payload: '{"v":2}', updatedAt: 2_000, deleted: false, schema: 1, pushedAt: 9_500 });
+    expect((await getDoc(ref)).data()).toEqual({
+      payload: '{"v":2}',
+      updatedAt: 2_000,
+      deleted: false,
+      schema: 1,
+      pushedAt: 9_500,
+    });
+    // A version without the new field (an older app) drops it instead of keeping the stale value.
+    await setDoc(ref, synced(3_000, true));
+    expect((await getDoc(ref)).data()).toEqual({ payload: '', updatedAt: 3_000, deleted: true, schema: 1 });
   });
 });

@@ -138,6 +138,11 @@ class SyncEngineImpl(
     /** First run: tracks the data logged before sync existed. Another uid: merges everything into it. */
     internal fun prepare(uid: String) {
         db.transaction {
+            // Cursors written by versions that followed `updatedAt` mean nothing now: download everything once.
+            if (db.metaQueries.get(META_CURSOR_KIND).executeAsOneOrNull() != CURSOR_KIND_PUSHED_AT) {
+                q.resetCursors()
+                db.metaQueries.put(META_CURSOR_KIND, CURSOR_KIND_PUSHED_AT)
+            }
             if (db.metaQueries.get(META_BACKFILLED).executeAsOneOrNull() != "1") {
                 backfill()
                 db.metaQueries.put(META_BACKFILLED, "1")
@@ -217,7 +222,10 @@ class SyncEngineImpl(
         }
     }
 
-    /** Applies remote documents newer than the local roots and advances the cursor. */
+    /**
+     * Applies remote documents newer than the local roots and advances the cursor to the latest `pushedAt` seen (the
+     * cursor table is still called `sinceUpdatedAt`: renaming a column would need a migration for no gain).
+     */
     internal fun receive(collection: String, docs: List<SyncDocument>) {
         var cursor = q.selectCursor(collection).executeAsOneOrNull() ?: 0L
         for (doc in docs.sortedBy { it.updatedAt }) {
@@ -233,7 +241,7 @@ class SyncEngineImpl(
                     break
                 }
             }
-            cursor = maxOf(cursor, doc.updatedAt)
+            cursor = maxOf(cursor, doc.pushedAt)
         }
         q.putCursor(collection, cursor)
     }
@@ -249,6 +257,7 @@ class SyncEngineImpl(
                 val dirty = q.selectDirty(batchSize.toLong()).executeAsList()
                 if (dirty.isEmpty()) break
                 state.value = SyncStatus.Syncing(pending())
+                val pushedAt = now()
                 val docs = dirty.map { s ->
                     val payload = if (s.deleted == 1L) null else store.read(s.collection, s.id)
                     SyncDocument(
@@ -256,7 +265,8 @@ class SyncEngineImpl(
                         s.id,
                         s.updatedAt,
                         deleted = payload == null,
-                        payload = payload.orEmpty()
+                        payload = payload.orEmpty(),
+                        pushedAt = pushedAt,
                     )
                 }
                 remote.push(uid, docs)
@@ -287,7 +297,7 @@ class SyncEngineImpl(
 
     private fun pending(): Long = q.countDirty().executeAsOne()
 
-    /** The cursor, minus a look-back window: a device that was offline may push documents dated earlier. */
+    /** The cursor (latest `pushedAt` seen), minus a look-back window for the clock differences between phones. */
     private fun since(collection: String): Long =
         q.selectCursor(collection).executeAsOneOrNull()?.let { (it - CURSOR_LOOKBACK_MILLIS).coerceAtLeast(0) } ?: 0L
 
@@ -298,6 +308,8 @@ class SyncEngineImpl(
         const val BATCH_SIZE = 100
         const val META_BACKFILLED = "syncBackfilled"
         const val META_UID = "syncUid"
+        const val META_CURSOR_KIND = "syncCursorKind"
+        const val CURSOR_KIND_PUSHED_AT = "pushedAt"
         const val CURSOR_LOOKBACK_MILLIS = 7L * 24 * 60 * 60 * 1_000
         private const val MAX_ROUNDS = 1_000
         private const val ERROR_AFTER_FAILURES = 5

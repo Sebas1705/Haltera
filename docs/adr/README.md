@@ -17,3 +17,4 @@ the repository is not invented: an ADR says so instead.
 | [0006](0006-agp-9-androidapp-split.md) | AGP 9 and a pure-Android `androidApp` module | Accepted | 2026-10-25 |
 | [0007](0007-crashlytics-android-only-opt-out.md) | Crashlytics on Android only, with a user opt-out | Accepted | 2026-10-29 |
 | [0008](0008-rename-to-haltera-keep-firebase.md) | Rename Ironlog to Haltera and keep the Firebase project | Accepted | 2026-10-16 |
+| [0009](0009-sync-downloads-follow-the-upload-time.md) | Sync downloads follow the upload time, not `updatedAt` | Accepted | 2026-11-01 |

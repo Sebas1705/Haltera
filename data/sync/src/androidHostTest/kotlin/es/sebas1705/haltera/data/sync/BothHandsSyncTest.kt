@@ -49,7 +49,7 @@ class BothHandsSyncTest {
         assertEquals(emptyList(), d2.dirty())
 
         // The slot is removed on the first phone: the link goes, the snapshot stays on both phones.
-        tick()
+        cloud.tick()
         d1.db.routineSlotEntityQueries.delete("r1-s1")
         d1.engine.syncNow()
         d2.engine.syncNow()

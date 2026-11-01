@@ -45,7 +45,7 @@ class CustomExerciseSyncTest {
         d1.engine.syncNow()
         d2.engine.syncNow()
 
-        tick()
+        cloud.tick()
         d1.db.exerciseEntityQueries.updateUser(
             nameEn = "Sled", nameEs = "Trineo", nameEnSearch = "sled", nameEsSearch = "trineo", category = "STRENGTH",
             trackingType = "WEIGHT_REPS", level = "EXPERT", primaryMuscles = "QUADRICEPS", secondaryMuscles = "GLUTES",
@@ -119,7 +119,7 @@ class CustomExerciseSyncTest {
         d1.engine.syncNow()
         d2.engine.syncNow()
 
-        tick()
+        cloud.tick()
         d1.db.exerciseEntityQueries.setUserDeprecated(deprecated = 1, updatedAt = 50, id = "user-1")
         assertEquals(0L, d1.state(EXERCISES, "user-1")?.deleted)
         d1.engine.syncNow()
@@ -130,7 +130,7 @@ class CustomExerciseSyncTest {
         assertEquals(1, d2.db.sessionExerciseEntityQueries.selectBySession("w9").executeAsList().size)
 
         // Restoring syncs back the same way.
-        tick()
+        cloud.tick()
         d1.db.exerciseEntityQueries.setUserDeprecated(deprecated = 0, updatedAt = 60, id = "user-1")
         d1.engine.syncNow()
         d2.engine.syncNow()
@@ -155,7 +155,7 @@ class CustomExerciseSyncTest {
         d2.logged()
 
         // Phone 1 (which never logged it) deletes the barbell variant.
-        tick()
+        cloud.tick()
         d1.db.exerciseVariantEntityQueries.deleteUser("user-1.barbell")
         d1.engine.syncNow()
         d2.engine.syncNow()

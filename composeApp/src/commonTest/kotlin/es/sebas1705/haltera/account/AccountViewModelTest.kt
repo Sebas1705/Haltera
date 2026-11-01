@@ -68,7 +68,7 @@ private class FakeAccount(
 private class FakeRemote : RemoteStore {
     val deleted = mutableListOf<String>()
     override suspend fun push(uid: String, documents: List<SyncDocument>) = Unit
-    override fun changes(uid: String, collection: String, sinceUpdatedAt: Long): Flow<List<SyncDocument>> = emptyFlow()
+    override fun changes(uid: String, collection: String, sincePushedAt: Long): Flow<List<SyncDocument>> = emptyFlow()
     override suspend fun deleteAll(uid: String) {
         deleted += uid
     }

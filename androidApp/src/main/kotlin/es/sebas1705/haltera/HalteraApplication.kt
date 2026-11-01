@@ -1,9 +1,12 @@
 package es.sebas1705.haltera
 
 import android.app.Application
+import android.content.pm.ApplicationInfo
 import android.os.Build
 import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.crashlytics.crashlytics
 import dev.gitlive.firebase.initialize
+import es.sebas1705.haltera.core.datastore.CrashReportsStore
 import es.sebas1705.haltera.account.AndroidGoogleSignInLauncher
 import es.sebas1705.haltera.account.GoogleSignInLauncher
 import es.sebas1705.haltera.account.NoGoogleSignIn
@@ -25,7 +28,10 @@ import es.sebas1705.haltera.health.HealthConnectBridge
 import es.sebas1705.haltera.feature.routines.share.RoutineShareBridge
 import es.sebas1705.haltera.share.AndroidBarcodeScanner
 import es.sebas1705.haltera.settings.AppInfo
+import es.sebas1705.haltera.settings.CrashReportsAvailability
 import es.sebas1705.haltera.share.AndroidRoutineShareBridge
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -38,7 +44,7 @@ class HalteraApplication : Application() {
         Firebase.initialize(this)
         val firebase = FirebaseConfig(configured = isFirebaseConfigured(this))
         val activities = ResumedActivity().also(::registerActivityLifecycleCallbacks)
-        startKoin {
+        val koin = startKoin {
             androidContext(this@HalteraApplication)
             modules(
                 appModules + module {
@@ -56,9 +62,22 @@ class HalteraApplication : Application() {
                     single<BarcodeScanner> { AndroidBarcodeScanner() }
                     single { AppVersionName(versionName()) }
                     single { appInfo() }
+                    single { CrashReportsAvailability(available = firebase.configured) }
                 },
             )
-        }
+        }.koin
+        if (firebase.configured) applyCrashReportsSwitch(koin.get())
+    }
+
+    /**
+     * Crashlytics collection follows Settings → Privacy → "Send crash reports" in release builds. The manifest turns it
+     * on for release and off for debug builds; Crashlytics persists the override, so a user who turned it off sends
+     * nothing from the next start on, crashes during startup included. Debug builds never send.
+     */
+    private fun applyCrashReportsSwitch(store: CrashReportsStore) {
+        val debuggable = (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0
+        if (debuggable) return
+        MainScope().launch { store.enabled.collect { Firebase.crashlytics.setCrashlyticsCollectionEnabled(it) } }
     }
 
     @Suppress("DEPRECATION") // getPackageInfo(String, PackageInfoFlags) needs API 33.

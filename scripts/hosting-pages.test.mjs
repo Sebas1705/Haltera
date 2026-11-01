@@ -151,3 +151,29 @@ test("firebase.json serves the haltera site from hosting with security headers",
 test("feature graphics are up to date, 1024x500 and without alpha", () => {
   assert.deepEqual(checkFeatureGraphics(), []);
 });
+
+test("every page has Open Graph and Twitter card tags with an absolute 1200x630 share image", () => {
+  const origin = "https://haltera.web.app";
+  for (const page of pages) {
+    const html = read(page);
+    const meta = (name) => html.match(new RegExp(`<meta (?:property|name)="${name}" content="([^"]*)"`))?.[1];
+    assert.equal(meta("og:type"), "website", `${page}: og:type`);
+    assert.ok(meta("og:title") && html.includes(`<title>${meta("og:title")}</title>`), `${page}: og:title must match <title>`);
+    assert.equal(meta("og:description"), meta("description"), `${page}: og:description must match the description`);
+    assert.equal(meta("og:image"), `${origin}/og-image.png`, `${page}: og:image`);
+    assert.equal(meta("og:image:width"), "1200", page);
+    assert.equal(meta("og:image:height"), "630", page);
+    assert.ok(meta("og:image:alt"), `${page}: og:image:alt`);
+    assert.equal(meta("twitter:card"), "summary_large_image", `${page}: twitter:card`);
+    const lang = html.match(/<html lang="(\w+)">/)[1];
+    assert.equal(meta("og:locale"), lang === "es" ? "es_ES" : "en_US", `${page}: og:locale`);
+    const url = meta("og:url");
+    assert.ok(url?.startsWith(`${origin}/`), `${page}: og:url must be absolute`);
+    const path = url.slice(origin.length);
+    assert.equal(resolve(path), page, `${page}: og:url ${url} does not point at this page`);
+  }
+  const png = readFileSync(join(hosting, "og-image.png"));
+  assert.equal(png.subarray(1, 4).toString(), "PNG");
+  assert.deepEqual([png.readUInt32BE(16), png.readUInt32BE(20)], [1200, 630], "og-image.png must be 1200x630");
+  assert.ok(png.length < 300 * 1024, `og-image.png is ${png.length} bytes, keep it under 300 KB`);
+});

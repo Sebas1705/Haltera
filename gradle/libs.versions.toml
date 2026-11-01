@@ -6,7 +6,7 @@ compose-material-icons  = "1.7.3"
 agp                     = "9.4.1"
 
 coroutines              = "1.11.0"
-serialization           = "1.11.0"
+serialization           = "1.12.0"
 datetime                = "0.8.0"
 immutable-collections   = "0.5.2"
 

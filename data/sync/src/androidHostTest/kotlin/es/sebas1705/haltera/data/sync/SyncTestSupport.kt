@@ -56,11 +56,11 @@ class FakeCloud(
         docs.value += documents.associateBy { Triple(uid, it.collection, it.id) }
     }
 
-    override fun changes(uid: String, collection: String, sinceUpdatedAt: Long): Flow<List<SyncDocument>> =
+    override fun changes(uid: String, collection: String, sincePushedAt: Long): Flow<List<SyncDocument>> =
         docs.onEach { check(online.value) { "offline" } }
             .map { all ->
                 all.filterKeys { it.first == uid && it.second == collection }.values
-                    .filter { it.updatedAt > sinceUpdatedAt }.sortedBy { it.updatedAt }
+                    .filter { sincePushedAt <= 0 || it.pushedAt > sincePushedAt }.sortedBy { it.pushedAt }
             }
             .distinctUntilChanged()
 
@@ -75,9 +75,10 @@ class FakeCloud(
 
     fun all(uid: String): List<SyncDocument> = docs.value.filterKeys { it.first == uid }.values.toList()
 
-    /** Writes a document as another device would. */
-    fun put(uid: String, doc: SyncDocument) {
-        docs.value += Triple(uid, doc.collection, doc.id) to doc
+    /** Writes a document as another device would, uploaded now unless [doc] says otherwise (0: a legacy document). */
+    fun put(uid: String, doc: SyncDocument, legacy: Boolean = false) {
+        val stored = doc.copy(pushedAt = if (legacy) 0 else doc.pushedAt.takeIf { it > 0 } ?: clock.now())
+        docs.value += Triple(uid, doc.collection, doc.id) to stored
     }
 }
 

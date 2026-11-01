@@ -13,6 +13,8 @@ internal data class RemoteDocument(
     val updatedAt: Long = 0,
     val deleted: Boolean = false,
     val schema: Int = SCHEMA_VERSION,
+    /** When it was uploaded (uploader's clock, ms): the download cursor follows it, not `updatedAt` (docs/adr/0009). */
+    val pushedAt: Long = 0,
 )
 
 internal const val SCHEMA_VERSION = 1
@@ -22,6 +24,7 @@ internal fun SyncDocument.toRemote() = RemoteDocument(
     payload = if (deleted) "" else payload,
     updatedAt = updatedAt,
     deleted = deleted,
+    pushedAt = pushedAt,
 )
 
 internal fun RemoteDocument.toSync(collection: String, id: String) = SyncDocument(
@@ -30,6 +33,7 @@ internal fun RemoteDocument.toSync(collection: String, id: String) = SyncDocumen
     updatedAt = updatedAt,
     deleted = deleted,
     payload = if (deleted) "" else payload,
+    pushedAt = pushedAt,
 )
 
 /** The user collections (design §3); clients cannot list subcollections, so deletion walks these. */

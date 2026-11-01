@@ -23,6 +23,8 @@ const keptIdentifiers = [
 // Files that talk about the old name on purpose.
 const allowedFiles = new Set([
   "docs/NAMING.md",
+  "docs/adr/0008-rename-to-haltera-keep-firebase.md", // records the rename decision
+  "docs/adr/README.md", // index row of the rename ADR
   "docs/RELEASE.md", // legacy package and legacy Firebase apps
   "docs/FIRESTORE-DATA.md", // rename runbook
   "README.md", // "formerly called Ironlog"

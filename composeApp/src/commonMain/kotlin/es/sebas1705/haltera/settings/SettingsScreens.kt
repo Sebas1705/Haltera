@@ -66,9 +66,12 @@ import es.sebas1705.haltera.resources.settings_about
 import es.sebas1705.haltera.resources.settings_account
 import es.sebas1705.haltera.resources.settings_bar_weight
 import es.sebas1705.haltera.resources.settings_credits
+import es.sebas1705.haltera.resources.settings_crash_reports
+import es.sebas1705.haltera.resources.settings_crash_reports_hint
 import es.sebas1705.haltera.resources.settings_integrations
 import es.sebas1705.haltera.resources.settings_keep_screen_on
 import es.sebas1705.haltera.resources.settings_plates
+import es.sebas1705.haltera.resources.settings_privacy
 import es.sebas1705.haltera.resources.settings_rest_sound
 import es.sebas1705.haltera.resources.settings_rest_vibration
 import es.sebas1705.haltera.resources.settings_share_name
@@ -182,6 +185,15 @@ fun SettingsScreen(
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             SectionTitle(Res.string.settings_integrations)
             IntegrationsSection()
+            if (state.crashReportsAvailable) {
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                SectionTitle(Res.string.settings_privacy)
+                SwitchRow(
+                    label = Res.string.settings_crash_reports,
+                    checked = state.crashReports,
+                    supporting = Res.string.settings_crash_reports_hint,
+                ) { viewModel.onEvent(SettingsIntent.SetCrashReports(it)) }
+            }
             HorizontalDivider(Modifier.padding(vertical = 8.dp))
             TextButton(onClick = onAbout, modifier = Modifier.padding(horizontal = 8.dp)) {
                 Text(stringResource(Res.string.settings_about))
@@ -233,9 +245,15 @@ private fun ChipRow(options: List<Long>, selected: (Long) -> Boolean, unit: Weig
 }
 
 @Composable
-private fun SwitchRow(label: StringResource, checked: Boolean, onChange: (Boolean) -> Unit) {
+private fun SwitchRow(
+    label: StringResource,
+    checked: Boolean,
+    supporting: StringResource? = null,
+    onChange: (Boolean) -> Unit,
+) {
     ListItem(
         headlineContent = { Text(stringResource(label)) },
+        supportingContent = supporting?.let { { Text(stringResource(it)) } },
         trailingContent = { Switch(checked = checked, onCheckedChange = onChange) },
         modifier = Modifier.fillMaxWidth(),
     )

@@ -23,6 +23,38 @@ jobs:
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v6
       - run: ./gradlew detekt testDebugUnitTest testAndroidHostTest verifySqlDelightMigration :androidApp:assembleDebug --continue
+      # Kover merges the host tests that just ran (they stay up to date) into one report and fails the
+      # job if line coverage drops below the threshold in build.gradle.kts (koverVerify).
+      - name: Coverage report (Kover)
+        run: ./gradlew koverXmlReport koverHtmlReport koverVerify --continue
+      - name: Coverage summary
+        if: ${{ !cancelled() }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const path = "build/reports/kover/report.xml";
+            if (!fs.existsSync(path)) { fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, "### Coverage\n\nNo Kover report was produced.\n"); process.exit(0); }
+            const xml = fs.readFileSync(path, "utf8");
+            const pct = (type) => {
+              // The report-level counters are the last ones in the JaCoCo-style XML.
+              const all = [...xml.matchAll(new RegExp(`<counter type="${type}" missed="(\\d+)" covered="(\\d+)"`, "g"))];
+              const [, missed, covered] = all[all.length - 1].map(Number);
+              return { pct: (100 * covered / (covered + missed)).toFixed(1), covered, total: covered + missed };
+            };
+            const line = pct("LINE"), branch = pct("BRANCH");
+            const threshold = (fs.readFileSync("build.gradle.kts", "utf8").match(/minBound\((\d+)\)/) || [])[1];
+            fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,
+              `### Coverage (Kover, host tests)\n\n` +
+              `| Metric | Covered | Coverage |\n|---|---|---|\n` +
+              `| Lines | ${line.covered} / ${line.total} | **${line.pct} %** |\n` +
+              `| Branches | ${branch.covered} / ${branch.total} | ${branch.pct} % |\n\n` +
+              `Minimum line coverage enforced by koverVerify: ${threshold} %. HTML report in the kover-html-report artifact.\n`);
+          '
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: kover-html-report
+          path: build/reports/kover/html/
       - uses: actions/upload-artifact@v7
         if: always()
         with:

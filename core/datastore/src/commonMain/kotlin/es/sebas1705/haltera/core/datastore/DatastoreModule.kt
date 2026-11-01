@@ -12,4 +12,6 @@ val datastoreModule = module {
     single<CloudBackupStore> { SettingsCloudBackupStore(Settings()) }
     // Health Connect / HealthKit switches and bookkeeping: device-local, never synced.
     single<HealthSettingsStore> { SettingsHealthSettingsStore(Settings()) }
+    // Settings → Privacy → "Send crash reports": device-local, never synced, kept by "Also erase data on this device".
+    single<CrashReportsStore> { SettingsCrashReportsStore(Settings()) }
 }

@@ -4,6 +4,7 @@ import dev.gitlive.firebase.firestore.ChangeType
 import dev.gitlive.firebase.firestore.CollectionReference
 import dev.gitlive.firebase.firestore.Direction
 import dev.gitlive.firebase.firestore.FirebaseFirestore
+import dev.gitlive.firebase.firestore.Query
 import es.sebas1705.haltera.data.sync.RemoteStore
 import es.sebas1705.haltera.data.sync.SyncDocument
 import kotlinx.coroutines.channels.Channel
@@ -33,10 +34,8 @@ class FirestoreRemoteStore(
         }
     }
 
-    override fun changes(uid: String, collection: String, sinceUpdatedAt: Long): Flow<List<SyncDocument>> =
-        collection(uid, collection)
-            .where { "updatedAt" greaterThan sinceUpdatedAt }
-            .orderBy("updatedAt", Direction.ASCENDING)
+    override fun changes(uid: String, collection: String, sincePushedAt: Long): Flow<List<SyncDocument>> =
+        changedSince(collection(uid, collection), sincePushedAt)
             .snapshots
             // The SDK callback must never drop a snapshot: each one carries only its changes.
             .buffer(Channel.UNLIMITED)
@@ -45,6 +44,18 @@ class FirestoreRemoteStore(
                     .filter { it.type != ChangeType.REMOVED }
                     .map { it.document.data(RemoteDocument.serializer()).toSync(collection, it.document.id) }
             }
+
+    /**
+     * What was uploaded after [sincePushedAt]. Not `updatedAt`: a phone that was offline uploads old changes late, and
+     * they would fall behind the cursor. From 0 it is the whole collection, which is also the only way to see documents
+     * written before `pushedAt` existed (a filter on a field excludes the documents that lack it).
+     */
+    private fun changedSince(collection: CollectionReference, sincePushedAt: Long): Query =
+        if (sincePushedAt <= 0) {
+            collection.orderBy("updatedAt", Direction.ASCENDING)
+        } else {
+            collection.where { "pushedAt" greaterThan sincePushedAt }.orderBy("pushedAt", Direction.ASCENDING)
+        }
 
     override suspend fun deleteAll(uid: String) {
         SYNCED_COLLECTIONS.forEach { name ->

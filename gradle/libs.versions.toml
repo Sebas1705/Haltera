@@ -33,7 +33,7 @@ detekt                  = "1.23.8"
 detekt-kotlin           = "2.0.21"
 kover                   = "0.9.11"
 
-security-crypto         = "1.1.0-beta01"
+security-crypto         = "1.1.0"
 leakcanary              = "2.14"
 turbine                 = "1.2.1"
 compose-icons           = "1.1.1"

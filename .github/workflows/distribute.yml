@@ -14,8 +14,32 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  distribute:
+  # Chooses where the heavy build runs: the owner's PC (self-hosted runner, see Sebas1705/ci-runner) when its
+  # heartbeat variable is under 3 minutes old, otherwise a GitHub-hosted runner. Only push and manual runs may
+  # use the PC; pull requests and every other event stay on GitHub-hosted runners.
+  pick-runner:
+    name: Pick the runner
     runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      runner: ${{ steps.pick.outputs.runner }}
+    steps:
+      - id: pick
+        env:
+          HEARTBEAT: ${{ vars.PC_RUNNER_HEARTBEAT }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          runner='"ubuntu-latest"'
+          if { [ "$EVENT" = push ] || [ "$EVENT" = workflow_dispatch ]; } && [ -n "${HEARTBEAT:-}" ]; then
+            age=$(( $(date +%s) - HEARTBEAT ))
+            if [ "$age" -ge 0 ] && [ "$age" -lt 180 ]; then runner='["self-hosted","pc"]'; fi
+          fi
+          echo "Runner: $runner"
+          echo "runner=$runner" >> "$GITHUB_OUTPUT"
+
+  distribute:
+    needs: pick-runner
+    runs-on: ${{ fromJSON(needs.pick-runner.outputs.runner) }}
     timeout-minutes: 45
     env:
       DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
@@ -23,6 +47,12 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+
+      # `npx firebase-tools` needs npm: the PC image ships an old Node without npx, so install the same Node
+      # on every runner.
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
 
       - name: Version name
         id: ver

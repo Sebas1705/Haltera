@@ -46,6 +46,22 @@ manually from Actions (`workflow_dispatch`):
 the previous one. Testers get an email from App Distribution with the download link (the first time
 they accept the invitation and install from the browser or the *Firebase App Tester* app).
 
+### Which runner builds
+
+The heavy Linux Gradle jobs (`android` in `ci.yml`, `distribute` in `distribute.yml`, `release` in
+`release.yml`) can run on the owner's PC, a self-hosted Linux runner (labels `self-hosted, pc`; see
+`Sebas1705/ci-runner`). Each workflow starts with a small `pick-runner` job on `ubuntu-latest` that decides:
+
+- The PC is chosen only for `push` (tags included) and `workflow_dispatch` runs, and only when the repository
+  variable `PC_RUNNER_HEARTBEAT` (epoch seconds, written every minute by a watcher while the PC is free and idle)
+  is under 180 seconds old.
+- Pull requests and every other event always use `ubuntu-latest`, so fork code never reaches the PC.
+- If the heartbeat is missing or stale the job falls back to `ubuntu-latest` automatically; no setting to change.
+
+The jobs are otherwise identical on both runners (same secrets, permissions and steps). `actions/setup-node`
+installs Node 22 on both because the PC image ships an older Node without npm. Everything else (iOS, Firestore
+rules emulator, catalogue checks, Firebase deploys, Play promotion) stays on GitHub-hosted runners.
+
 Locally, without those variables, `./gradlew :androidApp:assembleRelease` builds a release APK
 (R8 on) signed with the debug key and the version from the convention plugin. To build one signed
 with the real key:

@@ -64,10 +64,10 @@ test("pushing to main from another branch is blocked, branch names that contain 
 });
 
 test("Doppler secret values are not printed, names are fine", () => {
-  assert.equal(bash("doppler secrets -p ironlog -c prd").block, true);
+  assert.equal(bash("doppler secrets -p demo -c prd").block, true);
   assert.equal(bash("doppler secrets get FOO --plain").block, true);
-  assert.equal(bash("doppler secrets -p ironlog -c prd --only-names").block, false);
-  assert.equal(bash("doppler run -p ironlog -c prd -- ./gradlew assembleRelease").block, false);
+  assert.equal(bash("doppler secrets -p demo -c prd --only-names").block, false);
+  assert.equal(bash("doppler run -p demo -c prd -- ./gradlew assembleRelease").block, false);
 });
 
 test("reading secret files through a shell is blocked", () => {

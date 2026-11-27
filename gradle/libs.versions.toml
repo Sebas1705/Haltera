@@ -11,7 +11,7 @@ datetime                = "0.8.0"
 immutable-collections   = "0.5.2"
 
 lifecycle               = "2.11.0"
-navigation              = "2.9.2"
+navigation              = "2.10.0"
 
 ktor                    = "3.6.0"
 koin                    = "4.2.2"

@@ -72,3 +72,7 @@ scripts/nutrition/node_modules/
 # Firebase (firebase/): rules-test dependencies and emulator logs
 firebase/rules-test/node_modules/
 firebase/*-debug.log
+
+# Claude Code: personal settings and session worktrees (the shared .claude/settings.json and commands are committed)
+.claude/settings.local.json
+.claude/worktrees/

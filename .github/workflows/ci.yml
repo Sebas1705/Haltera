@@ -137,6 +137,8 @@ jobs:
       - run: npm ci --prefix scripts/catalog
       - run: npm test --prefix scripts/catalog
       - run: node scripts/catalog/build.mjs --check
+      # The guard that stops AI agents editing generated files, secrets and shipped schema snapshots.
+      - run: node --test scripts/agent-guard.test.mjs
       # Generic foods database (nutrition/README.md).
       - run: npm ci --prefix scripts/nutrition
       - run: npm test --prefix scripts/nutrition

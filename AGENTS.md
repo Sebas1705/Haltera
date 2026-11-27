@@ -41,6 +41,16 @@ Conversations with the owner may be in Spanish; anything committed is in English
 - **Detekt must pass** — run `./gradlew detekt` before marking a task done (it autocorrects formatting locally; CI only reports)
 - **The brand has one source, `brand/tokens.json`** — never hand-edit generated icons, the splash theme or `brand/*.svg`; change the tokens and run `node scripts/brand.mjs --png` (see [docs/BRAND.md](docs/BRAND.md)). Features use `HalteraTheme.colors` (accent, PR gold) and `PrBadge` from `core:ui` instead of new colours
 
+## Working with AI agents
+
+- `.claude/settings.json` wires `scripts/agent-guard.mjs` as a `PreToolUse` hook for Claude Code. It blocks edits to
+  generated files (brand assets, schema snapshots, `.templetry-answers.yml`), to secret files, force pushes,
+  `--no-verify`, commits and pushes made directly on `main`, and printing Doppler secret values. The same rules
+  are written above; the hook only makes them mechanical. Extend `scripts/agent-guard.mjs` and its test together.
+- `/verify` (in `.claude/commands/`) runs the required checks and reports what was and was not verified.
+- Agents work on a branch and open a PR. An unattended agent (CI) never merges; a person reviews and merges. Issue-driven runs are described in
+  [docs/AGENT-WORKFLOW.md](docs/AGENT-WORKFLOW.md).
+
 ## Firebase (account and sync)
 
 - `androidApp/google-services.json` and `iosApp/iosApp/GoogleService-Info.plist` come from Doppler

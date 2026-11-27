@@ -73,4 +73,43 @@ class TrainingMathTest {
         assertEquals(75 * 60_000L, TrainingMath.durationMillis(session))
         assertNull(TrainingMath.durationMillis(dated("b", TODAY, minutes = null).session))
     }
+
+    @Test
+    fun `setVolume of a completed working set with negative reps is 0`() {
+        assertEquals(0L, TrainingMath.setVolume(lift(100.0, -5)))
+    }
+
+    @Test
+    fun `setVolume of a bilateral set with null load is 0`() {
+        assertEquals(0L, TrainingMath.setVolume(lift(null, 5), bilateral = true))
+    }
+
+    @Test
+    fun `effectiveSets(session) sums effective sets of two exercises`() {
+        val session = dated(
+            "s",
+            TODAY,
+            move("ex1", lift(100.0, 5), lift(100.0, 0)),
+            move("ex2", lift(80.0, 6, SetKind.FAILURE), lift(100.0, 0))
+        ).session
+        assertEquals(2, TrainingMath.effectiveSets(session))
+    }
+
+    @Test
+    fun `durationMillis of a session whose endedAt is before startedAt is 0`() {
+        val base = dated("s", TODAY, minutes = 60).session
+        val bad = base.copy(endedAt = base.startedAt - 1000)
+        assertEquals(0L, TrainingMath.durationMillis(bad))
+    }
+
+    @Test
+    fun `volume(session) equals sum of volume of its exercises, with one bilateral exercise`() {
+        val session = dated(
+            "s",
+            TODAY,
+            move("ex1", lift(100.0, 5)),
+            move("ex2", lift(80.0, 6), bilateral = true)
+        ).session
+        assertEquals(1_460_000L, TrainingMath.volume(session))
+    }
 }
